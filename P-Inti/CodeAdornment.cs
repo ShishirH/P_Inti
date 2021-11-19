@@ -7,6 +7,7 @@ using System.Windows.Shapes;
 using Microsoft.VisualStudio.Text;
 using Microsoft.VisualStudio.Text.Editor;
 using Microsoft.VisualStudio.Text.Formatting;
+using GalaSoft.MvvmLight.Threading;
 
 namespace P_Inti
 {
@@ -43,19 +44,27 @@ namespace P_Inti
                 throw new ArgumentNullException("view");
             }
 
-            this.layer = view.GetAdornmentLayer("CodeAdornment");
+            IAdornmentLayer layer = null;
 
+            DispatcherHelper.Initialize();
+            DispatcherHelper.CheckBeginInvokeOnUI((Action)delegate
+           {
+               layer = view.GetAdornmentLayer("CodeAdornment");
+           });
+
+            this.layer = layer;
             this.view = view;
             //this.view.LayoutChanged += this.OnLayoutChanged;
 
             // Create the pen and brush to color the box behind the a's
             this.brush = null;
-            //this.brush.Freeze();
+               //this.brush.Freeze();
 
-            var penBrush = new SolidColorBrush(Colors.Transparent);
-            penBrush.Freeze();
-            this.pen = new Pen(penBrush, 0.5);
-            this.pen.Freeze();
+               var penBrush = new SolidColorBrush(Colors.Transparent);
+               penBrush.Freeze();
+               this.pen = new Pen(penBrush, 0.5);
+               this.pen.Freeze();
+
         }
 
         public CodeAdornment(IWpfTextView view, Brush brush) : this(view)

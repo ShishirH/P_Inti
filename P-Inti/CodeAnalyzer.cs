@@ -1191,7 +1191,7 @@ namespace TestingCodeAnalysis
                 //}
 
                 // TMP
-                syntaxTrees.Add(CSharpSyntaxTree.ParseText(File.ReadAllText(@"E:\UVic\progvolver\VisualDebugger\VisualDebugger\Resources\Logger.cs")));
+                syntaxTrees.Add(CSharpSyntaxTree.ParseText(File.ReadAllText(@"C:\Dev\P-Inti\P-Inti\Resources\Logger.cs")));
 
 
                 refs.Add(MetadataReference.CreateFromFile(typeof(object).GetTypeInfo().Assembly.Location));

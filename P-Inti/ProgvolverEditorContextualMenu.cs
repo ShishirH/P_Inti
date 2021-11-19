@@ -111,7 +111,7 @@ namespace P_Inti
 
                 string signalID = Utils.generateID();
                 MyWindowControl.trackedSignalIDs.Add(signalID);
-                MyWindowControl.signalsPositions.Add(signalID, Tuple.Create(@"F:\UVic\Research\Demos\Demo\Demo\Program.cs", ts.CurrentLine - 1));
+                MyWindowControl.signalsPositions.Add(signalID, Tuple.Create(@"C:\Dev\Demo\Demo\Program.cs", ts.CurrentLine - 1));
 
                 var activePoint = ((EnvDTE.TextSelection)dte.ActiveDocument.Selection).ActivePoint;
                 string lineText = activePoint.CreateEditPoint().GetLines(activePoint.Line, activePoint.Line + 1);

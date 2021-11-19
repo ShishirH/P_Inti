@@ -916,16 +916,16 @@ namespace P_Inti
 
             IWpfTextView textView = Utils.GetWpfView();
 
-            if (textView != null)
-            {
-                theDispatcher.Invoke(new Action(() => {
-                    Dictionary<string, CodeAdornment> codeAdornments = windowControl.codeAdornments;
-                    SolidColorBrush brush = (SolidColorBrush)(new BrushConverter().ConvertFrom(color));
-                    brush.Opacity = opacity;
-                    CodeAdornment codeAdornment = new CodeAdornment(textView, brush);
-                    codeAdornments.Add(id, codeAdornment);
-                }));
-            }
+            //if (textView != null) TODO ERROR FIX
+            //{
+            //    theDispatcher.Invoke(new Action(() => {
+            //        Dictionary<string, CodeAdornment> codeAdornments = windowControl.codeAdornments;
+            //        SolidColorBrush brush = (SolidColorBrush)(new BrushConverter().ConvertFrom(color));
+            //        brush.Opacity = opacity;
+            //        CodeAdornment codeAdornment = new CodeAdornment(textView, brush);
+            //        codeAdornments.Add(id, codeAdornment);
+            //    }));
+            //}
 
             return result;
         }
@@ -1366,7 +1366,7 @@ namespace P_Inti
 
                 LineText lineText = new LineText();
                 lineText.setLine(textView);
-                lineText.addAdornment(textView);
+                // FIX ERROR TODO lineText.addAdornment(textView);
 
 
                 var selection = (TextSelection)windowControl.dte.ActiveDocument.Selection;
