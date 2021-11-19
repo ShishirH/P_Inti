@@ -1,0 +1,44 @@
+#wrapper{
+    margin: 50px auto;
+    text-align: center;
+    width: 1000px;
+}
+
+#tools{
+    float: left;
+    border-radius: 2px;
+    border: 1px solid black;
+}
+
+.tool{
+    padding: 15px;
+}
+
+.tool:not(:last-child){
+    border-bottom: 1px solid black;
+}
+
+.tool input{
+    width: 50px;
+}
+
+.tool button{
+    padding: 6px 7px;
+}
+
+.tool input[type="color"]{
+    border: none;
+    background: none;
+}
+
+.tool .title{
+    display: block;
+}
+
+.hidden{
+    display: none !important;
+}
+
+#canvas-area{
+    border: 1px solid black;
+}

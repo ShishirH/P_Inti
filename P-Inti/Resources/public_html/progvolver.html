@@ -1,0 +1,1468 @@
+﻿<!DOCTYPE html>
+<html style="overflow-x: no-display; overflow-y: hidden;">
+    <head>
+
+        <title>ProgVolver</title>
+
+
+        <style>
+
+
+
+            .vis-item.true  { background-color: #90EE90FF; border-color: #006400FF; opacity: 0.75; }
+            .vis-item.false      { background-color: #FFC0CBFF; border-color: #8B0000FF; opacity: 0.75; }
+
+
+            .vis-item.assignment { background-color: #ffe428ff;  border-color: #af9100FF; opacity: 0.75; }
+
+
+            .vis-item.reference { background-color: #ADD8E6FF; border-color: #0000FFFF; opacity: 0.75; }
+
+
+        </style>
+
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+        <meta name="apple-mobile-web-app-capable" content="yes" />
+        <meta name="apple-mobile-web-app-status-bar-style" content="black" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+
+        <script type="text/javascript">
+            if (window.CefSharp) {
+                CefSharp.BindObjectAsync("jsHandler", "jsHandler");
+            }
+        </script>
+
+        <link rel="stylesheet" type="text/css" href="./css/monserratFont.css">
+        <link rel="stylesheet" type="text/css" href="./css/main.css" />
+        <link rel="stylesheet" type="text/css" href="./css/kickstart.css" media="all" />
+        <link rel="stylesheet" type="text/css" href="./style.css" media="all" />
+        <link rel="stylesheet" type="text/css" href="./css/locators.css" />
+        <link rel="stylesheet" type="text/css" href="./css/operators.css" />
+        <link rel="stylesheet" type="text/css" href="./css/functions.css" />
+        <link rel="stylesheet" type="text/css" href="./css/collections.css" />
+        <link rel="stylesheet" type="text/css" href="./css/values.css" />
+        <link rel="stylesheet" type="text/css" href="./css/marks.css" />
+        <link rel="stylesheet" type="text/css" href="./css/generators.css" />
+        <link rel="stylesheet" type="text/css" href="./css/rangeGenerator.css" />
+        <link rel="stylesheet" type="text/css" href="./css/collectiveOperators.css" />
+        <link rel="stylesheet" type="text/css" href="./css/customDataTypes.css" />
+        <link rel="stylesheet" type="text/css" href="./css/fonts/fontawesome/css/font-awesome.css" media="all" />
+        <link rel="stylesheet" type="text/css" href="./css/fonts/font-awesome-4.4.0/css/font-awesome.css" media="all" />
+        <link rel="stylesheet" type="text/css" href="./css/alertify.core.css" />
+        <link rel="stylesheet" type="text/css" href="./css/alertify.default.css" />
+        <link rel="stylesheet" type="text/css" href="./css/tooltipster.bundle.css" />
+        <link rel="stylesheet" type="text/css" href="./css/tooltipster-sideTip-borderless.min.css" />
+        <link rel="stylesheet" type="text/css" href="./css/tooltipster-sideTip-punk.min.css" />
+        <link rel="stylesheet" type="text/css" href="./css/workshop.css" />
+        <!--        <link rel="stylesheet" type="text/css" href="./css/spectrum.css" />-->
+        <link rel="stylesheet" type="text/css" href="./css/jquery.dialog.css" />
+        <link rel="stylesheet" type="text/css" href="./css/ion.rangeSlider.min.css" />
+        <link rel="stylesheet" type="text/css" href="./css/drawingCanvas.css" />
+        <link rel="stylesheet" type="text/css" href="./js/contextMenu/jquery.contextMenu.min.css" />
+
+
+        <script type="text/javascript" src="./js/jquery-1.10.2.js"></script>
+        <script type="text/javascript" src="./js/jquery.ajaxfileupload.js"></script>
+        <script type="text/javascript" src="./js/jquery-ui-1.10.4.min.js"></script>
+        <script type="text/javascript" src="./js/jquery.path.js"></script>
+        <script type="text/javascript" src="./js/kickstart.js"></script>
+        <script type="text/javascript" src="./js/drawingCanvas.js"></script>
+
+        <!--        <script type="text/javascript" src="./js/fabric4.4.0.js"></script>-->
+        <script type="text/javascript" src="./js/fabric.js"></script>
+        <!--        <script type="text/javascript" src="./js/fabric_new.js"></script>-->
+
+        <script type="text/javascript" src="./js/graphlib.min.js"></script>
+        <script type="text/javascript" src="./js/undomanager.js"></script>
+        <script type="text/javascript" src="./js/iVoLVER.js"></script>
+        <script type="text/javascript" src="./js/moment.js"></script>
+        <script type="text/javascript" src="./js/alertify.js"></script>
+        <script type="text/javascript" src="./js/tooltipster.core.min.js"></script>
+        <script type="text/javascript" src="./js/tooltipster.bundle.min.js"></script>
+        <script type="text/javascript" src="./js/jquery.ui.touch-punch.min.js"></script>
+        <script type="text/javascript" src="./js/generalFunctions.js"></script>
+        <script type="text/javascript" src="./js/globals.js"></script>
+        <script type="text/javascript" src="./js/classes/Project.js"></script>
+        <script type="text/javascript" src="./js/interaction/canvasEvents.js"></script>
+        <script type="text/javascript" src="./js/interaction/objectsEvents.js"></script>
+        <script type="text/javascript" src="./js/interaction/widgetsEvents.js"></script>
+
+        <script type="text/javascript" src="./js/hammer.min.js"></script>
+
+        <script type="text/javascript" src="./js/javascript.util.js"></script>
+        <script type="text/javascript" src="./js/jsts.js"></script>
+        <script type="text/javascript" src="./js/simplify.js"></script>
+        <script type="text/javascript" src="./js/classes/Connector.js"></script>
+        <script type="text/javascript" src="./js/classes/iconPaths.js"></script>
+        <script type="text/javascript" src="./js/colors.js"></script>
+        <script type="text/javascript" src="./js/jsGradient.js"></script>
+        <script type="text/javascript" src="./js/FileSaver.min.js"></script>
+        <script type="text/javascript" src="./js/math.min.js"></script>
+        <script type="text/javascript" src="./js/colormix-1.0.0.min.js"></script>
+        <script type="text/javascript" src="./js/h5utils.js"></script>
+        <script type="text/javascript" src="./js/jquery.xdomainajax.js"></script>
+        <script type="text/javascript" src="./js/jquery.resize.js"></script>
+        <script type="text/javascript" src="./js/jquery.drag.resize.js"></script>
+        <script type="text/javascript" src="./js/toPathTransformations.js"></script>
+        <script type="text/javascript" src="./js/path-data-polyfill.js"></script>
+        <script type="text/javascript" src="./js/clipper_unminified.js"></script>
+        <!--<script type="text/javascript" src="./js/spectrum.js"></script>-->
+        <script type="text/javascript" src="./js/workshop.js"></script>
+        <script type="text/javascript" src="./js/jszip.min.js"></script>
+        <script type="text/javascript" src="./js/pathseg.js"></script>
+        <script type="text/javascript" src="./js/jquery.dialog.js"></script>
+        <script type="text/javascript" src="./js/ion.rangeSlider.min.js"></script>
+        <script type="text/javascript" src="./js/papaparse.min.js"></script>
+        <script src="http://netbeast.github.io/colorsys/browser.js"></script>
+
+
+        <script type="text/javascript" src="./js/contextMenu/jquery.contextMenu.js"></script>
+        <script type="text/javascript" src="./js/contextMenu/jquery.ui.position.min.js"></script>
+
+        <script type="text/javascript" src="./js/progvolver.js"></script>
+        <script type="text/javascript" src="./js/classes/types/Value.js"></script>
+        <script type="text/javascript" src="./js/classes/VisualProperty.js"></script>
+        <script type="text/javascript" src="./js/classes/types/VisualValue.js"></script>
+        <script type="text/javascript" src="./js/classes/types/ShapeData.js"></script>
+        <script type="text/javascript" src="./js/classes/types/ColorData.js"></script>
+        <script type="text/javascript" src="./js/classes/types/StringData.js"></script>
+        <script type="text/javascript" src="./js/classes/types/NumericData.js"></script>
+        <script type="text/javascript" src="./js/classes/marks/Mark.js"></script>
+        <script type="text/javascript" src="./js/classes/marks/RectangularMark.js"></script>
+        <script type="text/javascript" src="./js/classes/progvolver/ConnectionPort.js"></script>
+        <script type="text/javascript" src="./js/classes/progvolver/ConnectableWidget.js"></script>
+        <script type="text/javascript" src="./js/classes/progvolver/CodeNote.js"></script>
+        <script type="text/javascript" src="./js/classes/progvolver/WhenSignal.js"></script>
+        <script type="text/javascript" src="./js/classes/progvolver/ReferenceWidget.js"></script>
+        <script type="text/javascript" src="./js/classes/progvolver/ReferencePointer.js"></script>
+        <script type="text/javascript" src="./js/classes/progvolver/ProgvolverSymbol.js"></script>
+        <script type="text/javascript" src="./js/classes/progvolver/ProgvolverExpression.js"></script>
+        <script type="text/javascript" src="./js/classes/progvolver/Plotter.js"></script>
+        <script type="text/javascript" src="./js/classes/progvolver/ArraySymbol.js"></script>
+        <script type="text/javascript" src="./js/classes/progvolver/ArrayElementSymbol.js"></script>
+        <script type="text/javascript" src="./js/classes/progvolver/SignalEmitterWidget.js"></script>
+        <script type="text/javascript" src="./js/classes/progvolver/SignalHolder.js"></script>
+        <script type="text/javascript" src="./js/classes/progvolver/ObjectWidget.js"></script>
+        <script type="text/javascript" src="./js/classes/progvolver/SignalReceiverWidget.js"></script>
+        <script type="text/javascript" src="./js/classes/progvolver/AffectWidget.js"></script>
+        <script type="text/javascript" src="./js/classes/progvolver/WhenWidget.js"></script>
+        <script type="text/javascript" src="./js/classes/progvolver/ArrayElementObject.js"></script>
+        <script type="text/javascript" src="./js/classes/progvolver/MinimizeButton.js"></script>
+        <script type="text/javascript" src="./js/classes/progvolver/ObjectMemberSelection.js"></script>
+        <script type="text/javascript" src="./js/classes/progvolver/ObjectSelectionPane.js"></script>
+        <script type="text/javascript" src="./js/classes/progvolver/ObjectSelectionCheckBox.js"></script>
+        <script type="text/javascript" src="./js/classes/progvolver/SnapshotWidget.js"></script>
+        <script type="text/javascript" src="./js/classes/progvolver/Snapshot.js"></script>
+        <script type="text/javascript" src="./js/classes/progvolver/SignalReceiverSnapshot.js"></script>
+        <script type="text/javascript" src="./js/classes/progvolver/ColorPickerWidget.js"></script>
+        <script type="text/javascript" src="./js/classes/progvolver/ColorPickerSignalHolder.js"></script>
+        <script type="text/javascript" src="./js/classes/progvolver/ArrayColorWidget.js"></script>
+        <script type="text/javascript" src="./js/classes/progvolver/ArrayColorWidgetAddition.js"></script>
+        <script type="text/javascript" src="./js/classes/progvolver/ColorWidgetSignal.js"></script>
+        <script type="text/javascript" src="./js/classes/progvolver/ArrayColorWidgetOutput.js"></script>
+
+        <script type="text/javascript" src="./js/classes/progvolver/NumberHolder.js"></script>
+        <script type="text/javascript" src="./js/classes/progvolver/NumberFormatter.js"></script>
+        <script type="text/javascript" src="./js/classes/progvolver/Dropdown.js"></script>
+        <script type="text/javascript" src="./js/classes/progvolver/TextRectangle.js"></script>
+        <script type="text/javascript" src="./js/classes/progvolver/CanvasVariable.js"></script>
+        <script type="text/javascript" src="./js/classes/progvolver/CanvasVariableConnectionPort.js"></script>
+
+        <link rel="stylesheet" type="text/css" href="./js/spectrum.min.css"/>
+        <script src="./js/spectrum.min.js"></script>
+        <script src="./js/d3.v6.js"></script>
+
+        <!--        <script src="./js/vis-timeline-graph2d.min.js"></script>
+                <link rel="stylesheet" type="text/css" href="./css/vis-timeline-graph2d.min.css" />-->
+
+
+        <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.24.0/moment.min.js"></script>
+        <script type="text/javascript" src="https://visjs.github.io/vis-timeline/standalone/umd/vis-timeline-graph2d.min.js"></script>
+        <link href="https://visjs.github.io/vis-timeline/styles/vis-timeline-graph2d.min.css" rel="stylesheet" type="text/css" />
+
+
+
+
+    </head>
+
+    <!--<body oncontextmenu="return false;" onresize="adjustCanvasDimensions(canvas);">-->
+    <body onresize="adjustCanvasDimensions();">
+
+
+        <!-- HORIZONTAL MENU -->
+        <ul id="theMenu" class="menu nonSelection">
+
+            <!-- IMPORTING -->
+            <!--            <li><a class="description" title="Load Image" href="javascript:void(0);" onclick="onLoad();"><i class="icon-pictu                            re "></i></a></li>
+                        <li> <input type="file" accept=".jpeg, .png, .jpg"  id="imageFileInput" name="someFile" onchange="handleImageFiles(this.files)" style="visibility:hidden;position:absolute;top:                -50;left:-50"/></li>-->
+            <!--            <li class="verticalLeftDivider"><a onclick="readSVGFileAsData()"><i class="fa                 fa-file-code-o "></i></a></li>
+                        <li> <input type="file" accept=".svg" id="dataSVGFileInput" name="someSVGDataFile" onchange="handleSVGFiles(this, this.files, false)" style="visibility:hidden;position:absolute;top:-50;left:-50"/></li>-->
+
+            <li class="verticalLeftDivider"><a href="javascript:loadLogfile();"><i class="fa-folder-open-o icon-large"></i></a></li>
+            <li> <input type="file" accept=".log" id="logFileInput" name="someDatafile" onchange="handleLogfiles(this.files)" style="visibility:hidden;position:absolute;top:-50;left:-50"/></li>
+
+            <li class="verticalLeftDivider verticalRightDivider verticalRightDivider2"><a href="javascript:void(0);" onclick="reloadPage()"><i id="openWebPageButton" class="fa fa-refresh "></i></a></li>
+
+            <!-- ZOOM -->
+            <li class=""><a onclick="zoomIn()"><i class="icon-zoom-in "></i></a></li>
+            <li class="verticalLeftDivider verticalRightDivider verticalRightDivider2"><a onclick="zoomOut()"><i class="icon-zoom-out "></i></a></li>
+
+            <!-- DRAGGING & PANNING MODES -->
+            <li id="panningModeButton" onmousedown='modeButtonClicked(this);' draggable="false" class="mode"><a><i class="fa fa-hand-paper-o "> </i> </a></li>
+            <li class="verticalLeftDivider mode" id="disconnectingModeButton" onmousedown='modeButtonClicked(this);' draggable="false"><a><i class="fa fa-unlink "> </i> </a></li>
+            <li class="verticalLeftDivider verticalRightDivider verticalRightDivider2 mode" id="squaredSelectionButton" onmousedown='modeButtonClicked(this);' draggable="false"><a><i class="fa fa-object-group "> </i> </a></li>
+
+            <!-- CONNECTORS VISIBILITY -->
+            <li class="verticalLeftDivider verticalRightDivider verticalRightDivider2 mode" draggable="false"><a id="connectorsVisibilityButton" onmousedown="toggleConnectorsVisibility(this);"><i class="fa fa-eye "></i></a></li>            
+
+
+
+            <!-- OPERATIONS ON OBJECTS -->
+            <!--            <li class="mode verticalLeftDivider" onmousedown='duplicateObject();' draggable="false"><a><i class="fa fa-clone fa-flip-horizontal  clicMenu"> </i> </a></li>
+                        <li class="mode verticalLeftDivider" onmousedown='expandMarks();' draggable="false"><a><i class="fa fa-angle-double-down  clicMenu"> </i> </a></li>
+                        <li class="mode verticalLeftDivider" onmousedown='compressMarks();' draggable="false"><a><i class="fa fa-angle-double-up  clicMenu"> </i> </a></li>
+                        <li class="verticalLeftDivider verticalRightDivider verticalRightDivider2 mode" onmousedown='deleteObject();' draggable="false"><a><i class="fa fa-remove "> </i> </a></li>
+                        <li class="verticalLeftDivider verticalRightDivider verticalRightDivider2"><a href="javascript:void(0);" onclick="deleteAllObjects();"><i class="fa fa-trash-o "></i></a></li>-->
+
+            <!-- FILE MENU -->
+            <li id="fileMenu" onclick="showMenu(this);" class="verticalRightDivider verticalRightDivider2">
+                <a>
+                    <i class="fa fa-file-o "></i>
+                </a>
+                <ul id="fileMenuUL">
+                    <li><a href="javascript:void(0);" onclick="saveProject();"><i id="saveProjectElement" class="fa-save icon-large"></i> Save project</a></li>
+                    <li><a href="javascript:loadiVoLVERProject();"><i class="fa-folder-open-o icon-large"></i> Open project</a></li>
+                    <li> <input type="file" accept="application/xml" id="dataprojectFileInput" name="someProjectfile" onchange="handleDatafiles(this.files)" style="visibility:hidden;position:absolute;top:-50;left:-50"/></li>                    
+                    <li class="divider"><a href="javascript:void(0);"><i class="fa-download icon-large"></i> Export canvas</a>
+                        <ul>
+                            <li><a href="javascript:void(0);" onclick="saveCanvas();"><i id="saveCanvasElement" class="fa-file-code-o icon-large"></i> As SVG</a></li>
+                            <li><a href="javascript:void(0);" onclick="saveCanvas();"><i id="saveCanvasElement" class="fa-file-image-o icon-large"></i> As PNG</a></li>
+                        </ul>
+                    </li>
+                </ul>
+            </li>
+
+            <!-- RIGHT PANEL HANDLER -->
+            <li class="verticalLeftDivider2" style="float: right;"><a id="toggleAdditionalToolsVisibility" href="javascript:void(0);" onclick="togglePanelVisibility('rightPanel');"><i class="fa fa-chevron-right "></i></a></li>
+        </ul>
+        <div class="grid">
+            <div style="width: 100%" id="mainContainer">
+                <div class="rightPanel nonSelection" id="rightPanel" draggable="false"></div>
+                <section id="drop">
+                    <div id="canvasContainer" class="canvasStyle">
+                        <canvas id="theCanvas" class="context-menu-one"></canvas>
+                    </div>
+                </section>
+            </div>
+
+
+
+
+            <div style="margin: 0px 0px; padding: 0px 0px; width: 100%; min-height: 60px; height: auto; border-top: #6f6f6f 1px solid; width:100%; position:absolute; bottom:0; left:0;">
+
+                <div style="position: relative; margin-bottom: -30px; z-index: 22222222222; text-align:center;">
+                    <button class="large" onclick="toggleExtendedTimeline()" style="position: relative; top: -15px; border-radius: 15px; width: 30px; height: 30px; padding: 0px; margin: 0px; "><i id="extendedTimelineButtonIcon" style=" position: relative; top: -2px; font-size: 18px; color: black;" class="fa fa-chevron-down"></i></button>
+                </div>
+
+                <div style=" height:60px; width:80px; border-right: #6f6f6f 1px solid; float:left; ">
+                    <ul class="menu nonSelection">
+                        <li class=""><a onclick="playSlider()"><i id="playButton" class="icon-play fa-2x" style="padding:10px 10px;"></i></a></li>
+                    </ul>
+                </div>
+
+                <div style=" width:auto; height:60px; overflow:hidden;">
+                    <input style="width: available;" type="text" id="theSlider" name="theSlider" value="" />
+                </div>
+
+                <div style="border-top: #6f6f6f 1px solid;">
+                    <div id="extendedTimeline"></div>
+                </div>
+
+
+
+            </div>
+
+
+
+
+
+
+
+
+        </div>
+
+    </div>
+    <div id="wrapper">
+        <div id="tools">
+            <div class="tool">
+                <span class="title">Color</span>
+                <input type="color" id="color" />
+            </div>
+            <div class="tool">
+                <span class="title">Size</span>
+                <input type="number" id="size" max="100" min="1" value="3" />
+            </div>
+            <div class="tool">
+                <span class="title hidden">Clear</span>
+                <button id="clear">Clear</button>
+            </div>
+            <div class="tool">
+                <span class="title hidden">Save</span>
+                <button id="save">Save</button>
+            </div>
+        </div>
+        <canvas id="canvas-area"></canvas>
+    </div>
+
+
+
+
+
+    <script type="text/javascript">
+
+        var canvas = iVoLVER.init();
+        allSymbols = new Array();
+        $systemSlider = $("#theSlider");
+        sliderMarksElement = null;
+        sliderMarksElements = '';
+        configureSlider();
+        // You can write fabric code here:
+//            var myCircle = new fabric.Circle({
+//                radius: 30,
+//                fill: 'rgb(125,14,223)',
+//                top: 100,
+//                left: 200
+//            });
+//            canvas.add(myCircle);
+//
+//            // or iVoLVER code:
+//            iVoLVER.data.registerType({
+//                name: 'Point',
+//                iconPath: pointDataTypeIcon,
+//                fillColor: '#00BDFF',
+//                iconClass: 'workshop-point',
+//                getDisplayableString: function () {
+//                    return '(' + this.x + ',' + this.y + ')';
+//                },
+//                defaults: {x: 0, y: 0},
+//                onEditing: {
+//                    x: {type: 'number', divStyle: 'float: left; margin-top: 2px;'},
+//                    y: {type: 'number'}
+//                }
+//            });
+
+
+
+
+
+
+        var ConnectableSquare = iVoLVER.util.createClass(fabric.Rect, {
+            isSquare: true,
+            initialize: function (options) {
+                options || (options = {});
+                options.width = options.side;
+                options.height = options.side;
+                this.callSuper('initialize', options);
+                this.initConnectable();
+            },
+            processConnectionRequest: function (connection) {
+                var source = connection.source;
+                var connectionAccepted = source.isCircle || source.isSquare || (source.isTriangle && source.countConnectedCircles() === 2);
+                var message = '';
+                if (!connectionAccepted) {
+                    message = 'Sorry, this Triangle should be connected to two circles to be accepted.';
+                }
+                return {
+                    connectionAccepted: connectionAccepted,
+                    message: message
+                };
+            },
+            connectionAccepted: function (connection, target) {
+                this.fill = iVoLVER.util.getRandomColor();
+            }
+        });
+        iVoLVER.util.extends(ConnectableSquare.prototype, iVoLVER.model.Connectable);
+        var ConnectableCircle = iVoLVER.util.createClass(fabric.Circle, {
+            isCircle: true,
+            initialize: function (options) {
+                options || (options = {});
+                this.callSuper('initialize', options);
+                this.initConnectable();
+            },
+            processConnectionRequest: function (connection) {
+                var source = connection.source;
+                var connectionAccepted = (source.isCircle && (source.getInConnections().length + source.getOutConnections().length) === 1) || (source.isTriangle && (source.getInConnections().length >= 2));
+                var message = '';
+                if (!connectionAccepted) {
+                    if (source.isCircle) {
+                        message = 'Sorry, I only accept unconnected Circles.';
+                    } else if (source.isTriangle) {
+                        message = 'Sorry, I only accept Triangles with at least two incoming connections.';
+                    } else {
+                        message = 'Sorry, I don\'t accept connections from Squares.';
+                    }
+                }
+                return {
+                    connectionAccepted: connectionAccepted,
+                    message: message
+                };
+            }
+        });
+        iVoLVER.util.extends(ConnectableCircle.prototype, iVoLVER.model.Connectable);
+//            var LabeledRect = iVoLVER.util.createClass(fabric.Rect, {
+//                initialize: function (options) {
+//                    options || (options = {});
+//                    this.callSuper('initialize', options);
+//                    this.initExpandable();
+//                },
+//
+//            });
+//            iVoLVER.util.extends(LabeledRect.prototype, iVoLVER.model.Expandable);
+//
+//
+//
+//            var parent = new LabeledRect({
+//                fill: '#F9D333', originX: 'center', originY: 'center',
+//                width: 200, height: 80, top: 300, left: 500
+//            });
+//
+//
+//            for (var i = 0; i < 8; i++) {
+//                var child = new fabric.Circle({radius: 25, fill: '#034EA2'});
+//                var compressedOriginParent = null;
+//                var compressedOriginChild = null;
+//                var expandedOriginParent = null;
+//                var expandedOriginChild = null;
+//                var compressedX = null;
+//                if (i < 4) {// children to the left
+//                    // compressed
+//                    compressedOriginParent = {originX: 'right', originY: 'top'};
+//                    compressedOriginChild = {originX: 'left', originY: 'top'};
+//                    compressedX = 5;
+//                    // expanded
+//                    expandedOriginParent = {originX: 'right', originY: 'center'};
+//                    expandedOriginChild = {originX: 'left', originY: 'center'};
+//                    expandedX = (i % 4) * 55 + 30;
+//                } else {// children to the right
+//                    // compressed
+//                    compressedOriginParent = {originX: 'left', originY: 'top'};
+//                    compressedOriginChild = {originX: 'right', originY: 'top'};
+//                    compressedX = -5;
+//                    // expanded
+//                    expandedOriginParent = {originX: 'left', originY: 'center'};
+//                    expandedOriginChild = {originX: 'right', originY: 'center'};
+//                    expandedX = -(i % 4) * 55 - 30;
+//                }
+//                var compressedY = (i % 4) * 22;
+//                var expandedY = 0;
+//                parent.addChild(child, {
+//                    whenCompressed: {
+//                        x: compressedX, y: compressedY,
+//                        scaleX: 0.25, scaleY: 0.25, opacity: 0.25,
+//                        originParent: compressedOriginParent, originChild: compressedOriginChild
+//                    },
+//                    whenExpanded: {
+//                        x: expandedX, y: expandedY,
+//                        originParent: expandedOriginParent, originChild: expandedOriginChild
+//                    },
+//                    movable: true
+//                });
+//                canvas.add(child);
+//            }
+
+
+
+
+
+
+
+
+//            canvas.add(parent);
+
+
+//            var port = new ConnectionPort({
+//                top: 100,
+//                left: 100
+//            });
+//            parent.addChild(port, {
+//                whenCompressed: {
+//                    x: 0, y: 0,
+//                    originParent: {originX: 'left', originY: 'center'},
+//                    originChild: {originX: 'center', originY: 'center'}
+//                },
+//                whenExpanded: {
+//                    x: 0, y: 0,
+//                    originParent: {originX: 'left', originY: 'center'},
+//                    originChild: {originX: 'center', originY: 'center'}
+//                },
+//                movable: false
+//            });
+//            canvas.add(port);
+
+
+
+
+
+
+        iVoLVER.gui.add.button({
+            sectionID: iVoLVER.gui.toolbar, // variable storing the id of the top toolbar
+            tooltip: 'Run',
+            iconClass: 'fa-cogs',
+            onClick: function () {
+                if (window.jsHandler) {
+                    if (window.jsHandler.runCodeAnalyzer) {
+                        var waitingDialog = new jWait('Running Program');
+                        window.jsHandler.runCodeAnalyzer(null).then(function (response) {
+
+                            window.trackedSymbolsIDs = response.trackedSymbolsIDs;
+                            window.trackedExpressionsIDs = response.trackedExpressionsIDs;
+                            window.trackedSignalIDs = response.trackedSignalIDs;
+                            console.log("Signal IDs:");
+                            console.log(response.trackedSignalIDs);
+                            var logFileContent = response.logFileContent.join("\n");
+                            var scopeFileContent = response.scopeFileContent.join("\n");
+                            var signalFileContent = response.signalFileContent.join("\n");
+                            //console.log("Signal file content is: " + response.signalFileContent.join("\n"));
+                            processLogFiles(logFileContent, scopeFileContent, signalFileContent);
+                            window.snapshotWidget && window.snapshotWidget.parseMemberValues();
+                            waitingDialog.dialog('content', '<div style="text-align: center; margin-top: 20px;"><span align="center" style="font-size: 150%;">' + response.response + '</span></div>');
+                            if (response.success) {
+                                setTimeout(function () {
+                                    waitingDialog.dialog('hide');
+                                }, 2000);
+                            }
+
+                        });
+                    }
+                }
+            }
+        });
+//            iVoLVER.gui.add.button({
+//                sectionID: iVoLVER.gui.toolbar, // variable storing the id of the top toolbar
+//                tooltip: 'Wait',
+//                iconClass: 'workshop-raceTrack',
+//                onClick: function () {
+//                    var waitingDialog = jWait('Analyzing code', false, true);
+//
+//
+//                    setTimeout(function () {
+//                        waitingDialog.dialog('content', '<div style="text-align: center; margin-top: 20px;"><span align="center" style="font-size: 150%;">Finished!</span></div>');
+//                    }, 1000);
+//
+//                }
+//            });
+
+
+
+
+        iVoLVER.gui.add.button({
+            sectionID: iVoLVER.gui.toolbar, // variable storing the id of the top toolbar
+            tooltip: 'Dev tools',
+            iconClass: 'workshop-raceTrack',
+            onClick: function () {
+                if (window.jsHandler && window.jsHandler.showDevTools) {
+                    window.jsHandler.showDevTools(null).then(function (response) {
+
+                    });
+                }
+            }
+        });
+        /*iVoLVER.gui.add.button({
+         sectionID: iVoLVER.gui.toolbar, // variable storing the id of the top toolbar
+         tooltip: 'insert',
+         iconClass: 'fa-square',
+         onClick: function () {
+         if (window.jsHandler && window.jsHandler.saveFiles) {
+         window.jsHandler.saveFiles(null).then(function (response) {
+         
+         });
+         }
+         }
+         });*/
+
+
+        iVoLVER.gui.add.modeButton({
+            name: 'DrawSquare',
+            iconClass: 'fa-sticky-note',
+            persistent: false,
+            onMouseDown: function (x, y, workspace) {
+                workspace.down = true;
+                workspace.initalX = x;
+                workspace.initalY = y;
+                workspace.fill = iVoLVER.util.getRandomColor();
+                workspace.stroke = darken(workspace.fill);
+                var square = new fabric.Rect({
+                    left: x, top: y,
+                    width: 0, height: 0,
+                    strokeWidth: 1,
+                    stroke: workspace.stroke,
+                    fill: workspace.fill,
+                });
+                workspace.square = square;
+                canvas.add(workspace.square);
+            },
+            onMouseMove: function (x, y, workspace) {
+                if (workspace.down) {
+                    // updating the line's ending coordinates
+                    var width = Math.abs(workspace.initalX - x);
+                    var height = Math.abs(workspace.initalY - y);
+                    workspace.square.set({width: width, height: height});
+                    workspace.square.setCoords();
+                }
+            },
+            onMouseUp: function (x, y, workspace) {
+                if (workspace.down) {
+                    workspace.square.setCoords();
+                    var squareCenter = workspace.square.getPointByOrigin('center', 'center');
+                    var note = new CodeNote({
+                        x: squareCenter.x,
+                        y: squareCenter.y,
+                        width: workspace.square.width,
+                        height: workspace.square.height,
+                        stroke: workspace.stroke,
+                        fill: workspace.fill,
+                        programElementType: "N",
+                        drawIconSpace: true,
+                    });
+                    window.note = note;
+                    canvas.remove(workspace.square);
+                    canvas.add(note);
+                    // updating the line's ending coordinates
+//                        var width = Math.abs(workspace.initalX - x);
+//                        var height = Math.abs(workspace.initalY - y);
+//                        workspace.square.set({width: width, height: height});
+                }
+            }
+        });
+        iVoLVER.gui.add.modeButton({
+            name: 'DrawPlotter',
+            tooltip: 'Plotter',
+            iconClass: 'fa-square',
+            persistent: false,
+            onMouseDown: function (x, y, workspace) {
+                workspace.down = true;
+                workspace.initalX = x;
+                workspace.initalY = y;
+                workspace.fill = iVoLVER.util.getRandomColor();
+                workspace.stroke = darken(workspace.fill);
+                var square = new fabric.Rect({
+                    left: x, top: y,
+                    width: 0, height: 0,
+                    strokeWidth: 1,
+                    stroke: workspace.stroke,
+                    fill: workspace.fill,
+                });
+                workspace.square = square;
+                canvas.add(workspace.square);
+            },
+            onMouseMove: function (x, y, workspace) {
+                if (workspace.down) {
+                    // updating the line's ending coordinates
+                    var width = Math.abs(workspace.initalX - x);
+                    var height = Math.abs(workspace.initalY - y);
+                    workspace.square.set({width: width, height: height});
+                    workspace.square.setCoords();
+                }
+            },
+            onMouseUp: function (x, y, workspace) {
+                if (workspace.down) {
+                    workspace.square.setCoords();
+                    var squareCenter = workspace.square.getPointByOrigin('center', 'center');
+                    var plotter = new Plotter({
+                        x: squareCenter.x,
+                        y: squareCenter.y,
+                        width: workspace.square.width,
+                        height: workspace.square.height,
+                        stroke: workspace.stroke,
+                        fill: workspace.fill,
+                        programElementType: "...",
+                        drawIconSpace: true,
+                    });
+                    window.note = plotter;
+                    canvas.remove(workspace.square);
+                    canvas.add(plotter);
+                }
+            }
+        });
+
+        iVoLVER.gui.add.modeButton({
+            name: 'WhenWidget',
+            tooltip: 'When Widget',
+            iconClass: 'fa-exchange',
+            persistent: false,
+            onMouseDown: function (x, y, workspace) {
+                workspace.down = true;
+                workspace.initalX = x;
+                workspace.initalY = y;
+                workspace.fill = iVoLVER.util.getRandomColor();
+                workspace.stroke = darken(workspace.fill);
+                var square = new fabric.Rect({
+                    left: x, top: y,
+                    width: 0, height: 0,
+                    strokeWidth: 1,
+                    stroke: workspace.stroke,
+                    fill: workspace.fill,
+                });
+                workspace.square = square;
+                canvas.add(workspace.square);
+            },
+            onMouseMove: function (x, y, workspace) {
+                if (workspace.down) {
+                    // updating the line's ending coordinates
+                    var width = Math.abs(workspace.initalX - x);
+                    var height = Math.abs(workspace.initalY - y);
+                    workspace.square.set({width: width, height: height});
+                    workspace.square.setCoords();
+                }
+            },
+            onMouseUp: function (x, y, workspace) {
+                if (workspace.down) {
+                    workspace.square.setCoords();
+                    var squareCenter = workspace.square.getPointByOrigin('center', 'center');
+                    var whenWidget = new WhenWidget({
+                        fill: '#F02466',
+                        stroke: '#F02466',
+                        width: 180,
+                        height: 100,
+                        x: squareCenter.x,
+                        y: squareCenter.y,
+                    });
+
+                    window.whenWidget = whenWidget;
+                    canvas.remove(workspace.square);
+                    canvas.add(whenWidget);
+                    // updating the line's ending coordinates
+//                        var width = Math.abs(workspace.initalX - x);
+//                        var height = Math.abs(workspace.initalY - y);
+//                        workspace.square.set({width: width, height: height});
+                }
+            }
+        });
+
+        iVoLVER.gui.add.modeButton({
+            name: 'AffectWidget',
+            tooltip: 'Affect Widget',
+            iconClass: 'fa-signal',
+            persistent: false,
+            onMouseDown: function (x, y, workspace) {
+                workspace.down = true;
+                workspace.initalX = x;
+                workspace.initalY = y;
+                workspace.fill = iVoLVER.util.getRandomColor();
+                workspace.stroke = darken(workspace.fill);
+                var square = new fabric.Rect({
+                    left: x, top: y,
+                    width: 0, height: 0,
+                    strokeWidth: 1,
+                    stroke: workspace.stroke,
+                    fill: workspace.fill,
+                });
+                workspace.square = square;
+                canvas.add(workspace.square);
+            },
+            onMouseMove: function (x, y, workspace) {
+                if (workspace.down) {
+                    // updating the line's ending coordinates
+                    var width = Math.abs(workspace.initalX - x);
+                    var height = Math.abs(workspace.initalY - y);
+                    workspace.square.set({width: width, height: height});
+                    workspace.square.setCoords();
+                }
+            },
+            onMouseUp: function (x, y, workspace) {
+                if (workspace.down) {
+                    workspace.square.setCoords();
+                    var squareCenter = workspace.square.getPointByOrigin('center', 'center');
+                    var affectWidget = new AffectWidget({
+                        fill: '#F02466',
+                        stroke: '#F02466',
+                        width: 180,
+                        height: 100,
+                        x: squareCenter.x,
+                        y: squareCenter.y,
+                    });
+
+                    window.affectWidget = affectWidget;
+                    canvas.remove(workspace.square);
+                    canvas.add(affectWidget);
+                    // updating the line's ending coordinates
+//                        var width = Math.abs(workspace.initalX - x);
+//                        var height = Math.abs(workspace.initalY - y);
+//                        workspace.square.set({width: width, height: height});
+                }
+            }
+        });
+
+        iVoLVER.gui.add.modeButton({
+            name: 'SnapshotWidget',
+            tooltip: 'Snapshot Widget',
+            iconClass: 'fa-photo',
+            persistent: false,
+            onMouseDown: function (x, y, workspace) {
+                workspace.down = true;
+                workspace.initalX = x;
+                workspace.initalY = y;
+                workspace.fill = iVoLVER.util.getRandomColor();
+                workspace.stroke = darken(workspace.fill);
+                var square = new fabric.Rect({
+                    left: x, top: y,
+                    width: 0, height: 0,
+                    strokeWidth: 1,
+                    stroke: workspace.stroke,
+                    fill: workspace.fill,
+                });
+                workspace.square = square;
+                canvas.add(workspace.square);
+            },
+            onMouseMove: function (x, y, workspace) {
+                if (workspace.down) {
+                    // updating the line's ending coordinates
+                    var width = Math.abs(workspace.initalX - x);
+                    var height = Math.abs(workspace.initalY - y);
+                    workspace.square.set({width: width, height: height});
+                    workspace.square.setCoords();
+                }
+            },
+            onMouseUp: function (x, y, workspace) {
+                if (workspace.down) {
+                    workspace.square.setCoords();
+                    var squareCenter = workspace.square.getPointByOrigin('center', 'center');
+                    var snapshotWidget = new SnapshotWidget({
+                        fill: '#F02466',
+                        stroke: '#F02466',
+                        width: workspace.square.width,
+                        height: workspace.square.height,
+                        x: squareCenter.x,
+                        y: squareCenter.y
+                    });
+
+
+                    window.snapshotWidget = snapshotWidget;
+                    canvas.remove(workspace.square);
+                    canvas.add(snapshotWidget);
+                    // updating the line's ending coordinates
+//                        var width = Math.abs(workspace.initalX - x);
+//                        var height = Math.abs(workspace.initalY - y);
+//                        workspace.square.set({width: width, height: height});
+                }
+            }
+        });
+
+        iVoLVER.gui.add.modeButton({
+            name: 'CanvasVariable',
+            tooltip: 'Canvas Variable',
+            iconClass: 'fa-circle',
+            persistent: false,
+            onMouseDown: function (x, y, workspace) {
+                workspace.down = true;
+                workspace.initalX = x;
+                workspace.initalY = y;
+                workspace.stroke = darken(workspace.fill);
+                var square = new CanvasVariable({
+                    type: "dataType",
+                    name: "name",
+                    left: x, top: y,
+                    x: x, y: y,
+                    value: ""
+                });
+                workspace.square = square;
+                canvas.add(workspace.square);
+            },
+            onMouseMove: function (x, y, workspace) {
+                if (workspace.down) {
+                    // updating the line's ending coordinates
+                    workspace.square.setCoords();
+                    workspace.square.positionObjects();
+                }
+            },
+            onMouseUp: function(x, y, workspace) {
+                workspace.down = false;
+                workspace.square.positionObjects();
+                workspace.square.compress();
+            }
+        });
+
+
+//             var circle1 = drawCircleAt({x: 300, y: 100}, 'green', 40);
+//            var circle2 = drawCircleAt({x: 500, y: 100}, 'red', 40);
+
+//            console.log(circle1);
+//
+//            circle1.on('selected', function () {
+//                console.log("1");
+//            });
+//            circle1.on('selected', function () {
+//                console.log("44");
+//            });
+//            
+//            circle2.on('selected', function () {
+//                console.log("2");
+//            });
+
+
+
+//            var note = new CodeNote({
+//                programElementType: "N",
+//                drawIconSpace: true,
+//                addWithAnimation: true,
+//                title: 'Gonzalo',
+//                width: 300,
+//                height: 150,
+//                y: 300,
+//                x: 500,
+//                fill: iVoLVER.util.getRandomColor(),
+//                startLine: 10,
+//                endLine: 200,
+//                fileName: 'File.cs'
+//            });
+//            canvas.add(note);
+//            window.pepe = note;
+
+        /*var plotter = new Plotter({
+         programElementType: "...",
+         drawIconSpace: true,
+         addWithAnimation: true,
+         title: 'This is a plot',
+         width: 400,
+         height: 250,
+         y: 300,
+         x: 700,
+         fill: '#ececec'
+         });
+         canvas.add(plotter);
+         window.pepe = plotter;*/
+
+
+//            var note1 = new CodeNote({
+//                x: 600, y: 300, width: 250, height: 150, label: "hola", programElementType: "M", title: "XXXXXXX", fileName: "pepe"
+//            });
+//            canvas.add(note1);
+//
+//            var note2 = new CodeNote({
+//                x: 1300, y: 300, width: 250, height: 150, label: "chao", programElementType: "L", title: "YYYYYY", fileName: "poancho"
+//            });
+//            canvas.add(note2);
+//
+//            
+
+//            var variable1 = new ProgvolverSymbol({value: '2846', kind: 'Field', type: 'int', name: 'age', file: 'Program.cs (34)', y: 400, x: 100, id: '23_May_2020___22_49_58_341___0695e0f7-c7ae-408a-871b-5c705e1bc7d2___9981'});
+//            canvas.add(variable1);
+//
+//            var variable2 = new ProgvolverSymbol({value: '15', kind: 'Local', containingType: 'Program',  name: 'j', type: 'float', file: 'Program.cs (37)', y: 600, x: 800, id: '23_May_2020___22_50_03_189___d508a426-449d-454b-96fa-defa10a177af___6263'});
+//            canvas.add(variable2);
+//
+//
+//
+////            var variable222 = new ProgvolverSymbol({file: '', id: "response.symbolID", type: 'int', value: "Uno", kind: "Local", name: "allInfo", x: 100, y: 100, values: [{time: 5, value: 0}, {time: 10, value: 0}, {time: 20, value: 0}, {time: 25, value: 0}, {time: 70, value: 0}, {time: 80, value: 0}]});
+////            canvas.add(variable222);
+//
+
+
+
+        /*var variable333 = new ProgvolverSymbol({
+         fileName: 'aFile.cs',
+         id: "26_October_2020___16_35_50_921___b944aafd-78ab-4caf-ab1b-a639d3420281___7840",
+         type: 'int',
+         value: "Dos",
+         kind: "Local",
+         name: "xPos",
+         x: 100, y: 250,
+         lineNumber: 10
+         });
+         canvas.add(variable333);*/
+
+
+        $.contextMenu({
+            selector: '.context-menu-one',
+            build: function ($trigger, e) {
+
+
+                var codeNoteID = $(".context-menu-one").attr('codeNoteID');
+                var codeNote = iVoLVER.getObjectByID(codeNoteID);
+                var hexColor = new fabric.Color(codeNote.fill);
+                var hexColorString = "#" + hexColor.toHex();
+                // this callback is executed every time the menu is to be shown
+                // its results are destroyed every time the menu is hidden
+                // e is the original contextmenu event, containing e.pageX and e.pageY (amongst other data)
+                return {
+//                        callback: function (key, options) {
+//                            var m = "clicked: " + key;
+//                            window.console && console.log(m) || alert(m);
+//                        },
+                    items: {
+
+                        "createSubMenu": {
+                            "name": "Create...",
+                            "items": {
+                                "method": {name: "Method", icon: "fa-cog", },
+                                "attribute": {name: "Attribute", icon: "fa-tag"},
+                                "note": {name: "Note", icon: "fa-sticky-note"},
+                            }
+                        },
+                        color: {
+                            "name": "Color",
+                            items: {
+                                colorChooser: {
+                                    type: 'html',
+                                    html: '<input class="colorPickerDiv" id="color-picker" value="' + hexColorString + '"/>',
+                                    icon: function ($element, key, item) {
+
+                                        $('#color-picker').spectrum({
+                                            type: "flat",
+                                            showInput: false,
+                                            showAlpha: false,
+                                            allowEmpty: false,
+                                            showButtons: false,
+                                            showPalette: false,
+                                            show: function (color) {
+                                                $('#color-picker').spectrum("reflow");
+                                                setTimeout(function () {
+                                                    $('#color-picker').spectrum("reflow");
+                                                }, 500);
+                                            },
+                                            move: function (tinycolor) {
+                                                var r = Math.round(tinycolor._r);
+                                                var g = Math.round(tinycolor._g);
+                                                var b = Math.round(tinycolor._b);
+                                                var hexColor = new fabric.Color.fromRgb('rgb(' + r + ',' + g + ',' + b + ')');
+                                                var hexColorString = "#" + hexColor.toHex();
+                                                codeNote.changeColor(hexColorString);
+                                            }
+                                        });
+                                        $(".context-menu-item .context-menu-html").css("padding", "0");
+                                        $(".sp-container").css("padding", "0");
+                                        $(".sp-container").css("margin", "0");
+                                        $(".sp-container").css("border", "none");
+                                        $(".sp-container").css("box-shadow", "none");
+                                    },
+                                }
+                            },
+                            events: {
+                                show: function (options) {
+                                    console.log("kjyhgoyuf");
+                                },
+                            }
+                        }
+                    },
+                    events: {
+                        show: function (options) {
+                            $('#color-picker').spectrum("reflow");
+                        },
+                        preShow: function (options) {
+                            $('#color-picker').spectrum("reflow");
+                        }
+                    },
+                };
+            },
+            trigger: 'none',
+            determinePosition: function ($menu) {
+                // Position using jQuery.ui.position http://api.jqueryui.com/position
+                $menu.css('display', 'block')
+                        .position({my: "center top", at: "center bottom", of: this, offset: "0 5"})
+                        .css('display', 'none');
+            },
+            callback: function (key, options) {
+
+                console.log(options);
+                var codeNoteID = $(".context-menu-one").attr('codeNoteID');
+                console.log("codeNoteID:");
+                console.log(codeNoteID);
+                var codeNode = iVoLVER.getObjectByID(codeNoteID);
+                console.log(codeNode);
+                console.log("codeNode.titleObject.text");
+                console.log(codeNode.titleObject.text);
+                if (key == "method") {
+                    if (window.jsHandler) {
+                        if (window.jsHandler.insertText) {
+
+                            var args = {
+                                text: '\n\n// ' + codeNode.textarea.val() + '\npublic void ' + codeNode.titleObject.text + ' () {\n\n\n}\n',
+                                id: codeNode.id,
+                                mainColor: codeNode.fill
+                            };
+                            codeNode.setIconLetter("M");
+                            window.jsHandler.insertText(args).then(function (response) {
+
+                                codeNode.startLine = response.linePosition;
+                                codeNode.endLine = response.linePosition + 4;
+                                codeNode.lineNumber = response.linePosition;
+                                codeNode.file = response.file;
+                                codeNode.fileName = response.file.split('\\').pop().split('/').pop();
+                                codeNode.setLabel(codeNode.fileName + " (" + (codeNode.startLine + 1) + " - " + (codeNode.endLine + 1) + ")");
+                                var gotoArgs = {
+                                    id: codeNode.id,
+                                    mainColor: codeNode.fill,
+                                    startLine: codeNode.startLine,
+                                    endLine: codeNode.endLine,
+                                    file: codeNode.file,
+                                    lineNumber: codeNode.lineNumber,
+                                    animate: true,
+                                    newDispatcher: true,
+                                    opacity: 0.25
+                                };
+                                window.jsHandler.goTo(gotoArgs);
+                                window.jsHandler.afterInsertingText(null);
+                            });
+                        }
+                    }
+                }
+
+
+            },
+        });
+
+
+        //$('.data-title').attr('data-menutitle', "Create");
+
+
+
+//            $.contextMenu({
+//                selector: 'body',
+//                items: {
+//                    item: {
+//                        type: 'html',
+//                        html: '<input id="color-picker" value="#276cb8" />'
+//                    }
+//                }
+//            });
+
+
+
+
+
+//            var array1 = new ArraySymbol({value: [1, 2, 3], kind: 'Field', type: 'int', name: 'age', file: 'Program.cs (34)', y: 400, x: 100, id: '23_May_2020___22_49_58_341___0695e0f7-c7ae-408a-871b-5c705e1bc7d2___9981'});
+//            canvas.add(array1);
+
+        // DOM element where the Timeline will be attached
+        var container = document.getElementById('extendedTimeline');
+        // Configuration for the Timeline
+        window.timelineOptions = {
+            showCurrentTime: false,
+            groupOrder: 'content',
+            stack: false,
+            showMajorLabels: false,
+            selectable: false,
+            width: '100%',
+            dataAttributes: 'all',
+            format: {
+                minorLabels: function (date, scale, step) {
+                    let progress = (100 - (100 * moment.duration(window.lastOffset - date.toDate()).valueOf() / window.programDuration)).toFixed(2);
+                    if (progress < 0 || progress > 100) {
+                        return '';
+                    }
+                    return progress + '%';
+                }
+            },
+//                height: 100,
+            minHeight: 100,
+//                maxHeight: 100
+
+        };
+        // Create a Timeline
+        var timeline = new vis.Timeline(container);
+//        var whenWidget = new WhenWidget({
+//            fill: '#F02466',
+//            stroke: '#F02466',
+//            width: 180,
+//            height: 100,
+//            y: 350,
+//            x: 500
+//        });
+//        
+//        canvas.add(whenWidget);
+////
+//        var affectWidget = new AffectWidget({
+//            fill: '#F02466',
+//            stroke: '#F02466',
+//            y: 500,
+//            x: 500,
+//            top: 500,
+//            left: 500
+//        });
+//
+//        canvas.add(affectWidget);
+//        canvas.add(whenWidget);
+
+//            var referenceWidget = new ReferenceWidget({
+//                fill: '#F02466',
+//                stroke: '#F02466',
+//                y: 250,
+//                name: "Pointer",
+//                x: 250}, null);
+
+        //canvas.add(referenceWidget);
+        //console.log(referenceWidget);
+
+//            var objectMembersArray = [];
+//
+//            for (let i = 0; i < 20; i++) {
+//                var objectMembers = [];
+//
+//                var progvolverString = new ProgvolverSymbol({
+//                    dataType: "double",
+//                    fill: '#B3CDE3',
+//                    type: "string",
+//                    name: i,
+//                    value: "Hello",
+//                    isMember: true
+//                });
+//
+//                objectMembers.push(progvolverString);
+//                objectMembersArray.push(objectMembers);
+//            }
+//
+//
+//            var arrayWidget = new ArraySymbol({
+//                elements: [1, 2, 3], //[1, 2, 3, 4, 5],
+//                type: "double",
+//                name: "array",
+//                dataType: "double",
+//                y: 500,
+//                x: 500,
+//                fill: '#B3CDE3',
+//                opacity: 0,
+//                initialValue: 'new double[2, 3]',
+//                isClass: true,
+//                objectMembers: objectMembersArray
+//            });
+
+        //canvas.add(arrayWidget);
+
+//            var referenceWidget = new ReferenceWidget({
+//                fill: '#B3CDE3',
+//                stroke: '#B3CDE3',
+//                y: 500,
+//                name: "name",
+//                type: "type",
+//                isArrayElement: true,
+//                x: 500}, objectMembersArray[1]);
+
+//            objectMembersArray[0].push(objectMembersArray[1][0]);
+//            console.log(objectMembersArray[0]);
+//            var objectWidget = new ObjectWidget({
+//                fill: '#B3CDE3',
+//                stroke: '#F02466',
+//                y: 250,
+//                name: "var",
+//                x: 250,
+//                objectMembers: objectMembersArray[0]});
+//            
+//            canvas.add(objectWidget);
+
+
+        //canvas.add(arrayWidget);
+
+
+//            var progvolverString = new ProgvolverSymbol({
+//                dataType: "double",
+//                y: 500,
+//                x: 500,
+//                fill: '#B3CDE3',
+//                type: "string",
+//                value: "This is a referenced string"
+//            });
+//
+//            var anotherString = new ProgvolverSymbol({
+//                dataType: "double",
+//                y: 500,
+//                x: 500,
+//                fill: '#B3CDE3',
+//                type: "string",
+//                value: "This is another string"
+//            });
+//
+//            var objectWidget = new ObjectWidget({
+//                fill: '#B3CDE3',
+//                stroke: '#F02466',
+//                y: 250,
+//                name: "var",
+//                x: 250,
+//                objectMembers: [anotherString, progvolverString]});
+//
+//            canvas.add(objectWidget);
+
+
+//            var oneDArray = new ArraySymbol({
+//                elements: [1, 2, 3], //[1, 2, 3, 4, 5],
+//                type: "double",
+//                name: "array",
+//                dataType: "double",
+//                y: 400,
+//                x: 400,
+//                fill: '#B3CDE3',
+//                initialValue: 'new double[3]',
+//            });
+//            
+//            canvas.add(oneDArray);
+//
+//
+//            var referenceWidget = new ReferenceWidget({
+//                //fill: '#B3CDE3',
+//                stroke: '#B3CDE3',
+//                y: 500,
+//                name: "name",
+//                type: "type",
+//                opacity: 0,
+//                isArrayElement: false,
+//                x: 500}, oneDArray);
+
+
+//            var arrayElement = new ArrayElementObject({
+//                element: 0, // Change this to 0.00
+//                index: 0,
+//                fill: '#DFE3B3',
+//                stroke: 'white',
+//                width: 50,
+//                height: 50,
+//                top: 250,
+//                left: 250,
+//                x: 250,
+//                y: 250,
+//                opacity: 1,
+//                visible: true,
+//                dataType: "double",
+//                isClass: true,
+//                objectMembers: objectMembersArray[0]
+//            });
+
+        //canvas.add(arrayElement)
+//
+//            canvas.add(referenceWidget);
+//
+
+//            toggleExtendedTimeline();
+
+
+
+
+
+
+//            let testCircle = new fabric.Circle({
+//                top: 200,
+//                left: 200,
+//                radius: 100,
+//                fill: 'red',
+//            });
+//
+//            canvas.add(testCircle);
+//
+//            testCircle.on({
+//                'pressed': function () {
+//                    console.log("aholoa");
+//                }
+//            });
+//
+//            canvas.on({
+//                'touch:longpress': function () {
+//                    if (!canvas.longpress) {
+//                        let activeObject = canvas.getActiveObject();
+//                        activeObject && activeObject.fire('pressed');
+//                        canvas.longpress = false;
+//                        //console.log(canvas.longpress);
+//                    }
+//                }
+//            });
+
+//            var progvolverString = new ObjectMemberSelection({
+//                dataType: "double",
+//                y: 500,
+//                x: 500,
+//                fill: '#B3CDE3',
+//                type: "string",
+//                name: "string x"
+//            });
+//            canvas.add(progvolverString);
+
+
+//        var progvolverString = new ProgvolverSymbol({
+//            dataType: "double",
+//            y: 500,
+//            x: 500,
+//            fill: '#B3CDE3',
+//            type: "string",
+//            value: "This",
+//            name: "str",
+//            kind: "local",
+//            connectionPortLocations: ['right']
+//        });
+//        canvas.add(progvolverString);
+
+//        addRectangularMarkToCanvas({
+//            'left': 250,
+//            'top': 250,
+//            'fill': 'gray',
+//            'colorForStroke': 'gray',
+//            'width': 100,
+//            'height': 100
+//        });
+
+//        var colorPickerWidget = new ColorPickerWidget({
+//            y: 250,
+//            x: 250
+//        });
+//        canvas.add(colorPickerWidget);
+//        colorPickerWidget.bringContentsToFront();
+
+//        var colorPickerSignalHolder = new ColorPickerSignalHolder({
+//            y: 300,
+//            x: 300
+//        });
+//        canvas.add(colorPickerSignalHolder);
+
+//        var colorPickerSignalHolders = new ColorPickerSignalHolder({
+//            y: 500,
+//            x: 500
+//        });
+//        canvas.add(colorPickerSignalHolders);
+
+//        var arrayColorWidgetAddition = new ArrayColorWidget({
+//            y: 500,
+//            x: 500
+//        });
+//        canvas.add(arrayColorWidgetAddition);
+
+
+//        var numberHolder = new NumberHolder({
+//            y: 500,
+//            x: 500
+//        });
+//        canvas.add(numberHolder);
+
+//        var numberFormatter = new NumberFormatter({
+//            y: 350,
+//            x: 350
+//        });
+//        canvas.add(numberFormatter);
+
+//        var dropdown = new Dropdown({
+//            y: 350,
+//            x: 350,
+//            width: 100,
+//            height: 60,
+//            fill: 'yellow',
+//            dropdownOptions: ['increase', 'decrease', 'change']
+//        });
+//        canvas.add(dropdown);
+
+//        var canvasVariable = new CanvasVariable({
+//            type: "double",
+//            dataType: "double",
+//            y: 500,
+//            x: 500,
+//            fill: '#B3CDE3',
+//            type: "string",
+//            value: "This",
+//            name: "str",
+//            kind: "local",
+//            connectionPortLocations: ['']
+//        });
+//        canvas.add(canvasVariable);
+
+
+    </script>
+</body>
+</html>
+
+
+

@@ -1,0 +1,312 @@
+i,120,i = i + 20,15,C:/Users/ggmendez/source/repos/ConsoleApp1/ConsoleApp1/Program.cs,23_May_2020___22_49_58_341___0695e0f7-c7ae-408a-871b-5c705e1bc7d2___9981,7541000
+i,120,i = i + 20,15,C:/Users/ggmendez/source/repos/ConsoleApp1/ConsoleApp1/Program.cs,23_May_2020___22_52_09_097___894cce55-8b25-475a-9401-968abf775830___4667,7756100
+i,8,i = 8,19,C:/Users/ggmendez/source/repos/ConsoleApp1/ConsoleApp1/Program.cs,23_May_2020___22_49_58_341___0695e0f7-c7ae-408a-871b-5c705e1bc7d2___9981,7765200
+i,8,i = 8,19,C:/Users/ggmendez/source/repos/ConsoleApp1/ConsoleApp1/Program.cs,23_May_2020___22_52_09_097___894cce55-8b25-475a-9401-968abf775830___4667,7770200
+i,800,i = 800,23,C:/Users/ggmendez/source/repos/ConsoleApp1/ConsoleApp1/Program.cs,23_May_2020___22_49_58_341___0695e0f7-c7ae-408a-871b-5c705e1bc7d2___9981,7777100
+i,800,i = 800,23,C:/Users/ggmendez/source/repos/ConsoleApp1/ConsoleApp1/Program.cs,23_May_2020___22_52_09_097___894cce55-8b25-475a-9401-968abf775830___4667,7782000
+i,801,i++,25,C:/Users/ggmendez/source/repos/ConsoleApp1/ConsoleApp1/Program.cs,23_May_2020___22_49_58_341___0695e0f7-c7ae-408a-871b-5c705e1bc7d2___9981,7786400
+i,801,i++,25,C:/Users/ggmendez/source/repos/ConsoleApp1/ConsoleApp1/Program.cs,23_May_2020___22_52_09_097___894cce55-8b25-475a-9401-968abf775830___4667,7887300
+i,800,--i,27,C:/Users/ggmendez/source/repos/ConsoleApp1/ConsoleApp1/Program.cs,23_May_2020___22_49_58_341___0695e0f7-c7ae-408a-871b-5c705e1bc7d2___9981,7893600
+i,800,--i,27,C:/Users/ggmendez/source/repos/ConsoleApp1/ConsoleApp1/Program.cs,23_May_2020___22_52_09_097___894cce55-8b25-475a-9401-968abf775830___4667,7900000
+j,41,j = 41,38,C:/Users/ggmendez/source/repos/ConsoleApp1/ConsoleApp1/Program.cs,23_May_2020___22_50_03_189___d508a426-449d-454b-96fa-defa10a177af___6263,8005100
+i,0,i = 0,42,C:/Users/ggmendez/source/repos/ConsoleApp1/ConsoleApp1/Program.cs,23_May_2020___22_49_58_341___0695e0f7-c7ae-408a-871b-5c705e1bc7d2___9981,8099500
+i,0,i++,42,C:/Users/ggmendez/source/repos/ConsoleApp1/ConsoleApp1/Program.cs,23_May_2020___22_49_58_341___0695e0f7-c7ae-408a-871b-5c705e1bc7d2___9981,8105000
+i,0,i = 0,42,C:/Users/ggmendez/source/repos/ConsoleApp1/ConsoleApp1/Program.cs,23_May_2020___22_52_09_097___894cce55-8b25-475a-9401-968abf775830___4667,8112500
+i,0,i++,42,C:/Users/ggmendez/source/repos/ConsoleApp1/ConsoleApp1/Program.cs,23_May_2020___22_52_09_097___894cce55-8b25-475a-9401-968abf775830___4667,8117200
+i,1,i = 0,42,C:/Users/ggmendez/source/repos/ConsoleApp1/ConsoleApp1/Program.cs,23_May_2020___22_49_58_341___0695e0f7-c7ae-408a-871b-5c705e1bc7d2___9981,8122100
+i,1,i++,42,C:/Users/ggmendez/source/repos/ConsoleApp1/ConsoleApp1/Program.cs,23_May_2020___22_49_58_341___0695e0f7-c7ae-408a-871b-5c705e1bc7d2___9981,8126600
+i,1,i = 0,42,C:/Users/ggmendez/source/repos/ConsoleApp1/ConsoleApp1/Program.cs,23_May_2020___22_52_09_097___894cce55-8b25-475a-9401-968abf775830___4667,8216000
+i,1,i++,42,C:/Users/ggmendez/source/repos/ConsoleApp1/ConsoleApp1/Program.cs,23_May_2020___22_52_09_097___894cce55-8b25-475a-9401-968abf775830___4667,8223700
+i,2,i = 0,42,C:/Users/ggmendez/source/repos/ConsoleApp1/ConsoleApp1/Program.cs,23_May_2020___22_49_58_341___0695e0f7-c7ae-408a-871b-5c705e1bc7d2___9981,8314400
+i,2,i++,42,C:/Users/ggmendez/source/repos/ConsoleApp1/ConsoleApp1/Program.cs,23_May_2020___22_49_58_341___0695e0f7-c7ae-408a-871b-5c705e1bc7d2___9981,8324200
+i,2,i = 0,42,C:/Users/ggmendez/source/repos/ConsoleApp1/ConsoleApp1/Program.cs,23_May_2020___22_52_09_097___894cce55-8b25-475a-9401-968abf775830___4667,8329900
+i,2,i++,42,C:/Users/ggmendez/source/repos/ConsoleApp1/ConsoleApp1/Program.cs,23_May_2020___22_52_09_097___894cce55-8b25-475a-9401-968abf775830___4667,8334600
+i,3,i = 0,42,C:/Users/ggmendez/source/repos/ConsoleApp1/ConsoleApp1/Program.cs,23_May_2020___22_49_58_341___0695e0f7-c7ae-408a-871b-5c705e1bc7d2___9981,8344700
+i,3,i++,42,C:/Users/ggmendez/source/repos/ConsoleApp1/ConsoleApp1/Program.cs,23_May_2020___22_49_58_341___0695e0f7-c7ae-408a-871b-5c705e1bc7d2___9981,8353700
+i,3,i = 0,42,C:/Users/ggmendez/source/repos/ConsoleApp1/ConsoleApp1/Program.cs,23_May_2020___22_52_09_097___894cce55-8b25-475a-9401-968abf775830___4667,8482000
+i,3,i++,42,C:/Users/ggmendez/source/repos/ConsoleApp1/ConsoleApp1/Program.cs,23_May_2020___22_52_09_097___894cce55-8b25-475a-9401-968abf775830___4667,8494700
+i,4,i = 0,42,C:/Users/ggmendez/source/repos/ConsoleApp1/ConsoleApp1/Program.cs,23_May_2020___22_49_58_341___0695e0f7-c7ae-408a-871b-5c705e1bc7d2___9981,8503600
+i,4,i++,42,C:/Users/ggmendez/source/repos/ConsoleApp1/ConsoleApp1/Program.cs,23_May_2020___22_49_58_341___0695e0f7-c7ae-408a-871b-5c705e1bc7d2___9981,8624600
+i,4,i = 0,42,C:/Users/ggmendez/source/repos/ConsoleApp1/ConsoleApp1/Program.cs,23_May_2020___22_52_09_097___894cce55-8b25-475a-9401-968abf775830___4667,8651200
+i,4,i++,42,C:/Users/ggmendez/source/repos/ConsoleApp1/ConsoleApp1/Program.cs,23_May_2020___22_52_09_097___894cce55-8b25-475a-9401-968abf775830___4667,8740700
+i,5,i = 0,42,C:/Users/ggmendez/source/repos/ConsoleApp1/ConsoleApp1/Program.cs,23_May_2020___22_49_58_341___0695e0f7-c7ae-408a-871b-5c705e1bc7d2___9981,8747500
+i,5,i++,42,C:/Users/ggmendez/source/repos/ConsoleApp1/ConsoleApp1/Program.cs,23_May_2020___22_49_58_341___0695e0f7-c7ae-408a-871b-5c705e1bc7d2___9981,9000900
+i,5,i = 0,42,C:/Users/ggmendez/source/repos/ConsoleApp1/ConsoleApp1/Program.cs,23_May_2020___22_52_09_097___894cce55-8b25-475a-9401-968abf775830___4667,9007100
+i,5,i++,42,C:/Users/ggmendez/source/repos/ConsoleApp1/ConsoleApp1/Program.cs,23_May_2020___22_52_09_097___894cce55-8b25-475a-9401-968abf775830___4667,9127700
+i,6,i = 0,42,C:/Users/ggmendez/source/repos/ConsoleApp1/ConsoleApp1/Program.cs,23_May_2020___22_49_58_341___0695e0f7-c7ae-408a-871b-5c705e1bc7d2___9981,9134500
+i,6,i++,42,C:/Users/ggmendez/source/repos/ConsoleApp1/ConsoleApp1/Program.cs,23_May_2020___22_49_58_341___0695e0f7-c7ae-408a-871b-5c705e1bc7d2___9981,9140800
+i,6,i = 0,42,C:/Users/ggmendez/source/repos/ConsoleApp1/ConsoleApp1/Program.cs,23_May_2020___22_52_09_097___894cce55-8b25-475a-9401-968abf775830___4667,9146700
+i,6,i++,42,C:/Users/ggmendez/source/repos/ConsoleApp1/ConsoleApp1/Program.cs,23_May_2020___22_52_09_097___894cce55-8b25-475a-9401-968abf775830___4667,9243900
+i,7,i = 0,42,C:/Users/ggmendez/source/repos/ConsoleApp1/ConsoleApp1/Program.cs,23_May_2020___22_49_58_341___0695e0f7-c7ae-408a-871b-5c705e1bc7d2___9981,9254600
+i,7,i++,42,C:/Users/ggmendez/source/repos/ConsoleApp1/ConsoleApp1/Program.cs,23_May_2020___22_49_58_341___0695e0f7-c7ae-408a-871b-5c705e1bc7d2___9981,9259700
+i,7,i = 0,42,C:/Users/ggmendez/source/repos/ConsoleApp1/ConsoleApp1/Program.cs,23_May_2020___22_52_09_097___894cce55-8b25-475a-9401-968abf775830___4667,9265000
+i,7,i++,42,C:/Users/ggmendez/source/repos/ConsoleApp1/ConsoleApp1/Program.cs,23_May_2020___22_52_09_097___894cce55-8b25-475a-9401-968abf775830___4667,9382600
+i,8,i = 0,42,C:/Users/ggmendez/source/repos/ConsoleApp1/ConsoleApp1/Program.cs,23_May_2020___22_49_58_341___0695e0f7-c7ae-408a-871b-5c705e1bc7d2___9981,9393800
+i,8,i++,42,C:/Users/ggmendez/source/repos/ConsoleApp1/ConsoleApp1/Program.cs,23_May_2020___22_49_58_341___0695e0f7-c7ae-408a-871b-5c705e1bc7d2___9981,9399200
+i,8,i = 0,42,C:/Users/ggmendez/source/repos/ConsoleApp1/ConsoleApp1/Program.cs,23_May_2020___22_52_09_097___894cce55-8b25-475a-9401-968abf775830___4667,9405800
+i,8,i++,42,C:/Users/ggmendez/source/repos/ConsoleApp1/ConsoleApp1/Program.cs,23_May_2020___22_52_09_097___894cce55-8b25-475a-9401-968abf775830___4667,9410600
+i,9,i = 0,42,C:/Users/ggmendez/source/repos/ConsoleApp1/ConsoleApp1/Program.cs,23_May_2020___22_49_58_341___0695e0f7-c7ae-408a-871b-5c705e1bc7d2___9981,9416500
+i,9,i++,42,C:/Users/ggmendez/source/repos/ConsoleApp1/ConsoleApp1/Program.cs,23_May_2020___22_49_58_341___0695e0f7-c7ae-408a-871b-5c705e1bc7d2___9981,9423400
+i,9,i = 0,42,C:/Users/ggmendez/source/repos/ConsoleApp1/ConsoleApp1/Program.cs,23_May_2020___22_52_09_097___894cce55-8b25-475a-9401-968abf775830___4667,9430800
+i,9,i++,42,C:/Users/ggmendez/source/repos/ConsoleApp1/ConsoleApp1/Program.cs,23_May_2020___22_52_09_097___894cce55-8b25-475a-9401-968abf775830___4667,9437800
+i,10,i = 0,42,C:/Users/ggmendez/source/repos/ConsoleApp1/ConsoleApp1/Program.cs,23_May_2020___22_49_58_341___0695e0f7-c7ae-408a-871b-5c705e1bc7d2___9981,9451200
+i,10,i++,42,C:/Users/ggmendez/source/repos/ConsoleApp1/ConsoleApp1/Program.cs,23_May_2020___22_49_58_341___0695e0f7-c7ae-408a-871b-5c705e1bc7d2___9981,9553200
+i,10,i = 0,42,C:/Users/ggmendez/source/repos/ConsoleApp1/ConsoleApp1/Program.cs,23_May_2020___22_52_09_097___894cce55-8b25-475a-9401-968abf775830___4667,9559600
+i,10,i++,42,C:/Users/ggmendez/source/repos/ConsoleApp1/ConsoleApp1/Program.cs,23_May_2020___22_52_09_097___894cce55-8b25-475a-9401-968abf775830___4667,9564900
+i,11,i = 0,42,C:/Users/ggmendez/source/repos/ConsoleApp1/ConsoleApp1/Program.cs,23_May_2020___22_49_58_341___0695e0f7-c7ae-408a-871b-5c705e1bc7d2___9981,9571600
+i,11,i++,42,C:/Users/ggmendez/source/repos/ConsoleApp1/ConsoleApp1/Program.cs,23_May_2020___22_49_58_341___0695e0f7-c7ae-408a-871b-5c705e1bc7d2___9981,9689900
+i,11,i = 0,42,C:/Users/ggmendez/source/repos/ConsoleApp1/ConsoleApp1/Program.cs,23_May_2020___22_52_09_097___894cce55-8b25-475a-9401-968abf775830___4667,9701600
+i,11,i++,42,C:/Users/ggmendez/source/repos/ConsoleApp1/ConsoleApp1/Program.cs,23_May_2020___22_52_09_097___894cce55-8b25-475a-9401-968abf775830___4667,9805000
+i,12,i = 0,42,C:/Users/ggmendez/source/repos/ConsoleApp1/ConsoleApp1/Program.cs,23_May_2020___22_49_58_341___0695e0f7-c7ae-408a-871b-5c705e1bc7d2___9981,9815300
+i,12,i++,42,C:/Users/ggmendez/source/repos/ConsoleApp1/ConsoleApp1/Program.cs,23_May_2020___22_49_58_341___0695e0f7-c7ae-408a-871b-5c705e1bc7d2___9981,9820300
+i,12,i = 0,42,C:/Users/ggmendez/source/repos/ConsoleApp1/ConsoleApp1/Program.cs,23_May_2020___22_52_09_097___894cce55-8b25-475a-9401-968abf775830___4667,9825300
+i,12,i++,42,C:/Users/ggmendez/source/repos/ConsoleApp1/ConsoleApp1/Program.cs,23_May_2020___22_52_09_097___894cce55-8b25-475a-9401-968abf775830___4667,9831400
+i,13,i = 0,42,C:/Users/ggmendez/source/repos/ConsoleApp1/ConsoleApp1/Program.cs,23_May_2020___22_49_58_341___0695e0f7-c7ae-408a-871b-5c705e1bc7d2___9981,9931000
+i,13,i++,42,C:/Users/ggmendez/source/repos/ConsoleApp1/ConsoleApp1/Program.cs,23_May_2020___22_49_58_341___0695e0f7-c7ae-408a-871b-5c705e1bc7d2___9981,9940300
+i,13,i = 0,42,C:/Users/ggmendez/source/repos/ConsoleApp1/ConsoleApp1/Program.cs,23_May_2020___22_52_09_097___894cce55-8b25-475a-9401-968abf775830___4667,9945900
+i,13,i++,42,C:/Users/ggmendez/source/repos/ConsoleApp1/ConsoleApp1/Program.cs,23_May_2020___22_52_09_097___894cce55-8b25-475a-9401-968abf775830___4667,9952200
+i,14,i = 0,42,C:/Users/ggmendez/source/repos/ConsoleApp1/ConsoleApp1/Program.cs,23_May_2020___22_49_58_341___0695e0f7-c7ae-408a-871b-5c705e1bc7d2___9981,9957700
+i,14,i++,42,C:/Users/ggmendez/source/repos/ConsoleApp1/ConsoleApp1/Program.cs,23_May_2020___22_49_58_341___0695e0f7-c7ae-408a-871b-5c705e1bc7d2___9981,9963100
+i,14,i = 0,42,C:/Users/ggmendez/source/repos/ConsoleApp1/ConsoleApp1/Program.cs,23_May_2020___22_52_09_097___894cce55-8b25-475a-9401-968abf775830___4667,10049900
+i,14,i++,42,C:/Users/ggmendez/source/repos/ConsoleApp1/ConsoleApp1/Program.cs,23_May_2020___22_52_09_097___894cce55-8b25-475a-9401-968abf775830___4667,10064200
+i,15,i = 0,42,C:/Users/ggmendez/source/repos/ConsoleApp1/ConsoleApp1/Program.cs,23_May_2020___22_49_58_341___0695e0f7-c7ae-408a-871b-5c705e1bc7d2___9981,10071500
+i,15,i++,42,C:/Users/ggmendez/source/repos/ConsoleApp1/ConsoleApp1/Program.cs,23_May_2020___22_49_58_341___0695e0f7-c7ae-408a-871b-5c705e1bc7d2___9981,10077000
+i,15,i = 0,42,C:/Users/ggmendez/source/repos/ConsoleApp1/ConsoleApp1/Program.cs,23_May_2020___22_52_09_097___894cce55-8b25-475a-9401-968abf775830___4667,10083800
+i,15,i++,42,C:/Users/ggmendez/source/repos/ConsoleApp1/ConsoleApp1/Program.cs,23_May_2020___22_52_09_097___894cce55-8b25-475a-9401-968abf775830___4667,10088900
+i,16,i = 0,42,C:/Users/ggmendez/source/repos/ConsoleApp1/ConsoleApp1/Program.cs,23_May_2020___22_49_58_341___0695e0f7-c7ae-408a-871b-5c705e1bc7d2___9981,10178200
+i,16,i++,42,C:/Users/ggmendez/source/repos/ConsoleApp1/ConsoleApp1/Program.cs,23_May_2020___22_49_58_341___0695e0f7-c7ae-408a-871b-5c705e1bc7d2___9981,10184500
+i,16,i = 0,42,C:/Users/ggmendez/source/repos/ConsoleApp1/ConsoleApp1/Program.cs,23_May_2020___22_52_09_097___894cce55-8b25-475a-9401-968abf775830___4667,10194300
+i,16,i++,42,C:/Users/ggmendez/source/repos/ConsoleApp1/ConsoleApp1/Program.cs,23_May_2020___22_52_09_097___894cce55-8b25-475a-9401-968abf775830___4667,10200800
+i,17,i = 0,42,C:/Users/ggmendez/source/repos/ConsoleApp1/ConsoleApp1/Program.cs,23_May_2020___22_49_58_341___0695e0f7-c7ae-408a-871b-5c705e1bc7d2___9981,10207100
+i,17,i++,42,C:/Users/ggmendez/source/repos/ConsoleApp1/ConsoleApp1/Program.cs,23_May_2020___22_49_58_341___0695e0f7-c7ae-408a-871b-5c705e1bc7d2___9981,10212600
+i,17,i = 0,42,C:/Users/ggmendez/source/repos/ConsoleApp1/ConsoleApp1/Program.cs,23_May_2020___22_52_09_097___894cce55-8b25-475a-9401-968abf775830___4667,10232000
+i,17,i++,42,C:/Users/ggmendez/source/repos/ConsoleApp1/ConsoleApp1/Program.cs,23_May_2020___22_52_09_097___894cce55-8b25-475a-9401-968abf775830___4667,10237300
+i,18,i = 0,42,C:/Users/ggmendez/source/repos/ConsoleApp1/ConsoleApp1/Program.cs,23_May_2020___22_49_58_341___0695e0f7-c7ae-408a-871b-5c705e1bc7d2___9981,10268300
+i,18,i++,42,C:/Users/ggmendez/source/repos/ConsoleApp1/ConsoleApp1/Program.cs,23_May_2020___22_49_58_341___0695e0f7-c7ae-408a-871b-5c705e1bc7d2___9981,10273100
+i,18,i = 0,42,C:/Users/ggmendez/source/repos/ConsoleApp1/ConsoleApp1/Program.cs,23_May_2020___22_52_09_097___894cce55-8b25-475a-9401-968abf775830___4667,10279300
+i,18,i++,42,C:/Users/ggmendez/source/repos/ConsoleApp1/ConsoleApp1/Program.cs,23_May_2020___22_52_09_097___894cce55-8b25-475a-9401-968abf775830___4667,10284400
+i,19,i = 0,42,C:/Users/ggmendez/source/repos/ConsoleApp1/ConsoleApp1/Program.cs,23_May_2020___22_49_58_341___0695e0f7-c7ae-408a-871b-5c705e1bc7d2___9981,10289500
+i,19,i++,42,C:/Users/ggmendez/source/repos/ConsoleApp1/ConsoleApp1/Program.cs,23_May_2020___22_49_58_341___0695e0f7-c7ae-408a-871b-5c705e1bc7d2___9981,10295500
+i,19,i = 0,42,C:/Users/ggmendez/source/repos/ConsoleApp1/ConsoleApp1/Program.cs,23_May_2020___22_52_09_097___894cce55-8b25-475a-9401-968abf775830___4667,10300200
+i,19,i++,42,C:/Users/ggmendez/source/repos/ConsoleApp1/ConsoleApp1/Program.cs,23_May_2020___22_52_09_097___894cce55-8b25-475a-9401-968abf775830___4667,10306400
+i,20,i = 0,42,C:/Users/ggmendez/source/repos/ConsoleApp1/ConsoleApp1/Program.cs,23_May_2020___22_49_58_341___0695e0f7-c7ae-408a-871b-5c705e1bc7d2___9981,10311900
+i,20,i++,42,C:/Users/ggmendez/source/repos/ConsoleApp1/ConsoleApp1/Program.cs,23_May_2020___22_49_58_341___0695e0f7-c7ae-408a-871b-5c705e1bc7d2___9981,10318100
+i,20,i = 0,42,C:/Users/ggmendez/source/repos/ConsoleApp1/ConsoleApp1/Program.cs,23_May_2020___22_52_09_097___894cce55-8b25-475a-9401-968abf775830___4667,10323200
+i,20,i++,42,C:/Users/ggmendez/source/repos/ConsoleApp1/ConsoleApp1/Program.cs,23_May_2020___22_52_09_097___894cce55-8b25-475a-9401-968abf775830___4667,10328400
+i,21,i = 0,42,C:/Users/ggmendez/source/repos/ConsoleApp1/ConsoleApp1/Program.cs,23_May_2020___22_49_58_341___0695e0f7-c7ae-408a-871b-5c705e1bc7d2___9981,10333700
+i,21,i++,42,C:/Users/ggmendez/source/repos/ConsoleApp1/ConsoleApp1/Program.cs,23_May_2020___22_49_58_341___0695e0f7-c7ae-408a-871b-5c705e1bc7d2___9981,10340700
+i,21,i = 0,42,C:/Users/ggmendez/source/repos/ConsoleApp1/ConsoleApp1/Program.cs,23_May_2020___22_52_09_097___894cce55-8b25-475a-9401-968abf775830___4667,10345700
+i,21,i++,42,C:/Users/ggmendez/source/repos/ConsoleApp1/ConsoleApp1/Program.cs,23_May_2020___22_52_09_097___894cce55-8b25-475a-9401-968abf775830___4667,10352500
+i,22,i = 0,42,C:/Users/ggmendez/source/repos/ConsoleApp1/ConsoleApp1/Program.cs,23_May_2020___22_49_58_341___0695e0f7-c7ae-408a-871b-5c705e1bc7d2___9981,10359500
+i,22,i++,42,C:/Users/ggmendez/source/repos/ConsoleApp1/ConsoleApp1/Program.cs,23_May_2020___22_49_58_341___0695e0f7-c7ae-408a-871b-5c705e1bc7d2___9981,10370400
+i,22,i = 0,42,C:/Users/ggmendez/source/repos/ConsoleApp1/ConsoleApp1/Program.cs,23_May_2020___22_52_09_097___894cce55-8b25-475a-9401-968abf775830___4667,10377700
+i,22,i++,42,C:/Users/ggmendez/source/repos/ConsoleApp1/ConsoleApp1/Program.cs,23_May_2020___22_52_09_097___894cce55-8b25-475a-9401-968abf775830___4667,10387800
+i,23,i = 0,42,C:/Users/ggmendez/source/repos/ConsoleApp1/ConsoleApp1/Program.cs,23_May_2020___22_49_58_341___0695e0f7-c7ae-408a-871b-5c705e1bc7d2___9981,10394700
+i,23,i++,42,C:/Users/ggmendez/source/repos/ConsoleApp1/ConsoleApp1/Program.cs,23_May_2020___22_49_58_341___0695e0f7-c7ae-408a-871b-5c705e1bc7d2___9981,10400600
+i,23,i = 0,42,C:/Users/ggmendez/source/repos/ConsoleApp1/ConsoleApp1/Program.cs,23_May_2020___22_52_09_097___894cce55-8b25-475a-9401-968abf775830___4667,10407000
+i,23,i++,42,C:/Users/ggmendez/source/repos/ConsoleApp1/ConsoleApp1/Program.cs,23_May_2020___22_52_09_097___894cce55-8b25-475a-9401-968abf775830___4667,10412300
+i,24,i = 0,42,C:/Users/ggmendez/source/repos/ConsoleApp1/ConsoleApp1/Program.cs,23_May_2020___22_49_58_341___0695e0f7-c7ae-408a-871b-5c705e1bc7d2___9981,10418900
+i,24,i++,42,C:/Users/ggmendez/source/repos/ConsoleApp1/ConsoleApp1/Program.cs,23_May_2020___22_49_58_341___0695e0f7-c7ae-408a-871b-5c705e1bc7d2___9981,10537000
+i,24,i = 0,42,C:/Users/ggmendez/source/repos/ConsoleApp1/ConsoleApp1/Program.cs,23_May_2020___22_52_09_097___894cce55-8b25-475a-9401-968abf775830___4667,10542800
+i,24,i++,42,C:/Users/ggmendez/source/repos/ConsoleApp1/ConsoleApp1/Program.cs,23_May_2020___22_52_09_097___894cce55-8b25-475a-9401-968abf775830___4667,10548000
+i,25,i = 0,42,C:/Users/ggmendez/source/repos/ConsoleApp1/ConsoleApp1/Program.cs,23_May_2020___22_49_58_341___0695e0f7-c7ae-408a-871b-5c705e1bc7d2___9981,10554500
+i,25,i++,42,C:/Users/ggmendez/source/repos/ConsoleApp1/ConsoleApp1/Program.cs,23_May_2020___22_49_58_341___0695e0f7-c7ae-408a-871b-5c705e1bc7d2___9981,10559500
+i,25,i = 0,42,C:/Users/ggmendez/source/repos/ConsoleApp1/ConsoleApp1/Program.cs,23_May_2020___22_52_09_097___894cce55-8b25-475a-9401-968abf775830___4667,10663300
+i,25,i++,42,C:/Users/ggmendez/source/repos/ConsoleApp1/ConsoleApp1/Program.cs,23_May_2020___22_52_09_097___894cce55-8b25-475a-9401-968abf775830___4667,10673400
+i,26,i = 0,42,C:/Users/ggmendez/source/repos/ConsoleApp1/ConsoleApp1/Program.cs,23_May_2020___22_49_58_341___0695e0f7-c7ae-408a-871b-5c705e1bc7d2___9981,10681100
+i,26,i++,42,C:/Users/ggmendez/source/repos/ConsoleApp1/ConsoleApp1/Program.cs,23_May_2020___22_49_58_341___0695e0f7-c7ae-408a-871b-5c705e1bc7d2___9981,10685500
+i,26,i = 0,42,C:/Users/ggmendez/source/repos/ConsoleApp1/ConsoleApp1/Program.cs,23_May_2020___22_52_09_097___894cce55-8b25-475a-9401-968abf775830___4667,10805100
+i,26,i++,42,C:/Users/ggmendez/source/repos/ConsoleApp1/ConsoleApp1/Program.cs,23_May_2020___22_52_09_097___894cce55-8b25-475a-9401-968abf775830___4667,10812500
+i,27,i = 0,42,C:/Users/ggmendez/source/repos/ConsoleApp1/ConsoleApp1/Program.cs,23_May_2020___22_49_58_341___0695e0f7-c7ae-408a-871b-5c705e1bc7d2___9981,10818800
+i,27,i++,42,C:/Users/ggmendez/source/repos/ConsoleApp1/ConsoleApp1/Program.cs,23_May_2020___22_49_58_341___0695e0f7-c7ae-408a-871b-5c705e1bc7d2___9981,10824900
+i,27,i = 0,42,C:/Users/ggmendez/source/repos/ConsoleApp1/ConsoleApp1/Program.cs,23_May_2020___22_52_09_097___894cce55-8b25-475a-9401-968abf775830___4667,10832500
+i,27,i++,42,C:/Users/ggmendez/source/repos/ConsoleApp1/ConsoleApp1/Program.cs,23_May_2020___22_52_09_097___894cce55-8b25-475a-9401-968abf775830___4667,10839200
+i,28,i = 0,42,C:/Users/ggmendez/source/repos/ConsoleApp1/ConsoleApp1/Program.cs,23_May_2020___22_49_58_341___0695e0f7-c7ae-408a-871b-5c705e1bc7d2___9981,10964300
+i,28,i++,42,C:/Users/ggmendez/source/repos/ConsoleApp1/ConsoleApp1/Program.cs,23_May_2020___22_49_58_341___0695e0f7-c7ae-408a-871b-5c705e1bc7d2___9981,10974400
+i,28,i = 0,42,C:/Users/ggmendez/source/repos/ConsoleApp1/ConsoleApp1/Program.cs,23_May_2020___22_52_09_097___894cce55-8b25-475a-9401-968abf775830___4667,11092200
+i,28,i++,42,C:/Users/ggmendez/source/repos/ConsoleApp1/ConsoleApp1/Program.cs,23_May_2020___22_52_09_097___894cce55-8b25-475a-9401-968abf775830___4667,11104800
+i,29,i = 0,42,C:/Users/ggmendez/source/repos/ConsoleApp1/ConsoleApp1/Program.cs,23_May_2020___22_49_58_341___0695e0f7-c7ae-408a-871b-5c705e1bc7d2___9981,11116700
+i,29,i++,42,C:/Users/ggmendez/source/repos/ConsoleApp1/ConsoleApp1/Program.cs,23_May_2020___22_49_58_341___0695e0f7-c7ae-408a-871b-5c705e1bc7d2___9981,11127100
+i,29,i = 0,42,C:/Users/ggmendez/source/repos/ConsoleApp1/ConsoleApp1/Program.cs,23_May_2020___22_52_09_097___894cce55-8b25-475a-9401-968abf775830___4667,11221600
+i,29,i++,42,C:/Users/ggmendez/source/repos/ConsoleApp1/ConsoleApp1/Program.cs,23_May_2020___22_52_09_097___894cce55-8b25-475a-9401-968abf775830___4667,11338900
+i,30,i = 0,42,C:/Users/ggmendez/source/repos/ConsoleApp1/ConsoleApp1/Program.cs,23_May_2020___22_49_58_341___0695e0f7-c7ae-408a-871b-5c705e1bc7d2___9981,11348700
+i,30,i++,42,C:/Users/ggmendez/source/repos/ConsoleApp1/ConsoleApp1/Program.cs,23_May_2020___22_49_58_341___0695e0f7-c7ae-408a-871b-5c705e1bc7d2___9981,11463800
+i,30,i = 0,42,C:/Users/ggmendez/source/repos/ConsoleApp1/ConsoleApp1/Program.cs,23_May_2020___22_52_09_097___894cce55-8b25-475a-9401-968abf775830___4667,11471800
+i,30,i++,42,C:/Users/ggmendez/source/repos/ConsoleApp1/ConsoleApp1/Program.cs,23_May_2020___22_52_09_097___894cce55-8b25-475a-9401-968abf775830___4667,11581500
+i,31,i = 0,42,C:/Users/ggmendez/source/repos/ConsoleApp1/ConsoleApp1/Program.cs,23_May_2020___22_49_58_341___0695e0f7-c7ae-408a-871b-5c705e1bc7d2___9981,11588400
+i,31,i++,42,C:/Users/ggmendez/source/repos/ConsoleApp1/ConsoleApp1/Program.cs,23_May_2020___22_49_58_341___0695e0f7-c7ae-408a-871b-5c705e1bc7d2___9981,11595000
+i,31,i = 0,42,C:/Users/ggmendez/source/repos/ConsoleApp1/ConsoleApp1/Program.cs,23_May_2020___22_52_09_097___894cce55-8b25-475a-9401-968abf775830___4667,11602300
+i,31,i++,42,C:/Users/ggmendez/source/repos/ConsoleApp1/ConsoleApp1/Program.cs,23_May_2020___22_52_09_097___894cce55-8b25-475a-9401-968abf775830___4667,11608300
+i,32,i = 0,42,C:/Users/ggmendez/source/repos/ConsoleApp1/ConsoleApp1/Program.cs,23_May_2020___22_49_58_341___0695e0f7-c7ae-408a-871b-5c705e1bc7d2___9981,11707400
+i,32,i++,42,C:/Users/ggmendez/source/repos/ConsoleApp1/ConsoleApp1/Program.cs,23_May_2020___22_49_58_341___0695e0f7-c7ae-408a-871b-5c705e1bc7d2___9981,11716700
+i,32,i = 0,42,C:/Users/ggmendez/source/repos/ConsoleApp1/ConsoleApp1/Program.cs,23_May_2020___22_52_09_097___894cce55-8b25-475a-9401-968abf775830___4667,11727800
+i,32,i++,42,C:/Users/ggmendez/source/repos/ConsoleApp1/ConsoleApp1/Program.cs,23_May_2020___22_52_09_097___894cce55-8b25-475a-9401-968abf775830___4667,11828200
+i,33,i = 0,42,C:/Users/ggmendez/source/repos/ConsoleApp1/ConsoleApp1/Program.cs,23_May_2020___22_49_58_341___0695e0f7-c7ae-408a-871b-5c705e1bc7d2___9981,11833900
+i,33,i++,42,C:/Users/ggmendez/source/repos/ConsoleApp1/ConsoleApp1/Program.cs,23_May_2020___22_49_58_341___0695e0f7-c7ae-408a-871b-5c705e1bc7d2___9981,11840200
+i,33,i = 0,42,C:/Users/ggmendez/source/repos/ConsoleApp1/ConsoleApp1/Program.cs,23_May_2020___22_52_09_097___894cce55-8b25-475a-9401-968abf775830___4667,11848500
+i,33,i++,42,C:/Users/ggmendez/source/repos/ConsoleApp1/ConsoleApp1/Program.cs,23_May_2020___22_52_09_097___894cce55-8b25-475a-9401-968abf775830___4667,11854300
+i,34,i = 0,42,C:/Users/ggmendez/source/repos/ConsoleApp1/ConsoleApp1/Program.cs,23_May_2020___22_49_58_341___0695e0f7-c7ae-408a-871b-5c705e1bc7d2___9981,11859300
+i,34,i++,42,C:/Users/ggmendez/source/repos/ConsoleApp1/ConsoleApp1/Program.cs,23_May_2020___22_49_58_341___0695e0f7-c7ae-408a-871b-5c705e1bc7d2___9981,11864500
+i,34,i = 0,42,C:/Users/ggmendez/source/repos/ConsoleApp1/ConsoleApp1/Program.cs,23_May_2020___22_52_09_097___894cce55-8b25-475a-9401-968abf775830___4667,11995300
+i,34,i++,42,C:/Users/ggmendez/source/repos/ConsoleApp1/ConsoleApp1/Program.cs,23_May_2020___22_52_09_097___894cce55-8b25-475a-9401-968abf775830___4667,12004200
+i,35,i = 0,42,C:/Users/ggmendez/source/repos/ConsoleApp1/ConsoleApp1/Program.cs,23_May_2020___22_49_58_341___0695e0f7-c7ae-408a-871b-5c705e1bc7d2___9981,12013100
+i,35,i++,42,C:/Users/ggmendez/source/repos/ConsoleApp1/ConsoleApp1/Program.cs,23_May_2020___22_49_58_341___0695e0f7-c7ae-408a-871b-5c705e1bc7d2___9981,12114400
+i,35,i = 0,42,C:/Users/ggmendez/source/repos/ConsoleApp1/ConsoleApp1/Program.cs,23_May_2020___22_52_09_097___894cce55-8b25-475a-9401-968abf775830___4667,12122100
+i,35,i++,42,C:/Users/ggmendez/source/repos/ConsoleApp1/ConsoleApp1/Program.cs,23_May_2020___22_52_09_097___894cce55-8b25-475a-9401-968abf775830___4667,12127500
+i,36,i = 0,42,C:/Users/ggmendez/source/repos/ConsoleApp1/ConsoleApp1/Program.cs,23_May_2020___22_49_58_341___0695e0f7-c7ae-408a-871b-5c705e1bc7d2___9981,12133500
+i,36,i++,42,C:/Users/ggmendez/source/repos/ConsoleApp1/ConsoleApp1/Program.cs,23_May_2020___22_49_58_341___0695e0f7-c7ae-408a-871b-5c705e1bc7d2___9981,12228400
+i,36,i = 0,42,C:/Users/ggmendez/source/repos/ConsoleApp1/ConsoleApp1/Program.cs,23_May_2020___22_52_09_097___894cce55-8b25-475a-9401-968abf775830___4667,12234900
+i,36,i++,42,C:/Users/ggmendez/source/repos/ConsoleApp1/ConsoleApp1/Program.cs,23_May_2020___22_52_09_097___894cce55-8b25-475a-9401-968abf775830___4667,12240000
+i,37,i = 0,42,C:/Users/ggmendez/source/repos/ConsoleApp1/ConsoleApp1/Program.cs,23_May_2020___22_49_58_341___0695e0f7-c7ae-408a-871b-5c705e1bc7d2___9981,12370800
+i,37,i++,42,C:/Users/ggmendez/source/repos/ConsoleApp1/ConsoleApp1/Program.cs,23_May_2020___22_49_58_341___0695e0f7-c7ae-408a-871b-5c705e1bc7d2___9981,12378900
+i,37,i = 0,42,C:/Users/ggmendez/source/repos/ConsoleApp1/ConsoleApp1/Program.cs,23_May_2020___22_52_09_097___894cce55-8b25-475a-9401-968abf775830___4667,12384400
+i,37,i++,42,C:/Users/ggmendez/source/repos/ConsoleApp1/ConsoleApp1/Program.cs,23_May_2020___22_52_09_097___894cce55-8b25-475a-9401-968abf775830___4667,12393100
+i,38,i = 0,42,C:/Users/ggmendez/source/repos/ConsoleApp1/ConsoleApp1/Program.cs,23_May_2020___22_49_58_341___0695e0f7-c7ae-408a-871b-5c705e1bc7d2___9981,12521300
+i,38,i++,42,C:/Users/ggmendez/source/repos/ConsoleApp1/ConsoleApp1/Program.cs,23_May_2020___22_49_58_341___0695e0f7-c7ae-408a-871b-5c705e1bc7d2___9981,12531800
+i,38,i = 0,42,C:/Users/ggmendez/source/repos/ConsoleApp1/ConsoleApp1/Program.cs,23_May_2020___22_52_09_097___894cce55-8b25-475a-9401-968abf775830___4667,12540700
+i,38,i++,42,C:/Users/ggmendez/source/repos/ConsoleApp1/ConsoleApp1/Program.cs,23_May_2020___22_52_09_097___894cce55-8b25-475a-9401-968abf775830___4667,12546600
+i,39,i = 0,42,C:/Users/ggmendez/source/repos/ConsoleApp1/ConsoleApp1/Program.cs,23_May_2020___22_49_58_341___0695e0f7-c7ae-408a-871b-5c705e1bc7d2___9981,12554800
+i,39,i++,42,C:/Users/ggmendez/source/repos/ConsoleApp1/ConsoleApp1/Program.cs,23_May_2020___22_49_58_341___0695e0f7-c7ae-408a-871b-5c705e1bc7d2___9981,12559900
+i,39,i = 0,42,C:/Users/ggmendez/source/repos/ConsoleApp1/ConsoleApp1/Program.cs,23_May_2020___22_52_09_097___894cce55-8b25-475a-9401-968abf775830___4667,12565200
+i,39,i++,42,C:/Users/ggmendez/source/repos/ConsoleApp1/ConsoleApp1/Program.cs,23_May_2020___22_52_09_097___894cce55-8b25-475a-9401-968abf775830___4667,12571100
+i,40,i = 0,42,C:/Users/ggmendez/source/repos/ConsoleApp1/ConsoleApp1/Program.cs,23_May_2020___22_49_58_341___0695e0f7-c7ae-408a-871b-5c705e1bc7d2___9981,12579900
+i,40,i++,42,C:/Users/ggmendez/source/repos/ConsoleApp1/ConsoleApp1/Program.cs,23_May_2020___22_49_58_341___0695e0f7-c7ae-408a-871b-5c705e1bc7d2___9981,12586600
+i,40,i = 0,42,C:/Users/ggmendez/source/repos/ConsoleApp1/ConsoleApp1/Program.cs,23_May_2020___22_52_09_097___894cce55-8b25-475a-9401-968abf775830___4667,12592900
+i,40,i++,42,C:/Users/ggmendez/source/repos/ConsoleApp1/ConsoleApp1/Program.cs,23_May_2020___22_52_09_097___894cce55-8b25-475a-9401-968abf775830___4667,12599200
+i,41,i = 0,42,C:/Users/ggmendez/source/repos/ConsoleApp1/ConsoleApp1/Program.cs,23_May_2020___22_49_58_341___0695e0f7-c7ae-408a-871b-5c705e1bc7d2___9981,12606100
+i,41,i++,42,C:/Users/ggmendez/source/repos/ConsoleApp1/ConsoleApp1/Program.cs,23_May_2020___22_49_58_341___0695e0f7-c7ae-408a-871b-5c705e1bc7d2___9981,12612400
+i,41,i = 0,42,C:/Users/ggmendez/source/repos/ConsoleApp1/ConsoleApp1/Program.cs,23_May_2020___22_52_09_097___894cce55-8b25-475a-9401-968abf775830___4667,12622300
+i,41,i++,42,C:/Users/ggmendez/source/repos/ConsoleApp1/ConsoleApp1/Program.cs,23_May_2020___22_52_09_097___894cce55-8b25-475a-9401-968abf775830___4667,12657700
+i,42,i = 0,42,C:/Users/ggmendez/source/repos/ConsoleApp1/ConsoleApp1/Program.cs,23_May_2020___22_49_58_341___0695e0f7-c7ae-408a-871b-5c705e1bc7d2___9981,12664300
+i,42,i++,42,C:/Users/ggmendez/source/repos/ConsoleApp1/ConsoleApp1/Program.cs,23_May_2020___22_49_58_341___0695e0f7-c7ae-408a-871b-5c705e1bc7d2___9981,12669200
+i,42,i = 0,42,C:/Users/ggmendez/source/repos/ConsoleApp1/ConsoleApp1/Program.cs,23_May_2020___22_52_09_097___894cce55-8b25-475a-9401-968abf775830___4667,12674400
+i,42,i++,42,C:/Users/ggmendez/source/repos/ConsoleApp1/ConsoleApp1/Program.cs,23_May_2020___22_52_09_097___894cce55-8b25-475a-9401-968abf775830___4667,12681300
+i,43,i = 0,42,C:/Users/ggmendez/source/repos/ConsoleApp1/ConsoleApp1/Program.cs,23_May_2020___22_49_58_341___0695e0f7-c7ae-408a-871b-5c705e1bc7d2___9981,12686800
+i,43,i++,42,C:/Users/ggmendez/source/repos/ConsoleApp1/ConsoleApp1/Program.cs,23_May_2020___22_49_58_341___0695e0f7-c7ae-408a-871b-5c705e1bc7d2___9981,12726800
+i,43,i = 0,42,C:/Users/ggmendez/source/repos/ConsoleApp1/ConsoleApp1/Program.cs,23_May_2020___22_52_09_097___894cce55-8b25-475a-9401-968abf775830___4667,12732000
+i,43,i++,42,C:/Users/ggmendez/source/repos/ConsoleApp1/ConsoleApp1/Program.cs,23_May_2020___22_52_09_097___894cce55-8b25-475a-9401-968abf775830___4667,12738800
+i,44,i = 0,42,C:/Users/ggmendez/source/repos/ConsoleApp1/ConsoleApp1/Program.cs,23_May_2020___22_49_58_341___0695e0f7-c7ae-408a-871b-5c705e1bc7d2___9981,12743900
+i,44,i++,42,C:/Users/ggmendez/source/repos/ConsoleApp1/ConsoleApp1/Program.cs,23_May_2020___22_49_58_341___0695e0f7-c7ae-408a-871b-5c705e1bc7d2___9981,12749100
+i,44,i = 0,42,C:/Users/ggmendez/source/repos/ConsoleApp1/ConsoleApp1/Program.cs,23_May_2020___22_52_09_097___894cce55-8b25-475a-9401-968abf775830___4667,12754800
+i,44,i++,42,C:/Users/ggmendez/source/repos/ConsoleApp1/ConsoleApp1/Program.cs,23_May_2020___22_52_09_097___894cce55-8b25-475a-9401-968abf775830___4667,12759400
+i,45,i = 0,42,C:/Users/ggmendez/source/repos/ConsoleApp1/ConsoleApp1/Program.cs,23_May_2020___22_49_58_341___0695e0f7-c7ae-408a-871b-5c705e1bc7d2___9981,12765400
+i,45,i++,42,C:/Users/ggmendez/source/repos/ConsoleApp1/ConsoleApp1/Program.cs,23_May_2020___22_49_58_341___0695e0f7-c7ae-408a-871b-5c705e1bc7d2___9981,12770400
+i,45,i = 0,42,C:/Users/ggmendez/source/repos/ConsoleApp1/ConsoleApp1/Program.cs,23_May_2020___22_52_09_097___894cce55-8b25-475a-9401-968abf775830___4667,12776900
+i,45,i++,42,C:/Users/ggmendez/source/repos/ConsoleApp1/ConsoleApp1/Program.cs,23_May_2020___22_52_09_097___894cce55-8b25-475a-9401-968abf775830___4667,12782200
+i,46,i = 0,42,C:/Users/ggmendez/source/repos/ConsoleApp1/ConsoleApp1/Program.cs,23_May_2020___22_49_58_341___0695e0f7-c7ae-408a-871b-5c705e1bc7d2___9981,12787600
+i,46,i++,42,C:/Users/ggmendez/source/repos/ConsoleApp1/ConsoleApp1/Program.cs,23_May_2020___22_49_58_341___0695e0f7-c7ae-408a-871b-5c705e1bc7d2___9981,12792500
+i,46,i = 0,42,C:/Users/ggmendez/source/repos/ConsoleApp1/ConsoleApp1/Program.cs,23_May_2020___22_52_09_097___894cce55-8b25-475a-9401-968abf775830___4667,12801300
+i,46,i++,42,C:/Users/ggmendez/source/repos/ConsoleApp1/ConsoleApp1/Program.cs,23_May_2020___22_52_09_097___894cce55-8b25-475a-9401-968abf775830___4667,12806400
+i,47,i = 0,42,C:/Users/ggmendez/source/repos/ConsoleApp1/ConsoleApp1/Program.cs,23_May_2020___22_49_58_341___0695e0f7-c7ae-408a-871b-5c705e1bc7d2___9981,12811200
+i,47,i++,42,C:/Users/ggmendez/source/repos/ConsoleApp1/ConsoleApp1/Program.cs,23_May_2020___22_49_58_341___0695e0f7-c7ae-408a-871b-5c705e1bc7d2___9981,12816600
+i,47,i = 0,42,C:/Users/ggmendez/source/repos/ConsoleApp1/ConsoleApp1/Program.cs,23_May_2020___22_52_09_097___894cce55-8b25-475a-9401-968abf775830___4667,12823600
+i,47,i++,42,C:/Users/ggmendez/source/repos/ConsoleApp1/ConsoleApp1/Program.cs,23_May_2020___22_52_09_097___894cce55-8b25-475a-9401-968abf775830___4667,12828600
+i,48,i = 0,42,C:/Users/ggmendez/source/repos/ConsoleApp1/ConsoleApp1/Program.cs,23_May_2020___22_49_58_341___0695e0f7-c7ae-408a-871b-5c705e1bc7d2___9981,12834800
+i,48,i++,42,C:/Users/ggmendez/source/repos/ConsoleApp1/ConsoleApp1/Program.cs,23_May_2020___22_49_58_341___0695e0f7-c7ae-408a-871b-5c705e1bc7d2___9981,12841100
+i,48,i = 0,42,C:/Users/ggmendez/source/repos/ConsoleApp1/ConsoleApp1/Program.cs,23_May_2020___22_52_09_097___894cce55-8b25-475a-9401-968abf775830___4667,12846300
+i,48,i++,42,C:/Users/ggmendez/source/repos/ConsoleApp1/ConsoleApp1/Program.cs,23_May_2020___22_52_09_097___894cce55-8b25-475a-9401-968abf775830___4667,12850900
+i,49,i = 0,42,C:/Users/ggmendez/source/repos/ConsoleApp1/ConsoleApp1/Program.cs,23_May_2020___22_49_58_341___0695e0f7-c7ae-408a-871b-5c705e1bc7d2___9981,12856100
+i,49,i++,42,C:/Users/ggmendez/source/repos/ConsoleApp1/ConsoleApp1/Program.cs,23_May_2020___22_49_58_341___0695e0f7-c7ae-408a-871b-5c705e1bc7d2___9981,12862000
+i,49,i = 0,42,C:/Users/ggmendez/source/repos/ConsoleApp1/ConsoleApp1/Program.cs,23_May_2020___22_52_09_097___894cce55-8b25-475a-9401-968abf775830___4667,12867200
+i,49,i++,42,C:/Users/ggmendez/source/repos/ConsoleApp1/ConsoleApp1/Program.cs,23_May_2020___22_52_09_097___894cce55-8b25-475a-9401-968abf775830___4667,13013700
+i,50,i = 0,42,C:/Users/ggmendez/source/repos/ConsoleApp1/ConsoleApp1/Program.cs,23_May_2020___22_49_58_341___0695e0f7-c7ae-408a-871b-5c705e1bc7d2___9981,13129800
+i,50,i++,42,C:/Users/ggmendez/source/repos/ConsoleApp1/ConsoleApp1/Program.cs,23_May_2020___22_49_58_341___0695e0f7-c7ae-408a-871b-5c705e1bc7d2___9981,13136600
+i,50,i = 0,42,C:/Users/ggmendez/source/repos/ConsoleApp1/ConsoleApp1/Program.cs,23_May_2020___22_52_09_097___894cce55-8b25-475a-9401-968abf775830___4667,13140000
+i,50,i++,42,C:/Users/ggmendez/source/repos/ConsoleApp1/ConsoleApp1/Program.cs,23_May_2020___22_52_09_097___894cce55-8b25-475a-9401-968abf775830___4667,13143500
+i,51,i = 0,42,C:/Users/ggmendez/source/repos/ConsoleApp1/ConsoleApp1/Program.cs,23_May_2020___22_49_58_341___0695e0f7-c7ae-408a-871b-5c705e1bc7d2___9981,13147000
+i,51,i++,42,C:/Users/ggmendez/source/repos/ConsoleApp1/ConsoleApp1/Program.cs,23_May_2020___22_49_58_341___0695e0f7-c7ae-408a-871b-5c705e1bc7d2___9981,13152300
+i,51,i = 0,42,C:/Users/ggmendez/source/repos/ConsoleApp1/ConsoleApp1/Program.cs,23_May_2020___22_52_09_097___894cce55-8b25-475a-9401-968abf775830___4667,13155600
+i,51,i++,42,C:/Users/ggmendez/source/repos/ConsoleApp1/ConsoleApp1/Program.cs,23_May_2020___22_52_09_097___894cce55-8b25-475a-9401-968abf775830___4667,13158900
+i,52,i = 0,42,C:/Users/ggmendez/source/repos/ConsoleApp1/ConsoleApp1/Program.cs,23_May_2020___22_49_58_341___0695e0f7-c7ae-408a-871b-5c705e1bc7d2___9981,13163000
+i,52,i++,42,C:/Users/ggmendez/source/repos/ConsoleApp1/ConsoleApp1/Program.cs,23_May_2020___22_49_58_341___0695e0f7-c7ae-408a-871b-5c705e1bc7d2___9981,13166300
+i,52,i = 0,42,C:/Users/ggmendez/source/repos/ConsoleApp1/ConsoleApp1/Program.cs,23_May_2020___22_52_09_097___894cce55-8b25-475a-9401-968abf775830___4667,13169600
+i,52,i++,42,C:/Users/ggmendez/source/repos/ConsoleApp1/ConsoleApp1/Program.cs,23_May_2020___22_52_09_097___894cce55-8b25-475a-9401-968abf775830___4667,13173700
+i,53,i = 0,42,C:/Users/ggmendez/source/repos/ConsoleApp1/ConsoleApp1/Program.cs,23_May_2020___22_49_58_341___0695e0f7-c7ae-408a-871b-5c705e1bc7d2___9981,13177800
+i,53,i++,42,C:/Users/ggmendez/source/repos/ConsoleApp1/ConsoleApp1/Program.cs,23_May_2020___22_49_58_341___0695e0f7-c7ae-408a-871b-5c705e1bc7d2___9981,13181100
+i,53,i = 0,42,C:/Users/ggmendez/source/repos/ConsoleApp1/ConsoleApp1/Program.cs,23_May_2020___22_52_09_097___894cce55-8b25-475a-9401-968abf775830___4667,13184400
+i,53,i++,42,C:/Users/ggmendez/source/repos/ConsoleApp1/ConsoleApp1/Program.cs,23_May_2020___22_52_09_097___894cce55-8b25-475a-9401-968abf775830___4667,13187800
+i,54,i = 0,42,C:/Users/ggmendez/source/repos/ConsoleApp1/ConsoleApp1/Program.cs,23_May_2020___22_49_58_341___0695e0f7-c7ae-408a-871b-5c705e1bc7d2___9981,13200800
+i,54,i++,42,C:/Users/ggmendez/source/repos/ConsoleApp1/ConsoleApp1/Program.cs,23_May_2020___22_49_58_341___0695e0f7-c7ae-408a-871b-5c705e1bc7d2___9981,13204000
+i,54,i = 0,42,C:/Users/ggmendez/source/repos/ConsoleApp1/ConsoleApp1/Program.cs,23_May_2020___22_52_09_097___894cce55-8b25-475a-9401-968abf775830___4667,13208100
+i,54,i++,42,C:/Users/ggmendez/source/repos/ConsoleApp1/ConsoleApp1/Program.cs,23_May_2020___22_52_09_097___894cce55-8b25-475a-9401-968abf775830___4667,13211300
+i,55,i = 0,42,C:/Users/ggmendez/source/repos/ConsoleApp1/ConsoleApp1/Program.cs,23_May_2020___22_49_58_341___0695e0f7-c7ae-408a-871b-5c705e1bc7d2___9981,13215600
+i,55,i++,42,C:/Users/ggmendez/source/repos/ConsoleApp1/ConsoleApp1/Program.cs,23_May_2020___22_49_58_341___0695e0f7-c7ae-408a-871b-5c705e1bc7d2___9981,13221600
+i,55,i = 0,42,C:/Users/ggmendez/source/repos/ConsoleApp1/ConsoleApp1/Program.cs,23_May_2020___22_52_09_097___894cce55-8b25-475a-9401-968abf775830___4667,13224800
+i,55,i++,42,C:/Users/ggmendez/source/repos/ConsoleApp1/ConsoleApp1/Program.cs,23_May_2020___22_52_09_097___894cce55-8b25-475a-9401-968abf775830___4667,13228900
+i,56,i = 0,42,C:/Users/ggmendez/source/repos/ConsoleApp1/ConsoleApp1/Program.cs,23_May_2020___22_49_58_341___0695e0f7-c7ae-408a-871b-5c705e1bc7d2___9981,13320800
+i,56,i++,42,C:/Users/ggmendez/source/repos/ConsoleApp1/ConsoleApp1/Program.cs,23_May_2020___22_49_58_341___0695e0f7-c7ae-408a-871b-5c705e1bc7d2___9981,13324200
+i,56,i = 0,42,C:/Users/ggmendez/source/repos/ConsoleApp1/ConsoleApp1/Program.cs,23_May_2020___22_52_09_097___894cce55-8b25-475a-9401-968abf775830___4667,13327600
+i,56,i++,42,C:/Users/ggmendez/source/repos/ConsoleApp1/ConsoleApp1/Program.cs,23_May_2020___22_52_09_097___894cce55-8b25-475a-9401-968abf775830___4667,13331900
+i,57,i = 0,42,C:/Users/ggmendez/source/repos/ConsoleApp1/ConsoleApp1/Program.cs,23_May_2020___22_49_58_341___0695e0f7-c7ae-408a-871b-5c705e1bc7d2___9981,13335100
+i,57,i++,42,C:/Users/ggmendez/source/repos/ConsoleApp1/ConsoleApp1/Program.cs,23_May_2020___22_49_58_341___0695e0f7-c7ae-408a-871b-5c705e1bc7d2___9981,13338300
+i,57,i = 0,42,C:/Users/ggmendez/source/repos/ConsoleApp1/ConsoleApp1/Program.cs,23_May_2020___22_52_09_097___894cce55-8b25-475a-9401-968abf775830___4667,13342300
+i,57,i++,42,C:/Users/ggmendez/source/repos/ConsoleApp1/ConsoleApp1/Program.cs,23_May_2020___22_52_09_097___894cce55-8b25-475a-9401-968abf775830___4667,13346900
+i,58,i = 0,42,C:/Users/ggmendez/source/repos/ConsoleApp1/ConsoleApp1/Program.cs,23_May_2020___22_49_58_341___0695e0f7-c7ae-408a-871b-5c705e1bc7d2___9981,13350000
+i,58,i++,42,C:/Users/ggmendez/source/repos/ConsoleApp1/ConsoleApp1/Program.cs,23_May_2020___22_49_58_341___0695e0f7-c7ae-408a-871b-5c705e1bc7d2___9981,13353200
+i,58,i = 0,42,C:/Users/ggmendez/source/repos/ConsoleApp1/ConsoleApp1/Program.cs,23_May_2020___22_52_09_097___894cce55-8b25-475a-9401-968abf775830___4667,13356500
+i,58,i++,42,C:/Users/ggmendez/source/repos/ConsoleApp1/ConsoleApp1/Program.cs,23_May_2020___22_52_09_097___894cce55-8b25-475a-9401-968abf775830___4667,13360200
+i,59,i = 0,42,C:/Users/ggmendez/source/repos/ConsoleApp1/ConsoleApp1/Program.cs,23_May_2020___22_49_58_341___0695e0f7-c7ae-408a-871b-5c705e1bc7d2___9981,13363500
+i,59,i++,42,C:/Users/ggmendez/source/repos/ConsoleApp1/ConsoleApp1/Program.cs,23_May_2020___22_49_58_341___0695e0f7-c7ae-408a-871b-5c705e1bc7d2___9981,13367400
+i,59,i = 0,42,C:/Users/ggmendez/source/repos/ConsoleApp1/ConsoleApp1/Program.cs,23_May_2020___22_52_09_097___894cce55-8b25-475a-9401-968abf775830___4667,13371500
+i,59,i++,42,C:/Users/ggmendez/source/repos/ConsoleApp1/ConsoleApp1/Program.cs,23_May_2020___22_52_09_097___894cce55-8b25-475a-9401-968abf775830___4667,13374600
+i,60,i = 0,42,C:/Users/ggmendez/source/repos/ConsoleApp1/ConsoleApp1/Program.cs,23_May_2020___22_49_58_341___0695e0f7-c7ae-408a-871b-5c705e1bc7d2___9981,13377800
+i,60,i++,42,C:/Users/ggmendez/source/repos/ConsoleApp1/ConsoleApp1/Program.cs,23_May_2020___22_49_58_341___0695e0f7-c7ae-408a-871b-5c705e1bc7d2___9981,13380900
+i,60,i = 0,42,C:/Users/ggmendez/source/repos/ConsoleApp1/ConsoleApp1/Program.cs,23_May_2020___22_52_09_097___894cce55-8b25-475a-9401-968abf775830___4667,13385200
+i,60,i++,42,C:/Users/ggmendez/source/repos/ConsoleApp1/ConsoleApp1/Program.cs,23_May_2020___22_52_09_097___894cce55-8b25-475a-9401-968abf775830___4667,13389100
+i,61,i = 0,42,C:/Users/ggmendez/source/repos/ConsoleApp1/ConsoleApp1/Program.cs,23_May_2020___22_49_58_341___0695e0f7-c7ae-408a-871b-5c705e1bc7d2___9981,13392300
+i,61,i++,42,C:/Users/ggmendez/source/repos/ConsoleApp1/ConsoleApp1/Program.cs,23_May_2020___22_49_58_341___0695e0f7-c7ae-408a-871b-5c705e1bc7d2___9981,13395400
+i,61,i = 0,42,C:/Users/ggmendez/source/repos/ConsoleApp1/ConsoleApp1/Program.cs,23_May_2020___22_52_09_097___894cce55-8b25-475a-9401-968abf775830___4667,13399300
+i,61,i++,42,C:/Users/ggmendez/source/repos/ConsoleApp1/ConsoleApp1/Program.cs,23_May_2020___22_52_09_097___894cce55-8b25-475a-9401-968abf775830___4667,13519500
+i,62,i = 0,42,C:/Users/ggmendez/source/repos/ConsoleApp1/ConsoleApp1/Program.cs,23_May_2020___22_49_58_341___0695e0f7-c7ae-408a-871b-5c705e1bc7d2___9981,13531200
+i,62,i++,42,C:/Users/ggmendez/source/repos/ConsoleApp1/ConsoleApp1/Program.cs,23_May_2020___22_49_58_341___0695e0f7-c7ae-408a-871b-5c705e1bc7d2___9981,13635500
+i,62,i = 0,42,C:/Users/ggmendez/source/repos/ConsoleApp1/ConsoleApp1/Program.cs,23_May_2020___22_52_09_097___894cce55-8b25-475a-9401-968abf775830___4667,13640200
+i,62,i++,42,C:/Users/ggmendez/source/repos/ConsoleApp1/ConsoleApp1/Program.cs,23_May_2020___22_52_09_097___894cce55-8b25-475a-9401-968abf775830___4667,13643500
+i,63,i = 0,42,C:/Users/ggmendez/source/repos/ConsoleApp1/ConsoleApp1/Program.cs,23_May_2020___22_49_58_341___0695e0f7-c7ae-408a-871b-5c705e1bc7d2___9981,13647000
+i,63,i++,42,C:/Users/ggmendez/source/repos/ConsoleApp1/ConsoleApp1/Program.cs,23_May_2020___22_49_58_341___0695e0f7-c7ae-408a-871b-5c705e1bc7d2___9981,13651300
+i,63,i = 0,42,C:/Users/ggmendez/source/repos/ConsoleApp1/ConsoleApp1/Program.cs,23_May_2020___22_52_09_097___894cce55-8b25-475a-9401-968abf775830___4667,13734000
+i,63,i++,42,C:/Users/ggmendez/source/repos/ConsoleApp1/ConsoleApp1/Program.cs,23_May_2020___22_52_09_097___894cce55-8b25-475a-9401-968abf775830___4667,13740800
+i,64,i = 0,42,C:/Users/ggmendez/source/repos/ConsoleApp1/ConsoleApp1/Program.cs,23_May_2020___22_49_58_341___0695e0f7-c7ae-408a-871b-5c705e1bc7d2___9981,13748300
+i,64,i++,42,C:/Users/ggmendez/source/repos/ConsoleApp1/ConsoleApp1/Program.cs,23_May_2020___22_49_58_341___0695e0f7-c7ae-408a-871b-5c705e1bc7d2___9981,13850600
+i,64,i = 0,42,C:/Users/ggmendez/source/repos/ConsoleApp1/ConsoleApp1/Program.cs,23_May_2020___22_52_09_097___894cce55-8b25-475a-9401-968abf775830___4667,13861500
+i,64,i++,42,C:/Users/ggmendez/source/repos/ConsoleApp1/ConsoleApp1/Program.cs,23_May_2020___22_52_09_097___894cce55-8b25-475a-9401-968abf775830___4667,13867400
+i,65,i = 0,42,C:/Users/ggmendez/source/repos/ConsoleApp1/ConsoleApp1/Program.cs,23_May_2020___22_49_58_341___0695e0f7-c7ae-408a-871b-5c705e1bc7d2___9981,13873400
+i,65,i++,42,C:/Users/ggmendez/source/repos/ConsoleApp1/ConsoleApp1/Program.cs,23_May_2020___22_49_58_341___0695e0f7-c7ae-408a-871b-5c705e1bc7d2___9981,13880800
+i,65,i = 0,42,C:/Users/ggmendez/source/repos/ConsoleApp1/ConsoleApp1/Program.cs,23_May_2020___22_52_09_097___894cce55-8b25-475a-9401-968abf775830___4667,13984200
+i,65,i++,42,C:/Users/ggmendez/source/repos/ConsoleApp1/ConsoleApp1/Program.cs,23_May_2020___22_52_09_097___894cce55-8b25-475a-9401-968abf775830___4667,13990800
+i,66,i = 0,42,C:/Users/ggmendez/source/repos/ConsoleApp1/ConsoleApp1/Program.cs,23_May_2020___22_49_58_341___0695e0f7-c7ae-408a-871b-5c705e1bc7d2___9981,13997100
+i,66,i++,42,C:/Users/ggmendez/source/repos/ConsoleApp1/ConsoleApp1/Program.cs,23_May_2020___22_49_58_341___0695e0f7-c7ae-408a-871b-5c705e1bc7d2___9981,14014300
+i,66,i = 0,42,C:/Users/ggmendez/source/repos/ConsoleApp1/ConsoleApp1/Program.cs,23_May_2020___22_52_09_097___894cce55-8b25-475a-9401-968abf775830___4667,14020000
+i,66,i++,42,C:/Users/ggmendez/source/repos/ConsoleApp1/ConsoleApp1/Program.cs,23_May_2020___22_52_09_097___894cce55-8b25-475a-9401-968abf775830___4667,14025900
+i,67,i = 0,42,C:/Users/ggmendez/source/repos/ConsoleApp1/ConsoleApp1/Program.cs,23_May_2020___22_49_58_341___0695e0f7-c7ae-408a-871b-5c705e1bc7d2___9981,14034800
+i,67,i++,42,C:/Users/ggmendez/source/repos/ConsoleApp1/ConsoleApp1/Program.cs,23_May_2020___22_49_58_341___0695e0f7-c7ae-408a-871b-5c705e1bc7d2___9981,14041000
+i,67,i = 0,42,C:/Users/ggmendez/source/repos/ConsoleApp1/ConsoleApp1/Program.cs,23_May_2020___22_52_09_097___894cce55-8b25-475a-9401-968abf775830___4667,14047000
+i,67,i++,42,C:/Users/ggmendez/source/repos/ConsoleApp1/ConsoleApp1/Program.cs,23_May_2020___22_52_09_097___894cce55-8b25-475a-9401-968abf775830___4667,14052700
+i,68,i = 0,42,C:/Users/ggmendez/source/repos/ConsoleApp1/ConsoleApp1/Program.cs,23_May_2020___22_49_58_341___0695e0f7-c7ae-408a-871b-5c705e1bc7d2___9981,14059600
+i,68,i++,42,C:/Users/ggmendez/source/repos/ConsoleApp1/ConsoleApp1/Program.cs,23_May_2020___22_49_58_341___0695e0f7-c7ae-408a-871b-5c705e1bc7d2___9981,14065900
+i,68,i = 0,42,C:/Users/ggmendez/source/repos/ConsoleApp1/ConsoleApp1/Program.cs,23_May_2020___22_52_09_097___894cce55-8b25-475a-9401-968abf775830___4667,14085800
+i,68,i++,42,C:/Users/ggmendez/source/repos/ConsoleApp1/ConsoleApp1/Program.cs,23_May_2020___22_52_09_097___894cce55-8b25-475a-9401-968abf775830___4667,14091500
+i,69,i = 0,42,C:/Users/ggmendez/source/repos/ConsoleApp1/ConsoleApp1/Program.cs,23_May_2020___22_49_58_341___0695e0f7-c7ae-408a-871b-5c705e1bc7d2___9981,14098600
+i,69,i++,42,C:/Users/ggmendez/source/repos/ConsoleApp1/ConsoleApp1/Program.cs,23_May_2020___22_49_58_341___0695e0f7-c7ae-408a-871b-5c705e1bc7d2___9981,14181700
+i,69,i = 0,42,C:/Users/ggmendez/source/repos/ConsoleApp1/ConsoleApp1/Program.cs,23_May_2020___22_52_09_097___894cce55-8b25-475a-9401-968abf775830___4667,14189900
+i,69,i++,42,C:/Users/ggmendez/source/repos/ConsoleApp1/ConsoleApp1/Program.cs,23_May_2020___22_52_09_097___894cce55-8b25-475a-9401-968abf775830___4667,14193500
+i,70,i = 0,42,C:/Users/ggmendez/source/repos/ConsoleApp1/ConsoleApp1/Program.cs,23_May_2020___22_49_58_341___0695e0f7-c7ae-408a-871b-5c705e1bc7d2___9981,14197800
+i,70,i++,42,C:/Users/ggmendez/source/repos/ConsoleApp1/ConsoleApp1/Program.cs,23_May_2020___22_49_58_341___0695e0f7-c7ae-408a-871b-5c705e1bc7d2___9981,14202100
+i,70,i = 0,42,C:/Users/ggmendez/source/repos/ConsoleApp1/ConsoleApp1/Program.cs,23_May_2020___22_52_09_097___894cce55-8b25-475a-9401-968abf775830___4667,14284700
+i,70,i++,42,C:/Users/ggmendez/source/repos/ConsoleApp1/ConsoleApp1/Program.cs,23_May_2020___22_52_09_097___894cce55-8b25-475a-9401-968abf775830___4667,14295500
+i,71,i = 0,42,C:/Users/ggmendez/source/repos/ConsoleApp1/ConsoleApp1/Program.cs,23_May_2020___22_49_58_341___0695e0f7-c7ae-408a-871b-5c705e1bc7d2___9981,14299200
+i,71,i++,42,C:/Users/ggmendez/source/repos/ConsoleApp1/ConsoleApp1/Program.cs,23_May_2020___22_49_58_341___0695e0f7-c7ae-408a-871b-5c705e1bc7d2___9981,14302600
+i,71,i = 0,42,C:/Users/ggmendez/source/repos/ConsoleApp1/ConsoleApp1/Program.cs,23_May_2020___22_52_09_097___894cce55-8b25-475a-9401-968abf775830___4667,14305900
+i,71,i++,42,C:/Users/ggmendez/source/repos/ConsoleApp1/ConsoleApp1/Program.cs,23_May_2020___22_52_09_097___894cce55-8b25-475a-9401-968abf775830___4667,14310800
+i,72,i = 0,42,C:/Users/ggmendez/source/repos/ConsoleApp1/ConsoleApp1/Program.cs,23_May_2020___22_49_58_341___0695e0f7-c7ae-408a-871b-5c705e1bc7d2___9981,14314200
+i,72,i++,42,C:/Users/ggmendez/source/repos/ConsoleApp1/ConsoleApp1/Program.cs,23_May_2020___22_49_58_341___0695e0f7-c7ae-408a-871b-5c705e1bc7d2___9981,14317400
+i,72,i = 0,42,C:/Users/ggmendez/source/repos/ConsoleApp1/ConsoleApp1/Program.cs,23_May_2020___22_52_09_097___894cce55-8b25-475a-9401-968abf775830___4667,14320700
+i,72,i++,42,C:/Users/ggmendez/source/repos/ConsoleApp1/ConsoleApp1/Program.cs,23_May_2020___22_52_09_097___894cce55-8b25-475a-9401-968abf775830___4667,14324700
+i,73,i = 0,42,C:/Users/ggmendez/source/repos/ConsoleApp1/ConsoleApp1/Program.cs,23_May_2020___22_49_58_341___0695e0f7-c7ae-408a-871b-5c705e1bc7d2___9981,14328000
+i,73,i++,42,C:/Users/ggmendez/source/repos/ConsoleApp1/ConsoleApp1/Program.cs,23_May_2020___22_49_58_341___0695e0f7-c7ae-408a-871b-5c705e1bc7d2___9981,14332000
+i,73,i = 0,42,C:/Users/ggmendez/source/repos/ConsoleApp1/ConsoleApp1/Program.cs,23_May_2020___22_52_09_097___894cce55-8b25-475a-9401-968abf775830___4667,14336000
+i,73,i++,42,C:/Users/ggmendez/source/repos/ConsoleApp1/ConsoleApp1/Program.cs,23_May_2020___22_52_09_097___894cce55-8b25-475a-9401-968abf775830___4667,14339400
+i,74,i = 0,42,C:/Users/ggmendez/source/repos/ConsoleApp1/ConsoleApp1/Program.cs,23_May_2020___22_49_58_341___0695e0f7-c7ae-408a-871b-5c705e1bc7d2___9981,14342800
+i,74,i++,42,C:/Users/ggmendez/source/repos/ConsoleApp1/ConsoleApp1/Program.cs,23_May_2020___22_49_58_341___0695e0f7-c7ae-408a-871b-5c705e1bc7d2___9981,14346100
+i,74,i = 0,42,C:/Users/ggmendez/source/repos/ConsoleApp1/ConsoleApp1/Program.cs,23_May_2020___22_52_09_097___894cce55-8b25-475a-9401-968abf775830___4667,14350000
+i,74,i++,42,C:/Users/ggmendez/source/repos/ConsoleApp1/ConsoleApp1/Program.cs,23_May_2020___22_52_09_097___894cce55-8b25-475a-9401-968abf775830___4667,14353300
+j,20,j = 20,50,C:/Users/ggmendez/source/repos/ConsoleApp1/ConsoleApp1/Program.cs,23_May_2020___22_50_03_189___d508a426-449d-454b-96fa-defa10a177af___6263,14368000

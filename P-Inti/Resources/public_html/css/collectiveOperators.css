@@ -1,0 +1,39 @@
+@font-face {
+  font-family: 'icomoon';
+  src:  url('fonts/collectiveOperators.eot?1vcgpn');
+  src:  url('fonts/collectiveOperators.eot?1vcgpn#iefix') format('embedded-opentype'),
+    url('fonts/collectiveOperators.ttf?1vcgpn') format('truetype'),
+    url('fonts/collectiveOperators.woff?1vcgpn') format('woff'),
+    url('fonts/collectiveOperators.svg?1vcgpn#icomoon') format('svg');
+  font-weight: normal;
+  font-style: normal;
+}
+
+[class^="collectiveOperator-"], [class*=" collectiveOperator-"] {
+  /* use !important to prevent issues with browser extensions that change fonts */
+  font-family: 'icomoon' !important;
+  speak: none;
+  font-style: normal;
+  font-weight: normal;
+  font-variant: normal;
+  text-transform: none;
+  line-height: 1;
+
+  /* Better Font Rendering =========== */
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+.collectiveOperator-intersection:before {
+  content: "\e1700";
+}
+.collectiveOperator-concat:before {
+  content: "\e1701";
+}
+.collectiveOperator-difference:before {
+  content: "\e1702";
+}
+.collectiveOperator-union:before {
+  content: "\e1703";
+}
+

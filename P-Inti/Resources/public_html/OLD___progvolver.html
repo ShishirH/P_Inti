@@ -1,0 +1,284 @@
+﻿<!DOCTYPE html>
+<html style="overflow-x: no-display;">
+    <head>
+
+        <title>ProgVolver</title>
+
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+        <meta name="apple-mobile-web-app-capable" content="yes" />
+        <meta name="apple-mobile-web-app-status-bar-style" content="black" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+
+        <script type="text/javascript">
+            CefSharp.BindObjectAsync("jsHandler", "jsHandler");
+        </script>
+
+        <link rel="stylesheet" type="text/css" href="./css/monserratFont.css">
+        <link rel="stylesheet" type="text/css" href="./css/main.css" />
+        <link rel="stylesheet" type="text/css" href="./css/kickstart.css" media="all" />
+        <link rel="stylesheet" type="text/css" href="./style.css" media="all" />
+        <link rel="stylesheet" type="text/css" href="./css/locators.css" />
+        <link rel="stylesheet" type="text/css" href="./css/operators.css" />
+        <link rel="stylesheet" type="text/css" href="./css/functions.css" />
+        <link rel="stylesheet" type="text/css" href="./css/collections.css" />
+        <link rel="stylesheet" type="text/css" href="./css/values.css" />
+        <link rel="stylesheet" type="text/css" href="./css/marks.css" />
+        <link rel="stylesheet" type="text/css" href="./css/generators.css" />
+        <link rel="stylesheet" type="text/css" href="./css/rangeGenerator.css" />
+        <link rel="stylesheet" type="text/css" href="./css/collectiveOperators.css" />
+        <link rel="stylesheet" type="text/css" href="./css/customDataTypes.css" />
+        <link rel="stylesheet" type="text/css" href="./css/fonts/fontawesome/css/font-awesome.css" media="all" />
+        <link rel="stylesheet" type="text/css" href="./css/fonts/font-awesome-4.4.0/css/font-awesome.css" media="all" />
+        <link rel="stylesheet" type="text/css" href="./css/alertify.core.css" />
+        <link rel="stylesheet" type="text/css" href="./css/alertify.default.css" />
+        <link rel="stylesheet" type="text/css" href="./css/tooltipster.bundle.css" />
+        <link rel="stylesheet" type="text/css" href="./css/tooltipster-sideTip-borderless.min.css" />
+        <link rel="stylesheet" type="text/css" href="./css/tooltipster-sideTip-punk.min.css" />
+        <link rel="stylesheet" type="text/css" href="./css/workshop.css" />
+        <link rel="stylesheet" type="text/css" href="./css/spectrum.css" />
+
+        <script type="text/javascript" src="./js/jquery-1.10.2.js"></script>
+        <script type="text/javascript" src="./js/jquery.ajaxfileupload.js"></script>
+        <script type="text/javascript" src="./js/jquery-ui-1.10.4.min.js"></script>
+        <script type="text/javascript" src="./js/jquery.path.js"></script>
+        <script type="text/javascript" src="./js/kickstart.js"></script>
+        <script type="text/javascript" src="./js/fabric.js"></script>
+        <script type="text/javascript" src="./js/graphlib.min.js"></script>
+        <script type="text/javascript" src="./js/undomanager.js"></script>
+        <script type="text/javascript" src="./js/iVoLVER.js"></script>
+        <script type="text/javascript" src="./js/moment.js"></script>
+        <script type="text/javascript" src="./js/alertify.js"></script>
+        <script type="text/javascript" src="./js/tooltipster.core.min.js"></script>
+        <script type="text/javascript" src="./js/tooltipster.bundle.min.js"></script>
+        <script type="text/javascript" src="./js/jquery.ui.touch-punch.min.js"></script>
+        <script type="text/javascript" src="./js/generalFunctions.js"></script>
+        <script type="text/javascript" src="./js/globals.js"></script>
+        <script type="text/javascript" src="./js/classes/Project.js"></script>
+        <script type="text/javascript" src="./js/interaction/canvasEvents.js"></script>
+        <script type="text/javascript" src="./js/interaction/objectsEvents.js"></script>
+        <script type="text/javascript" src="./js/interaction/widgetsEvents.js"></script>
+        <script type="text/javascript" src="./js/hammer.min.js"></script>
+        <script type="text/javascript" src="./js/javascript.util.js"></script>
+        <script type="text/javascript" src="./js/jsts.js"></script>
+        <script type="text/javascript" src="./js/simplify.js"></script>
+        <script type="text/javascript" src="./js/classes/Connector.js"></script>
+        <script type="text/javascript" src="./js/classes/iconPaths.js"></script>
+        <script type="text/javascript" src="./js/colors.js"></script>
+        <script type="text/javascript" src="./js/jsGradient.js"></script>
+        <script type="text/javascript" src="./js/FileSaver.min.js"></script>
+        <script type="text/javascript" src="./js/math.min.js"></script>
+        <script type="text/javascript" src="./js/colormix-1.0.0.min.js"></script>
+        <script type="text/javascript" src="./js/h5utils.js"></script>
+        <script type="text/javascript" src="./js/jquery.xdomainajax.js"></script>
+        <script type="text/javascript" src="./js/jquery.resize.js"></script>
+        <script type="text/javascript" src="./js/jquery.drag.resize.js"></script>
+        <script type="text/javascript" src="./js/toPathTransformations.js"></script>
+        <script type="text/javascript" src="./js/path-data-polyfill.js"></script>
+        <script type="text/javascript" src="./js/clipper_unminified.js"></script>
+        <script type="text/javascript" src="./js/spectrum.js"></script>
+        <script type="text/javascript" src="./js/workshop.js"></script>
+        <script type="text/javascript" src="./js/jszip.min.js"></script>
+        <script type="text/javascript" src="./js/pathseg.js"></script>
+        <script type="text/javascript" src="./js/progvolver.js"></script>
+
+    </head>
+
+    <body oncontextmenu="return false;" onresize="adjustCanvasDimensions(canvas);">			
+
+
+        <!-- HORIZONTAL MENU -->
+        <ul id="theMenu" class="menu nonSelection">
+
+            <!-- IMPORTING -->
+            <!--            <li><a class="description" title="Load Image" href="javascript:void(0);" onclick="onLoad();"><i class="icon-pictu                            re fa-2x"></i></a></li>
+                        <li> <input type="file" accept=".jpeg, .png, .jpg"  id="imageFileInput" name="someFile" onchange="handleImageFiles(this.files)" style="visibility:hidden;position:absolute;top:                -50;left:-50"/></li>-->
+            <li class="verticalLeftDivider"><a onclick="readSVGFileAsData()"><i class="fa                 fa-file-code-o fa-2x"></i></a></li>
+            <li> <input type="file" accept=".svg" id="dataSVGFileInput" name="someSVGDataFile" onchange="handleSVGFiles(this, this.files, false)" style="visibility:hidden;position:absolute;top:-50;left:-50"/></li>
+
+            <!--            <li class="verticalLeftDivider"><a href="javascript:loadDatafil                                e();"><i class="icon-table fa-2x"></i></a></li>
+                        <li> <input type="file" accept=".csv, .json" id="dataimageFileInput" name="someDatafile" onchange="handleDatafiles(this.files)" style="visibility:hidden                    ;position:absolute;top:-50;left:-50"/></li>-->
+
+            <li class="verticalLeftDivider verticalRightDivider verticalRightDivider2"><a href="javascript:void(0);" onclick="window.location.reload(false);"><i id="openWebPageButton" class="fa fa-refresh fa-2x"></i></a></li>
+
+            <!-- ZOOM -->
+            <li class=""><a onclick="zoomIn()"><i class="icon-zoom-in fa-2x"></i></a></li>
+            <li class="verticalLeftDivider verticalRightDivider verticalRightDivider2"><a onclick="zoomOut()"><i class="icon-zoom-out fa-2x"></i></a></li>
+
+            <!-- DRAGGING & PANNING MODES -->
+            <li id="panningModeButton" onmousedown='modeButtonClicked(this);' draggable="false" class="mode"><a><i class="fa fa-hand-paper-o fa-2x"> </i> </a></li>
+            <li class="verticalLeftDivider mode" id="disconnectingModeButton" onmousedown='modeButtonClicked(this);' draggable="false"><a><i class="fa fa-unlink fa-2x"> </i> </a></li>
+            <li class="verticalLeftDivider verticalRightDivider verticalRightDivider2 mode" id="squaredSelectionButton" onmousedown='modeButtonClicked(this);' draggable="false"><a><i class="fa fa-object-group fa-2x"> </i> </a></li>
+
+            <!-- CONNECTORS VISIBILITY -->
+            <li class="verticalLeftDivider verticalRightDivider verticalRightDivider2 mode" draggable="false"><a id="connectorsVisibilityButton" onmousedown="toggleConnectorsVisibility(this);"><i class="fa fa-eye fa-2x"></i></a></li>            
+
+            <!-- OPERATIONS ON OBJECTS -->
+            <li class="mode verticalLeftDivider" onmousedown='duplicateObject();' draggable="false"><a><i class="fa fa-clone fa-flip-horizontal fa-2x clicMenu"> </i> </a></li>
+            <li class="mode verticalLeftDivider" onmousedown='expandMarks();' draggable="false"><a><i class="fa fa-angle-double-down fa-2x clicMenu"> </i> </a></li>
+            <li class="mode verticalLeftDivider" onmousedown='compressMarks();' draggable="false"><a><i class="fa fa-angle-double-up fa-2x clicMenu"> </i> </a></li>
+            <li class="verticalLeftDivider verticalRightDivider verticalRightDivider2 mode" onmousedown='deleteObject();' draggable="false"><a><i class="fa fa-remove fa-2x"> </i> </a></li>
+            <li class="verticalLeftDivider verticalRightDivider verticalRightDivider2"><a href="javascript:void(0);" onclick="deleteAllObjects();"><i class="fa fa-trash-o fa-2x"></i></a></li>
+
+            <!-- FILE MENU -->
+            <li id="fileMenu" onclick="showMenu(this);" class="verticalRightDivider verticalRightDivider2">
+                <a>
+                    <i class="fa fa-file-o fa-2x"></i>
+                </a>
+                <ul id="fileMenuUL">
+                    <li><a href="javascript:void(0);" onclick="saveProject();"><i id="saveProjectElement" class="fa-save icon-large"></i> Save project</a></li>
+                    <li><a href="javascript:loadiVoLVERProject();"><i class="fa-folder-open-o icon-large"></i> Open project</a></li>
+                    <li> <input type="file" accept="application/xml" id="dataprojectFileInput" name="someProjectfile" onchange="handleDatafiles(this.files)" style="visibility:hidden;position:absolute;top:-50;left:-50"/></li>                    
+                    <li class="divider"><a href="javascript:void(0);"><i class="fa-download icon-large"></i> Export canvas</a>
+                        <ul>
+                            <li><a href="javascript:void(0);" onclick="saveCanvas();"><i id="saveCanvasElement" class="fa-file-code-o icon-large"></i> As SVG</a></li>
+                            <li><a href="javascript:void(0);" onclick="saveCanvas();"><i id="saveCanvasElement" class="fa-file-image-o icon-large"></i> As PNG</a></li>
+                        </ul>
+                    </li>
+                </ul>
+            </li>
+
+            <!-- RIGHT PANEL HANDLER -->
+            <li class="verticalLeftDivider2" style="float: right;"><a id="toggleAdditionalToolsVisibility" href="javascript:void(0);" onclick="togglePanelVisibility('rightPanel');"><i class="fa fa-chevron-right fa-2x"></i></a></li>
+        </ul>
+        <div class="grid">
+            <div style="width: 100%" id="mainContainer">
+                <div class="rightPanel nonSelection" id="rightPanel" draggable="false"></div>
+                <section id="drop">
+                    <div id="canvasContainer" class="canvasStyle">
+                        <canvas id="theCanvas"></canvas>
+                    </div>
+                </section>
+            </div>
+        </div>
+
+        <script type="text/javascript">
+            var canvas = iVoLVER.init();
+        </script>
+
+        <script type="text/javascript">
+
+            /*********************************************************************/
+            /***********        WRITE YOUR CODE IN THIS SECTION        ***********/
+            /*********************************************************************/
+
+
+
+
+            var rect = new fabric.Rect({
+                width: 100, height: 100, left: 10, top: 10, fill: 'red', originX: 'center', originY: 'center'
+            });
+            var circle = new fabric.Circle({
+                left: 150, top: 10, fill: 'green', radius: 50, originX: 'center', originY: 'center'
+            });
+            var group = new fabric.Group([rect, circle], {
+                left: 500,
+                top: 500,
+                subTargetCheck: true
+            });
+            canvas.add(group);
+            group.on('mousedown', onMouseDown);
+            group.on('moving', onMouseMoving);
+            group.on('mouseup', onMouseUp);
+
+            function onMouseUp(option) {
+                var theGroup = option.target;
+                theGroup.lockMovementX = false;
+                theGroup.lockMovementY = false;
+            }
+
+            function onMouseDown(option) {
+                var theGroup = option.target;
+                var groupCenter = theGroup.getPointByOrigin('center', 'center');
+                theGroup.originalCenter = groupCenter;
+                theGroup.subtarget = option.subTargets[0];
+                if (theGroup.subtarget) {
+                }
+                option.subTargets[0] && console.log(option.subTargets[0].type)
+            }
+
+            function onMouseMoving(option) {
+
+                var theGroup = option.target;
+                var subtarget = theGroup.subtarget;
+
+                theGroup.lockMovementX = true;
+                theGroup.lockMovementY = true;
+
+                if (subtarget) {
+
+                    var left = subtarget.get('left');
+                    var top = subtarget.get('top');
+
+
+                    var subtargetCenter = subtarget.getPointByOrigin('center', 'center');
+
+                    console.log("Moving group from: " + option.target.subtarget.type);
+
+                    subtarget.set('left', left + option.e.movementX);
+                    subtarget.set('top', top + option.e.movementY);
+
+                    circle.set('left', circle.get('left') + option.e.movementX / 2);
+                    circle.set('top', circle.get('top') + option.e.movementY / 2);
+
+
+                    theGroup.setPositionByOrigin(theGroup.originalCenter, 'center', 'center');
+
+
+
+                    subtarget.setCoords();
+
+                    group._restoreObjectsState();
+                    fabric.util.resetObjectTransform(group);
+                    group._calcBounds();
+                    group._updateObjectsCoords();
+                    group.setCoords();
+                    group.dirty = true;
+
+
+
+                    /*console.log(subtarget.left);
+                     console.log(subtarget.top);*/
+
+                } else {
+                    console.log("Moving group");
+                }
+
+                theGroup.lockMovementX = false;
+                theGroup.lockMovementY = false;
+
+            }
+
+//            canvas.renderAll();
+
+            // You can write fabric code here:
+//            var myCircle = new fabric.Circle({
+//             radius: 30,
+//             fill: 'rgb(125,14,223)',
+//             top: 100,
+//             left: 200
+//             });
+//             canvas.add(myCircle);
+//             
+//             // or iVoLVER code:
+//             iVoLVER.data.registerType({
+//             name: 'Point',
+//             iconPath: pointDataTypeIcon,
+//             fillColor: '#00BDFF',
+//             iconClass: 'workshop-point',
+//             getDisplayableString: function () {
+//             return '(' + this.x + ',' + this.y + ')';
+//             },
+//             defaults: {x: 0, y: 0},
+//             onEditing: {
+//             x: {type: 'number', divStyle: 'float: left; margin-top: 2px;'},
+//             y: {type: 'number'}
+//             }
+//             });
+
+        </script>
+    </body>
+</html>
+
+
+

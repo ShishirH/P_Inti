@@ -1,0 +1,636 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="15.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <MinimumVisualStudioVersion>16.0</MinimumVisualStudioVersion>
+    <VSToolsPath Condition="'$(VSToolsPath)' == ''">$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)</VSToolsPath>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|x86'">
+    <DebugSymbols>true</DebugSymbols>
+    <OutputPath>bin\x86\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <DebugType>full</DebugType>
+    <PlatformTarget>x86</PlatformTarget>
+    <LangVersion>7.3</LangVersion>
+    <ErrorReport>prompt</ErrorReport>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release|x86'">
+    <OutputPath>bin\x86\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <Optimize>true</Optimize>
+    <DebugType>pdbonly</DebugType>
+    <PlatformTarget>x86</PlatformTarget>
+    <LangVersion>7.3</LangVersion>
+    <ErrorReport>prompt</ErrorReport>
+  </PropertyGroup>
+	<PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|x64'">
+		<DebugSymbols>true</DebugSymbols>
+		<OutputPath>bin\x64\Debug\</OutputPath>
+		<DefineConstants>DEBUG;TRACE</DefineConstants>
+		<DebugType>full</DebugType>
+		<PlatformTarget>x86</PlatformTarget>
+		<LangVersion>7.3</LangVersion>
+		<ErrorReport>prompt</ErrorReport>
+	</PropertyGroup>
+	<Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <SchemaVersion>2.0</SchemaVersion>
+    <ProjectTypeGuids>{82b43b9b-a64c-4715-b499-d71e9ca2bd60};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
+    <ProjectGuid>{76561CBC-53B7-4AA4-B967-0C8845F1551D}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>P_Inti</RootNamespace>
+    <AssemblyName>P-Inti</AssemblyName>
+    <TargetFrameworkVersion>v4.7.2</TargetFrameworkVersion>
+    <GeneratePkgDefFile>true</GeneratePkgDefFile>
+    <UseCodebase>true</UseCodebase>
+    <IncludeAssemblyInVSIXContainer>true</IncludeAssemblyInVSIXContainer>
+    <IncludeDebugSymbolsInVSIXContainer>false</IncludeDebugSymbolsInVSIXContainer>
+    <IncludeDebugSymbolsInLocalVSIXDeployment>false</IncludeDebugSymbolsInLocalVSIXDeployment>
+    <CopyBuildOutputToOutputDirectory>true</CopyBuildOutputToOutputDirectory>
+    <CopyOutputSymbolsToOutputDirectory>true</CopyOutputSymbolsToOutputDirectory>
+    <StartAction>Program</StartAction>
+    <StartProgram Condition="'$(DevEnvDir)' != ''">$(DevEnvDir)devenv.exe</StartProgram>
+    <StartArguments>/rootsuffix Exp</StartArguments>
+  </PropertyGroup>
+  <ItemGroup>
+    <Compile Include="BREAKPOINT_EDIT_OPERATION.cs" />
+    <Compile Include="BREAKPOINT_FILTER_TYPE.cs" />
+    <Compile Include="CodeAdornment.cs" />
+    <Compile Include="CodeAdornmentTextViewCreationListener.cs" />
+    <Compile Include="CodeAnalyzer.cs" />
+    <Compile Include="Controls\RelativePositionPanel.cs" />
+    <Compile Include="DataTipIdentity.cs" />
+    <Compile Include="DEBUGGER_OPTIONS.cs" />
+    <Compile Include="DEBUGGER_STRING_OPTIONS.cs" />
+    <Compile Include="EBreakpointType.cs" />
+    <Compile Include="IBreakpoint.cs" />
+    <Compile Include="IBreakpointEvents.cs" />
+    <Compile Include="IBreakpointManager.cs" />
+    <Compile Include="IDataTipEvents.cs" />
+    <Compile Include="IDataTipManager.cs" />
+    <Compile Include="IDebuggerInternal11.cs" />
+    <Compile Include="IDebuggerInternalEvents.cs" />
+    <Compile Include="IMAGEINFO_TYPE.cs" />
+    <Compile Include="JsHandler.cs" />
+    <Compile Include="LineText.cs" />
+    <Compile Include="MyWindow.cs" />
+    <Compile Include="MyWindowCommand.cs" />
+    <Compile Include="MyWindowControl.xaml.cs">
+      <DependentUpon>MyWindowControl.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="ProgvolverEditorContextualMenu.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="P_IntiPackage.cs" />
+    <Compile Include="Resources\Logger.cs" />
+    <Compile Include="SignalGlyphFactory.cs" />
+    <Compile Include="SignalGlyphFactoryProvider.cs" />
+    <Compile Include="SignalGlyphTag.cs" />
+    <Compile Include="SignalGlyphTaggerProvider.cs" />
+    <Compile Include="Taggers.cs" />
+    <Compile Include="Utils.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="cef.pak">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      <IncludeInVSIX>true</IncludeInVSIX>
+    </Content>
+    <Content Include="cef_100_percent.pak">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      <IncludeInVSIX>true</IncludeInVSIX>
+    </Content>
+    <Content Include="cef_200_percent.pak">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      <IncludeInVSIX>true</IncludeInVSIX>
+    </Content>
+    <Content Include="cef_extensions.pak">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      <IncludeInVSIX>true</IncludeInVSIX>
+    </Content>
+    <Content Include="icudtl.dat">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      <IncludeInVSIX>true</IncludeInVSIX>
+    </Content>
+    <Content Include="natives_blob.bin">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      <IncludeInVSIX>true</IncludeInVSIX>
+    </Content>
+    <None Include="Resources\nbproject\private\private.properties" />
+    <None Include="Resources\nbproject\project.properties" />
+    <None Include="Resources\photothumb.db" />
+    <None Include="Resources\public_html\css\fonts\7Segments.otf" />
+    <None Include="Resources\public_html\css\fonts\collectionIcons.eot" />
+    <None Include="Resources\public_html\css\fonts\collectionIcons.ttf" />
+    <None Include="Resources\public_html\css\fonts\collectionIcons.woff" />
+    <None Include="Resources\public_html\css\fonts\collectiveOperators.eot" />
+    <None Include="Resources\public_html\css\fonts\collectiveOperators.ttf" />
+    <None Include="Resources\public_html\css\fonts\collectiveOperators.woff" />
+    <None Include="Resources\public_html\css\fonts\Cubica.ttf" />
+    <None Include="Resources\public_html\css\fonts\customDataTypes.eot" />
+    <None Include="Resources\public_html\css\fonts\customDataTypes.ttf" />
+    <None Include="Resources\public_html\css\fonts\customDataTypes.woff" />
+    <None Include="Resources\public_html\css\fonts\dateRangeIcon.eot" />
+    <None Include="Resources\public_html\css\fonts\dateRangeIcon.ttf" />
+    <None Include="Resources\public_html\css\fonts\dateRangeIcon.woff" />
+    <None Include="Resources\public_html\css\fonts\FatFont7.ttf" />
+    <None Include="Resources\public_html\css\fonts\font-awesome-4.4.0\css\font-awesome.css.map" />
+    <None Include="Resources\public_html\css\fonts\font-awesome-4.4.0\fonts\fontawesome-webfont.eot" />
+    <None Include="Resources\public_html\css\fonts\font-awesome-4.4.0\fonts\fontawesome-webfont.ttf" />
+    <None Include="Resources\public_html\css\fonts\font-awesome-4.4.0\fonts\fontawesome-webfont.woff" />
+    <None Include="Resources\public_html\css\fonts\font-awesome-4.4.0\fonts\fontawesome-webfont.woff2" />
+    <None Include="Resources\public_html\css\fonts\font-awesome-4.4.0\fonts\FontAwesome.otf" />
+    <None Include="Resources\public_html\css\fonts\font-awesome-4.4.0\less\animated.less" />
+    <None Include="Resources\public_html\css\fonts\font-awesome-4.4.0\less\bordered-pulled.less" />
+    <None Include="Resources\public_html\css\fonts\font-awesome-4.4.0\less\core.less" />
+    <None Include="Resources\public_html\css\fonts\font-awesome-4.4.0\less\fixed-width.less" />
+    <None Include="Resources\public_html\css\fonts\font-awesome-4.4.0\less\font-awesome.less" />
+    <None Include="Resources\public_html\css\fonts\font-awesome-4.4.0\less\icons.less" />
+    <None Include="Resources\public_html\css\fonts\font-awesome-4.4.0\less\larger.less" />
+    <None Include="Resources\public_html\css\fonts\font-awesome-4.4.0\less\list.less" />
+    <None Include="Resources\public_html\css\fonts\font-awesome-4.4.0\less\mixins.less" />
+    <None Include="Resources\public_html\css\fonts\font-awesome-4.4.0\less\path.less" />
+    <None Include="Resources\public_html\css\fonts\font-awesome-4.4.0\less\rotated-flipped.less" />
+    <None Include="Resources\public_html\css\fonts\font-awesome-4.4.0\less\stacked.less" />
+    <None Include="Resources\public_html\css\fonts\font-awesome-4.4.0\less\variables.less" />
+    <None Include="Resources\public_html\css\fonts\font-awesome-4.4.0\scss\font-awesome.scss" />
+    <None Include="Resources\public_html\css\fonts\font-awesome-4.4.0\scss\_animated.scss" />
+    <None Include="Resources\public_html\css\fonts\font-awesome-4.4.0\scss\_bordered-pulled.scss" />
+    <None Include="Resources\public_html\css\fonts\font-awesome-4.4.0\scss\_core.scss" />
+    <None Include="Resources\public_html\css\fonts\font-awesome-4.4.0\scss\_fixed-width.scss" />
+    <None Include="Resources\public_html\css\fonts\font-awesome-4.4.0\scss\_icons.scss" />
+    <None Include="Resources\public_html\css\fonts\font-awesome-4.4.0\scss\_larger.scss" />
+    <None Include="Resources\public_html\css\fonts\font-awesome-4.4.0\scss\_list.scss" />
+    <None Include="Resources\public_html\css\fonts\font-awesome-4.4.0\scss\_mixins.scss" />
+    <None Include="Resources\public_html\css\fonts\font-awesome-4.4.0\scss\_path.scss" />
+    <None Include="Resources\public_html\css\fonts\font-awesome-4.4.0\scss\_rotated-flipped.scss" />
+    <None Include="Resources\public_html\css\fonts\font-awesome-4.4.0\scss\_stacked.scss" />
+    <None Include="Resources\public_html\css\fonts\font-awesome-4.4.0\scss\_variables.scss" />
+    <None Include="Resources\public_html\css\fonts\fontawesome\font\fontawesome-webfont.eot" />
+    <None Include="Resources\public_html\css\fonts\fontawesome\font\fontawesome-webfont.ttf" />
+    <None Include="Resources\public_html\css\fonts\fontawesome\font\fontawesome-webfont.woff" />
+    <None Include="Resources\public_html\css\fonts\fontawesome\font\FontAwesome.otf" />
+    <None Include="Resources\public_html\css\fonts\functionIcons.eot" />
+    <None Include="Resources\public_html\css\fonts\functionIcons.ttf" />
+    <None Include="Resources\public_html\css\fonts\functionIcons.woff" />
+    <None Include="Resources\public_html\css\fonts\generatorIcons.eot" />
+    <None Include="Resources\public_html\css\fonts\generatorIcons.ttf" />
+    <None Include="Resources\public_html\css\fonts\generatorIcons.woff" />
+    <None Include="Resources\public_html\css\fonts\Gracilia.ttf" />
+    <None Include="Resources\public_html\css\fonts\icomoon.eot" />
+    <None Include="Resources\public_html\css\fonts\icomoon.ttf" />
+    <None Include="Resources\public_html\css\fonts\icomoon.woff" />
+    <None Include="Resources\public_html\css\fonts\locators.eot" />
+    <None Include="Resources\public_html\css\fonts\locators.ttf" />
+    <None Include="Resources\public_html\css\fonts\locators.woff" />
+    <None Include="Resources\public_html\css\fonts\markIcons.eot" />
+    <None Include="Resources\public_html\css\fonts\markIcons.ttf" />
+    <None Include="Resources\public_html\css\fonts\markIcons.woff" />
+    <None Include="Resources\public_html\css\fonts\Miguta.otf" />
+    <None Include="Resources\public_html\css\fonts\operatorsIcons.eot" />
+    <None Include="Resources\public_html\css\fonts\operatorsIcons.ttf" />
+    <None Include="Resources\public_html\css\fonts\operatorsIcons.woff" />
+    <None Include="Resources\public_html\css\fonts\rangeGenerator.eot" />
+    <None Include="Resources\public_html\css\fonts\rangeGenerator.ttf" />
+    <None Include="Resources\public_html\css\fonts\rangeGenerator.woff" />
+    <None Include="Resources\public_html\css\fonts\Rotunda.otf" />
+    <None Include="Resources\public_html\css\fonts\valuesIcons.eot" />
+    <None Include="Resources\public_html\css\fonts\valuesIcons.ttf" />
+    <None Include="Resources\public_html\css\fonts\valuesIcons.woff" />
+    <None Include="Resources\public_html\css\fonts\workshop.ttf" />
+    <None Include="Resources\public_html\css\fonts\workshop.woff" />
+    <None Include="Resources\public_html\css\selection.json" />
+    <None Include="Resources\public_html\js\contextMenu\font\context-menu-icons.eot" />
+    <None Include="Resources\public_html\js\contextMenu\font\context-menu-icons.ttf" />
+    <None Include="Resources\public_html\js\contextMenu\font\context-menu-icons.woff" />
+    <None Include="Resources\public_html\js\contextMenu\font\context-menu-icons.woff2" />
+    <None Include="Resources\public_html\js\contextMenu\jquery.contextMenu.min.css.map" />
+    <None Include="Resources\public_html\js\contextMenu\jquery.contextMenu.min.js.map" />
+    <None Include="Resources\public_html\js\graphlib.jscsrc" />
+    <None Include="Resources\public_html\log.csv" />
+    <Content Include="snapshot_blob.bin">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      <IncludeInVSIX>true</IncludeInVSIX>
+    </Content>
+    <None Include="source.extension.vsixmanifest">
+      <SubType>Designer</SubType>
+    </None>
+    <Content Include="v8_context_snapshot.bin">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      <IncludeInVSIX>true</IncludeInVSIX>
+    </Content>
+  </ItemGroup>
+  <ItemGroup>
+    <Reference Include="Microsoft.CSharp" />
+    <Reference Include="PresentationCore" />
+    <Reference Include="PresentationFramework" />
+    <Reference Include="System" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Design" />
+    <Reference Include="System.Drawing" />
+    <Reference Include="System.Windows.Forms" />
+    <Reference Include="System.Xaml" />
+    <Reference Include="System.Xml" />
+    <Reference Include="WindowsBase" />
+  </ItemGroup>
+  <ItemGroup>
+    <PackageReference Include="cef.redist.x64">
+      <Version>79.1.36</Version>
+    </PackageReference>
+    <PackageReference Include="cef.redist.x86">
+      <Version>79.1.36</Version>
+    </PackageReference>
+    <PackageReference Include="cef.sdk">
+      <Version>79.1.36</Version>
+    </PackageReference>
+    <PackageReference Include="CefSharp.Common">
+      <Version>79.1.360</Version>
+    </PackageReference>
+    <PackageReference Include="CefSharp.Wpf">
+      <Version>79.1.360</Version>
+    </PackageReference>
+    <PackageReference Include="Microsoft.Build">
+      <Version>17.0.0</Version>
+    </PackageReference>
+    <PackageReference Include="Microsoft.Build.Framework">
+      <Version>17.0.0</Version>
+    </PackageReference>
+    <PackageReference Include="Microsoft.Build.Tasks.Core">
+      <Version>17.0.0</Version>
+    </PackageReference>
+    <PackageReference Include="Microsoft.CodeAnalysis">
+      <Version>3.9.0</Version>
+    </PackageReference>
+    <PackageReference Include="Microsoft.CodeAnalysis.Common">
+      <Version>3.9.0</Version>
+    </PackageReference>
+    <PackageReference Include="Microsoft.CodeAnalysis.CSharp">
+      <Version>3.9.0</Version>
+    </PackageReference>
+    <PackageReference Include="Microsoft.CodeAnalysis.Workspaces.MSBuild">
+      <Version>3.9.0</Version>
+    </PackageReference>
+    <PackageReference Include="Microsoft.VisualStudio.SDK" Version="16.0.206" ExcludeAssets="runtime" />
+    <PackageReference Include="Microsoft.VSSDK.BuildTools" Version="16.11.35" />
+    <PackageReference Include="MvvmLightLibs">
+      <Version>5.4.1.1</Version>
+    </PackageReference>
+    <PackageReference Include="System.ComponentModel.Composition">
+      <Version>4.5.0</Version>
+    </PackageReference>
+  </ItemGroup>
+  <ItemGroup>
+    <Page Include="MyWindowControl.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="CefSharp.BrowserSubprocess.Core.dll">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      <IncludeInVSIX>true</IncludeInVSIX>
+    </Content>
+    <Content Include="CefSharp.BrowserSubprocess.Core.pdb">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      <IncludeInVSIX>true</IncludeInVSIX>
+    </Content>
+    <Content Include="CefSharp.BrowserSubprocess.exe">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      <IncludeInVSIX>true</IncludeInVSIX>
+    </Content>
+    <Content Include="CefSharp.BrowserSubprocess.pdb">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      <IncludeInVSIX>true</IncludeInVSIX>
+    </Content>
+    <Content Include="CefSharp.Core.dll">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      <IncludeInVSIX>true</IncludeInVSIX>
+    </Content>
+    <Content Include="CefSharp.Core.pdb">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      <IncludeInVSIX>true</IncludeInVSIX>
+    </Content>
+    <Content Include="CefSharp.Core.xml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      <IncludeInVSIX>true</IncludeInVSIX>
+    </Content>
+    <Content Include="CefSharp.dll">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      <IncludeInVSIX>true</IncludeInVSIX>
+    </Content>
+    <Content Include="CefSharp.pdb">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      <IncludeInVSIX>true</IncludeInVSIX>
+    </Content>
+    <Content Include="CefSharp.Wpf.dll">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      <IncludeInVSIX>true</IncludeInVSIX>
+    </Content>
+    <Content Include="CefSharp.Wpf.pdb">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      <IncludeInVSIX>true</IncludeInVSIX>
+    </Content>
+    <Content Include="CefSharp.Wpf.XML">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      <IncludeInVSIX>true</IncludeInVSIX>
+    </Content>
+    <Content Include="CefSharp.XML">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      <IncludeInVSIX>true</IncludeInVSIX>
+    </Content>
+    <Content Include="chrome_elf.dll">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      <IncludeInVSIX>true</IncludeInVSIX>
+    </Content>
+    <Content Include="CommonServiceLocator.dll">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      <IncludeInVSIX>true</IncludeInVSIX>
+    </Content>
+    <Content Include="d3dcompiler_47.dll">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      <IncludeInVSIX>true</IncludeInVSIX>
+    </Content>
+    <Content Include="libcef.dll">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      <IncludeInVSIX>true</IncludeInVSIX>
+    </Content>
+    <Content Include="libEGL.dll">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      <IncludeInVSIX>true</IncludeInVSIX>
+    </Content>
+    <Content Include="libGLESv2.dll">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      <IncludeInVSIX>true</IncludeInVSIX>
+    </Content>
+    <Content Include="Resources\MyWindowPackage.ico" />
+    <Content Include="Resources\nbproject\private\private.xml" />
+    <Content Include="Resources\nbproject\project.xml" />
+    <Content Include="Resources\ProgvolverEditorContextualMenu.png" />
+    <Content Include="Resources\public_html\colorwheel.png" />
+    <Content Include="Resources\public_html\css\alertify.core.css" />
+    <Content Include="Resources\public_html\css\alertify.default.css" />
+    <Content Include="Resources\public_html\css\collections.css" />
+    <Content Include="Resources\public_html\css\collectiveOperators.css" />
+    <Content Include="Resources\public_html\css\customDataTypes.css" />
+    <Content Include="Resources\public_html\css\dateRange.css" />
+    <Content Include="Resources\public_html\css\drawingCanvas.css" />
+    <Content Include="Resources\public_html\css\fonts\collectionIcons.svg" />
+    <Content Include="Resources\public_html\css\fonts\collectiveOperators.svg" />
+    <Content Include="Resources\public_html\css\fonts\customDataTypes.svg" />
+    <Content Include="Resources\public_html\css\fonts\dateRangeIcon.svg" />
+    <Content Include="Resources\public_html\css\fonts\font-awesome-4.4.0\css\font-awesome.css" />
+    <Content Include="Resources\public_html\css\fonts\font-awesome-4.4.0\css\font-awesome.min.css" />
+    <Content Include="Resources\public_html\css\fonts\font-awesome-4.4.0\fonts\fontawesome-webfont.svg" />
+    <Content Include="Resources\public_html\css\fonts\fontawesome\css\font-awesome.css" />
+    <Content Include="Resources\public_html\css\fonts\fontawesome\css\font-awesome.min.css" />
+    <Content Include="Resources\public_html\css\fonts\fontawesome\font\fontawesome-webfont.svg" />
+    <Content Include="Resources\public_html\css\fonts\functionIcons.svg" />
+    <Content Include="Resources\public_html\css\fonts\generatorIcons.svg" />
+    <Content Include="Resources\public_html\css\fonts\icomoon.svg" />
+    <Content Include="Resources\public_html\css\fonts\locators.svg" />
+    <Content Include="Resources\public_html\css\fonts\markIcons.svg" />
+    <Content Include="Resources\public_html\css\fonts\operatorsIcons.svg" />
+    <Content Include="Resources\public_html\css\fonts\rangeGenerator.svg" />
+    <Content Include="Resources\public_html\css\fonts\valuesIcons.svg" />
+    <Content Include="Resources\public_html\css\fonts\workshop.svg" />
+    <Content Include="Resources\public_html\css\functions.css" />
+    <Content Include="Resources\public_html\css\generators.css" />
+    <Content Include="Resources\public_html\css\img\breadcrumbs-bg.gif" />
+    <Content Include="Resources\public_html\css\img\bx_loader.gif" />
+    <Content Include="Resources\public_html\css\img\controls.png" />
+    <Content Include="Resources\public_html\css\img\fancybox\blank.gif" />
+    <Content Include="Resources\public_html\css\img\fancybox\fancybox-x.png" />
+    <Content Include="Resources\public_html\css\img\fancybox\fancybox-y.png" />
+    <Content Include="Resources\public_html\css\img\fancybox\fancybox.png" />
+    <Content Include="Resources\public_html\css\img\fancybox\fancy_close.png" />
+    <Content Include="Resources\public_html\css\img\fancybox\fancy_loading.png" />
+    <Content Include="Resources\public_html\css\img\fancybox\fancy_nav_left.png" />
+    <Content Include="Resources\public_html\css\img\fancybox\fancy_nav_right.png" />
+    <Content Include="Resources\public_html\css\img\fancybox\fancy_shadow_e.png" />
+    <Content Include="Resources\public_html\css\img\fancybox\fancy_shadow_n.png" />
+    <Content Include="Resources\public_html\css\img\fancybox\fancy_shadow_ne.png" />
+    <Content Include="Resources\public_html\css\img\fancybox\fancy_shadow_nw.png" />
+    <Content Include="Resources\public_html\css\img\fancybox\fancy_shadow_s.png" />
+    <Content Include="Resources\public_html\css\img\fancybox\fancy_shadow_se.png" />
+    <Content Include="Resources\public_html\css\img\fancybox\fancy_shadow_sw.png" />
+    <Content Include="Resources\public_html\css\img\fancybox\fancy_shadow_w.png" />
+    <Content Include="Resources\public_html\css\img\fancybox\fancy_title_left.png" />
+    <Content Include="Resources\public_html\css\img\fancybox\fancy_title_main.png" />
+    <Content Include="Resources\public_html\css\img\fancybox\fancy_title_over.png" />
+    <Content Include="Resources\public_html\css\img\fancybox\fancy_title_right.png" />
+    <Content Include="Resources\public_html\css\img\fancybox\jquery.easing-1.3.pack.js" />
+    <Content Include="Resources\public_html\css\img\fancybox\jquery.fancybox-1.3.4.js" />
+    <Content Include="Resources\public_html\css\img\fancybox\jquery.fancybox-1.3.4.pack.js" />
+    <Content Include="Resources\public_html\css\img\fancybox\jquery.mousewheel-3.0.4.pack.js" />
+    <Content Include="Resources\public_html\css\img\gray_jean.png" />
+    <Content Include="Resources\public_html\css\img\icon-arrow-right.png" />
+    <Content Include="Resources\public_html\css\ion.rangeSlider.css" />
+    <Content Include="Resources\public_html\css\ion.rangeSlider.min.css" />
+    <Content Include="Resources\public_html\css\jquery.dialog.css" />
+    <Content Include="Resources\public_html\css\jquery.fancybox-1.3.4.css" />
+    <Content Include="Resources\public_html\css\kickstart-buttons.css" />
+    <Content Include="Resources\public_html\css\kickstart-forms.css" />
+    <Content Include="Resources\public_html\css\kickstart-grid.css" />
+    <Content Include="Resources\public_html\css\kickstart-menus.css" />
+    <Content Include="Resources\public_html\css\kickstart-slideshow.css" />
+    <Content Include="Resources\public_html\css\kickstart.css" />
+    <Content Include="Resources\public_html\css\loader.gif" />
+    <Content Include="Resources\public_html\css\locators.css" />
+    <Content Include="Resources\public_html\css\main.css" />
+    <Content Include="Resources\public_html\css\marks.css" />
+    <Content Include="Resources\public_html\css\monserratFont.css" />
+    <Content Include="Resources\public_html\css\myIcons.css" />
+    <Content Include="Resources\public_html\css\normalize.css" />
+    <Content Include="Resources\public_html\css\opentip.css" />
+    <Content Include="Resources\public_html\css\operators.css" />
+    <Content Include="Resources\public_html\css\prettify.css" />
+    <Content Include="Resources\public_html\css\rangeGenerator.css" />
+    <Content Include="Resources\public_html\css\spectrum.css" />
+    <Content Include="Resources\public_html\css\tiptip.css" />
+    <Content Include="Resources\public_html\css\tooltipster-sideTip-borderless.min.css" />
+    <Content Include="Resources\public_html\css\tooltipster-sideTip-punk.min.css" />
+    <Content Include="Resources\public_html\css\tooltipster.bundle.css" />
+    <Content Include="Resources\public_html\css\tooltipster.css" />
+    <Content Include="Resources\public_html\css\values.css" />
+    <Content Include="Resources\public_html\css\vis-timeline-graph2d.min.css" />
+    <Content Include="Resources\public_html\css\workshop.css" />
+    <Content Include="Resources\public_html\icons\method.svg" />
+    <Content Include="Resources\public_html\js\alertify.js" />
+    <Content Include="Resources\public_html\js\bootstrap-filestyle.min.js" />
+    <Content Include="Resources\public_html\js\classes\CartesianLocator.js" />
+    <Content Include="Resources\public_html\js\classes\Connector.js" />
+    <Content Include="Resources\public_html\js\classes\ContinuousFunction.js" />
+    <Content Include="Resources\public_html\js\classes\DataWidget.js" />
+    <Content Include="Resources\public_html\js\classes\extractors\Extractor.js" />
+    <Content Include="Resources\public_html\js\classes\extractors\RectangularExtractor.js" />
+    <Content Include="Resources\public_html\js\classes\extractors\SamplerExtractor.js" />
+    <Content Include="Resources\public_html\js\classes\extractors\SVGPathExtractor.js" />
+    <Content Include="Resources\public_html\js\classes\extractors\TextualExtractor.js" />
+    <Content Include="Resources\public_html\js\classes\FreeSelection.js" />
+    <Content Include="Resources\public_html\js\classes\functions\CollectionAttributeSelector.js" />
+    <Content Include="Resources\public_html\js\classes\functions\CollectionGetter.js" />
+    <Content Include="Resources\public_html\js\classes\functions\Mapper.js" />
+    <Content Include="Resources\public_html\js\classes\functions\MapperInput.js" />
+    <Content Include="Resources\public_html\js\classes\functions\MapperOutput.js" />
+    <Content Include="Resources\public_html\js\classes\functions\NumericCollectionGenerator.js" />
+    <Content Include="Resources\public_html\js\classes\functions\NumericFunction.js" />
+    <Content Include="Resources\public_html\js\classes\functions\NumericFunctionInput.js" />
+    <Content Include="Resources\public_html\js\classes\functions\NumericFunctionOutput.js" />
+    <Content Include="Resources\public_html\js\classes\functions\VerticalCollection.js" />
+    <Content Include="Resources\public_html\js\classes\iconPaths.js" />
+    <Content Include="Resources\public_html\js\classes\LabeledRect.js" />
+    <Content Include="Resources\public_html\js\classes\Locator.js" />
+    <Content Include="Resources\public_html\js\classes\Locator_1.js" />
+    <Content Include="Resources\public_html\js\classes\marks\CircularMark.js" />
+    <Content Include="Resources\public_html\js\classes\marks\EllipticMark.js" />
+    <Content Include="Resources\public_html\js\classes\marks\FatFontMark.js" />
+    <Content Include="Resources\public_html\js\classes\marks\Mark.js" />
+    <Content Include="Resources\public_html\js\classes\marks\PathMark.js" />
+    <Content Include="Resources\public_html\js\classes\marks\RectangularMark.js" />
+    <Content Include="Resources\public_html\js\classes\marks\SquaredMark.js" />
+    <Content Include="Resources\public_html\js\classes\marks\SVGPathGroupMark.js" />
+    <Content Include="Resources\public_html\js\classes\marks\SVGPathMark.js" />
+    <Content Include="Resources\public_html\js\classes\operators\AdditionOperator.js" />
+    <Content Include="Resources\public_html\js\classes\operators\DivisionOperator.js" />
+    <Content Include="Resources\public_html\js\classes\operators\MultiplicationOperator.js" />
+    <Content Include="Resources\public_html\js\classes\operators\Operator.js" />
+    <Content Include="Resources\public_html\js\classes\operators\SubtractionOperator.js" />
+    <Content Include="Resources\public_html\js\classes\progvolver\AffectWidget.js" />
+    <Content Include="Resources\public_html\js\classes\progvolver\ArrayColorWidget.js" />
+    <Content Include="Resources\public_html\js\classes\progvolver\ArrayColorWidgetAddition.js" />
+    <Content Include="Resources\public_html\js\classes\progvolver\ArrayColorWidgetOutput.js" />
+    <Content Include="Resources\public_html\js\classes\progvolver\ArrayElementObject.js" />
+    <Content Include="Resources\public_html\js\classes\progvolver\ArrayElementSymbol.js" />
+    <Content Include="Resources\public_html\js\classes\progvolver\ArraySymbol.js" />
+    <Content Include="Resources\public_html\js\classes\progvolver\Background.js" />
+    <Content Include="Resources\public_html\js\classes\progvolver\CanvasVariable.js" />
+    <Content Include="Resources\public_html\js\classes\progvolver\CanvasVariableConnectionPort.js" />
+    <Content Include="Resources\public_html\js\classes\progvolver\CodeNote.js" />
+    <Content Include="Resources\public_html\js\classes\progvolver\ColorPickerSignalHolder.js" />
+    <Content Include="Resources\public_html\js\classes\progvolver\ColorPickerWidget.js" />
+    <Content Include="Resources\public_html\js\classes\progvolver\ColorWidgetSignal.js" />
+    <Content Include="Resources\public_html\js\classes\progvolver\ConnectableWidget.js" />
+    <Content Include="Resources\public_html\js\classes\progvolver\ConnectionPort.js" />
+    <Content Include="Resources\public_html\js\classes\progvolver\Dropdown.js" />
+    <Content Include="Resources\public_html\js\classes\progvolver\MinimizeButton.js" />
+    <Content Include="Resources\public_html\js\classes\progvolver\NumberFormatter.js" />
+    <Content Include="Resources\public_html\js\classes\progvolver\NumberHolder.js" />
+    <Content Include="Resources\public_html\js\classes\progvolver\ObjectMemberSelection.js" />
+    <Content Include="Resources\public_html\js\classes\progvolver\ObjectSelectionCheckBox.js" />
+    <Content Include="Resources\public_html\js\classes\progvolver\ObjectSelectionPane.js" />
+    <Content Include="Resources\public_html\js\classes\progvolver\ObjectWidget.js" />
+    <Content Include="Resources\public_html\js\classes\progvolver\Plotter.js" />
+    <Content Include="Resources\public_html\js\classes\progvolver\ProgvolverExpression.js" />
+    <Content Include="Resources\public_html\js\classes\progvolver\ProgvolverSymbol.js" />
+    <Content Include="Resources\public_html\js\classes\progvolver\ReferencePointer.js" />
+    <Content Include="Resources\public_html\js\classes\progvolver\ReferenceWidget.js" />
+    <Content Include="Resources\public_html\js\classes\progvolver\SignalEmitterWidget.js" />
+    <Content Include="Resources\public_html\js\classes\progvolver\SignalHolder.js" />
+    <Content Include="Resources\public_html\js\classes\progvolver\SignalReceiverSnapshot.js" />
+    <Content Include="Resources\public_html\js\classes\progvolver\SignalReceiverWidget.js" />
+    <Content Include="Resources\public_html\js\classes\progvolver\Snapshot.js" />
+    <Content Include="Resources\public_html\js\classes\progvolver\SnapshotWidget.js" />
+    <Content Include="Resources\public_html\js\classes\progvolver\TextRectangle.js" />
+    <Content Include="Resources\public_html\js\classes\progvolver\WhenSignal.js" />
+    <Content Include="Resources\public_html\js\classes\progvolver\WhenWidget.js" />
+    <Content Include="Resources\public_html\js\classes\Project.js" />
+    <Content Include="Resources\public_html\js\classes\rangeGenerators\Range.js" />
+    <Content Include="Resources\public_html\js\classes\rangeGenerators\RangeLimit.js" />
+    <Content Include="Resources\public_html\js\classes\rangeGenerators\RangeOutput.js" />
+    <Content Include="Resources\public_html\js\classes\selection\SquaredSelection.js" />
+    <Content Include="Resources\public_html\js\classes\types\ColorData.js" />
+    <Content Include="Resources\public_html\js\classes\types\DateAndTimeData.js" />
+    <Content Include="Resources\public_html\js\classes\types\DurationData.js" />
+    <Content Include="Resources\public_html\js\classes\types\NumericData.js" />
+    <Content Include="Resources\public_html\js\classes\types\ShapeData.js" />
+    <Content Include="Resources\public_html\js\classes\types\StringData.js" />
+    <Content Include="Resources\public_html\js\classes\types\Value.js" />
+    <Content Include="Resources\public_html\js\classes\types\VisualValue.js" />
+    <Content Include="Resources\public_html\js\classes\VisualProperty.js" />
+    <Content Include="Resources\public_html\js\clipper_unminified.js" />
+    <Content Include="Resources\public_html\js\colormix-1.0.0.min.js" />
+    <Content Include="Resources\public_html\js\colors.js" />
+    <Content Include="Resources\public_html\js\contextMenu\jquery.contextMenu.css" />
+    <Content Include="Resources\public_html\js\contextMenu\jquery.contextMenu.js" />
+    <Content Include="Resources\public_html\js\contextMenu\jquery.contextMenu.min.css" />
+    <Content Include="Resources\public_html\js\contextMenu\jquery.contextMenu.min.js" />
+    <Content Include="Resources\public_html\js\contextMenu\jquery.ui.position.js" />
+    <Content Include="Resources\public_html\js\contextMenu\jquery.ui.position.min.js" />
+    <Content Include="Resources\public_html\js\d3.v6.js" />
+    <Content Include="Resources\public_html\js\drawingCanvas.js" />
+    <Content Include="Resources\public_html\js\fabric.js" />
+    <Content Include="Resources\public_html\js\fabric.min.js" />
+    <Content Include="Resources\public_html\js\fabric4.4.0.js" />
+    <Content Include="Resources\public_html\js\fabric_new.js" />
+    <Content Include="Resources\public_html\js\FileSaver.min.js" />
+    <Content Include="Resources\public_html\js\generalFunctions.js" />
+    <Content Include="Resources\public_html\js\globals.js" />
+    <Content Include="Resources\public_html\js\graphlib.min.js" />
+    <Content Include="Resources\public_html\js\h5utils.js" />
+    <Content Include="Resources\public_html\js\hammer.min.js" />
+    <Content Include="Resources\public_html\js\interaction\blobsCounter.js" />
+    <Content Include="Resources\public_html\js\interaction\canvasEvents.js" />
+    <Content Include="Resources\public_html\js\interaction\connectors.js" />
+    <Content Include="Resources\public_html\js\interaction\objectsEvents.js" />
+    <Content Include="Resources\public_html\js\interaction\outputs.js" />
+    <Content Include="Resources\public_html\js\interaction\widgetsEvents.js" />
+    <Content Include="Resources\public_html\js\ion.rangeSlider.min.js" />
+    <Content Include="Resources\public_html\js\iVoLVER.js" />
+    <Content Include="Resources\public_html\js\javascript.util.js" />
+    <Content Include="Resources\public_html\js\jquery-1.10.2.js" />
+    <Content Include="Resources\public_html\js\jquery-3.1.1.min.js" />
+    <Content Include="Resources\public_html\js\jquery-3.5.0.min.js" />
+    <Content Include="Resources\public_html\js\jquery-ui-1.10.4.min.js" />
+    <Content Include="Resources\public_html\js\jquery.ajaxfileupload.js" />
+    <Content Include="Resources\public_html\js\jquery.dialog.js" />
+    <Content Include="Resources\public_html\js\jquery.drag.resize.js" />
+    <Content Include="Resources\public_html\js\jquery.path.js" />
+    <Content Include="Resources\public_html\js\jquery.resize.js" />
+    <Content Include="Resources\public_html\js\jquery.ui.touch-punch.min.js" />
+    <Content Include="Resources\public_html\js\jquery.xdomainajax.js" />
+    <Content Include="Resources\public_html\js\jsGradient.js" />
+    <Content Include="Resources\public_html\js\jsts.js" />
+    <Content Include="Resources\public_html\js\jszip.min.js" />
+    <Content Include="Resources\public_html\js\kickstart.js" />
+    <Content Include="Resources\public_html\js\main.js" />
+    <Content Include="Resources\public_html\js\math.min.js" />
+    <Content Include="Resources\public_html\js\moment.js" />
+    <Content Include="Resources\public_html\js\moment.min.js" />
+    <Content Include="Resources\public_html\js\opentip-jquery.js" />
+    <Content Include="Resources\public_html\js\papaparse.min.js" />
+    <Content Include="Resources\public_html\js\parseFormat.js" />
+    <Content Include="Resources\public_html\js\path-data-polyfill.js" />
+    <Content Include="Resources\public_html\js\pathseg.js" />
+    <Content Include="Resources\public_html\js\plugins.js" />
+    <Content Include="Resources\public_html\js\progvolver.js" />
+    <Content Include="Resources\public_html\js\simplify.js" />
+    <Content Include="Resources\public_html\js\solutions.js" />
+    <Content Include="Resources\public_html\js\spectrum.js" />
+    <Content Include="Resources\public_html\js\spectrum.min.css" />
+    <Content Include="Resources\public_html\js\spectrum.min.js" />
+    <Content Include="Resources\public_html\js\tooltipster.bundle.min.js" />
+    <Content Include="Resources\public_html\js\tooltipster.core.min.js" />
+    <Content Include="Resources\public_html\js\toPathTransformations.js" />
+    <Content Include="Resources\public_html\js\undomanager.js" />
+    <Content Include="Resources\public_html\js\vis-timeline-graph2d.min.js" />
+    <Content Include="Resources\public_html\js\workshop.js" />
+    <Content Include="Resources\public_html\OLD___progvolver.html" />
+    <Content Include="Resources\public_html\progvolver.html" />
+    <Content Include="Resources\public_html\style.css" />
+    <Content Include="Resources\public_html\ToolWindow1Command.png" />
+    <Content Include="Resources\rotationButton.svg" />
+    <VSCTCompile Include="P_IntiPackage.vsct">
+      <ResourceName>Menus.ctmenu</ResourceName>
+    </VSCTCompile>
+    <Content Include="Resources\MyWindowCommand.png" />
+  </ItemGroup>
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <Import Project="$(VSToolsPath)\VSSDK\Microsoft.VsSDK.targets" Condition="'$(VSToolsPath)' != ''" />
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+</Project>
