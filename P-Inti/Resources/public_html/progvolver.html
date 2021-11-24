@@ -169,6 +169,9 @@
         <script type="text/javascript" src="./js/classes/progvolver/CanvasVariable.js"></script>
         <script type="text/javascript" src="./js/classes/progvolver/CanvasVariableConnectionPort.js"></script>
 
+        <script type="text/javascript" src="js/classes/progvolver/CodeControl/CodeControls.js"></script>
+        <script type="text/javascript" src="js/classes/progvolver/CodeControl/ControlAddition.js"></script>
+
         <link rel="stylesheet" type="text/css" href="./js/spectrum.min.css"/>
         <script src="./js/spectrum.min.js"></script>
         <script src="./js/d3.v6.js"></script>
@@ -1445,20 +1448,26 @@
 //        });
 //        canvas.add(dropdown);
 
-//        var canvasVariable = new CanvasVariable({
-//            type: "double",
-//            dataType: "double",
-//            y: 500,
-//            x: 500,
-//            fill: '#B3CDE3',
-//            type: "string",
-//            value: "This",
-//            name: "str",
-//            kind: "local",
-//            connectionPortLocations: ['']
-//        });
-//        canvas.add(canvasVariable);
+       // var canvasVariable = new CanvasVariable({
+       //     type: "double",
+       //     dataType: "double",
+       //     y: 500,
+       //     x: 500,
+       //     fill: '#B3CDE3',
+       //     type: "string",
+       //     value: "This",
+       //     name: "str",
+       //     kind: "local",
+       //     connectionPortLocations: ['']
+       // });
+       // canvas.add(canvasVariable);
 
+            var codeControls = new CodeControls({
+                x: 500,
+                y: 500
+            });
+
+            canvas.add(codeControls);
 
     </script>
 </body>

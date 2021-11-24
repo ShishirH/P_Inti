@@ -190,7 +190,7 @@ class ConnectableWidget {
         var originChild = {originX: 'center', originY: 'center'};
         this.background.addChild(this.connectionDroppingArea, {
             whenCompressed: {
-                x: 0, y: 0, opacity: 0.5,
+                x: 0, y: 0,
                 scaleX: 1, scaleY: 1, opacity: 1,
                 originParent: originParent,
                 originChild: originChild

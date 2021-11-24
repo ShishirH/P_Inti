@@ -1756,5 +1756,42 @@ namespace P_Inti
             return node;
         }
 
+        public Dictionary<string, object> createCodeControl(object arg)
+        {
+            Dictionary<string, object> result = new Dictionary<string, object>();
+            if (windowControl.projectOpen())
+            {
+                string solutionDir = System.IO.Path.GetDirectoryName(windowControl.dte.Solution.FullName);
+                MyWindowControl.printInBrowserConsole(solutionDir);
+
+                solutionDir = "\"" + solutionDir + "\"";
+
+                // Initialize git repo
+                CodeControls.InitializeGitRepo(solutionDir);
+
+                int numberOfBranches = 0;//getNumberOfBranches(solutionDir);
+
+                if (numberOfBranches != -1)
+                {
+                    if (numberOfBranches == 0)
+                    {
+                        // No branches yet, commit everything on master
+                        CodeControls.AddGitChanges(solutionDir);
+                        CodeControls.CommitGitChanges(solutionDir);
+                    }
+                    else
+                    {
+                        // Earlier commits already made. Checkout to master and then create a new branch
+                        CodeControls.CheckoutToBranch(solutionDir, "master");
+                        CodeControls.CreateAndCheckoutGitBranch(solutionDir);
+                        CodeControls.AddGitChanges(solutionDir);
+                        CodeControls.CommitGitChanges(solutionDir);
+                    }
+                }
+
+                result.Add("Created git repo", "git");
+            }
+            return result;
+        }
     }
 }
