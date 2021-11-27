@@ -60,6 +60,7 @@
     <Compile Include="CodeAdornment.cs" />
     <Compile Include="CodeAdornmentTextViewCreationListener.cs" />
     <Compile Include="CodeAnalyzer.cs" />
+    <Compile Include="CodeControls.cs" />
     <Compile Include="Controls\RelativePositionPanel.cs" />
     <Compile Include="DataTipIdentity.cs" />
     <Compile Include="DEBUGGER_OPTIONS.cs" />

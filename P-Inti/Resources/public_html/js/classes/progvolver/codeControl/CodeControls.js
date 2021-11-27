@@ -13,6 +13,7 @@ class CodeControls {
 
         var background = createObjectBackground(fabric.Rect, options, this);
         background.childrenOnTop = [];
+        background.codeBranches = [];
 
         background.addName = function () {
             let labelObject = new fabric.IText("CONTROL_NAME", {
@@ -26,18 +27,18 @@ class CodeControls {
                 hoverCursor: "pointer"
             });
 
-            var originParent = {originX: 'center', originY: 'top'};
-            var originChild = {originX: 'center', originY: 'top'};
+            var originParent = {originX: 'left', originY: 'top'};
+            var originChild = {originX: 'left', originY: 'top'};
 
             background.addChild(labelObject, {
                 whenCompressed: {
-                    x: 0, y: 4,
+                    x: 10, y: 4,
                     scaleX: 1, scaleY: 1, opacity: 1,
                     originParent: originParent,
                     originChild: originChild
                 },
                 whenExpanded: {
-                    x: 0, y: 4,
+                    x: 10, y: 4,
                     scaleX: 1, scaleY: 1, opacity: 1,
                     originParent: originParent,
                     originChild: originChild
@@ -49,7 +50,8 @@ class CodeControls {
         }
 
         background.addControlAddition = new function () {
-            let controlAddition = new ControlAddition({
+            let controlAddition = new CodeControlAddition({
+                parent: background
             });
 
             var originParent = {originX: 'right', originY: 'top'};
@@ -57,13 +59,13 @@ class CodeControls {
 
             background.addChild(controlAddition, {
                 whenCompressed: {
-                    x: -5, y: 4,
+                    x: -30, y: 4,
                     scaleX: 1, scaleY: 1, opacity: 1,
                     originParent: originParent,
                     originChild: originChild
                 },
                 whenExpanded: {
-                    x: -5, y: 4,
+                    x: -30, y: 4,
                     scaleX: 1, scaleY: 1, opacity: 1,
                     originParent: originParent,
                     originChild: originChild
@@ -72,7 +74,6 @@ class CodeControls {
             });
 
             background.childrenOnTop.push(controlAddition);
-
         }
 
         background.registerListener('added', function() {

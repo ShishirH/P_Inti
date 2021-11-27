@@ -1766,32 +1766,78 @@ namespace P_Inti
 
                 solutionDir = "\"" + solutionDir + "\"";
 
-                // Initialize git repo
+                // Initialize or Reinitialize git repo
                 CodeControls.InitializeGitRepo(solutionDir);
 
-                int numberOfBranches = 0;//getNumberOfBranches(solutionDir);
+                int numberOfBranches = CodeControls.GetNumberOfBranches(solutionDir);
+                MyWindowControl.printInBrowserConsole("Number of Branches: " + numberOfBranches);
 
+                string id = Utils.generateID();
+                string branchName = "";
                 if (numberOfBranches != -1)
                 {
                     if (numberOfBranches == 0)
                     {
                         // No branches yet, commit everything on master
+                        branchName = "master";
                         CodeControls.AddGitChanges(solutionDir);
                         CodeControls.CommitGitChanges(solutionDir);
                     }
                     else
                     {
-                        // Earlier commits already made. Checkout to master and then create a new branch
-                        CodeControls.CheckoutToBranch(solutionDir, "master");
-                        CodeControls.CreateAndCheckoutGitBranch(solutionDir);
+                        // Earlier commits already made. Commit changes to present branch and then checkout to new branch
                         CodeControls.AddGitChanges(solutionDir);
+                        CodeControls.CommitGitChanges(solutionDir);
+
+                        branchName = id;
+                        CodeControls.CreateAndCheckoutGitBranch(solutionDir, id);
                         CodeControls.CommitGitChanges(solutionDir);
                     }
                 }
 
-                result.Add("Created git repo", "git");
+                result.Add("id", id);
+                result.Add("branchName", branchName);
             }
             return result;
         }
+
+        public Dictionary<string, object> goToControlBranch(object arg)
+        {
+            Dictionary<string, object> result = new Dictionary<string, object>();
+
+            string solutionDir = System.IO.Path.GetDirectoryName(windowControl.dte.Solution.FullName);
+
+            solutionDir = "\"" + solutionDir + "\"";
+
+            if (arg != null)
+            {
+                IDictionary<string, object> input = (IDictionary<string, object>)arg;
+                input.TryGetValue("branchName", out object branchName);
+                string branch = (string)branchName;
+                CodeControls.CheckoutToBranch(solutionDir, branch);
+            }
+
+            return result;
+        }
+        public Dictionary<string, object> updateControlBranch(object arg)
+        {
+            // First check if we are on the said branch, only then allow update TODO discuss this
+
+            Dictionary<string, object> result = new Dictionary<string, object>();
+
+            string solutionDir = System.IO.Path.GetDirectoryName(windowControl.dte.Solution.FullName);
+            solutionDir = "\"" + solutionDir + "\"";
+
+            if (arg != null)
+            {
+                IDictionary<string, object> input = (IDictionary<string, object>)arg;
+                input.TryGetValue("branchName", out object branchName);
+                string branch = (string)branchName;
+                CodeControls.AddGitChanges(solutionDir);
+                CodeControls.CommitGitChanges(solutionDir);
+            }
+            return result;
+        }
+
     }
 }

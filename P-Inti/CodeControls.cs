@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Diagnostics;
+﻿using System.Diagnostics;
 
 namespace P_Inti
 {
@@ -12,7 +7,7 @@ namespace P_Inti
         public static void InitializeGitRepo(string solutionDir)
         {
             MyWindowControl.printInBrowserConsole("git init " + solutionDir);
-            var gitInitProc = new System.Diagnostics.Process
+            var gitInitProc = new Process
             {
                 StartInfo = new ProcessStartInfo
                 {
@@ -26,14 +21,15 @@ namespace P_Inti
 
             gitInitProc.Start();
             gitInitProc.WaitForExit();
+            MyWindowControl.printInBrowserConsole("Created new git repo");
         }
 
         public static int GetNumberOfBranches(string solutionDir)
         {
-            string command = "(git -C " + solutionDir + " branch -r).Count";
+            string command = "(git -C " + solutionDir + " branch -a).Count";
             MyWindowControl.printInBrowserConsole(command);
 
-            var gitBranchesProc = new System.Diagnostics.Process
+            var gitBranchesProc = new Process
             {
                 StartInfo = new ProcessStartInfo
                 {
@@ -62,7 +58,7 @@ namespace P_Inti
             string command = "git -C " + solutionDir + " add .";
             MyWindowControl.printInBrowserConsole(command);
 
-            var gitAddProc = new System.Diagnostics.Process
+            var gitAddProc = new Process
             {
                 StartInfo = new ProcessStartInfo
                 {
@@ -76,6 +72,7 @@ namespace P_Inti
 
             gitAddProc.Start();
             gitAddProc.WaitForExit();
+            MyWindowControl.printInBrowserConsole("Added changes");
         }
 
         public static void CommitGitChanges(string solutionDir)
@@ -83,7 +80,7 @@ namespace P_Inti
             string command = "git -C " + solutionDir + " commit -m " + "\"CC\"";
             MyWindowControl.printInBrowserConsole(command);
 
-            var gitCommitProc = new System.Diagnostics.Process
+            var gitCommitProc = new Process
             {
                 StartInfo = new ProcessStartInfo
                 {
@@ -97,18 +94,19 @@ namespace P_Inti
 
             gitCommitProc.Start();
             gitCommitProc.WaitForExit();
+            MyWindowControl.printInBrowserConsole("Committed changes");
         }
 
-        public static void CreateAndCheckoutGitBranch(string solutionDir)
+        public static void CreateAndCheckoutGitBranch(string solutionDir, string branchName)
         {
-            string command = "git -C " + solutionDir + " checkout -b sample_branch";
+            string command = "git -C " + solutionDir + " checkout -b " + branchName;
             MyWindowControl.printInBrowserConsole(command);
 
-            var gitCheckoutProc = new System.Diagnostics.Process
+            var gitCheckoutProc = new Process
             {
                 StartInfo = new ProcessStartInfo
                 {
-                    FileName = "cmd.exe",
+                    FileName = "powershell.exe",
                     Arguments = command,
                     UseShellExecute = false,
                     RedirectStandardOutput = false,
@@ -118,6 +116,7 @@ namespace P_Inti
 
             gitCheckoutProc.Start();
             gitCheckoutProc.WaitForExit();
+            MyWindowControl.printInBrowserConsole("Checkout out to new branch " + branchName);
         }
 
         public static void CheckoutToBranch(string solutionDir, string branch)
@@ -125,7 +124,7 @@ namespace P_Inti
             string command = "git -C " + solutionDir + " checkout " + branch;
             MyWindowControl.printInBrowserConsole(command);
 
-            var gitCheckoutProc = new System.Diagnostics.Process
+            var gitCheckoutProc = new Process
             {
                 StartInfo = new ProcessStartInfo
                 {
