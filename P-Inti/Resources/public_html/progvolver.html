@@ -173,6 +173,7 @@
         <script type="text/javascript" src="js/classes/progvolver/codeControl/CodeControlAddition.js"></script>
         <script type="text/javascript" src="js/classes/progvolver/codeControl/Branch/CodeControlBranch.js"></script>
         <script type="text/javascript" src="js/classes/progvolver/codeControl/Branch/CodeControlBranchUpdate.js"></script>
+        <script type="text/javascript" src="js/classes/progvolver/codeControl/Branch/CodeControlBranchDelete.js"></script>
 
         <link rel="stylesheet" type="text/css" href="./js/spectrum.min.css"/>
         <script src="./js/spectrum.min.js"></script>
@@ -219,7 +220,7 @@
             <li class="verticalLeftDivider verticalRightDivider verticalRightDivider2 mode" id="squaredSelectionButton" onmousedown='modeButtonClicked(this);' draggable="false"><a><i class="fa fa-object-group "> </i> </a></li>
 
             <!-- CONNECTORS VISIBILITY -->
-            <li class="verticalLeftDivider verticalRightDivider verticalRightDivider2 mode" draggable="false"><a id="connectorsVisibilityButton" onmousedown="toggleConnectorsVisibility(this);"><i class="fa fa-eye "></i></a></li>            
+            <li class="verticalLeftDivider verticalRightDivider verticalRightDivider2 mode" draggable="false"><a id="connectorsVisibilityButton" onmousedown="toggleConnectorsVisibility(this);"><i class="fa fa-eye "></i></a></li>
 
 
 
@@ -238,7 +239,7 @@
                 <ul id="fileMenuUL">
                     <li><a href="javascript:void(0);" onclick="saveProject();"><i id="saveProjectElement" class="fa-save icon-large"></i> Save project</a></li>
                     <li><a href="javascript:loadiVoLVERProject();"><i class="fa-folder-open-o icon-large"></i> Open project</a></li>
-                    <li> <input type="file" accept="application/xml" id="dataprojectFileInput" name="someProjectfile" onchange="handleDatafiles(this.files)" style="visibility:hidden;position:absolute;top:-50;left:-50"/></li>                    
+                    <li> <input type="file" accept="application/xml" id="dataprojectFileInput" name="someProjectfile" onchange="handleDatafiles(this.files)" style="visibility:hidden;position:absolute;top:-50;left:-50"/></li>
                     <li class="divider"><a href="javascript:void(0);"><i class="fa-download icon-large"></i> Export canvas</a>
                         <ul>
                             <li><a href="javascript:void(0);" onclick="saveCanvas();"><i id="saveCanvasElement" class="fa-file-code-o icon-large"></i> As SVG</a></li>
@@ -580,7 +581,7 @@
          onClick: function () {
          if (window.jsHandler && window.jsHandler.saveFiles) {
          window.jsHandler.saveFiles(null).then(function (response) {
-         
+
          });
          }
          }
@@ -900,7 +901,7 @@
 //            circle1.on('selected', function () {
 //                console.log("44");
 //            });
-//            
+//
 //            circle2.on('selected', function () {
 //                console.log("2");
 //            });
@@ -949,7 +950,7 @@
 //            });
 //            canvas.add(note2);
 //
-//            
+//
 
 //            var variable1 = new ProgvolverSymbol({value: '2846', kind: 'Field', type: 'int', name: 'age', file: 'Program.cs (34)', y: 400, x: 100, id: '23_May_2020___22_49_58_341___0695e0f7-c7ae-408a-871b-5c705e1bc7d2___9981'});
 //            canvas.add(variable1);
@@ -1174,7 +1175,7 @@
 //            y: 350,
 //            x: 500
 //        });
-//        
+//
 //        canvas.add(whenWidget);
 ////
 //        var affectWidget = new AffectWidget({
@@ -1252,7 +1253,7 @@
 //                name: "var",
 //                x: 250,
 //                objectMembers: objectMembersArray[0]});
-//            
+//
 //            canvas.add(objectWidget);
 
 
@@ -1298,7 +1299,7 @@
 //                fill: '#B3CDE3',
 //                initialValue: 'new double[3]',
 //            });
-//            
+//
 //            canvas.add(oneDArray);
 //
 //
@@ -1464,12 +1465,18 @@
        // });
        // canvas.add(canvasVariable);
 
-            var codeControls = new CodeControls({
-                x: 500,
-                y: 500
-            });
+        var codeControls = new CodeControls({
+            x: 600,
+            y: 600
+        });
 
-            canvas.add(codeControls);
+        var arrayControls = new CodeControls({
+            x: 250,
+            y: 250
+        });
+
+        canvas.add(arrayControls);
+        canvas.add(codeControls);
 
     </script>
 </body>

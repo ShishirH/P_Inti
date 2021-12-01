@@ -1,4 +1,5 @@
-﻿using System.Diagnostics;
+﻿using System;
+using System.Diagnostics;
 
 namespace P_Inti
 {
@@ -140,5 +141,25 @@ namespace P_Inti
             gitCheckoutProc.WaitForExit();
         }
 
+        public static void DeleteBranch(string solutionDir, object branch)
+        {
+            string command = "git -C " + solutionDir + " branch -D " + branch;
+            MyWindowControl.printInBrowserConsole(command);
+
+            var gitDeleteBranchProc = new Process
+            {
+                StartInfo = new ProcessStartInfo
+                {
+                    FileName = "powershell.exe",
+                    Arguments = command,
+                    UseShellExecute = false,
+                    RedirectStandardOutput = false,
+                    CreateNoWindow = true
+                }
+            };
+
+            gitDeleteBranchProc.Start();
+            gitDeleteBranchProc.WaitForExit();
+        }
     }
 }

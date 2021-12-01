@@ -13,7 +13,10 @@ class CodeControls {
 
         var background = createObjectBackground(fabric.Rect, options, this);
         background.childrenOnTop = [];
+
         background.codeBranches = [];
+        background.codeBranchesMap = {};
+        background.selectedBranch = null;
 
         background.addName = function () {
             let labelObject = new fabric.IText("CONTROL_NAME", {
@@ -76,6 +79,16 @@ class CodeControls {
             background.childrenOnTop.push(controlAddition);
         }
 
+        background.updateSelectedBranch = function(selectedBranch) {
+            // Turn off color for any currently selected branch
+            if (background.selectedBranch) {
+                console.log("I am here!");
+                background.codeBranchesMap[background.selectedBranch].set('fill', 'white');
+            }
+
+            background.selectedBranch = selectedBranch.id;
+            background.codeBranchesMap[background.selectedBranch].set('fill', 'DarkSeaGreen');
+        }
         background.registerListener('added', function() {
             addChildrenToCanvas(background);
         });

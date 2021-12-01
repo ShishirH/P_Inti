@@ -13,8 +13,8 @@ class CodeControlBranch {
         background.id = options.id;
         background.branchName = options.branchName;
 
-        background.addName = function() {
-            let labelObject = new fabric.IText("BRANCH_NAME", {
+        background.addName = function () {
+            let labelObject = new fabric.IText("", {
                 fontFamily: 'Arial',
                 fill: '#0366d6',
                 fontSize: 14,
@@ -44,10 +44,17 @@ class CodeControlBranch {
                 movable: false
             });
 
+            // labelObject.on("editing:exited", function (e) {
+            //     //console.log('updated text:',e.target.text);
+            //     console.log("text:editing:exited");
+            // });
+
             background.childrenOnTop.push(labelObject);
+            background.labelObject = labelObject;
+
         }
 
-        background.addUpdate = function() {
+        background.addUpdate = function () {
             let updateObject = new CodeControlBranchUpdate({
                 parent: background
             });
@@ -74,24 +81,83 @@ class CodeControlBranch {
             background.childrenOnTop.push(updateObject);
         }
 
+        background.addDelete = function () {
+            let deleteObject = new CodeControlBranchDelete({
+                parent: background
+            });
+
+            const originParent = {originX: 'right', originY: 'center'};
+            const originChild = {originX: 'right', originY: 'center'};
+
+            background.addChild(deleteObject, {
+                whenCompressed: {
+                    x: -5, y: 0,
+                    scaleX: 1, scaleY: 1, opacity: 1,
+                    originParent: originParent,
+                    originChild: originChild
+                },
+                whenExpanded: {
+                    x: -5, y: 0,
+                    scaleX: 1, scaleY: 1, opacity: 1,
+                    originParent: originParent,
+                    originChild: originChild
+                },
+                movable: false
+            });
+
+            background.childrenOnTop.push(deleteObject);
+        }
+
         background.addName();
         background.addUpdate();
+        background.addDelete();
 
-        background.registerListener('added', function() {
+        background.registerListener('added', function () {
             addChildrenToCanvas(background);
+            background.labelObject.enterEditing().selectAll();
         });
 
-        background.registerListener('mouseup', function() {
+        background.registerListener('mouseup', function () {
             if (window.jsHandler) {
                 if (window.jsHandler.goToControlBranch) {
                     window.jsHandler.goToControlBranch({branchName: background.branchName});
                     console.log("went to branch: " + background.branchName);
+
+                    background.parent.updateSelectedBranch(background);
                 }
             }
         });
 
+        background.removeFromCanvas = function () {
+            let index = background.parent.codeBranches.indexOf(background);
+
+            if (index > -1) {
+                background.parent.codeBranches.splice(index, 1);
+
+                let positionIndex = 0;
+                background.parent.codeBranches.forEach(function (codeBranch) {
+                    let yPosition = CodeControlBranch.getYPositionForIndex(positionIndex);
+                    background.parent.compressedOptions[codeBranch.id].y = yPosition;
+                    background.parent.expandedOptions[codeBranch.id].y = yPosition;
+                    codeBranch.positionObjects();
+                    positionIndex++;
+                });
+
+                background.parent.positionObjects();
+                removeWidgetFromCanvas(background);
+            }
+        }
+
         this.progvolverType = "Control Addition Branch";
         registerProgvolverObject(this);
         return background;
+    }
+
+    getYPositionForIndex(index) {
+        return (index * 40) + 40;
+    }
+
+    static getYPositionForIndex(index) {
+        return (index * 40) + 40;
     }
 }

@@ -1839,5 +1839,25 @@ namespace P_Inti
             return result;
         }
 
+        public Dictionary<string, object> deleteControlBranch(object arg)
+        {
+            // First check if we are on the said branch, only then allow delete TODO discuss this
+
+            Dictionary<string, object> result = new Dictionary<string, object>();
+
+            string solutionDir = System.IO.Path.GetDirectoryName(windowControl.dte.Solution.FullName);
+            solutionDir = "\"" + solutionDir + "\"";
+
+            if (arg != null)
+            {
+                IDictionary<string, object> input = (IDictionary<string, object>)arg;
+                input.TryGetValue("branchName", out object branchName);
+                string branch = (string)branchName;
+                CodeControls.DeleteBranch(solutionDir, branchName);
+            }
+            return result;
+        }
+
+
     }
 }

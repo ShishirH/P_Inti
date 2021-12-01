@@ -62,6 +62,22 @@ function addChildrenToCanvas(background) {
     }
 }
 
+function removeWidgetFromCanvas(background) {
+    if (background.children) {
+        background.children.forEach(function (child) {
+            canvas.remove(child);
+        })
+    }
+
+    if (background.childrenOnTop) {
+        background.childrenOnTop.forEach(function (child) {
+            canvas.remove(child);
+        })
+    }
+
+    canvas.remove(background);
+}
+
 function getReferenceWidgetForInnerClass(response, memberJson, isArrayMember, returnObjectWidget) {
     var objectMembersDict = {};
     // {"access_modifier":"public","type":"bool","name":"isManager"}

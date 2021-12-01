@@ -1,7 +1,7 @@
 class CodeControlAddition {
     constructor(options) {
         options.radius = 10;
-        options.fill = "red";
+        options.fill = "LightGreen";
         options.stroke = options.stroke || darken(options.fill);
         options.strokeWidth = options.strokeWidth || 2;
         options.hasControls = false;
@@ -28,7 +28,7 @@ class CodeControlAddition {
                         const originParent = {originX: 'center', originY: 'top'};
                         const originChild = {originX: 'center', originY: 'top'};
 
-                        let yPosition = (background.parent.codeBranches.length * 40) + 40;
+                        let yPosition = CodeControlBranch.getYPositionForIndex(background.parent.codeBranches.length);
 
                         background.parent.addChild(codeControlBranch, {
                             whenCompressed: {
@@ -48,7 +48,12 @@ class CodeControlAddition {
 
                         background.parent.childrenOnTop.push(codeControlBranch);
                         background.parent.codeBranches.push(codeControlBranch);
+                        background.parent.codeBranchesMap[codeControlBranch.id] = codeControlBranch;
+
                         canvas.add(codeControlBranch);
+                        background.parent.updateSelectedBranch(codeControlBranch);
+                        background.parent.positionObject(codeControlBranch);
+                        codeControlBranch.positionObjects();
                     });
                 }
             }
