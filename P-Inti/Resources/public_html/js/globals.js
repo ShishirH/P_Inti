@@ -1,4 +1,4 @@
-var LOG = false;
+var LOG = true;
 //var LOG = true;
 
 visualPropertiesNames = {
