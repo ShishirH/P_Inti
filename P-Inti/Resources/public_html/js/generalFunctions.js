@@ -47,18 +47,24 @@ function createObjectBackground(baseClass, options, theWidget) {
 }
 
 function addChildrenToCanvas(background) {
-    if (background.children) {
-        background.children.forEach(function (child) {
-            canvas.add(child);
-            child.bringToFront();
-        })
-    }
+    if (background) {
+        let children = background.children;
+        let childrenOnTop = background.childrenOnTop;
 
-    if (background.childrenOnTop) {
-        background.childrenOnTop.forEach(function (child) {
-            canvas.add(child);
-            child.bringToFront();
-        })
+        canvas.add(background);
+        background.bringToFront && background.bringToFront();
+
+        if (children) {
+            children.forEach(function (child) {
+                addChildrenToCanvas(child);
+            })
+        }
+
+        if (childrenOnTop) {
+            childrenOnTop.forEach(function (child) {
+                addChildrenToCanvas(child);
+            })
+        }
     }
 }
 
