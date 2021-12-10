@@ -181,6 +181,6 @@ class CodeControlBranch {
     }
 
     static getYPositionForIndex(index) {
-        return (index * 30) + 40;
+        return (index * 30) + 25;
     }
 }

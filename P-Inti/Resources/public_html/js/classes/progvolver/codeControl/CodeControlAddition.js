@@ -63,6 +63,9 @@ class CodeControlAddition {
                             background.parent.codeBranches.push(codeControlBranch);
                             background.parent.codeBranchesMap[codeControlBranch.id] = codeControlBranch;
 
+                            let backgroundHeight = background.parent.height;
+                            background.parent.set('height', backgroundHeight + 30);
+
                             // Move the addition button below the newly created branch
                             let additionYPosition = CodeControlBranch.getYPositionForIndex(background.parent.codeBranches.length);
                             background.parent.expandedOptions[background.id].y = additionYPosition;
@@ -70,8 +73,7 @@ class CodeControlAddition {
 
                             canvas.add(codeControlBranch);
                             background.parent.updateSelectedBranch(codeControlBranch);
-                            background.parent.positionObject(codeControlBranch);
-                            background.parent.positionObject(background);
+                            background.parent.positionObjects();
                             codeControlBranch.positionObjects();
                         });
                     }

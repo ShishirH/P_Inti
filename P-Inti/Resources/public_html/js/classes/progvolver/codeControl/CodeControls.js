@@ -1,11 +1,12 @@
 class CodeControls {
     constructor(options) {
-        options.height = options.height || 200;
+        options.height = options.height || 60;
         options.width = options.width || 200;
         options.left = options.x || 250;
         options.top = options.y || 250;
-        options.fill = "WhiteSmoke";
-        options.stroke = "Gainsboro"//darken(options.fill);
+        options.index = (codeControlsOnCanvas.length % colorsArray.length);//"WhiteSmoke";
+        options.fill = colorsArray[options.index];
+        options.stroke = darken(options.fill); //"Gainsboro"//darken(options.fill);
         options.strokeWidth = options.strokeWidth || 2;
         options.hasControls = false;
         options.hasBorders = false;
@@ -17,6 +18,8 @@ class CodeControls {
         background.codeBranchesMap = {};
         background.selectedBranch = null;
         background.isOnCanvas = false;
+        background.saturatedColor = background.fill;
+        background.unsaturatedColor = desaturatedColorsArray[options.index];
 
         background.addName = function () {
             let labelObject = new fabric.IText("CONTROL_NAME", {
@@ -82,19 +85,30 @@ class CodeControls {
         }
 
         background.updateSelectedBranch = function (selectedBranch) {
-            // Turn off color for any currently selected branch across different code controls
-            codeControlsOnCanvas.forEach(function (codeControl) {
-                if (codeControl.selectedBranch) {
-                    let codeControlBranch = codeControl.codeBranchesMap[codeControl.selectedBranch];
+            if (window.selectedCodeControl !== background) {
+                background.codeBranches.forEach(function (branch) {
+                    let codeControlBranch = branch;
                     let deselectedColor = 'white';
                     codeControlBranch.set('fill', deselectedColor);
                     codeControlBranch.deleteBranch.set('stroke', deselectedColor);
                     codeControlBranch.updateBranch.set('stroke', deselectedColor);
-                }
-            });
+                })
+            }
+            else {
+                // Turn off color for any currently selected branch across different code controls
+                codeControlsOnCanvas.forEach(function (codeControl) {
+                    if (codeControl.selectedBranch) {
+                        let codeControlBranch = codeControl.codeBranchesMap[codeControl.selectedBranch];
+                        let deselectedColor = 'white';
+                        codeControlBranch.set('fill', deselectedColor);
+                        codeControlBranch.deleteBranch.set('stroke', deselectedColor);
+                        codeControlBranch.updateBranch.set('stroke', deselectedColor);
+                    }
+                });
+            }
 
             background.selectedBranch = selectedBranch.id;
-            let selectedColor = 'DarkSeaGreen';
+            let selectedColor = background.unsaturatedColor;//'DarkSeaGreen';
             let codeControlBranch = background.codeBranchesMap[background.selectedBranch];
             codeControlBranch.set('fill', selectedColor);
             codeControlBranch.deleteBranch.set('stroke', selectedColor);
@@ -116,7 +130,6 @@ class CodeControls {
         background.noScaleCache = false;
 
         // Add this to the list of code controls, and make this code control active.
-        //TODO Why am I getting an error here? window.codeControls.push(background);
         codeControlsOnCanvas.push(background);
         CodeControls.updateSelectedCodeControl(background);
 
@@ -132,10 +145,14 @@ class CodeControls {
             window.selectedCodeControl = background;
         } else {
             // Deselect previous selected code control
-            window.selectedCodeControl.set('stroke', 'Gainsboro');
+            window.selectedCodeControl.set('fill', window.selectedCodeControl.unsaturatedColor);
+            window.selectedCodeControl.set('stroke', darken(window.selectedCodeControl.fill));
             window.selectedCodeControl = background;
         }
 
-        window.selectedCodeControl.set('stroke', 'rgba(130, 130, 130, 1)');
+        window.selectedCodeControl.set('fill', window.selectedCodeControl.saturatedColor);
+        window.selectedCodeControl.set('stroke', darken(window.selectedCodeControl.fill));
+
+        //window.selectedCodeControl.set('stroke', 'rgba(130, 130, 130, 1)');
     }
 }
