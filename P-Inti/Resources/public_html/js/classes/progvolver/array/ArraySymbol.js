@@ -1251,6 +1251,8 @@ class ArraySymbol {
             background.children.push(background.scrollX);
             background.children.push(background.leftArrow);
             background.children.push(background.rightArrow);
+            console.log("Background is: ");
+            console.log(background);
         }
 
         background.addColorWidget = function () {

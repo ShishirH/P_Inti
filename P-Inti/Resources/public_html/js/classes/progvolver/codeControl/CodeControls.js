@@ -21,7 +21,7 @@ class CodeControls {
         background.addName = function () {
             let labelObject = new fabric.IText("CONTROL_NAME", {
                 fontFamily: 'Arial',
-                fill: '#0366d6',
+                fill: 'black',
                 fontSize: 14,
                 hasControls: false,
                 hasBorders: false,
@@ -62,13 +62,13 @@ class CodeControls {
 
             background.addChild(controlAddition, {
                 whenCompressed: {
-                    x: -30, y: 4,
+                    x: -5, y: 4,
                     scaleX: 1, scaleY: 1, opacity: 1,
                     originParent: originParent,
                     originChild: originChild
                 },
                 whenExpanded: {
-                    x: -30, y: 4,
+                    x: -5, y: 4,
                     scaleX: 1, scaleY: 1, opacity: 1,
                     originParent: originParent,
                     originChild: originChild

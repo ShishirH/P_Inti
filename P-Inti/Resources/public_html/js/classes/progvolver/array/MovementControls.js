@@ -1,25 +1,67 @@
+function getNewXPosition(indentation, hiddenNumber, arrayElementsArray, background, currentRow, currentColumn) {
+    if (background.columns === 1)
+        indentation = (currentRow - hiddenNumber - 1);
+    else
+        indentation = (currentColumn - hiddenNumber);
+
+    let newXPosition = parseFloat(45 + (indentation * arrayElementsArray[currentRow - 1][currentColumn].width));
+
+    return {indentation, newXPosition};
+}
+
+function setXPosition(newXPosition, i, j, background, hiddenNumber, leftHidden, elementWidth, rightHidden, arrayElementsArray) {
+    console.log("XPosition: " + newXPosition + " and index: " + (i - 1) + ", " + (j));
+    if (background.columns === 1) {
+        if (hiddenNumber >= i || newXPosition < 45) {
+            newXPosition = 45;
+            leftHidden = true;
+            background.areElementsOnLeft = true;
+        }
+    } else {
+        if (hiddenNumber > j || newXPosition < 45) {
+            newXPosition = 45;
+            leftHidden = true;
+            background.areElementsOnLeft = true;
+        }
+    }
+
+    if (newXPosition + elementWidth > (background.width - 45)) {
+        newXPosition = background.width - 45;
+        rightHidden = true;
+        background.areElementsOnRight = true;
+    }
+    background.expandedOptions[arrayElementsArray[i - 1][j].id].x = newXPosition;
+    background.compressedOptions[arrayElementsArray[i - 1][j].id].x = newXPosition;
+    return {leftHidden, rightHidden};
+}
+
 function moveScrollX(background) {
     // Divide the X axis into ticks for the array. -20 is for the left and the right arrows.
     if (!background.isCompressed) {
-        let ticks;
+        let tickWidth;
 
         const scrollX = background.scrollX;
         const arrayElementsArray = background.arrayElementsArray;
 
+        // Starts at 12
+        // Ends at 217.5
+        // Background width is 270 -> Right end is -52.5
+        // Width of the scrollX movement is 205.5
+
         if (background.columns > 1) {
-            ticks = (background.width - scrollX.width) / background.columns;
+            tickWidth = (background.width - scrollX.width) / (background.columns - 3); // TODO Work out the logic. Bugs with array size greater than 25
         } else {
-            ticks = arrayElementsArray.length;
+            tickWidth = (background.width - scrollX.width) / (arrayElementsArray.length - 3); // TODO Work out the logic. Bugs with array size greater than 25. 3 should be number of elements visible for array size - 1
         }
 
         var updatedFirstVisible = false;
-        LOG && console.log("Number of ticks are: " + ticks);
+        LOG && console.log("tickWidth is: " + tickWidth);
 
         let currentX = background.expandedOptions[scrollX.id].x;
         LOG && console.log("CurrentX is: " + currentX);
         background.compressedOptions[scrollX.id].x = currentX;
 
-        let hiddenNumber = (currentX / ticks);
+        let hiddenNumber = (currentX / tickWidth);
         hiddenNumber = Math.floor(hiddenNumber);
 
         if (hiddenNumber === background.hiddenX)
@@ -29,20 +71,18 @@ function moveScrollX(background) {
 
         LOG && console.log("Hidden number is: " + hiddenNumber);
 
-        let indentation;
+        let indentation = -1;
+        let newXPosition = -1;
         for (let i = 1; i <= background.rows; i++) {
             for (let j = 0; j < background.columns; j++) {
                 var leftHidden = false;
                 var rightHidden = false;
 
                 LOG && console.log("First visible is now: " + background.firstVisibleRow);
-                if (background.columns === 1)
-                    indentation = (i - hiddenNumber - 1);
-                else
-                    indentation = (j - hiddenNumber);
 
-                let newXPosition = parseFloat(45 + (indentation * arrayElementsArray[i - 1][j].width));
+                indentation, newXPosition = getNewXPosition(indentation, hiddenNumber, arrayElementsArray, background, i, j);
                 let elementWidth = arrayElementsArray[i - 1][j].width;
+
                 LOG && console.log("XPosition: " + newXPosition + " and index: " + (i - 1) + ", " + (j));
 
                 if (background.columns === 1) {
@@ -126,24 +166,9 @@ function moveScrollX(background) {
         }
 
         background.positionObjects();
-//                if (background.areElementsOnLeft) {
-//                    background.expandedOptions[background.leftBuffer.id].opacity = 1;
-//                    background.compressedOptions[background.leftBuffer.id].opacity = 1;
-//                } else {
-//                    background.expandedOptions[background.leftBuffer.id].opacity = 0;
-//                    background.compressedOptions[background.leftBuffer.id].opacity = 0;
-//
-//                }
-
-//                if (background.areElementsOnRight) {
-//                    background.expandedOptions[background.rightBuffer.id].opacity = 1;
-//                    background.compressedOptions[background.rightBuffer.id].opacity = 1;
-//                } else {
-//                    background.expandedOptions[background.rightBuffer.id].opacity = 0;
-//                    background.compressedOptions[background.rightBuffer.id].opacity = 0;
-//                }
     }
 }
+
 
 function leftArrowScroll(background) {
     if (background.hiddenX <= 0)
@@ -156,43 +181,23 @@ function leftArrowScroll(background) {
     var updatedFirstVisible = false;
     var updatedLastVisible = false;
 
-    let indentation;
+    let indentation = -1;
+    let newXPosition = -1;
     for (let i = 1; i <= background.rows; i++) {
         for (let j = 0; j < background.columns; j++) {
             var leftHidden = false;
             var rightHidden = false;
-
-            console.log("First visible is now: " + background.firstVisibleRow);
-            if (background.columns === 1)
-                indentation = (i - hiddenNumber - 1);
-            else
-                indentation = (j - hiddenNumber);
-
-            let newXPosition = parseFloat(45 + (indentation * arrayElementsArray[i - 1][j].width));
             let elementWidth = arrayElementsArray[i - 1][j].width;
-            console.log("XPosition: " + newXPosition + " and index: " + (i - 1) + ", " + (j));
 
-            if (background.columns === 1) {
-                if (hiddenNumber >= i || newXPosition < 45) {
-                    newXPosition = 45;
-                    leftHidden = true;
-                    background.areElementsOnLeft = true;
-                }
-            } else {
-                if (hiddenNumber > j || newXPosition < 45) {
-                    newXPosition = 45;
-                    leftHidden = true;
-                    background.areElementsOnLeft = true;
-                }
-            }
+            LOG && console.log("First visible is now: " + background.firstVisibleRow);
 
-            if (newXPosition + elementWidth > (background.width - 45)) {
-                newXPosition = background.width - 45;
-                rightHidden = true;
-                background.areElementsOnRight = true;
-            }
-            background.expandedOptions[arrayElementsArray[i - 1][j].id].x = newXPosition;
-            background.compressedOptions[arrayElementsArray[i - 1][j].id].x = newXPosition;
+            const newPosition = getNewXPosition(indentation, hiddenNumber, arrayElementsArray, background, i, j);
+            indentation = newPosition.indentation;
+            newXPosition = newPosition.newXPosition;
+
+            const __ret = setXPosition(newXPosition, i, j, background, hiddenNumber, leftHidden, elementWidth, rightHidden, arrayElementsArray);
+            leftHidden = __ret.leftHidden;
+            rightHidden = __ret.rightHidden;
             if (leftHidden) {
                 //arrayElementsArray[i - 1].opacity = 0;
                 background.expandedOptions[arrayElementsArray[i - 1][j].id].opacity = 0;
@@ -284,29 +289,11 @@ function rightArrowScroll(background) {
 
             let newXPosition = parseFloat(45 + (indentation * arrayElementsArray[i - 1][j].width));
             let elementWidth = arrayElementsArray[i - 1][j].width;
-            console.log("XPosition: " + newXPosition + " and index: " + (i - 1) + ", " + (j));
 
-            if (background.columns === 1) {
-                if (hiddenNumber >= i || newXPosition < 45) {
-                    newXPosition = 45;
-                    leftHidden = true;
-                    background.areElementsOnLeft = true;
-                }
-            } else {
-                if (hiddenNumber > j || newXPosition < 45) {
-                    newXPosition = 45;
-                    leftHidden = true;
-                    background.areElementsOnLeft = true;
-                }
-            }
+            const __ret = setXPosition(newXPosition, i, j, background, hiddenNumber, leftHidden, elementWidth, rightHidden, arrayElementsArray);
+            leftHidden = __ret.leftHidden;
+            rightHidden = __ret.rightHidden;
 
-            if (newXPosition + elementWidth > (background.width - 45)) {
-                newXPosition = background.width - 45;
-                rightHidden = true;
-                background.areElementsOnRight = true;
-            }
-            background.expandedOptions[arrayElementsArray[i - 1][j].id].x = newXPosition;
-            background.compressedOptions[arrayElementsArray[i - 1][j].id].x = newXPosition;
             if (leftHidden) {
                 //arrayElementsArray[i - 1].opacity = 0;
                 background.expandedOptions[arrayElementsArray[i - 1][j].id].opacity = 0;
