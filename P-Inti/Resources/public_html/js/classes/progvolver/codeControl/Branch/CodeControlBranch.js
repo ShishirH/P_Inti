@@ -123,13 +123,30 @@ class CodeControlBranch {
             }
         });
 
-        background.registerListener('mouseup', function () {
-            if (window.jsHandler) {
-                if (window.jsHandler.goToControlBranch) {
+        background.registerListener('mouseup', function (event) {
+            if (window.selectedCodeControl === background.parent) {
+                if (window.jsHandler && window.jsHandler.goToControlBranch) {
                     window.jsHandler.goToControlBranch({branchName: background.branchName});
                     console.log("went to branch: " + background.branchName);
 
                     background.parent.updateSelectedBranch(background);
+                }
+            } else {
+                // Ctrl + clicking branch from another non-selected branch. Merge those two branches and show them together
+                if (event.e.ctrlKey) {
+                    if (window.jsHandler && window.jsHandler.goToControlBranch) {
+                        // First, go to the selected branch in the active code control again.
+                        window.jsHandler.goToControlBranch({branchName: window.selectedCodeControl.selectedBranch});
+                        background.parent.updateSelectedBranch(background);
+
+                        // Then, merge the two branches together
+                        if (window.jsHandler.mergeBranches) {
+                            window.jsHandler.mergeBranches({
+                                branchOne: window.selectedCodeControl.selectedBranch,
+                                branchTwo: background.branchName
+                            });
+                        }
+                    }
                 }
             }
         });
@@ -158,7 +175,7 @@ class CodeControlBranch {
             }
         }
 
-        this.progvolverType = "Control Addition Branch";
+        this.progvolverType = "Code Control Branch";
         registerProgvolverObject(this);
         return background;
     }

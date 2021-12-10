@@ -66,9 +66,15 @@ class CodeControlBranchUpdate {
         //addRefreshButton();
 
         background.registerListener('mouseup', function() {
-            if (window.jsHandler) {
-                if (window.jsHandler.updateControlBranch) {
-                    window.jsHandler.updateControlBranch({branchName: background.parent.branchName});
+            console.log("Updating branch");
+            console.log(window.selectedCodeControl);
+            console.log(background.parent.parent)
+            if (window.selectedCodeControl === background.parent.parent) {
+                if (window.jsHandler) {
+                    if (window.jsHandler.updateControlBranch) {
+                        console.log("Updating control branch")
+                        window.jsHandler.updateControlBranch({branchName: background.parent.branchName});
+                    }
                 }
             }
         });

@@ -84,6 +84,8 @@
 //
 //}
 
+window.selectedCodeControl = null;
+
 function canvasBeforeSelectionCleared(option) {
 
     // if (LOG) {

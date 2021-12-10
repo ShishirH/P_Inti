@@ -161,5 +161,39 @@ namespace P_Inti
             gitDeleteBranchProc.Start();
             gitDeleteBranchProc.WaitForExit();
         }
+
+        public static void MergeBranches(string solutionDir, string branchOneStr, string branchTwoStr)
+        {
+            MyWindowControl.printInBrowserConsole("First branch is: " + branchOneStr);
+            MyWindowControl.printInBrowserConsole("Second branch is: " + branchTwoStr);
+
+            // Checkout to a new branch where you merge your changes
+            CodeControls.CreateAndCheckoutGitBranch(solutionDir, Utils.generateID());
+            CodeControls.MergeBranch(solutionDir, branchTwoStr);
+        }
+
+        // Merge the currently active branch and the branch in the argument
+        public static void MergeBranch(string solutionDir, string branch)
+        {
+            string command = "git -C " + solutionDir + " merge " + branch;
+            MyWindowControl.printInBrowserConsole(command);
+
+            var gitMergeBranchProc = new Process
+            {
+                StartInfo = new ProcessStartInfo
+                {
+                    FileName = "powershell.exe",
+                    Arguments = command,
+                    UseShellExecute = false,
+                    RedirectStandardOutput = false,
+                    CreateNoWindow = true
+                }
+            };
+
+            gitMergeBranchProc.Start();
+            gitMergeBranchProc.WaitForExit();
+
+        }
+
     }
 }

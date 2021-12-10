@@ -1858,6 +1858,28 @@ namespace P_Inti
             return result;
         }
 
+        public Dictionary<string, object> mergeBranches(object arg)
+        {
+            Dictionary<string, object> result = new Dictionary<string, object>();
+
+            string solutionDir = System.IO.Path.GetDirectoryName(windowControl.dte.Solution.FullName);
+            solutionDir = "\"" + solutionDir + "\"";
+
+            if (arg != null)
+            {
+                IDictionary<string, object> input = (IDictionary<string, object>)arg;
+                input.TryGetValue("branchOne", out object branchOne);
+                input.TryGetValue("branchTwo", out object branchTwo);
+
+                string branchOneStr = (string)branchOne;
+                string branchTwoStr = (string)branchTwo;
+
+                CodeControls.MergeBranches(solutionDir, branchOneStr, branchTwoStr);
+            }
+            return result;
+
+        }
+
 
     }
 }

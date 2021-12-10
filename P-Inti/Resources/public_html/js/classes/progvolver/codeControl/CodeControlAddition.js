@@ -24,55 +24,57 @@ class CodeControlAddition {
         };
 
         background.createCodeControl = function () {
-            if (window.jsHandler) {
-                if (window.jsHandler.createCodeControl) {
-                    window.jsHandler.createCodeControl(null).then(function (response) {
+            if (window.selectedCodeControl === background.parent) {
+                if (window.jsHandler) {
+                    if (window.jsHandler.createCodeControl) {
+                        window.jsHandler.createCodeControl(null).then(function (response) {
 
-                        console.log("Response ID: " + response.id);
-                        console.log("Branch name: " + response.branchName);
+                            console.log("Response ID: " + response.id);
+                            console.log("Branch name: " + response.branchName);
 
-                        let codeControlBranch = new CodeControlBranch({
-                            parent: background.parent,
-                            id: response.id,
-                            branchName: response.branchName
+                            let codeControlBranch = new CodeControlBranch({
+                                parent: background.parent,
+                                id: response.id,
+                                branchName: response.branchName
+                            });
+
+                            const originParent = {originX: 'center', originY: 'top'};
+                            const originChild = {originX: 'center', originY: 'top'};
+
+                            let yPosition = CodeControlBranch.getYPositionForIndex(background.parent.codeBranches.length);
+
+                            background.parent.addChild(codeControlBranch, {
+                                whenCompressed: {
+                                    x: 0, y: yPosition,
+                                    scaleX: 1, scaleY: 1, opacity: 1,
+                                    originParent: originParent,
+                                    originChild: originChild
+                                },
+                                whenExpanded: {
+                                    x: 0, y: yPosition,
+                                    scaleX: 1, scaleY: 1, opacity: 1,
+                                    originParent: originParent,
+                                    originChild: originChild
+                                },
+                                movable: false
+                            });
+
+                            background.parent.childrenOnTop.push(codeControlBranch);
+                            background.parent.codeBranches.push(codeControlBranch);
+                            background.parent.codeBranchesMap[codeControlBranch.id] = codeControlBranch;
+
+                            // Move the addition button below the newly created branch
+                            let additionYPosition = CodeControlBranch.getYPositionForIndex(background.parent.codeBranches.length);
+                            background.parent.expandedOptions[background.id].y = additionYPosition;
+                            background.parent.compressedOptions[background.id].y = additionYPosition;
+
+                            canvas.add(codeControlBranch);
+                            background.parent.updateSelectedBranch(codeControlBranch);
+                            background.parent.positionObject(codeControlBranch);
+                            background.parent.positionObject(background);
+                            codeControlBranch.positionObjects();
                         });
-
-                        const originParent = {originX: 'center', originY: 'top'};
-                        const originChild = {originX: 'center', originY: 'top'};
-
-                        let yPosition = CodeControlBranch.getYPositionForIndex(background.parent.codeBranches.length);
-
-                        background.parent.addChild(codeControlBranch, {
-                            whenCompressed: {
-                                x: 0, y: yPosition,
-                                scaleX: 1, scaleY: 1, opacity: 1,
-                                originParent: originParent,
-                                originChild: originChild
-                            },
-                            whenExpanded: {
-                                x: 0, y: yPosition,
-                                scaleX: 1, scaleY: 1, opacity: 1,
-                                originParent: originParent,
-                                originChild: originChild
-                            },
-                            movable: false
-                        });
-
-                        background.parent.childrenOnTop.push(codeControlBranch);
-                        background.parent.codeBranches.push(codeControlBranch);
-                        background.parent.codeBranchesMap[codeControlBranch.id] = codeControlBranch;
-
-                        // Move the addition button below the newly created branch
-                        let additionYPosition = CodeControlBranch.getYPositionForIndex(background.parent.codeBranches.length);
-                        background.parent.expandedOptions[background.id].y = additionYPosition;
-                        background.parent.compressedOptions[background.id].y = additionYPosition;
-
-                        canvas.add(codeControlBranch);
-                        background.parent.updateSelectedBranch(codeControlBranch);
-                        background.parent.positionObject(codeControlBranch);
-                        background.parent.positionObject(background);
-                        codeControlBranch.positionObjects();
-                    });
+                    }
                 }
             }
         }

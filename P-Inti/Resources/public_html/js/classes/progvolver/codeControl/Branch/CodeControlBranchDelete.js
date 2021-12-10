@@ -64,11 +64,13 @@ class CodeControlBranchDelete {
         //addDeletePath();
 
         background.registerListener('mouseup', function() {
-            if (window.jsHandler) {
-                if (window.jsHandler.deleteControlBranch) {
-                    window.jsHandler.deleteControlBranch({branchName: background.parent.branchName});
+            if (window.selectedCodeControl === background.parent.parent) {
+                if (window.jsHandler) {
+                    if (window.jsHandler.deleteControlBranch) {
+                        window.jsHandler.deleteControlBranch({branchName: background.parent.branchName});
 
-                    background.parent.removeFromCanvas();
+                        background.parent.removeFromCanvas();
+                    }
                 }
             }
         });
