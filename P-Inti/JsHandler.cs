@@ -1780,12 +1780,14 @@ namespace P_Inti
                     {
                         // No branches yet, commit everything on master
                         branchName = "master";
+                        CodeControls.ParseGitDiff(solutionDir);
                         CodeControls.AddGitChanges(solutionDir);
                         CodeControls.CommitGitChanges(solutionDir);
                     }
                     else
                     {
                         // Earlier commits already made. Commit changes to present branch and then checkout to new branch
+                        CodeControls.ParseGitDiff(solutionDir);
                         CodeControls.AddGitChanges(solutionDir);
                         CodeControls.CommitGitChanges(solutionDir);
 
@@ -1794,6 +1796,10 @@ namespace P_Inti
                         CodeControls.CommitGitChanges(solutionDir);
                     }
                 }
+
+                //MyWindowControl.currentBranchID = id;
+                //MyWindowControl.currentBranch = branchName;
+                //MyWindowControl.gitBranchID.Add(branchName, id);
 
                 result.Add("id", id);
                 result.Add("branchName", branchName);
@@ -1833,6 +1839,7 @@ namespace P_Inti
                 IDictionary<string, object> input = (IDictionary<string, object>)arg;
                 input.TryGetValue("branchName", out object branchName);
                 string branch = (string)branchName;
+                CodeControls.ParseGitDiff(solutionDir);
                 CodeControls.AddGitChanges(solutionDir);
                 CodeControls.CommitGitChanges(solutionDir);
             }

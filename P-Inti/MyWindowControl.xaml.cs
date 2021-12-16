@@ -40,11 +40,6 @@
     using Microsoft.VisualStudio.Editor;
     using Microsoft.CodeAnalysis.CSharp.Syntax;
 
-
-
-
-
-
     /// <summary>
     /// Interaction logic for MyWindowControl.
     /// </summary>
@@ -54,7 +49,6 @@
         public readonly static string debugLineInit = "##########~";
         public readonly static string debugLineEnd = "~**********";
 
-
         public readonly DTE dte = null;
         private Events events;
         public readonly Debugger debugger = null;
@@ -62,13 +56,6 @@
 
         public readonly SolutionEvents solutionEvents = null;
 
-
-
-
-
-
-
-        //public ArrayList expressions = new ArrayList();
         public Dictionary<string, string> expressions = new Dictionary<string, string>();
 
         public long initSeconds;
@@ -96,9 +83,9 @@
 
         public Dictionary<string, Tuple<SyntaxNode, string>> processedExpressions = new Dictionary<string, Tuple<SyntaxNode, string>>();
 
-
         public static Dictionary<string, Tuple<string, int>> signalsPositions = new Dictionary<string, Tuple<string, int>>();
 
+        public static Dictionary<string, CodeControlInfo> codeControlInfos = new Dictionary<string, CodeControlInfo>();
 
         public EnvDTE.Solution openedSolution;
         public Solution assembledSolution;
@@ -113,10 +100,13 @@
 
         public static ChromiumWebBrowser bs;
 
+        public static string currentBranch;
+        public static string currentBranchID;
+
+        public static Dictionary<string, string> gitBranchID = new Dictionary<string, string>();
 
         public MyWindowControl()
         {
-
             this.InitializeComponent();
 
             //theBrowser.Address = Environment.CurrentDirectory + "/Resources/public_html/progvolver.html";
@@ -133,8 +123,11 @@
 
             dte = Package.GetGlobalService(typeof(SDTE)) as DTE;
 
+            CodeControlInfo codeControlInfo1 = new CodeControlInfo(0, 2, Colors.Azure, Colors.Brown);
+            CodeControlInfo codeControlInfo2 = new CodeControlInfo(4, 7, Colors.Salmon, Colors.Brown);
 
-
+            codeControlInfos.Add("1", codeControlInfo1);
+            codeControlInfos.Add("2", codeControlInfo2);
 
             IVsSolution vv = Package.GetGlobalService(typeof(SVsSolution)) as IVsSolution;
             uint cookie;

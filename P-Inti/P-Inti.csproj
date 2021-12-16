@@ -60,6 +60,9 @@
     <Compile Include="CodeAdornment.cs" />
     <Compile Include="CodeAdornmentTextViewCreationListener.cs" />
     <Compile Include="CodeAnalyzer.cs" />
+    <Compile Include="CodeControlEditorAdornment.cs" />
+    <Compile Include="CodeControlEditorAdornmentTextViewCreationListener.cs" />
+    <Compile Include="CodeControlInfo.cs" />
     <Compile Include="CodeControls.cs" />
     <Compile Include="Controls\RelativePositionPanel.cs" />
     <Compile Include="DataTipIdentity.cs" />
@@ -231,6 +234,7 @@
     <Reference Include="PresentationFramework" />
     <Reference Include="System" />
     <Reference Include="System.Data" />
+    <Reference Include="System.Data.DataSetExtensions" />
     <Reference Include="System.Design" />
     <Reference Include="System.Drawing" />
     <Reference Include="System.Windows.Forms" />

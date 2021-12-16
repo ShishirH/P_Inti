@@ -117,6 +117,10 @@ namespace P_Inti
 
             gitCheckoutProc.Start();
             gitCheckoutProc.WaitForExit();
+
+            //MyWindowControl.currentBranch = branchName;
+            //MyWindowControl.currentBranchID = MyWindowControl.gitBranchID[branchName];
+
             MyWindowControl.printInBrowserConsole("Checkout out to new branch " + branchName);
         }
 
@@ -139,6 +143,9 @@ namespace P_Inti
 
             gitCheckoutProc.Start();
             gitCheckoutProc.WaitForExit();
+
+            //MyWindowControl.currentBranch = branch;
+            //MyWindowControl.currentBranchID = MyWindowControl.gitBranchID[branch];
         }
 
         public static void DeleteBranch(string solutionDir, object branch)
@@ -195,5 +202,35 @@ namespace P_Inti
 
         }
 
+        public static void ParseGitDiff(string solutionDir)
+        {
+            string command = "(git -C " + solutionDir + " diff -p --stat) | findstr \"@@ --git\"";
+            MyWindowControl.printInBrowserConsole(command);
+
+            var gitDiffProc = new Process
+            {
+                StartInfo = new ProcessStartInfo
+                {
+                    FileName = "powershell.exe",
+                    Arguments = command,
+                    UseShellExecute = false,
+                    RedirectStandardOutput = true,
+                    CreateNoWindow = true
+                }
+            };
+
+            gitDiffProc.Start();
+
+            string gitDiffString = "";
+            if (!gitDiffProc.StandardOutput.EndOfStream)
+            {
+                string line = gitDiffProc.StandardOutput.ReadLine();
+                MyWindowControl.printInBrowserConsole("Line: " + line);
+                gitDiffString += line;
+            }
+
+            gitDiffProc.WaitForExit();
+
+        }
     }
 }
