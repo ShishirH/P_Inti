@@ -14,17 +14,17 @@ namespace P_Inti
     /// <summary>
     /// CodeControlEditorAdornment places red boxes behind all the "a"s in the editor window
     /// </summary>
-    internal sealed class CodeControlEditorAdornment
+    public class CodeControlEditorAdornment
     {
         /// <summary>
         /// The layer of the adornment.
         /// </summary>
-        private readonly IAdornmentLayer layer;
+        private static IAdornmentLayer layer;
 
         /// <summary>
         /// Text view where the adornment is created.
         /// </summary>
-        private readonly IWpfTextView view;
+        private static IWpfTextView view;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="CodeControlEditorAdornment"/> class.
@@ -37,20 +37,10 @@ namespace P_Inti
                 throw new ArgumentNullException("view");
             }
 
-            this.layer = view.GetAdornmentLayer("CodeControlEditorAdornment");
+            CodeControlEditorAdornment.layer = view.GetAdornmentLayer("CodeControlEditorAdornment");
 
-            this.view = view;
-            this.view.LayoutChanged += this.OnLayoutChanged;
-
-            // Create the pen and brush to color the box behind the a's
-            //this.brush = new SolidColorBrush(Color.FromArgb(0x20, 0x00, 0x00, 0xff));
-            //this.brush = new SolidColorBrush(color);
-            //this.brush.Freeze();
-
-            //var penBrush = new SolidColorBrush(color);
-            //penBrush.Freeze();
-            //this.pen = new Pen(penBrush, 0.5);
-            //this.pen.Freeze();
+            CodeControlEditorAdornment.view = view;
+            CodeControlEditorAdornment.view.LayoutChanged += this.OnLayoutChanged;
         }
 
         /// <summary>
@@ -62,11 +52,11 @@ namespace P_Inti
         /// </remarks>
         /// <param name="sender">The event sender.</param>
         /// <param name="e">The event arguments.</param>
-        internal void OnLayoutChanged(object sender, TextViewLayoutChangedEventArgs e)
+        public void OnLayoutChanged(object sender, TextViewLayoutChangedEventArgs e)
         {
             foreach (ITextViewLine line in e.NewOrReformattedLines)
             {
-                this.CreateVisuals(line);
+                CodeControlEditorAdornment.CreateVisuals(line);
             }
         }
 
@@ -74,9 +64,9 @@ namespace P_Inti
         /// Adds the scarlet box behind the 'a' characters within the given line
         /// </summary>
         /// <param name="line">Line to add the adornments</param>
-        private void CreateVisuals(ITextViewLine line)
+        public static void CreateVisuals(ITextViewLine line)
         {
-            IWpfTextViewLineCollection textViewLines = this.view.TextViewLines;
+            IWpfTextViewLineCollection textViewLines = CodeControlEditorAdornment.view.TextViewLines;
 
             foreach (KeyValuePair<string, CodeControlInfo> codeControlInfoPair in MyWindowControl.codeControlInfos)
             {
@@ -100,7 +90,7 @@ namespace P_Inti
                         continue;
                     }
 
-                    SnapshotSpan span = new SnapshotSpan(this.view.TextSnapshot, Span.FromBounds(charIndex, charIndex + 1));
+                    SnapshotSpan span = new SnapshotSpan(CodeControlEditorAdornment.view.TextSnapshot, Span.FromBounds(charIndex, charIndex + 1));
                     Geometry geometry = textViewLines.GetMarkerGeometry(span);
                     if (geometry != null)
                     {
@@ -119,7 +109,7 @@ namespace P_Inti
                         Canvas.SetLeft(image, geometry.Bounds.Left);
                         Canvas.SetTop(image, geometry.Bounds.Top);
 
-                        this.layer.AddAdornment(AdornmentPositioningBehavior.TextRelative, span, null, image, null);
+                        CodeControlEditorAdornment.layer.AddAdornment(AdornmentPositioningBehavior.TextRelative, span, null, image, null);
                     }
 
                 }

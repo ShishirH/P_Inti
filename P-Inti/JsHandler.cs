@@ -1780,6 +1780,10 @@ namespace P_Inti
                     {
                         // No branches yet, commit everything on master
                         branchName = "master";
+                        MyWindowControl.currentBranchID = id;
+                        MyWindowControl.currentBranch = branchName;
+                        MyWindowControl.gitBranchID.Add(branchName, id);
+
                         CodeControls.ParseGitDiff(solutionDir);
                         CodeControls.AddGitChanges(solutionDir);
                         CodeControls.CommitGitChanges(solutionDir);
@@ -1787,6 +1791,11 @@ namespace P_Inti
                     else
                     {
                         // Earlier commits already made. Commit changes to present branch and then checkout to new branch
+                        branchName = id;
+                        MyWindowControl.currentBranchID = id;
+                        MyWindowControl.currentBranch = branchName;
+                        MyWindowControl.gitBranchID.Add(branchName, id);
+
                         CodeControls.ParseGitDiff(solutionDir);
                         CodeControls.AddGitChanges(solutionDir);
                         CodeControls.CommitGitChanges(solutionDir);
@@ -1796,10 +1805,6 @@ namespace P_Inti
                         CodeControls.CommitGitChanges(solutionDir);
                     }
                 }
-
-                //MyWindowControl.currentBranchID = id;
-                //MyWindowControl.currentBranch = branchName;
-                //MyWindowControl.gitBranchID.Add(branchName, id);
 
                 result.Add("id", id);
                 result.Add("branchName", branchName);

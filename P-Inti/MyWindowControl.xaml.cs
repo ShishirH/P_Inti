@@ -102,8 +102,8 @@
 
         public static string currentBranch;
         public static string currentBranchID;
-
         public static Dictionary<string, string> gitBranchID = new Dictionary<string, string>();
+        public static CodeControlEditorAdornment controlEditorAdornment = null;
 
         public MyWindowControl()
         {

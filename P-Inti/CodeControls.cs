@@ -1,5 +1,7 @@
 ﻿using System;
+using System.Linq;
 using System.Diagnostics;
+using System.Text.RegularExpressions;
 
 namespace P_Inti
 {
@@ -118,8 +120,8 @@ namespace P_Inti
             gitCheckoutProc.Start();
             gitCheckoutProc.WaitForExit();
 
-            //MyWindowControl.currentBranch = branchName;
-            //MyWindowControl.currentBranchID = MyWindowControl.gitBranchID[branchName];
+            MyWindowControl.currentBranch = branchName;
+            MyWindowControl.currentBranchID = MyWindowControl.gitBranchID[branchName];
 
             MyWindowControl.printInBrowserConsole("Checkout out to new branch " + branchName);
         }
@@ -204,7 +206,7 @@ namespace P_Inti
 
         public static void ParseGitDiff(string solutionDir)
         {
-            string command = "(git -C " + solutionDir + " diff -p --stat) | findstr \"@@ --git\"";
+            string command = "-NoExit (git -C " + solutionDir + " diff -p --stat) | findstr '@@ --git'";
             MyWindowControl.printInBrowserConsole(command);
 
             var gitDiffProc = new Process
@@ -222,12 +224,49 @@ namespace P_Inti
             gitDiffProc.Start();
 
             string gitDiffString = "";
-            if (!gitDiffProc.StandardOutput.EndOfStream)
+            string fileNameString = "";
+            string linesChangedString = "";
+
+            string fileName;
+            string[] fileNameSeparator = { "b/" };
+            string[] gitChangesSeparator = { "@@" };
+            while (!gitDiffProc.StandardOutput.EndOfStream)
             {
                 string line = gitDiffProc.StandardOutput.ReadLine();
-                MyWindowControl.printInBrowserConsole("Line: " + line);
+
+                // Diff of a new file
+                if (line.Contains("diff"))
+                {
+                    fileNameString = line;
+
+                    string[] fileNameArray = fileNameString.Split(fileNameSeparator, 2, StringSplitOptions.RemoveEmptyEntries);
+                    MyWindowControl.printInBrowserConsole("fileNameArray[0] " + fileNameArray[0]);
+                    MyWindowControl.printInBrowserConsole("fileNameArray[1] " + fileNameArray[1]);
+                    fileNameString = fileNameArray[1];
+                }
+                // Line containing changes for the file
+                else if (line.Contains("@@"))
+                {
+                    string changedLine = line.Split(gitChangesSeparator, 2, StringSplitOptions.RemoveEmptyEntries)[0].Trim();
+                    string[] resultString =  Regex.Matches(changedLine, @"\d+").OfType<Match>().Select(m => m.Value).ToArray();
+
+                    // @@ -13,11 +13,22 @@ namespace GitFlow
+                    int lineOfChange = Int32.Parse(resultString[0]);
+                    int numberOfLinesChanged = Int32.Parse(resultString[3]); // TODO This can cause runtime failures when there is only one line of change https://stackoverflow.com/questions/2529441/how-to-read-the-output-from-git-diff
+
+                    MyWindowControl.codeControlInfos[MyWindowControl.currentBranch].StartLine = lineOfChange;
+                    MyWindowControl.codeControlInfos[MyWindowControl.currentBranch].EndLine = lineOfChange + numberOfLinesChanged;
+
+                    if (MyWindowControl.controlEditorAdornment != null)
+                    {
+                        CodeControlEditorAdornment.CreateVisuals(null);
+                    }
+                }
+
+                MyWindowControl.printInBrowserConsole("Git diff line: " + line);
                 gitDiffString += line;
             }
+            MyWindowControl.printInBrowserConsole("\n\nGitDiffstring: " + gitDiffString);
 
             gitDiffProc.WaitForExit();
 
