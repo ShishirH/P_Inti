@@ -68,6 +68,38 @@ function addChildrenToCanvas(background) {
     }
 }
 
+function undoCanvas() {
+    if (UNDO_CANVAS_ENTRIES.length !== 0) {
+        let event = UNDO_CANVAS_ENTRIES.pop();
+        event.undoEvent();
+
+        REDO_CANVAS_ENTRIES.push(event);
+    }
+}
+
+function redoCanvas() {
+    if (REDO_CANVAS_ENTRIES.length !== 0) {
+        let event = REDO_CANVAS_ENTRIES.pop();
+        event.redoEvent();
+
+        UNDO_CANVAS_ENTRIES.push(event);
+    }
+}
+
+function adjustReferenceObjectPosition(background) {
+    if (!background.object.isCompressed) {
+        var position = (background.object.getPointByOrigin('left', 'center'));
+
+        let yPosition = parseFloat(position.y)
+        let xPosition = parseFloat(position.x) - 15
+        background.minimizeButton.x = xPosition;
+        background.minimizeButton.y = yPosition;
+        background.minimizeButton.left = xPosition;
+        background.minimizeButton.top = yPosition;
+        background.minimizeButton.setCoords();
+    }
+}
+
 function removeWidgetFromCanvas(background) {
     if (background.children) {
         background.children.forEach(function (child) {

@@ -264,6 +264,9 @@ linearDimensions = [
     'ry',
 ];
 
+var UNDO_CANVAS_ENTRIES = [];
+var REDO_CANVAS_ENTRIES = [];
+
 var OBJECT_WIDGET_FILL = '#DDEBF6';
 var SIGNAL_FILL = "#00AFF0"
 var SIGNAL_EMITTER_FILL = "#fcc603"

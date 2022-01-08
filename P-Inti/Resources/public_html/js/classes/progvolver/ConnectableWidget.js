@@ -47,6 +47,7 @@ class ConnectableWidget {
 
         iVoLVER._registerObject(this.background);
 
+        this.background.isMouseDownMoving = false;
 
         this.background.setProgramTime = function (time) {
             // 'this' here refers to the variable background
@@ -255,8 +256,30 @@ class ConnectableWidget {
         });
 
 
+        background.registerListener('moving', function (options) {
+            // Check if the moving event just started
+            if (!background.isMouseDownMoving) {
+                let position = (background.getPointByOrigin('left', 'top'));
 
+                background.oldPositionY = parseFloat(position.y);
+                background.oldPositionX = parseFloat(position.x);
 
+                background.isMouseDownMoving = true;
+            }
+        });
+
+        background.registerListener('mouseup', function () {
+            // Check if it was moving earlier
+            if (background.isMouseDownMoving) {
+                background.isMouseDownMoving = false;
+                let position = (background.getPointByOrigin('left', 'top'));
+
+                background.newPositionY = parseFloat(position.y);
+                background.newPositionX = parseFloat(position.x);
+
+                new MovingEvent(background, background.oldPositionX, background.oldPositionY, background.newPositionX, background.newPositionY);
+            }
+        });
 
         background.registerListener('added', function (options) {
 
@@ -306,10 +329,7 @@ class ConnectableWidget {
                 background.afterAdded();
             }
 
-
-
-
-
+            new CreationEvent(background);
         });
     }
 

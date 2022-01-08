@@ -417,21 +417,12 @@ class ReferenceWidget {
             background.object.left = rightSc.x + 25;
             background.object.top = rightSc.y - 35;
 
+            background.object.parent = background;
             canvas.add(background.object);
             background.children.push(background.object);
 
             background.object.registerListener('moving', function () {
-                if (!background.object.isCompressed) {
-                    var position = (background.object.getPointByOrigin('left', 'center'));
-
-                    let yPosition = parseFloat(position.y)
-                    let xPosition = parseFloat(position.x) - 15
-                    background.minimizeButton.x = xPosition;
-                    background.minimizeButton.y = yPosition;
-                    background.minimizeButton.left = xPosition;
-                    background.minimizeButton.top = yPosition;
-                    background.minimizeButton.setCoords();
-                }
+                adjustReferenceObjectPosition(background);
             });
         }
 
@@ -481,6 +472,8 @@ class ReferenceWidget {
                 }
             });
             bringToFront(background.arrowLine);
+
+            new CreationEvent(background);
         })
 
         background.organizeChildren = function () {
