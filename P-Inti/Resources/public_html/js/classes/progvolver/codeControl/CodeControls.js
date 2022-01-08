@@ -93,18 +93,24 @@ class CodeControls {
                     codeControlBranch.deleteBranch.set('stroke', deselectedColor);
                     codeControlBranch.updateBranch.set('stroke', deselectedColor);
                 })
-            }
-            else {
+            } else {
                 // Turn off color for any currently selected branch across different code controls
-                codeControlsOnCanvas.forEach(function (codeControl) {
-                    if (codeControl.selectedBranch) {
-                        let codeControlBranch = codeControl.codeBranchesMap[codeControl.selectedBranch];
-                        let deselectedColor = 'white';
-                        codeControlBranch.set('fill', deselectedColor);
-                        codeControlBranch.deleteBranch.set('stroke', deselectedColor);
-                        codeControlBranch.updateBranch.set('stroke', deselectedColor);
-                    }
-                });
+                // codeControlsOnCanvas.forEach(function (codeControl) {
+                //     if (codeControl.selectedBranch) {
+                //         let codeControlBranch = codeControl.codeBranchesMap[codeControl.selectedBranch];
+                //         let deselectedColor = 'white';
+                //         codeControlBranch.set('fill', deselectedColor);
+                //         codeControlBranch.deleteBranch.set('stroke', deselectedColor);
+                //         codeControlBranch.updateBranch.set('stroke', deselectedColor);
+                //     }
+                // });
+                background.codeBranches.forEach(function (branch) {
+                    let codeControlBranch = branch;
+                    let deselectedColor = 'white';
+                    codeControlBranch.set('fill', deselectedColor);
+                    codeControlBranch.deleteBranch.set('stroke', deselectedColor);
+                    codeControlBranch.updateBranch.set('stroke', deselectedColor);
+                })
             }
 
             background.selectedBranch = selectedBranch.id;
@@ -131,6 +137,15 @@ class CodeControls {
 
         // Add this to the list of code controls, and make this code control active.
         codeControlsOnCanvas.push(background);
+
+        if (window.jsHandler && window.jsHandler.initializeCodeControl) {
+            window.jsHandler.initializeCodeControl({
+                id: background.id,
+                saturatedColor: background.saturatedColor,
+                unsaturatedColor: background.unsaturatedColor
+            });
+        }
+
         CodeControls.updateSelectedCodeControl(background);
 
         this.progvolverType = "Code Controls";
@@ -148,6 +163,12 @@ class CodeControls {
             window.selectedCodeControl.set('fill', window.selectedCodeControl.unsaturatedColor);
             window.selectedCodeControl.set('stroke', darken(window.selectedCodeControl.fill));
             window.selectedCodeControl = background;
+        }
+
+        if (window.jsHandler && window.jsHandler.updateSelectedCodeControl) {
+            window.jsHandler.updateSelectedCodeControl({
+                id: background.id
+            })
         }
 
         window.selectedCodeControl.set('fill', window.selectedCodeControl.saturatedColor);

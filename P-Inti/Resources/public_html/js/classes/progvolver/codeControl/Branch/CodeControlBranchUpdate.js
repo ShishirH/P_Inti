@@ -24,11 +24,12 @@ class CodeControlBranchUpdate {
 
         background.registerListener('mouseup', function() {
             if (window.selectedCodeControl === background.parent.parent) {
-                if (window.jsHandler) {
-                    if (window.jsHandler.updateControlBranch) {
-                        console.log("Updating control branch")
-                        window.jsHandler.updateControlBranch({branchName: background.parent.branchName});
-                    }
+                if (window.jsHandler && window.jsHandler.updateControlBranch) {
+                    console.log("Updating control branch")
+                    window.jsHandler.updateControlBranch({
+                        branchName: background.parent.branchName,
+                        id: background.parent.id
+                    });
                 }
             }
         });

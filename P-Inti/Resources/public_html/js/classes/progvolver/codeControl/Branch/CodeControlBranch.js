@@ -132,22 +132,20 @@ class CodeControlBranch {
                     background.parent.updateSelectedBranch(background);
                 }
             } else {
-                // Ctrl + clicking branch from another non-selected branch. Merge those two branches and show them together
-                if (event.e.ctrlKey) {
-                    if (window.jsHandler && window.jsHandler.goToControlBranch) {
-                        // First, go to the selected branch in the active code control again.
-                        window.jsHandler.goToControlBranch({branchName: window.selectedCodeControl.selectedBranch});
-                        background.parent.updateSelectedBranch(background);
+                if (window.jsHandler && window.jsHandler.goToControlBranch) {
+                    // First, go to the selected branch in the active code control again.
+                    window.jsHandler.goToControlBranch({branchName: window.selectedCodeControl.selectedBranch});
+                    background.parent.updateSelectedBranch(background);
 
-                        // Then, merge the two branches together
-                        if (window.jsHandler.mergeBranches) {
-                            window.jsHandler.mergeBranches({
-                                branchOne: window.selectedCodeControl.selectedBranch,
-                                branchTwo: background.branchName
-                            });
-                        }
+                    // Then, merge the two branches together
+                    if (window.jsHandler.mergeBranches) {
+                        window.jsHandler.mergeBranches({
+                            branchOne: window.selectedCodeControl.selectedBranch,
+                            branchTwo: background.branchName
+                        });
                     }
                 }
+
             }
         });
 

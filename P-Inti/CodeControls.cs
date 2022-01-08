@@ -120,8 +120,8 @@ namespace P_Inti
             gitCheckoutProc.Start();
             gitCheckoutProc.WaitForExit();
 
-            MyWindowControl.currentBranch = branchName;
-            MyWindowControl.currentBranchID = MyWindowControl.gitBranchID[branchName];
+            MyWindowControl.CurrentBranch = branchName;
+            MyWindowControl.CurrentBranchID = branchName;
 
             MyWindowControl.printInBrowserConsole("Checkout out to new branch " + branchName);
         }
@@ -204,9 +204,9 @@ namespace P_Inti
 
         }
 
-        public static void ParseGitDiff(string solutionDir)
+        public static void ParseGitDiff(string solutionDir, string branchName, string id)
         {
-            string command = "-NoExit (git -C " + solutionDir + " diff -p --stat) | findstr '@@ --git'";
+            string command = "(git -C " + solutionDir + " diff -p --stat) | findstr '@@ --git'";
             MyWindowControl.printInBrowserConsole(command);
 
             var gitDiffProc = new Process
@@ -247,19 +247,27 @@ namespace P_Inti
                 // Line containing changes for the file
                 else if (line.Contains("@@"))
                 {
-                    string changedLine = line.Split(gitChangesSeparator, 2, StringSplitOptions.RemoveEmptyEntries)[0].Trim();
-                    string[] resultString =  Regex.Matches(changedLine, @"\d+").OfType<Match>().Select(m => m.Value).ToArray();
+                    linesChangedString = line.Split(gitChangesSeparator, 2, StringSplitOptions.RemoveEmptyEntries)[0].Trim();
+                    string[] resultString =  Regex.Matches(linesChangedString, @"\d+").OfType<Match>().Select(m => m.Value).ToArray();
 
                     // @@ -13,11 +13,22 @@ namespace GitFlow
-                    int lineOfChange = Int32.Parse(resultString[0]);
+                    int lineOfChange = Int32.Parse(resultString[0]) + 2; // TODO Why are we adding two here?
                     int numberOfLinesChanged = Int32.Parse(resultString[3]); // TODO This can cause runtime failures when there is only one line of change https://stackoverflow.com/questions/2529441/how-to-read-the-output-from-git-diff
 
-                    MyWindowControl.codeControlInfos[MyWindowControl.currentBranch].StartLine = lineOfChange;
-                    MyWindowControl.codeControlInfos[MyWindowControl.currentBranch].EndLine = lineOfChange + numberOfLinesChanged;
+                    if (numberOfLinesChanged == Int32.Parse(resultString[1]))
+                    {
+                        numberOfLinesChanged = 0;
+                    }
+
+                    CodeControlBranchInfo codeControlBranchInfo = new CodeControlBranchInfo(id, MyWindowControl.CurrentCodeControl.Id, branchName, lineOfChange, lineOfChange + numberOfLinesChanged);
+                    MyWindowControl.CurrentCodeControl.CodeControlBranches.Add(id, codeControlBranchInfo);
 
                     if (MyWindowControl.controlEditorAdornment != null)
                     {
-                        CodeControlEditorAdornment.CreateVisuals(null);
+                        MyWindowControl.currentDispatcher.Invoke(new Action(() =>
+                        {
+                            CodeControlEditorAdornment.CreateEditorVisuals(null);
+                        }));
                     }
                 }
 

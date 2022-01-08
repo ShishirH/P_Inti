@@ -270,5 +270,5 @@ var SIGNAL_EMITTER_FILL = "#fcc603"
 var WHEN_WIDGET_FILL = "#B3CDE3";
 var builtInTypes = ["bool", "byte", "sbyte", "char", "decimal", "double", "float", "int", "uint", "nint", "nuint", "long", "ulong", "short", "ushort", "string"];
 var colorsArray = ['#FF7F00', '#24A222', '#1776B6', '#E574C3', '#00BED1', '#9564BF'];
-var desaturatedColorsArray = ['#b37f4d', '#497c48', '#476d86', '#c396b5', '#3f8b92', '#937fa4'];
+var desaturatedColorsArray = ['#ffbf80', '#72a372', '#6d98b5', '#e6a1d1', '#69c8d1', '#a486bf'];
 var codeControlsOnCanvas = [];

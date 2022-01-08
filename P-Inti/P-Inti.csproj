@@ -60,6 +60,7 @@
     <Compile Include="CodeAdornment.cs" />
     <Compile Include="CodeAdornmentTextViewCreationListener.cs" />
     <Compile Include="CodeAnalyzer.cs" />
+    <Compile Include="CodeControlBranchInfo.cs" />
     <Compile Include="CodeControlEditorAdornment.cs" />
     <Compile Include="CodeControlEditorAdornmentTextViewCreationListener.cs" />
     <Compile Include="CodeControlInfo.cs" />

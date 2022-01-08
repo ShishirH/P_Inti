@@ -56,7 +56,7 @@ namespace P_Inti
         {
             foreach (ITextViewLine line in e.NewOrReformattedLines)
             {
-                CodeControlEditorAdornment.CreateVisuals(line);
+                CodeControlEditorAdornment.CreateEditorVisuals(line);
             }
         }
 
@@ -64,52 +64,70 @@ namespace P_Inti
         /// Adds the scarlet box behind the 'a' characters within the given line
         /// </summary>
         /// <param name="line">Line to add the adornments</param>
-        public static void CreateVisuals(ITextViewLine line)
+        public static void CreateEditorVisuals(ITextViewLine line)
         {
             IWpfTextViewLineCollection textViewLines = CodeControlEditorAdornment.view.TextViewLines;
 
-            foreach (KeyValuePair<string, CodeControlInfo> codeControlInfoPair in MyWindowControl.codeControlInfos)
+            foreach (KeyValuePair<string, CodeControlInfo> codeControlInfoPair in MyWindowControl.CodeControlInfos)
             {
                 string id = codeControlInfoPair.Key;
                 CodeControlInfo codeControlInfo = codeControlInfoPair.Value;
 
-                SolidColorBrush brush = new SolidColorBrush(codeControlInfo.SaturatedColor);
+                Color color;
+
+                if (codeControlInfo == MyWindowControl.CurrentCodeControl)
+                {
+                    color = codeControlInfo.SaturatedColor;
+                }
+                else
+                {
+                    color = codeControlInfo.UnsaturatedColor;
+                }
+
+                SolidColorBrush brush = new SolidColorBrush(color);
                 brush.Freeze();
 
-                SolidColorBrush penBrush = new SolidColorBrush(codeControlInfo.SaturatedColor);
+                SolidColorBrush penBrush = new SolidColorBrush(color);
                 penBrush.Freeze();
                 Pen pen = new Pen(penBrush, 0.5);
                 pen.Freeze();
 
-                for (int charIndex = textViewLines.FirstVisibleLine.Start; charIndex < textViewLines.LastVisibleLine.End; charIndex++)
+                foreach (KeyValuePair<string, CodeControlBranchInfo> codeControlBranchInfoPair in codeControlInfo.CodeControlBranches)
                 {
-                    int currentLine = textViewLines.FormattedSpan.Snapshot.GetLineNumberFromPosition(charIndex);
+                    string branchId = codeControlBranchInfoPair.Key;
+                    CodeControlBranchInfo codeControlBranchInfo = codeControlBranchInfoPair.Value;
 
-                    if (currentLine < codeControlInfo.StartLine || currentLine > codeControlInfo.EndLine)
+                    for (int charIndex = textViewLines.FirstVisibleLine.Start; charIndex < textViewLines.LastVisibleLine.End; charIndex++)
                     {
-                        continue;
-                    }
+                        int currentLine = textViewLines.FormattedSpan.Snapshot.GetLineNumberFromPosition(charIndex);
 
-                    SnapshotSpan span = new SnapshotSpan(CodeControlEditorAdornment.view.TextSnapshot, Span.FromBounds(charIndex, charIndex + 1));
-                    Geometry geometry = textViewLines.GetMarkerGeometry(span);
-                    if (geometry != null)
-                    {
-                        var drawing = new GeometryDrawing(brush, pen, geometry);
-                        drawing.Freeze();
-
-                        var drawingImage = new DrawingImage(drawing);
-                        drawingImage.Freeze();
-
-                        var image = new Image
+                        if (currentLine < codeControlBranchInfo.StartLine || currentLine > codeControlBranchInfo.EndLine)
                         {
-                            Source = drawingImage,
-                        };
+                            continue;
+                        }
 
-                        // Align the image with the top of the bounds of the text geometry
-                        Canvas.SetLeft(image, geometry.Bounds.Left);
-                        Canvas.SetTop(image, geometry.Bounds.Top);
+                        SnapshotSpan span = new SnapshotSpan(CodeControlEditorAdornment.view.TextSnapshot, Span.FromBounds(charIndex, charIndex + 1));
+                        Geometry geometry = textViewLines.GetMarkerGeometry(span);
+                        if (geometry != null)
+                        {
+                            var drawing = new GeometryDrawing(brush, pen, geometry);
+                            drawing.Freeze();
 
-                        CodeControlEditorAdornment.layer.AddAdornment(AdornmentPositioningBehavior.TextRelative, span, null, image, null);
+                            var drawingImage = new DrawingImage(drawing);
+                            drawingImage.Freeze();
+
+                            var image = new Image
+                            {
+                                Source = drawingImage,
+                            };
+
+                            // Align the image with the top of the bounds of the text geometry
+                            Canvas.SetLeft(image, geometry.Bounds.Left);
+                            Canvas.SetTop(image, geometry.Bounds.Top);
+
+                            CodeControlEditorAdornment.layer.AddAdornment(AdornmentPositioningBehavior.TextRelative, span, null, image, null);
+                        }
+
                     }
 
                 }

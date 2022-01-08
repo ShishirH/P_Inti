@@ -14,11 +14,11 @@ class CodeControlBranchDelete {
         background.oldRender = background.render;
         background.render = function (ctx) {
             ctx.save();
-            ctx.font = "40px Helvetica";
+            ctx.font = "28px Helvetica";
             ctx.fillStyle = "DarkRed"
             background.oldRender(ctx);
             var center = background.getPointByOrigin('center', 'center');
-            ctx.fillText("-", center.x - 4, center.y + 12);
+            ctx.fillText("🗑", center.x - 8, center.y + 10);
             ctx.restore();
         };
 
