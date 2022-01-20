@@ -1754,6 +1754,22 @@ class ArraySymbol extends ConnectableWidget {
             }
         });
 
+        background.toJson = function () {
+            let json = {};
+
+            json['value'] = background.value;
+            json['name'] = background.name;
+            json['type'] = background.type;
+            json['file'] = background.fileName;
+            json['fileName'] = background.fileName;
+            json['lineNumber'] = background.lineNumber;
+            json['initialValue'] = background.initialValue;
+            json['x'] = background.left;
+            json['y'] = background.top;
+            json['kind'] = "ArraySymbol";
+            return json;
+        }
+
         function getArrayDimensions(initialValue) {
             let indexOfOpeningBrace = initialValue.indexOf('[');
             let indexOfClosingBrace = initialValue.indexOf(']');
@@ -1779,5 +1795,24 @@ class ArraySymbol extends ConnectableWidget {
 
         registerProgvolverObject(this);
         return background;
+    }
+
+    static fromJson (json) {
+        return new ArraySymbol({
+            value: json['value'],
+            type: json['type'],
+            name: json['name'],
+            file: json['file'],
+            fileName: json['fileName'],
+            lineNumber: json['lineNumber'],
+            initialValue: json['initialValue'],
+            x: json['x'],
+            left: json['x'],
+            y: json['y'],
+            top: json['y'],
+            isCompressed: true,
+            isMember: true,
+            movable: true
+        });
     }
 }

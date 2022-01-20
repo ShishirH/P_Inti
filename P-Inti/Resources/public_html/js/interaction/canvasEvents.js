@@ -1989,6 +1989,8 @@ function bindCanvasDefaultEvents(canvas) {
                                         stroke: '#F02466',
                                         left: screenCoords.x,
                                         top: screenCoords.y,
+                                        x: screenCoords.x,
+                                        y: screenCoords.y,
                                         kind: response.Kind_String,
                                         type: response.dataType,
                                         name: response.Name,

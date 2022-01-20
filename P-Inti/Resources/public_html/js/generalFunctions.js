@@ -2079,6 +2079,8 @@ function onCanvasLoadComplete(canvasString) {
 
     if (kind === 'ProgvolverSymbol') {
         ProgvolverSymbol.fromJson(obj);
+    } else if (kind === 'ReferenceWidget') {
+        ReferenceWidget.fromJson(obj);
     }
 }
 
