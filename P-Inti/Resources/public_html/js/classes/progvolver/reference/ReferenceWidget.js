@@ -7,8 +7,6 @@ class ReferenceWidget {
         options.width = options.width || 70;
         options.rx = options.rx || 5;
         options.ry = options.ry || 5;
-        options.y = 250;
-        options.x = 250;
         options.fill = 'transparent';//options.fill || 'white';//"#B3CDE3";
         options.stroke = 'transparent';//options.stroke || 'white';//"#B3CDE3";
         options.strokeWidth = options.strokeWidth || 0;

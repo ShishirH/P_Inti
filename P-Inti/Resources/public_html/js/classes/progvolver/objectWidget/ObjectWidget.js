@@ -51,7 +51,6 @@ class ObjectWidget {
 
             background.rightPane.objectMemberSelectionArray.forEach(function (child) {
                 child.selectButton.visibility = true;
-                child.setVisibility(true);
             });
 
             background.innerReferences.forEach(function (innerMember) {
@@ -165,6 +164,7 @@ class ObjectWidget {
                 }
             });
             background.collapseButton.compress();
+            console.log("Compressing right pane")
             background.rightPane.compress();
             background.rightPane.objectMemberSelectionArray.forEach(function (child) {
                 child.compress();
@@ -174,15 +174,24 @@ class ObjectWidget {
         this.addAll = function () {
             console.log("Entered addAll");
             background.children.forEach(function (child) {
-                var contents = child.childrenOnTop || child.children;
-                if (contents) {
-                    contents.forEach(function (content) {
-                        content.expand && content.expand();
-                    })
+                if (child !== background.rightPane) {
+                    var contents = child.childrenOnTop || child.children;
+                    if (contents) {
+                        contents.forEach(function (content) {
+                            content.expand && content.expand();
+                        })
+                    }
+                    child.expand && child.expand();
                 }
-                child.expand && child.expand();
             });
             background.expand && background.expand();
+
+            background.rightPane.compress();
+            background.rightPane.objectMemberSelectionArray.forEach(function (child) {
+                child.compress();
+                console.log(child.setVisibility)
+                child.setVisibility(false);
+            });
         }
 
         this.removeAll = function () {
@@ -261,6 +270,7 @@ class ObjectWidget {
                     background.rightPane.compress();
                     background.rightPane.objectMemberSelectionArray.forEach(function (child) {
                         child.compress();
+                        child.setVisibility(false);
                         //child.selectButton.expand();
                     });
                     background.collapseButton.compress();
@@ -269,6 +279,7 @@ class ObjectWidget {
                     background.rightPane.expand();
                     background.rightPane.objectMemberSelectionArray.forEach(function (child) {
                         child.expand();
+                        child.setVisibility(true);
                         //child.selectButton.expand();
                     });
                     background.collapseButton.expand();
@@ -277,6 +288,7 @@ class ObjectWidget {
 
             background.children.push(collapseButton);
             background.collapseButton = collapseButton;
+            background.collapseButton.setCoords();
         }
         background.addCollapseButton();
 
