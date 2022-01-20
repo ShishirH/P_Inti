@@ -2037,8 +2037,50 @@ function onLogFileReadComplete(event, file) {
     processLogFileContent(logFileContent);
 }
 
+function objToString (obj) {
+    let str = '';
+    for (const [p, val] of Object.entries(obj)) {
+        str += `${p}::${val}\n`;
+    }
+    return str;
+}
 
+function saveCanvasState() {
+    console.log("persistent entries");
+    console.log(PERSISTENT_CANVAS_ENTRIES[0]);
+    var text = (PERSISTENT_CANVAS_ENTRIES[0].toJson());
+    var filename = "canvasContent";
+    var blob = new Blob([text], {type: "text/plain;charset=utf-8"});
+    window.jsHandler.saveCanvasFile({content: text})
+}
 
+function handleCanvasLoad(files) {
+    var file = files[0];
+    var reader = new FileReader();
+
+    reader.onload = function (e) {
+        let output = e.target.result;
+        onCanvasLoadComplete(output);
+    };
+
+    if (file) {
+        reader.readAsText(file);
+    }
+}
+
+function onCanvasLoadComplete(canvasString) {
+    console.log("Canvas string is: ");
+    console.log(canvasString);
+    const obj = JSON.parse(canvasString);
+
+    console.log("Kind is: ");
+    let kind = obj['kind'];
+    console.log(kind);
+
+    if (kind === 'ProgvolverSymbol') {
+        ProgvolverSymbol.fromJson(obj);
+    }
+}
 
 function onDataFileReadComplete(event, file) {
 

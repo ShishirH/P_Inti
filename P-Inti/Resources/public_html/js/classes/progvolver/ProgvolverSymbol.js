@@ -380,6 +380,121 @@ class ProgvolverSymbol extends ConnectableWidget {
             //alert("event:mousedblclick");
         });
 
+        background.addInteractionEvents = function () {
+            var movementInteractionEvent = new MovementInteractionEvent({
+                parent: background
+            });
+
+            var disappearanceInteraction = new DisappearanceInteractionEvent({
+                parent: background
+            });
+
+            var originParent = {originX: 'right', originY: 'top'};
+            var originChild = {originX: 'left', originY: 'bottom'};
+
+            let scaleX, scaleY, opacity;
+
+            scaleX = 0;
+            scaleY = 0;
+            opacity = 0;
+
+            background.addChild(disappearanceInteraction, {
+                whenCompressed: {
+                    x: 0, y: -3,
+                    scaleX: scaleX, scaleY: scaleY, opacity: opacity,
+                    originParent: originParent,
+                    originChild: originChild
+                },
+                whenExpanded: {
+                    x: 0, y: -3,
+                    scaleX: scaleX, scaleY: scaleY, opacity: opacity,
+                    originParent: originParent,
+                    originChild: originChild
+                },
+                movable: false
+            });
+
+            background.addChild(movementInteractionEvent, {
+                whenCompressed: {
+                    x: 0, y: -23,
+                    scaleX: scaleX, scaleY: scaleY, opacity: opacity,
+                    originParent: originParent,
+                    originChild: originChild
+                },
+                whenExpanded: {
+                    x: 0, y: -23,
+                    scaleX: scaleX, scaleY: scaleY, opacity: opacity,
+                    originParent: originParent,
+                    originChild: originChild
+                },
+                movable: false
+            });
+
+            canvas.add(movementInteractionEvent);
+            canvas.add(disappearanceInteraction);
+            background.movementInteractionEvent = movementInteractionEvent;
+            background.disappearanceInteractionEvent = disappearanceInteraction;
+
+            background.registerListener('mouseup', function(event) {
+                var rightClick = (event.e.which) ? (event.e.which == 3) : (event.e.which == 2);
+
+                if (rightClick) {
+                    background.expandedOptions[background.movementInteractionEvent.id].scaleX = 1;
+                    background.expandedOptions[background.movementInteractionEvent.id].scaleY = 1;
+                    background.expandedOptions[background.movementInteractionEvent.id].opacity = 1;
+
+                    background.compressedOptions[background.movementInteractionEvent.id].scaleX = 1;
+                    background.compressedOptions[background.movementInteractionEvent.id].scaleY = 1;
+                    background.expandedOptions[background.movementInteractionEvent.id].opacity = 1;
+
+                    background.expandedOptions[background.disappearanceInteractionEvent.id].scaleX = 1;
+                    background.expandedOptions[background.disappearanceInteractionEvent.id].scaleY = 1;
+                    background.expandedOptions[background.disappearanceInteractionEvent.id].opacity = 1;
+
+                    background.compressedOptions[background.disappearanceInteractionEvent.id].scaleX = 1;
+                    background.compressedOptions[background.disappearanceInteractionEvent.id].scaleY = 1;
+                    background.expandedOptions[background.disappearanceInteractionEvent.id].opacity = 1;
+
+                    background.expand();
+                    background.positionObjects();
+
+                }
+            });
+
+            background.registerListener('deselected', function (options) {
+                if (!background.doNotCompressWhenCanvasClicked) {
+                    background.expandedOptions[background.movementInteractionEvent.id].scaleX = 0;
+                    background.expandedOptions[background.movementInteractionEvent.id].scaleY = 0;
+                    background.expandedOptions[background.movementInteractionEvent.id].opacity = 0;
+
+                    background.compressedOptions[background.movementInteractionEvent.id].scaleX = 0;
+                    background.compressedOptions[background.movementInteractionEvent.id].scaleY = 0;
+                    background.expandedOptions[background.movementInteractionEvent.id].opacity = 0;
+
+                    background.expandedOptions[background.disappearanceInteractionEvent.id].scaleX = 0;
+                    background.expandedOptions[background.disappearanceInteractionEvent.id].scaleY = 0;
+                    background.expandedOptions[background.disappearanceInteractionEvent.id].opacity = 0;
+
+                    background.compressedOptions[background.disappearanceInteractionEvent.id].scaleX = 0;
+                    background.compressedOptions[background.disappearanceInteractionEvent.id].scaleY = 0;
+                    background.expandedOptions[background.disappearanceInteractionEvent.id].opacity = 0;
+
+                    background.compress({duration: theWidget.expandCompressDuration});
+                    background.positionObjects();
+
+                    if (!iVoLVER.util.isUndefined(theWidget.startLine) && !iVoLVER.util.isUndefined(theWidget.endLine)) {
+                        if (window.jsHandler && window.jsHandler.onObjectDeselected) {
+                            window.jsHandler.onObjectDeselected({id: background.id}).then(function (response) {
+                                console.log(response);
+                            });
+                        }
+                    }
+                }
+            });
+        }
+
+        background.addInteractionEvents();
+
         this.addProgvolverSymbolName = function () {
             var background = this;
 
@@ -646,6 +761,21 @@ class ProgvolverSymbol extends ConnectableWidget {
             background.expand();
         }
 
+        background.toJson = function () {
+            let json = {};
+
+            json['value'] = background.value;
+            json['type'] = background.dataType;
+            json['name'] = background.name;
+            json['file'] = background.file;
+            json['fileName'] = background.fileName;
+            json['x'] = background.left;
+            json['y'] = background.top;
+            json['fill'] = background.fill,
+            json['kind'] = "ProgvolverSymbol";
+            return JSON.stringify(json);
+        }
+
         background.clone = function () {
             return new ProgvolverSymbol({
                 value: background.value,
@@ -667,7 +797,28 @@ class ProgvolverSymbol extends ConnectableWidget {
         if (!this.doNotRegisterObject)
             registerProgvolverObject(this);
 
+        console.log("Adding to persistent entry")
+        PERSISTENT_CANVAS_ENTRIES.push(background);
+        console.log("Persistent entry is now");
+        console.log(PERSISTENT_CANVAS_ENTRIES);
         return background;
     }
+
+    static fromJson (json) {
+        console.log("This is being called");
+
+        let obj =  new ProgvolverSymbol({
+            value: json['value'],
+            type: json['type'],
+            name: json['name'],
+            file: json['file'],
+            fileName: json['fileName'],
+            x: json['x'], y: json['y'],
+            fill: json['fill']
+        });
+
+        canvas.add(obj);
+    }
+
 }
 

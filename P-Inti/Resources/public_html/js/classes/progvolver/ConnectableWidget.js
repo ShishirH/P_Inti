@@ -5,6 +5,7 @@ class ConnectableWidget {
         this.expandCompressDuration = 100;
         this.addWithAnimation = options.addWithAnimation;
         this.background = this.createBackground(baseClass, options);
+        var backgroundObject = this.background;
         this.label = options.label || '';
         !options.doNotAddLabelObject && this.addLabelObject(options.isMember);
         this.addConnectionDropableArea(options);
@@ -15,11 +16,6 @@ class ConnectableWidget {
         this.background.childrenOnTop = new Array();
 
         this.id = this.background.id;
-
-        /*this.fileName = options.fileName;
-         this.startLine = options.startLine;
-         this.endLine = options.endLine;
-         this.lineNumber = options.lineNumber;*/
 
         this.background.setLabel = function (label) {
 
@@ -53,6 +49,7 @@ class ConnectableWidget {
             // 'this' here refers to the variable background
             this[window.sliderDimension] = time;
             this.currentTime = time;
+            backgroundObject.currentTime = time;
             if (this.references) {
                 var filteredReferences = this.references.filter(item => item[window.sliderDimension] <= time);
                 var lastReference = filteredReferences[filteredReferences.length - 1];
@@ -66,6 +63,54 @@ class ConnectableWidget {
                     this.onValuesUpdated && this.onValuesUpdated(this.values[this.values.length - 1]);
                     /*console.log(this.history);
                      console.log(this.values);*/
+                }
+            }
+
+
+            if (backgroundObject.movementInteractionEvent) {
+                if (backgroundObject.movementInteractionEvent.timeOfMovement != -1) {
+                    if (backgroundObject.currentTime < backgroundObject.movementInteractionEvent.timeOfMovement) {
+                        backgroundObject.left = backgroundObject.movementInteractionEvent.oldXPosition;
+                        backgroundObject.top = backgroundObject.movementInteractionEvent.oldYPosition;
+                        backgroundObject.positionObjects();
+                    } else {
+                        backgroundObject.left = backgroundObject.movementInteractionEvent.newXPosition;
+                        backgroundObject.top = backgroundObject.movementInteractionEvent.newYPosition;
+                        backgroundObject.positionObjects();
+                    }
+                }
+            }
+
+            if (backgroundObject.disappearanceInteractionEvent) {
+                if (backgroundObject.disappearanceInteractionEvent.timeOfDisappearance != -1) {
+                    if (backgroundObject.currentTime < backgroundObject.disappearanceInteractionEvent.timeOfDisappearance) {
+                        if (!backgroundObject.disappearanceInteractionEvent.isParentOnCanvas) {
+                            canvas.add(backgroundObject);
+                            backgroundObject.childrenOnTop.forEach(function (child) {
+                                canvas.add(child);
+                            })
+
+                            backgroundObject.children.forEach(function (child) {
+                                canvas.add(child);
+                            })
+
+                            backgroundObject.disappearanceInteractionEvent.isParentOnCanvas = true;
+                            backgroundObject.positionObjects();
+                        }
+                    } else {
+                        if (backgroundObject.disappearanceInteractionEvent.isParentOnCanvas) {
+                            canvas.remove(backgroundObject);
+                            backgroundObject.childrenOnTop.forEach(function (child) {
+                                canvas.remove(child);
+                            })
+
+                            backgroundObject.children.forEach(function (child) {
+                                canvas.remove(child);
+                            })
+
+                            backgroundObject.disappearanceInteractionEvent.isParentOnCanvas = false;
+                        }
+                    }
                 }
             }
         };

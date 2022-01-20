@@ -37,6 +37,7 @@ using Microsoft.CodeAnalysis.Text;
 using Microsoft.CodeAnalysis.FindSymbols;
 using Microsoft.VisualStudio.Text;
 using Newtonsoft.Json;
+using System.Windows.Forms;
 
 namespace P_Inti
 {
@@ -1515,7 +1516,7 @@ namespace P_Inti
 
             if (startLine == null || endLine == null)
             {
-                MessageBox.Show("startLine or endLine are null");
+                System.Windows.MessageBox.Show("startLine or endLine are null");
                 return null;
             }
 
@@ -1951,6 +1952,43 @@ namespace P_Inti
                     }));
                 }
             }
+            return result;
+        }
+
+        public Dictionary<string, object> saveCanvasFile(object arg)
+        {
+            MyWindowControl.printInBrowserConsole("Saving canvas state");
+
+            Dictionary<string, object> result = new Dictionary<string, object>();
+
+            if (arg != null)
+            {
+                IDictionary<string, object> input = (IDictionary<string, object>)arg;
+                input.TryGetValue("content", out object content);
+
+                string contentStr = (string)content;
+
+                SaveFileDialog saveFileDialog1 = new SaveFileDialog();
+                saveFileDialog1.Filter = "Progvolver Persistent Canvas |*.plog";
+                saveFileDialog1.Title = "Save progvolver canvas";
+                theDispatcher.Invoke(new Action(() =>
+                {
+                    saveFileDialog1.ShowDialog();
+                }));
+
+                MyWindowControl.printInBrowserConsole("I am here");
+                // If the file name is not an empty string open it for saving.
+                if (saveFileDialog1.FileName != "")
+                {
+                    System.IO.FileStream fs =
+                        (System.IO.FileStream)saveFileDialog1.OpenFile();
+
+                    byte[] bytes = Encoding.UTF8.GetBytes(contentStr);
+                    fs.Write(bytes, 0, bytes.Length);
+                    fs.Close();
+                }
+            }
+
             return result;
         }
 
