@@ -67,6 +67,9 @@ class ObjectWidget {
         this.value = options.value || '';
         background.label = options.label || options.fileName && options.lineNumber ? options.fileName + ' (' + options.lineNumber + ')' : options.fileName || '';
         background.objectMembersDict = options.objectMembers;
+
+        console.log("Object members dict is: ");
+        console.log(background.objectMembersDict);
         background.objectMembers = [];
 
         background.objectMembers = [];

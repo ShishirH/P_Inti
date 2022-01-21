@@ -2056,9 +2056,6 @@ function bindCanvasDefaultEvents(canvas) {
 
                                     var objectWidget = new ObjectWidget({
                                         value: '',
-                                        containingType: response.ContainingType,
-                                        containingSymbol: response.ContainingSymbol,
-                                        containingNamespace: response.ContainingNamespace,
                                         kind: response.Kind_String,
                                         type: response.dataType,
                                         name: response.Name,

@@ -539,15 +539,18 @@ class ReferenceWidget {
 
     static fromJson (json) {
         let isArray = false;
-        console.log("Inside reference from json");
         let referencedObjJson = json['referencedObject'];
-        let referencedObj;
-        console.log(referencedObjJson);
+        let referencedObj = null;
 
+        console.log("The referencedObjJson is: ");
+        console.log(referencedObjJson);
         if (referencedObjJson['kind'] === "ArraySymbol") {
             referencedObj = ArraySymbol.fromJson(referencedObjJson);
             isArray = true;
         }
+        // } else if (referencedObjJson['kind'] === "ObjectWidget") {
+        //     referencedObj = ObjectWidget.fromJson(referencedObjJson)
+        // }
 
         console.log("Json is: ");
         console.log(json);
