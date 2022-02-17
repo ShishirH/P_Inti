@@ -154,7 +154,7 @@ class ArraySymbol extends ConnectableWidget {
 
         this.value = options.value || '';
 
-        var defaultValues = {"int": 0, "double": 0.0, "String": ""};
+        var defaultValuesForType = {"int": 0, "double": 0.0, "String": ""};
 
         var arrayElementsArray = [];
         background.arrayElementsArray = arrayElementsArray;
@@ -181,6 +181,8 @@ class ArraySymbol extends ConnectableWidget {
         background.registerListener('added', function (options) {
             if (!background.isInitialized) {
                 background.setCoords();
+                console.log("The initial value is");
+                console.log(background.initialValue);
                 //background.addBuffers();
                 background.addInitialArrayElements(background.initialValue);
                 background.addRotationButton();
@@ -194,15 +196,17 @@ class ArraySymbol extends ConnectableWidget {
             }
         });
 
-        var rows;
-        var columns;
+        let rows;
+        let columns;
+        let arrayValues;
         let objectMembersIndex = 0;
         this.addInitialArrayElements = function (initialValue) {
             let maxWidth = 200;
-            let arrayDimensions = getArrayDimensions(initialValue);
+            let arrayDimensionsAndDefaultValue = getArrayDimensionsAndDefaultValue(initialValue, background.dataType);
 
-            rows = arrayDimensions[0];
-            columns = arrayDimensions[1];
+            rows = arrayDimensionsAndDefaultValue[0];
+            columns = arrayDimensionsAndDefaultValue[1];
+            arrayValues = arrayDimensionsAndDefaultValue[2];
 
             background.rows = rows;
             background.columns = columns;
@@ -224,28 +228,34 @@ class ArraySymbol extends ConnectableWidget {
                     element = {};
                     element["row"] = i;
                     element["column"] = j;
-                    element["value"] = defaultValues[dataType];
 
-                    if (j == 0) {//= Create new row
+                    if (arrayValues.length === 0) {
+                        element["value"] = defaultValuesForType[dataType];
+                    } else {
+                        console.log("Array values is: ");
+                        console.log(arrayValues);
+                        element["value"] = (columns > 1) ? arrayValues[i][j] : arrayValues[0][i];
+                    }
+
+                    if (j === 0) {//= Create new row
                         dataItem.push([]);
                     }
                     dataItem[i].push(element);
 
-                    if (columns == 1) { //1D array
-                        if (i == 0)
+                    if (columns === 1) { //1D array
+                        if (i === 0)
                             xPosition = 45;
                         else
                             xPosition = xPosition + arrayElementsArray[i - 1][0].width;
                     } else {
-                        if (j == 0)
+                        if (j === 0)
                             xPosition = 45;
                         else
                             xPosition = xPosition + arrayElementsArray[i][j - 1].width;
                     }
-                    LOG && console.log("Index: [" + i + ", " + j + " element: " + dataItem[i][j].value);
 
                     let index;
-                    if (columns == 1) //1D Array
+                    if (columns === 1) //1D Array
                         index = i;
                     else
                         index = i + ',' + j;
@@ -1770,27 +1780,69 @@ class ArraySymbol extends ConnectableWidget {
             return json;
         }
 
-        function getArrayDimensions(initialValue) {
+        function getArrayDimensionsAndDefaultValue(initialValue, type) {
             let indexOfOpeningBrace = initialValue.indexOf('[');
             let indexOfClosingBrace = initialValue.indexOf(']');
-            let rows, columns;
+            let rows, columns, defaultValue = [];
 
             LOG && console.log("Initial value: " + initialValue.substring(indexOfOpeningBrace + 1, indexOfClosingBrace));
 
-            // 2D array
-            if (initialValue.substring(indexOfOpeningBrace + 1, indexOfClosingBrace).indexOf(',') != -1) {
+            // No [] present in initialValue. Declaration is of the form int[] array = {1, 2, 3, 4, 5}, or { {1, 2}, {3, 4},  {5, 6} } OR
+            // There are braces, but it doesn't contain the size. For instance int[] arr = new int[] {1, 2, 3, 4, 5}
+            if ((indexOfClosingBrace === -1 && indexOfOpeningBrace === -1) ||
+                (indexOfClosingBrace === indexOfOpeningBrace + 1)) {
+                let firstOpener = initialValue.indexOf('{');
+                let firstCloser = initialValue.lastIndexOf('}');
+
+                let innerContents = initialValue.substring(firstOpener + 1, firstCloser).trim();
+                console.log("Inner contents are: " + innerContents);
+                if (innerContents.indexOf('{') === -1) {
+                    // 1, 2, 3, 4, 5 -> 1D array
+                    let rowNumbers = innerContents.split(',').map(function(item) {
+                        return item.trim();
+                    });
+
+                    rows = rowNumbers.length;
+                    columns = 1;
+                    defaultValue.push(rowNumbers);
+                } else {
+                    // { {1, 2}, {3, 4},  {5, 6} } -> 2D array
+                    let arrayElementStartIndex = 0;
+                    let rowIndex = 0;
+                    let elementString = innerContents;
+
+                    while(elementString.substring(arrayElementStartIndex).indexOf('{') !== -1) {
+                        elementString = innerContents.substring(arrayElementStartIndex);
+                        let braceStartIndex = elementString.indexOf('{');
+                        let braceEndIndex = elementString.indexOf('}');
+
+                        let arrayRowNumbers = elementString.substring(braceStartIndex + 1, braceEndIndex).split(',').map(function(item) {
+                            return item.trim();
+                        });
+
+                        // Only 2D arrays supported for now
+                        defaultValue.push(arrayRowNumbers);
+                        rowIndex++;
+                        arrayElementStartIndex = braceEndIndex + 1 + innerContents.substring(braceEndIndex + 1).indexOf(',') + 1;
+                    }
+
+                    rows = defaultValue.length;
+                    columns = defaultValue[0].length;
+                }
+            } else if (initialValue.substring(indexOfOpeningBrace + 1, indexOfClosingBrace).indexOf(',') !== -1) {
+                // 2D array with no initialization -> new int[3, 4]
                 let index = initialValue.indexOf(',');
-                LOG && console.log("Row string: " + initialValue.substring(indexOfOpeningBrace + 1, index));
                 rows = parseInt(initialValue.substring(indexOfOpeningBrace + 1, index));
                 columns = parseInt(initialValue.substring(index + 1, indexOfClosingBrace));
-                LOG && console.log("Columns string: " + initialValue.substring(index + 1, indexOfClosingBrace));
-                LOG && console.log("Rows: " + rows + " and columns: " + columns);
             } else {
                 rows = parseInt(initialValue.substring(indexOfOpeningBrace + 1, indexOfClosingBrace));
                 columns = 1;
             }
 
-            return [rows, columns]
+            console.log("Rows are: " + rows);
+            console.log(columns);
+            console.log(defaultValue);
+            return [rows, columns, defaultValue]
         }
 
         registerProgvolverObject(this);
