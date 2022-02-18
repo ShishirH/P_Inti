@@ -176,6 +176,12 @@
         <script type="text/javascript" src="js/classes/progvolver/codeControl/Branch/CodeControlBranchUpdate.js"></script>
         <script type="text/javascript" src="js/classes/progvolver/codeControl/Branch/CodeControlBranchDelete.js"></script>
 
+        <script type="text/javascript" src="js/interaction/Undo_Redo_Events/MovingEvent.js"></script>
+        <script type="text/javascript" src="js/interaction/Undo_Redo_Events/CreationEvent.js"></script>
+
+        <script type="text/javascript" src="js/interaction/interactionEvents/MovementInteractionEvent.js"></script>
+        <script type="text/javascript" src="js/interaction/interactionEvents/DisappearanceInteractionEvent.js"></script>
+
         <link rel="stylesheet" type="text/css" href="./js/spectrum.min.css"/>
         <script src="./js/spectrum.min.js"></script>
         <script src="./js/d3.v6.js"></script>
@@ -206,9 +212,16 @@
             <!--            <li class="verticalLeftDivider"><a onclick="readSVGFileAsData()"><i class="fa                 fa-file-code-o "></i></a></li>
                         <li> <input type="file" accept=".svg" id="dataSVGFileInput" name="someSVGDataFile" onchange="handleSVGFiles(this, this.files, false)" style="visibility:hidden;position:absolute;top:-50;left:-50"/></li>-->
 
-            <li class="verticalLeftDivider"><a href="javascript:loadLogfile();"><i class="fa-folder-open-o icon-large"></i></a></li>
-            <li> <input type="file" accept=".log" id="logFileInput" name="someDatafile" onchange="handleLogfiles(this.files)" style="visibility:hidden;position:absolute;top:-50;left:-50"/></li>
+<!--            <li class="verticalLeftDivider"><a href="javascript:loadLogfile();"><i class="fa-folder-open-o icon-large"></i></a></li>-->
+<!--            <li> <input type="file" accept=".log" id="logFileInput" name="someDatafile" onchange="handleLogfiles(this.files)" style="visibility:hidden;position:absolute;top:-50;left:-50"/></li>-->
 
+            <li class="verticalLeftDivider"><a href="javascript:loadLogfile();"><i class="fa-folder-open-o icon-large"></i></a></li>
+            <li> <input type="file" id="logFileInput" name="someDatafile" onchange="handleCanvasLoad(this.files)" style="visibility:hidden;position:absolute;top:-50;left:-50"/></li>
+            <li class="verticalLeftDivider verticalRightDivider verticalRightDivider2"><a onclick="saveCanvasState()"><i class="fa fa-floppy-o "></i></a></li>
+
+            <!-- UNDO AND REDO -->
+            <li class = "verticalLeftDivider"><a href = "javascript:void(0);" onclick="undoCanvas()"><i id="undoCanvas" class="fa fa-undo "></i></a></li>
+            <li class = "verticalLeftDivider"><a href = "javascript:void(0);" onclick="redoCanvas()"><i id="redoCanvas" class="fa fa-repeat "></i></a></li>
             <li class="verticalLeftDivider verticalRightDivider verticalRightDivider2"><a href="javascript:void(0);" onclick="reloadPage()"><i id="openWebPageButton" class="fa fa-refresh "></i></a></li>
 
             <!-- ZOOM -->
@@ -1478,7 +1491,6 @@
         //
         // canvas.add(arrayControls);
         // canvas.add(codeControls);
-
     </script>
 </body>
 </html>

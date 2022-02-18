@@ -1,7 +1,7 @@
 class CodeControlBranch {
     constructor(options) {
         options.height = 30;
-        options.width = 200;
+        options.width = options.parent.width - 6;
         options.fill = "white";
         options.stroke = options.stroke || darken(options.fill);
         options.strokeWidth = options.strokeWidth || 1;
@@ -12,11 +12,12 @@ class CodeControlBranch {
         background.childrenOnTop = [];
         background.id = options.id;
         background.branchName = options.branchName;
+        background.isOnCanvas = false;
 
         background.addName = function () {
             let labelObject = new fabric.IText("", {
-                fontFamily: 'Arial',
-                fill: '#0366d6',
+                fontFamily: 'Trebuchet MS',
+                fill: '#333',
                 fontSize: 14,
                 hasControls: false,
                 hasBorders: false,
@@ -78,6 +79,7 @@ class CodeControlBranch {
                 movable: false
             });
 
+            background.updateBranch = updateObject;
             background.childrenOnTop.push(updateObject);
         }
 
@@ -105,6 +107,7 @@ class CodeControlBranch {
                 movable: false
             });
 
+            background.deleteBranch = deleteObject;
             background.childrenOnTop.push(deleteObject);
         }
 
@@ -113,18 +116,36 @@ class CodeControlBranch {
         background.addDelete();
 
         background.registerListener('added', function () {
-            addChildrenToCanvas(background);
-            background.labelObject.enterEditing().selectAll();
+            if (!background.isOnCanvas) {
+                background.isOnCanvas = true;
+                addChildrenToCanvas(background);
+                background.labelObject.enterEditing().selectAll();
+            }
         });
 
-        background.registerListener('mouseup', function () {
-            if (window.jsHandler) {
-                if (window.jsHandler.goToControlBranch) {
+        background.registerListener('mouseup', function (event) {
+            if (window.selectedCodeControl === background.parent) {
+                if (window.jsHandler && window.jsHandler.goToControlBranch) {
                     window.jsHandler.goToControlBranch({branchName: background.branchName});
                     console.log("went to branch: " + background.branchName);
 
                     background.parent.updateSelectedBranch(background);
                 }
+            } else {
+                if (window.jsHandler && window.jsHandler.goToControlBranch) {
+                    // First, go to the selected branch in the active code control again.
+                    window.jsHandler.goToControlBranch({branchName: window.selectedCodeControl.selectedBranch});
+                    background.parent.updateSelectedBranch(background);
+
+                    // Then, merge the two branches together
+                    if (window.jsHandler.mergeBranches) {
+                        window.jsHandler.mergeBranches({
+                            branchOne: window.selectedCodeControl.selectedBranch,
+                            branchTwo: background.branchName
+                        });
+                    }
+                }
+
             }
         });
 
@@ -143,21 +164,21 @@ class CodeControlBranch {
                     positionIndex++;
                 });
 
+                let additionYPosition = CodeControlBranch.getYPositionForIndex(positionIndex);
+                background.parent.compressedOptions[background.parent.controlAddition.id].y = additionYPosition;
+                background.parent.expandedOptions[background.parent.controlAddition.id].y = additionYPosition;
+
                 background.parent.positionObjects();
                 removeWidgetFromCanvas(background);
             }
         }
 
-        this.progvolverType = "Control Addition Branch";
+        this.progvolverType = "Code Control Branch";
         registerProgvolverObject(this);
         return background;
     }
 
-    getYPositionForIndex(index) {
-        return (index * 40) + 40;
-    }
-
     static getYPositionForIndex(index) {
-        return (index * 40) + 40;
+        return (index * 30) + 25;
     }
 }

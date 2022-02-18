@@ -84,6 +84,8 @@
 //
 //}
 
+window.selectedCodeControl = null;
+
 function canvasBeforeSelectionCleared(option) {
 
     // if (LOG) {
@@ -1985,6 +1987,8 @@ function bindCanvasDefaultEvents(canvas) {
                                     var referenceWidget = new ReferenceWidget({
                                         fill: '#F02466',
                                         stroke: '#F02466',
+                                        left: screenCoords.x,
+                                        top: screenCoords.y,
                                         x: screenCoords.x,
                                         y: screenCoords.y,
                                         kind: response.Kind_String,
@@ -2052,9 +2056,6 @@ function bindCanvasDefaultEvents(canvas) {
 
                                     var objectWidget = new ObjectWidget({
                                         value: '',
-                                        containingType: response.ContainingType,
-                                        containingSymbol: response.ContainingSymbol,
-                                        containingNamespace: response.ContainingNamespace,
                                         kind: response.Kind_String,
                                         type: response.dataType,
                                         name: response.Name,

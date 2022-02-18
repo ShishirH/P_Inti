@@ -1,5 +1,7 @@
 ﻿using System;
+using System.Linq;
 using System.Diagnostics;
+using System.Text.RegularExpressions;
 
 namespace P_Inti
 {
@@ -117,6 +119,10 @@ namespace P_Inti
 
             gitCheckoutProc.Start();
             gitCheckoutProc.WaitForExit();
+
+            MyWindowControl.CurrentBranch = branchName;
+            MyWindowControl.CurrentBranchID = branchName;
+
             MyWindowControl.printInBrowserConsole("Checkout out to new branch " + branchName);
         }
 
@@ -139,6 +145,9 @@ namespace P_Inti
 
             gitCheckoutProc.Start();
             gitCheckoutProc.WaitForExit();
+
+            //MyWindowControl.currentBranch = branch;
+            //MyWindowControl.currentBranchID = MyWindowControl.gitBranchID[branch];
         }
 
         public static void DeleteBranch(string solutionDir, object branch)
@@ -160,6 +169,115 @@ namespace P_Inti
 
             gitDeleteBranchProc.Start();
             gitDeleteBranchProc.WaitForExit();
+        }
+
+        public static void MergeBranches(string solutionDir, string branchOneStr, string branchTwoStr)
+        {
+            MyWindowControl.printInBrowserConsole("First branch is: " + branchOneStr);
+            MyWindowControl.printInBrowserConsole("Second branch is: " + branchTwoStr);
+
+            // Checkout to a new branch where you merge your changes
+            CodeControls.CreateAndCheckoutGitBranch(solutionDir, Utils.generateID());
+            CodeControls.MergeBranch(solutionDir, branchTwoStr);
+        }
+
+        // Merge the currently active branch and the branch in the argument
+        public static void MergeBranch(string solutionDir, string branch)
+        {
+            string command = "git -C " + solutionDir + " merge " + branch;
+            MyWindowControl.printInBrowserConsole(command);
+
+            var gitMergeBranchProc = new Process
+            {
+                StartInfo = new ProcessStartInfo
+                {
+                    FileName = "powershell.exe",
+                    Arguments = command,
+                    UseShellExecute = false,
+                    RedirectStandardOutput = false,
+                    CreateNoWindow = true
+                }
+            };
+
+            gitMergeBranchProc.Start();
+            gitMergeBranchProc.WaitForExit();
+
+        }
+
+        public static void ParseGitDiff(string solutionDir, string branchName, string id)
+        {
+            string command = "(git -C " + solutionDir + " diff -p --stat) | findstr '@@ --git'";
+            MyWindowControl.printInBrowserConsole(command);
+
+            var gitDiffProc = new Process
+            {
+                StartInfo = new ProcessStartInfo
+                {
+                    FileName = "powershell.exe",
+                    Arguments = command,
+                    UseShellExecute = false,
+                    RedirectStandardOutput = true,
+                    CreateNoWindow = true
+                }
+            };
+
+            gitDiffProc.Start();
+
+            string gitDiffString = "";
+            string fileNameString = "";
+            string linesChangedString = "";
+
+            string fileName;
+            string[] fileNameSeparator = { "b/" };
+            string[] gitChangesSeparator = { "@@" };
+            while (!gitDiffProc.StandardOutput.EndOfStream)
+            {
+                string line = gitDiffProc.StandardOutput.ReadLine();
+
+                // Diff of a new file
+                if (line.Contains("diff"))
+                {
+                    fileNameString = line;
+
+                    string[] fileNameArray = fileNameString.Split(fileNameSeparator, 2, StringSplitOptions.RemoveEmptyEntries);
+                    MyWindowControl.printInBrowserConsole("fileNameArray[0] " + fileNameArray[0]);
+                    MyWindowControl.printInBrowserConsole("fileNameArray[1] " + fileNameArray[1]);
+                    fileNameString = fileNameArray[1];
+                }
+                // Line containing changes for the file
+                else if (line.Contains("@@"))
+                {
+                    linesChangedString = line.Split(gitChangesSeparator, 2, StringSplitOptions.RemoveEmptyEntries)[0].Trim();
+                    string[] resultString =  Regex.Matches(linesChangedString, @"\d+").OfType<Match>().Select(m => m.Value).ToArray();
+
+                    // @@ -13,11 +13,22 @@ namespace GitFlow
+                    int lineOfChange = Int32.Parse(resultString[0]) + 2; // TODO Why are we adding two here?
+                    int numberOfLinesChanged = Int32.Parse(resultString[3]); // TODO This can cause runtime failures when there is only one line of change https://stackoverflow.com/questions/2529441/how-to-read-the-output-from-git-diff
+
+                    if (numberOfLinesChanged == Int32.Parse(resultString[1]))
+                    {
+                        numberOfLinesChanged = 0;
+                    }
+
+                    CodeControlBranchInfo codeControlBranchInfo = new CodeControlBranchInfo(id, MyWindowControl.CurrentCodeControl.Id, branchName, lineOfChange, lineOfChange + numberOfLinesChanged);
+                    MyWindowControl.CurrentCodeControl.CodeControlBranches.Add(id, codeControlBranchInfo);
+
+                    if (MyWindowControl.controlEditorAdornment != null)
+                    {
+                        MyWindowControl.currentDispatcher.Invoke(new Action(() =>
+                        {
+                            CodeControlEditorAdornment.CreateEditorVisuals(null);
+                        }));
+                    }
+                }
+
+                MyWindowControl.printInBrowserConsole("Git diff line: " + line);
+                gitDiffString += line;
+            }
+            MyWindowControl.printInBrowserConsole("\n\nGitDiffstring: " + gitDiffString);
+
+            gitDiffProc.WaitForExit();
+
         }
     }
 }

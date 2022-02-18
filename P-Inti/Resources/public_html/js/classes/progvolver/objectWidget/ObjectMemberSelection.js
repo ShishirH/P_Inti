@@ -42,6 +42,12 @@ class ObjectMemberSelection {
 
         background.setVisibility = function (visibility) {
             background.visibility = visibility;
+
+            if (visibility === false) {
+                background.selectButton.value = "";
+            } else {
+                background.selectButton.value = "✓";
+            }
         }
 
 //        background.registerListener('added', function () {

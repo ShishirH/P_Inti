@@ -28,7 +28,6 @@ class ReferenceWidget {
         background.isArrayElement = options.isArrayElement || false;
         background.isArray = options.isArray || false;
 
-
         background.expandedHeight = background.height;
         background.expandedWidth = background.width;
 
@@ -318,7 +317,6 @@ class ReferenceWidget {
         }
 
         function addMinimizeButton() {
-            var sc = getScreenCoordinates(background.getPointByOrigin('left', 'center'));
             var minimizeButton = new MinimizeButton({
                 sign: "+",
                 radius: 12,
@@ -359,7 +357,7 @@ class ReferenceWidget {
                 movable: false
             });
 
-            sc = background.getPointByOrigin('right', 'center');
+            var sc = background.getPointByOrigin('right', 'center');
             minimizeButton.x = sc.x + 12;
             minimizeButton.y = sc.y;
             minimizeButton.left = sc.x + 12;
@@ -415,21 +413,12 @@ class ReferenceWidget {
             background.object.left = rightSc.x + 25;
             background.object.top = rightSc.y - 35;
 
+            background.object.parent = background;
             canvas.add(background.object);
             background.children.push(background.object);
 
             background.object.registerListener('moving', function () {
-                if (!background.object.isCompressed) {
-                    var position = (background.object.getPointByOrigin('left', 'center'));
-
-                    let yPosition = parseFloat(position.y)
-                    let xPosition = parseFloat(position.x) - 15
-                    background.minimizeButton.x = xPosition;
-                    background.minimizeButton.y = yPosition;
-                    background.minimizeButton.left = xPosition;
-                    background.minimizeButton.top = yPosition;
-                    background.minimizeButton.setCoords();
-                }
+                adjustReferenceObjectPosition(background);
             });
         }
 
@@ -479,6 +468,8 @@ class ReferenceWidget {
                 }
             });
             bringToFront(background.arrowLine);
+
+            new CreationEvent(background);
         })
 
         background.organizeChildren = function () {
@@ -512,6 +503,23 @@ class ReferenceWidget {
             return clonedReference;
         }
 
+        background.toJson = function () {
+            console.log("Inside toJson of reference widget")
+            let json = {};
+
+            json['fill'] = background.fill;
+            json['stroke'] = background.stroke;
+            json['name'] = background.name;
+            json['type'] = background.type;
+            json['x'] = background.left;
+            json['y'] = background.top;
+            json['Kind_String'] = background.kind;
+            json['kind'] = "ReferenceWidget";
+            json['referencedObject'] = background.object.toJson();
+            return JSON.stringify(json);
+        }
+
+
         background.setValue = function (newValue) {
             console.log("New value is: ");
             console.log(newValue);
@@ -522,6 +530,45 @@ class ReferenceWidget {
 
         this.progvolverType = "ReferenceWidget";
         registerProgvolverObject(this);
+
+        console.log("Adding to persistent entry")
+        PERSISTENT_CANVAS_ENTRIES.push(background);
+
         return background;
+    }
+
+    static fromJson (json) {
+        let isArray = false;
+        let referencedObjJson = json['referencedObject'];
+        let referencedObj = null;
+
+        console.log("The referencedObjJson is: ");
+        console.log(referencedObjJson);
+        if (referencedObjJson['kind'] === "ArraySymbol") {
+            referencedObj = ArraySymbol.fromJson(referencedObjJson);
+            isArray = true;
+        }
+        // } else if (referencedObjJson['kind'] === "ObjectWidget") {
+        //     referencedObj = ObjectWidget.fromJson(referencedObjJson)
+        // }
+
+        console.log("Json is: ");
+        console.log(json);
+
+        let obj =  new ReferenceWidget({
+            type: json['type'],
+            name: json['name'],
+            file: json['file'],
+            kind: json['Kind_String'],
+            fileName: json['fileName'],
+            x: json['x'], y: json['y'],
+            left: json['x'], top: json['y'],
+            fill: json['fill'],
+            stroke: json['stroke'],
+            isArray: isArray
+        }, referencedObj);
+
+        canvas.add(obj);
+        obj.expand();
     }
 }

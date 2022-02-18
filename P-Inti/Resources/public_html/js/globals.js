@@ -70,8 +70,6 @@ MINIATURE_OUTPUT = 'Miniature';
 IMAGE_PLOTTER = 'ImagePlotter';
 
 
-
-
 CIRCULAR_MARK = 'Circle';
 RECTANGULAR_MARK = 'Rectangle';
 SQUARED_MARK = 'Square';
@@ -93,8 +91,6 @@ markShapes = [
 ];
 
 
-
-
 RECTANGULAR_VIXOR = 'RectangleExtractor';
 TEXT_RECOGNIZER = 'TextRecognizer';
 COLOR_REGION_EXTRACTOR = 'ColorRegionExtractor';
@@ -105,7 +101,6 @@ rectangular_output_default_height = 30;
 
 rectangular_mark_default_width = 65;
 rectangular_mark_default_height = 65;
-
 
 
 widget_fill_opacity = 0.5;
@@ -156,8 +151,6 @@ superScriptsCodes = [
 //    {prefix: 'nano', symbol: 'n', factor: 0.000000001, exponent: -9},
 //    {prefix: 'pico', symbol: 'p', factor: 0.000000000001, exponent: -12}
 //];
-
-
 
 
 metricPrefixes = [
@@ -241,7 +234,6 @@ durationUnits = [
 ];
 
 
-
 // Path Segment Types (numbers)
 PATHSEG_UNKNOWN = 0;
 PATHSEG_CLOSEPATH = 1;
@@ -272,9 +264,16 @@ linearDimensions = [
     'ry',
 ];
 
+var UNDO_CANVAS_ENTRIES = [];
+var REDO_CANVAS_ENTRIES = [];
+
+var PERSISTENT_CANVAS_ENTRIES = [];
+
 var OBJECT_WIDGET_FILL = '#DDEBF6';
 var SIGNAL_FILL = "#00AFF0"
 var SIGNAL_EMITTER_FILL = "#fcc603"
 var WHEN_WIDGET_FILL = "#B3CDE3";
 var builtInTypes = ["bool", "byte", "sbyte", "char", "decimal", "double", "float", "int", "uint", "nint", "nuint", "long", "ulong", "short", "ushort", "string"];
 var colorsArray = ['#FF7F00', '#24A222', '#1776B6', '#E574C3', '#00BED1', '#9564BF'];
+var desaturatedColorsArray = ['#ffbf80', '#72a372', '#6d98b5', '#e6a1d1', '#69c8d1', '#a486bf'];
+var codeControlsOnCanvas = [];

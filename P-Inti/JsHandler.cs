@@ -37,6 +37,7 @@ using Microsoft.CodeAnalysis.Text;
 using Microsoft.CodeAnalysis.FindSymbols;
 using Microsoft.VisualStudio.Text;
 using Newtonsoft.Json;
+using System.Windows.Forms;
 
 namespace P_Inti
 {
@@ -1515,7 +1516,7 @@ namespace P_Inti
 
             if (startLine == null || endLine == null)
             {
-                MessageBox.Show("startLine or endLine are null");
+                System.Windows.MessageBox.Show("startLine or endLine are null");
                 return null;
             }
 
@@ -1780,16 +1781,27 @@ namespace P_Inti
                     {
                         // No branches yet, commit everything on master
                         branchName = "master";
+                        MyWindowControl.CurrentBranchID = id;
+                        MyWindowControl.CurrentBranch = branchName;
+                        MyWindowControl.GitBranchID.Add(branchName, id);
+
+                        CodeControls.ParseGitDiff(solutionDir, branchName, id);
                         CodeControls.AddGitChanges(solutionDir);
                         CodeControls.CommitGitChanges(solutionDir);
                     }
                     else
                     {
                         // Earlier commits already made. Commit changes to present branch and then checkout to new branch
+                        CodeControls.ParseGitDiff(solutionDir, MyWindowControl.CurrentBranch, MyWindowControl.CurrentBranchID);
                         CodeControls.AddGitChanges(solutionDir);
                         CodeControls.CommitGitChanges(solutionDir);
 
                         branchName = id;
+                        MyWindowControl.CurrentBranchID = id;
+                        MyWindowControl.CurrentBranch = branchName;
+                        MyWindowControl.GitBranchID.Add(branchName, id);
+
+                        // branchName = id; TODO WHY???
                         CodeControls.CreateAndCheckoutGitBranch(solutionDir, id);
                         CodeControls.CommitGitChanges(solutionDir);
                     }
@@ -1832,7 +1844,12 @@ namespace P_Inti
             {
                 IDictionary<string, object> input = (IDictionary<string, object>)arg;
                 input.TryGetValue("branchName", out object branchName);
+                input.TryGetValue("id", out object id);
+
                 string branch = (string)branchName;
+                string idStr = (string)id;
+
+                CodeControls.ParseGitDiff(solutionDir, branch, idStr);
                 CodeControls.AddGitChanges(solutionDir);
                 CodeControls.CommitGitChanges(solutionDir);
             }
@@ -1858,6 +1875,122 @@ namespace P_Inti
             return result;
         }
 
+        public Dictionary<string, object> mergeBranches(object arg)
+        {
+            Dictionary<string, object> result = new Dictionary<string, object>();
+
+            string solutionDir = System.IO.Path.GetDirectoryName(windowControl.dte.Solution.FullName);
+            solutionDir = "\"" + solutionDir + "\"";
+
+            if (arg != null)
+            {
+                IDictionary<string, object> input = (IDictionary<string, object>)arg;
+                input.TryGetValue("branchOne", out object branchOne);
+                input.TryGetValue("branchTwo", out object branchTwo);
+
+                string branchOneStr = (string)branchOne;
+                string branchTwoStr = (string)branchTwo;
+
+                CodeControls.MergeBranches(solutionDir, branchOneStr, branchTwoStr);
+            }
+            return result;
+        }
+
+        public Dictionary<string, object> initializeCodeControl(object arg)
+        {
+            Dictionary<string, object> result = new Dictionary<string, object>();
+
+            string solutionDir = System.IO.Path.GetDirectoryName(windowControl.dte.Solution.FullName);
+            solutionDir = "\"" + solutionDir + "\"";
+
+            if (arg != null)
+            {
+                IDictionary<string, object> input = (IDictionary<string, object>)arg;
+                input.TryGetValue("id", out object id);
+                input.TryGetValue("saturatedColor", out object saturatedColorObj);
+                input.TryGetValue("unsaturatedColor", out object unsaturatedColorObj);
+
+                string idStr = (string)id;
+                string saturatedColorStr = (string)saturatedColorObj;
+                string unsaturatedColorStr = (string)unsaturatedColorObj;
+
+                System.Drawing.Color saturatedColor = System.Drawing.ColorTranslator.FromHtml(saturatedColorStr);
+                System.Drawing.Color unsaturatedColor = System.Drawing.ColorTranslator.FromHtml(unsaturatedColorStr);
+
+                MyWindowControl.printInBrowserConsole("idStr: " + idStr);
+                MyWindowControl.printInBrowserConsole("saturatedColorStr: " + saturatedColorStr);
+                MyWindowControl.printInBrowserConsole("unsaturatedColorStr: " + unsaturatedColorStr);
+
+                CodeControlInfo codeControlInfo = new CodeControlInfo(idStr, Color.FromArgb(saturatedColor.A, saturatedColor.R, saturatedColor.G, saturatedColor.B), 
+                    Color.FromArgb(unsaturatedColor.A, unsaturatedColor.R, unsaturatedColor.G, unsaturatedColor.B), null, null);
+
+                MyWindowControl.CodeControlInfos.Add(idStr, codeControlInfo);
+            }
+            return result;
+        }
+
+        public Dictionary<string, object> updateSelectedCodeControl(object arg)
+        {
+            Dictionary<string, object> result = new Dictionary<string, object>();
+
+            if (arg != null)
+            {
+                IDictionary<string, object> input = (IDictionary<string, object>)arg;
+                input.TryGetValue("id", out object id);
+
+                string idStr = (string)id;
+
+                MyWindowControl.printInBrowserConsole("Updating code control");
+                MyWindowControl.printInBrowserConsole("idStr: " + idStr);
+                MyWindowControl.CurrentCodeControl = MyWindowControl.CodeControlInfos[idStr];
+
+                if (MyWindowControl.controlEditorAdornment != null)
+                {
+                    MyWindowControl.currentDispatcher.Invoke(new Action(() =>
+                    {
+                        CodeControlEditorAdornment.CreateEditorVisuals(null);
+                    }));
+                }
+            }
+            return result;
+        }
+
+        public Dictionary<string, object> saveCanvasFile(object arg)
+        {
+            MyWindowControl.printInBrowserConsole("Saving canvas state");
+
+            Dictionary<string, object> result = new Dictionary<string, object>();
+
+            if (arg != null)
+            {
+                IDictionary<string, object> input = (IDictionary<string, object>)arg;
+                input.TryGetValue("content", out object content);
+
+                string contentStr = (string)content;
+
+                SaveFileDialog saveFileDialog1 = new SaveFileDialog();
+                saveFileDialog1.Filter = "Progvolver Persistent Canvas |*.plog";
+                saveFileDialog1.Title = "Save progvolver canvas";
+                theDispatcher.Invoke(new Action(() =>
+                {
+                    saveFileDialog1.ShowDialog();
+                }));
+
+                MyWindowControl.printInBrowserConsole("I am here");
+                // If the file name is not an empty string open it for saving.
+                if (saveFileDialog1.FileName != "")
+                {
+                    System.IO.FileStream fs =
+                        (System.IO.FileStream)saveFileDialog1.OpenFile();
+
+                    byte[] bytes = Encoding.UTF8.GetBytes(contentStr);
+                    fs.Write(bytes, 0, bytes.Length);
+                    fs.Close();
+                }
+            }
+
+            return result;
+        }
 
     }
 }

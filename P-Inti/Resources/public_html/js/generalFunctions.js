@@ -47,18 +47,56 @@ function createObjectBackground(baseClass, options, theWidget) {
 }
 
 function addChildrenToCanvas(background) {
-    if (background.children) {
-        background.children.forEach(function (child) {
-            canvas.add(child);
-            child.bringToFront();
-        })
-    }
+    if (background) {
+        let children = background.children;
+        let childrenOnTop = background.childrenOnTop;
 
-    if (background.childrenOnTop) {
-        background.childrenOnTop.forEach(function (child) {
-            canvas.add(child);
-            child.bringToFront();
-        })
+        canvas.add(background);
+        background.bringToFront && background.bringToFront();
+
+        if (children) {
+            children.forEach(function (child) {
+                addChildrenToCanvas(child);
+            })
+        }
+
+        if (childrenOnTop) {
+            childrenOnTop.forEach(function (child) {
+                addChildrenToCanvas(child);
+            })
+        }
+    }
+}
+
+function undoCanvas() {
+    if (UNDO_CANVAS_ENTRIES.length !== 0) {
+        let event = UNDO_CANVAS_ENTRIES.pop();
+        event.undoEvent();
+
+        REDO_CANVAS_ENTRIES.push(event);
+    }
+}
+
+function redoCanvas() {
+    if (REDO_CANVAS_ENTRIES.length !== 0) {
+        let event = REDO_CANVAS_ENTRIES.pop();
+        event.redoEvent();
+
+        UNDO_CANVAS_ENTRIES.push(event);
+    }
+}
+
+function adjustReferenceObjectPosition(background) {
+    if (!background.object.isCompressed) {
+        var position = (background.object.getPointByOrigin('left', 'center'));
+
+        let yPosition = parseFloat(position.y)
+        let xPosition = parseFloat(position.x) - 15
+        background.minimizeButton.x = xPosition;
+        background.minimizeButton.y = yPosition;
+        background.minimizeButton.left = xPosition;
+        background.minimizeButton.top = yPosition;
+        background.minimizeButton.setCoords();
     }
 }
 
@@ -1999,8 +2037,52 @@ function onLogFileReadComplete(event, file) {
     processLogFileContent(logFileContent);
 }
 
+function objToString (obj) {
+    let str = '';
+    for (const [p, val] of Object.entries(obj)) {
+        str += `${p}::${val}\n`;
+    }
+    return str;
+}
 
+function saveCanvasState() {
+    console.log("persistent entries");
+    console.log(PERSISTENT_CANVAS_ENTRIES[0]);
+    var text = (PERSISTENT_CANVAS_ENTRIES[0].toJson());
+    var filename = "canvasContent";
+    var blob = new Blob([text], {type: "text/plain;charset=utf-8"});
+    window.jsHandler.saveCanvasFile({content: text})
+}
 
+function handleCanvasLoad(files) {
+    var file = files[0];
+    var reader = new FileReader();
+
+    reader.onload = function (e) {
+        let output = e.target.result;
+        onCanvasLoadComplete(output);
+    };
+
+    if (file) {
+        reader.readAsText(file);
+    }
+}
+
+function onCanvasLoadComplete(canvasString) {
+    console.log("Canvas string is: ");
+    console.log(canvasString);
+    const obj = JSON.parse(canvasString);
+
+    console.log("Kind is: ");
+    let kind = obj['kind'];
+    console.log(kind);
+
+    if (kind === 'ProgvolverSymbol') {
+        ProgvolverSymbol.fromJson(obj);
+    } else if (kind === 'ReferenceWidget') {
+        ReferenceWidget.fromJson(obj);
+    }
+}
 
 function onDataFileReadComplete(event, file) {
 
