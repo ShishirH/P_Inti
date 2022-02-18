@@ -1,0 +1,118 @@
+{
+  "format": 1,
+  "restore": {
+    "C:\\Dev\\P-Inti\\P-Inti\\P-Inti.csproj": {}
+  },
+  "projects": {
+    "C:\\Dev\\P-Inti\\P-Inti\\P-Inti.csproj": {
+      "version": "1.0.0",
+      "restore": {
+        "projectUniqueName": "C:\\Dev\\P-Inti\\P-Inti\\P-Inti.csproj",
+        "projectName": "P-Inti",
+        "projectPath": "C:\\Dev\\P-Inti\\P-Inti\\P-Inti.csproj",
+        "packagesPath": "C:\\Users\\Shishir Halaharvi\\.nuget\\packages\\",
+        "outputPath": "C:\\Dev\\P-Inti\\P-Inti\\obj\\",
+        "projectStyle": "PackageReference",
+        "skipContentFileWrite": true,
+        "configFilePaths": [
+          "C:\\Users\\Shishir Halaharvi\\AppData\\Roaming\\NuGet\\NuGet.Config",
+          "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
+        ],
+        "originalTargetFrameworks": [
+          "net472"
+        ],
+        "sources": {
+          "C:\\Program Files (x86)\\Microsoft SDKs\\NuGetPackages\\": {},
+          "https://api.nuget.org/v3/index.json": {}
+        },
+        "frameworks": {
+          "net472": {
+            "projectReferences": {}
+          }
+        }
+      },
+      "frameworks": {
+        "net472": {
+          "dependencies": {
+            "CefSharp.Common": {
+              "target": "Package",
+              "version": "[79.1.360, )"
+            },
+            "CefSharp.Wpf": {
+              "target": "Package",
+              "version": "[79.1.360, )"
+            },
+            "Microsoft.Build": {
+              "target": "Package",
+              "version": "[17.0.0, )"
+            },
+            "Microsoft.Build.Framework": {
+              "target": "Package",
+              "version": "[17.0.0, )"
+            },
+            "Microsoft.Build.Tasks.Core": {
+              "target": "Package",
+              "version": "[17.0.0, )"
+            },
+            "Microsoft.CodeAnalysis": {
+              "target": "Package",
+              "version": "[3.9.0, )"
+            },
+            "Microsoft.CodeAnalysis.CSharp": {
+              "target": "Package",
+              "version": "[3.9.0, )"
+            },
+            "Microsoft.CodeAnalysis.Common": {
+              "target": "Package",
+              "version": "[3.9.0, )"
+            },
+            "Microsoft.CodeAnalysis.Workspaces.MSBuild": {
+              "target": "Package",
+              "version": "[3.9.0, )"
+            },
+            "Microsoft.VSSDK.BuildTools": {
+              "target": "Package",
+              "version": "[16.11.35, )"
+            },
+            "Microsoft.VisualStudio.SDK": {
+              "include": "Compile, Build, Native, ContentFiles, Analyzers, BuildTransitive",
+              "target": "Package",
+              "version": "[16.0.206, )"
+            },
+            "MvvmLightLibs": {
+              "target": "Package",
+              "version": "[5.4.1.1, )"
+            },
+            "System.ComponentModel.Composition": {
+              "target": "Package",
+              "version": "[4.5.0, )"
+            },
+            "cef.redist.x64": {
+              "target": "Package",
+              "version": "[79.1.36, )"
+            },
+            "cef.redist.x86": {
+              "target": "Package",
+              "version": "[79.1.36, )"
+            },
+            "cef.sdk": {
+              "target": "Package",
+              "version": "[79.1.36, )"
+            }
+          }
+        }
+      },
+      "runtimes": {
+        "win": {
+          "#import": []
+        },
+        "win-x64": {
+          "#import": []
+        },
+        "win-x86": {
+          "#import": []
+        }
+      }
+    }
+  }
+}

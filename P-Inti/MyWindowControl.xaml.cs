@@ -87,6 +87,8 @@
         public List<string> trackedExpressionsIDs = new List<string>();
         public static List<string> trackedSignalIDs = new List<string>();
 
+        public Dictionary<string, string> codeControlBranches = new Dictionary<string, string>();
+
         public Dictionary<string, ISymbol> trackedSymbols = new Dictionary<string, ISymbol>();
 
         // the tuple that describes an expression is composed be: the expression's ID (string), the expression itself (SyntaxNode), fileName (string)

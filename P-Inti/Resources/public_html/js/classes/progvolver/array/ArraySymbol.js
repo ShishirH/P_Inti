@@ -1,4 +1,4 @@
-class ArraySymbol extends ConnectableWidget {
+class ArraySymbol {
     constructor(options) {
         var symbolFont = '20px Helvetica';
 
@@ -24,11 +24,14 @@ class ArraySymbol extends ConnectableWidget {
 //            width: 10,
 //            height: 10
 //        }
-        var background = super(fabric.Rect, options);
+        var background = createObjectBackground(fabric.Rect, options, null);
 
+        console.log("Background is: " + background);
+        console.log(background)
         background.expandedWidth = 0;
         background.expandedHeight = 0;
         background.compressed = true;
+        background.isMember = options.isMember;
 //        background.compressedProperties = {
 //            width: 10,
 //            height: 10,
@@ -71,8 +74,8 @@ class ArraySymbol extends ConnectableWidget {
         background.noScaleCache = false;
         background.isArray = true;
 
-        var areElementsOnLeft = false;
-        var areElementsOnRight = false;
+        background.areElementsOnLeft = false;
+        background.areElementsOnRight = false;
         background.customScalingFunction = function () {
             let i;
             let j;
@@ -114,7 +117,7 @@ class ArraySymbol extends ConnectableWidget {
             background.rightBuffer && background.positionObject(background.rightBuffer);
             background.topBuffer && background.positionObject(background.topBuffer);
             background.bottomBuffer && background.positionObject(background.bottomBuffer);
-            background.widget.labelObject && background.positionObject(background.widget.labelObject);
+            background.labelObject && background.positionObject(background.labelObject);
             background.nameObject && background.positionObject(background.nameObject);
             background.scrollY && background.positionObject(background.scrollY);
             background.topArrow && background.positionObject(background.topArrow);
@@ -132,16 +135,14 @@ class ArraySymbol extends ConnectableWidget {
         };
 
         background.children = [];
-        var theWidget = background.widget;
-        background.children.push(background.widget.labelObject);
 
-        this.elements = options.elements;
-        this.name = options.name;
-        this.dataType = options.type;
+        background.elements = options.elements;
+        background.name = options.name;
+        background.dataType = options.type;
         background.orientation = 0;
-        this.containingType = options.containingType;
-        this.initialValue = options.initialValue;
-        this.isClass = options.isClass;
+        background.containingType = options.containingType;
+        background.initialValue = options.initialValue;
+        background.isClass = options.isClass;
         background.objectMembers = options.objectMembers;
 
         background.elements = options.elements;
@@ -152,10 +153,12 @@ class ArraySymbol extends ConnectableWidget {
         background.label = options.label;
         background.lineNumber = options.lineNumber;
 
-        this.value = options.value || '';
+        background.value = options.value || '';
 
         var defaultValues = {"int": 0, "double": 0.0, "String": ""};
 
+        console.log("background is: ");
+        console.log(background);
         var arrayElementsArray = [];
         background.arrayElementsArray = arrayElementsArray;
         background.isInitialized = false;
@@ -168,12 +171,12 @@ class ArraySymbol extends ConnectableWidget {
         background.setProgramTime = function (time) {
 
             // 'this' here refers to the variable background
-            this.time = time;
+            background.time = time;
             background.currentTime = time;
-            if (this.history) {
-                this.values = this.history.filter(item => item.time <= time);
-                if (this.values.length) {
-                    background.onValuesUpdated && background.onValuesUpdated(this.values[this.values.length - 1]);
+            if (background.history) {
+                background.values = background.history.filter(item => item.time <= time);
+                if (background.values.length) {
+                    background.onValuesUpdated && background.onValuesUpdated(background.values[background.values.length - 1]);
                 }
             }
         };
@@ -183,6 +186,7 @@ class ArraySymbol extends ConnectableWidget {
                 background.setCoords();
                 //background.addBuffers();
                 background.addInitialArrayElements(background.initialValue);
+                background.addLabelObject();
                 background.addRotationButton();
                 background.addScrollX();
 
@@ -197,7 +201,7 @@ class ArraySymbol extends ConnectableWidget {
         var rows;
         var columns;
         let objectMembersIndex = 0;
-        this.addInitialArrayElements = function (initialValue) {
+        background.addInitialArrayElements = function (initialValue) {
             let maxWidth = 200;
             let arrayDimensions = getArrayDimensions(initialValue);
 
@@ -242,7 +246,7 @@ class ArraySymbol extends ConnectableWidget {
                         else
                             xPosition = xPosition + arrayElementsArray[i][j - 1].width;
                     }
-                    LOG && console.log("Index: [" + i + ", " + j + " element: " + dataItem[i][j].value);
+                    LOG && console.log("Index: [" + i + ", " + j + "] element: " + dataItem[i][j].value);
 
                     let index;
                     if (columns == 1) //1D Array
@@ -253,7 +257,7 @@ class ArraySymbol extends ConnectableWidget {
                     var arrayElement;
                     let changeView = true;
                     // Check if array of primitives or array of references
-                    if (this.isClass) {
+                    if (background.isClass) {
                         let isArrayMember = true;
                         let returnObjectWidget = true;
                         let referencedObject = getReferenceWidgetForInnerClass(options, options.members, isArrayMember, returnObjectWidget);
@@ -267,7 +271,7 @@ class ArraySymbol extends ConnectableWidget {
                             array: background,
                             visible: true,
                             dataType: dataType,
-                            isClass: this.isClass,
+                            isClass: background.isClass,
                             referencedObject: referencedObject
                         });
                     } else {
@@ -280,7 +284,7 @@ class ArraySymbol extends ConnectableWidget {
                             array: background,
                             visible: true,
                             dataType: dataType,
-                            isClass: this.isClass,
+                            isClass: background.isClass,
                             numberOfColumns: columns,
                             row: i,
                             column: j,
@@ -312,9 +316,15 @@ class ArraySymbol extends ConnectableWidget {
                     let elementWidth = 45;
                     let maxWidth = 270;
 
-                    if ((xPosition + elementWidth) > (maxWidth - 45)) {
+                    LOG && console.log(" xpos: " + xPosition + " ypos: " + yPosition + " index: " + i + ", " + j);
+
+                    let elementRightX = xPosition + elementWidth;
+                    let allowedSize = maxWidth - 45;
+                    LOG && console.log("ElementRightX: " + elementRightX + " & allowedSize: " + allowedSize);
+
+                    if (elementRightX > allowedSize) {
                         opacity = 0;
-                        areElementsOnRight = true;
+                        background.areElementsOnRight = true;
                         arrayElement.setVisible(false);
                     } else {
                         opacity = 1;
@@ -322,7 +332,7 @@ class ArraySymbol extends ConnectableWidget {
                     }
 
                     if (columns > 1) {
-                        if (this.isClass) {
+                        if (background.isClass) {
                             yPosition = (i * 100) + 50;
                         } else {
                             if (!changeView) {
@@ -376,7 +386,7 @@ class ArraySymbol extends ConnectableWidget {
 
                         if (background.height < yPosition && yPosition < maxHeight) {
                             LOG && console.log("Setting new height");
-                            if (!this.isClass) {
+                            if (!background.isClass) {
                                 if (!changeView) {
                                     background.expandedHeight = yPosition + 70;
                                 } else {
@@ -403,33 +413,77 @@ class ArraySymbol extends ConnectableWidget {
             background.positionObjects();
         }
 
-        background.widget.labelObject.on({
-            mouseup: function (options) {
+        background.addLabelObject = function () {
+            var labelObject = new fabric.Text(background.label, {
+                fontFamily: 'Arial',
+                fill: '#0366d6',
+                fontSize: 14,
+                hasControls: false,
+                hasBorders: false,
+                textAlign: 'center',
+                fontWeight: '100',
+                hoverCursor: "pointer"
+            });
+            var originParent = {originX: 'center', originY: 'bottom'};
+            var originChild = {originX: 'center', originY: 'top'};
 
-                deselectAllObjects();
-                background.fire('selected');
+            let scaleX, scaleY, opacity;
+            if (background.isMember) {
+                scaleX = 0;
+                scaleY = 0;
+                opacity = 0;
+            } else {
+                scaleX = 1;
+                scaleY = 1;
+                opacity = 1;
+            }
 
-                if (!iVoLVER.util.isUndefined(background.lineNumber)) {
-                    if (window.jsHandler) {
-                        if (window.jsHandler.goTo) {
-                            var lineNumber = background.lineNumber - 1;
-                            var args = {
-                                id: background.id,
-                                mainColor: background.fill,
-                                startLine: lineNumber,
-                                endLine: lineNumber,
-                                file: background.file,
-                                lineNumber: lineNumber,
-                                animate: true,
-                                newDispatcher: true
-                            };
-                            console.log(args);
-                            window.jsHandler.goTo(args);
+            background.addChild(labelObject, {
+                whenCompressed: {
+                    x: 0, y: 2,
+                    scaleX: scaleX, scaleY: scaleY, opacity: opacity,
+                    originParent: originParent,
+                    originChild: originChild
+                },
+                whenExpanded: {
+                    x: 0, y: 2,
+                    originParent: originParent,
+                    originChild: originChild
+                },
+                movable: false
+            });
+
+            background.labelObject = labelObject;
+            background.children.push(background.labelObject);
+
+            background.labelObject.on({
+                mouseup: function (options) {
+
+                    deselectAllObjects();
+                    background.fire('selected');
+
+                    if (!iVoLVER.util.isUndefined(background.lineNumber)) {
+                        if (window.jsHandler) {
+                            if (window.jsHandler.goTo) {
+                                var lineNumber = background.lineNumber - 1;
+                                var args = {
+                                    id: background.id,
+                                    mainColor: background.fill,
+                                    startLine: lineNumber,
+                                    endLine: lineNumber,
+                                    file: background.file,
+                                    lineNumber: lineNumber,
+                                    animate: true,
+                                    newDispatcher: true
+                                };
+                                console.log(args);
+                                window.jsHandler.goTo(args);
+                            }
                         }
                     }
-                }
-            },
-        });
+                },
+            });
+        }
 
         background.setHistory = function () {
             background.history = window.logData.filter(item => item.widgetsID == background.id);
@@ -460,7 +514,7 @@ class ArraySymbol extends ConnectableWidget {
 
             if (!background.isCompressed) {
 
-                if (areElementsOnLeft) {
+                if (background.areElementsOnLeft) {
                     let positionLeft = background.getPointByOrigin('left', 'center');
                     ctx.save();
                     ctx.beginPath();
@@ -472,7 +526,7 @@ class ArraySymbol extends ConnectableWidget {
                     ctx.restore();
                 }
 
-                if (areElementsOnRight) {
+                if (background.areElementsOnRight) {
                     let positionRight = background.getPointByOrigin('right', 'center');
                     ctx.save();
                     ctx.beginPath();
@@ -506,7 +560,7 @@ class ArraySymbol extends ConnectableWidget {
             ctx.fillText(renderableValue, center.x, center.y + 3);
         };
 
-        this.addRotationButton = function () {
+        background.addRotationButton = function () {
             var svgString = "M20.49,13.98h-1.25v-7.1V1.87H7.42V0.51C7.42,0.5,7.41,0.5,7.4,0.5L0.51,4.25c-0.01,0.01-0.01,0.02,0,0.02 L7.4,8.03c0.01,0.01,0.02,0,0.02-0.01V6.88h6.5v7.1h-1.4c-0.01,0-0.02,0.01-0.01,0.02l3.98,6.5c0.01,0.01,0.02,0.01,0.02,0L20.5,14 C20.5,13.99,20.5,13.98,20.49,13.98z"
             var rotationButton = new fabric.Path(svgString, {
                 top: 20,
@@ -668,9 +722,8 @@ class ArraySymbol extends ConnectableWidget {
 
         var hiddenTop = 0;
         var lastVisibleRow = 0;
-        var firstVisibleRow = 1;
 
-        this.addScrollY = function () {
+        background.addScrollY = function () {
             var topArrow = new fabric.Triangle({
                 height: 6,
                 width: 6,
@@ -798,7 +851,7 @@ class ArraySymbol extends ConnectableWidget {
                         var topHidden = false;
                         var bottomHidden = false;
 
-                        console.log("First visible is now: " + firstVisibleRow);
+                        console.log("First visible is now: " + background.firstVisibleRow);
                         indentation = (i - hiddenNumber - 1); // CHANGE FOR ORIENTATION
 
                         let newYPosition = parseFloat((indentation * 50) + 30);
@@ -839,7 +892,7 @@ class ArraySymbol extends ConnectableWidget {
                         } else { // Visible
                             if (!updatedFirstVisible) {
                                 updatedFirstVisible = true;
-                                firstVisibleRow = i;
+                                background.firstVisibleRow = i;
                             }
 
                             let maxWidth = background.width - 80;
@@ -851,7 +904,7 @@ class ArraySymbol extends ConnectableWidget {
                             console.log("Array index: " + (i - 1) + ", " + (j) + " is visible");
                             background.expandedOptions[arrayElementsArray[i - 1][j].id].opacity = 1;
                             background.compressedOptions[arrayElementsArray[i - 1][j].id].opacity = 1;
-                            lastVisible = i;
+                            background.lastVisible = i;
                         }
                     }
                 }
@@ -878,7 +931,7 @@ class ArraySymbol extends ConnectableWidget {
                         var topHidden = false;
                         var bottomHidden = false;
 
-                        console.log("First visible is now: " + firstVisibleRow);
+                        console.log("First visible is now: " + background.firstVisibleRow);
                         indentation = (i - hiddenNumber - 1); // CHANGE FOR ORIENTATION
 
                         let newYPosition = parseFloat((indentation * 50) + 30);
@@ -919,7 +972,7 @@ class ArraySymbol extends ConnectableWidget {
                         } else { // Visible
                             if (!updatedFirstVisible) {
                                 updatedFirstVisible = true;
-                                firstVisibleRow = i;
+                                background.firstVisibleRow = i;
                             }
 
                             let maxWidth = background.width - 80;
@@ -931,7 +984,7 @@ class ArraySymbol extends ConnectableWidget {
                             console.log("Array index: " + (i - 1) + ", " + (j) + " is visible");
                             background.expandedOptions[arrayElementsArray[i - 1][j].id].opacity = 1;
                             background.compressedOptions[arrayElementsArray[i - 1][j].id].opacity = 1;
-                            lastVisible = i;
+                            background.lastVisible = i;
                         }
                     }
                 }
@@ -973,7 +1026,7 @@ class ArraySymbol extends ConnectableWidget {
                         var topHidden = false;
                         var bottomHidden = false;
 
-                        console.log("First visible is now: " + firstVisibleRow);
+                        console.log("First visible is now: " + background.firstVisibleRow);
                         indentation = (i - hiddenNumber - 1); // CHANGE FOR ORIENTATION
 
                         let newYPosition = parseFloat((indentation * 50) + 30);
@@ -1014,7 +1067,7 @@ class ArraySymbol extends ConnectableWidget {
                         } else { // Visible
                             if (!updatedFirstVisible) {
                                 updatedFirstVisible = true;
-                                firstVisibleRow = i;
+                                background.firstVisibleRow = i;
                             }
 
                             let maxWidth = background.width - 80;
@@ -1077,13 +1130,13 @@ class ArraySymbol extends ConnectableWidget {
             }
         }
 
-        var topHidden = 0;
-        var lastVisible = 0;
-        var firstVisibleRow = 1;
-        var hiddenX = 0;
+        background.topHidden = 0;
+        background.lastVisible = 0;
+        background.firstVisibleRow = 1;
+        background.hiddenX = 0;
 
-        this.addScrollX = function () {
-            var leftArrow = new fabric.Triangle({
+        background.addScrollX = function () {
+            let leftArrow = new fabric.Triangle({
                 height: 6,
                 width: 6,
                 fill: darken(background.stroke),
@@ -1092,7 +1145,7 @@ class ArraySymbol extends ConnectableWidget {
                 angle: 270
             });
 
-            var rightArrow = new fabric.Triangle({
+            let rightArrow = new fabric.Triangle({
                 height: 6,
                 width: 6,
                 fill: darken(background.stroke),
@@ -1101,15 +1154,16 @@ class ArraySymbol extends ConnectableWidget {
                 angle: 90
             });
 
-            var scrollX = new fabric.Rect({
+            let scrollX = new fabric.Rect({
                 height: 6,
                 width: 40,
                 fill: darken(background.stroke),
                 hasControls: false,
                 hasBorders: false
             });
-            var originParent = {originX: 'left', originY: 'bottom'};
-            var originChild = {originX: 'left', originY: 'bottom'};
+
+            let originParent = {originX: 'left', originY: 'bottom'};
+            let originChild = {originX: 'left', originY: 'bottom'};
 
             background.addChild(leftArrow, {
                 whenCompressed: {
@@ -1155,8 +1209,8 @@ class ArraySymbol extends ConnectableWidget {
                 }
             });
 
-            var originParent = {originX: 'right', originY: 'bottom'};
-            var originChild = {originX: 'left', originY: 'bottom'};
+            originParent = {originX: 'right', originY: 'bottom'};
+            originChild = {originX: 'left', originY: 'bottom'};
 
             background.addChild(rightArrow, {
                 whenCompressed: {
@@ -1175,401 +1229,16 @@ class ArraySymbol extends ConnectableWidget {
                 }
             });
 
-            scrollX.on('moving', function () {
-                // Divide the X axis into ticks for the array. -20 is for the left and the right arrows.
-                let ticks;
-
-                if (columns > 1) {
-                    ticks = (background.width - scrollX.width) / columns;
-                } else {
-                    ticks = (background.width - scrollX.width) / arrayElementsArray.length;
-                }
-
-                var updatedFirstVisible = false;
-                var updatedLastVisible = false;
-                LOG && console.log("Number of ticks are: " + ticks);
-
-                let currentX = background.expandedOptions[scrollX.id].x;
-                LOG && console.log("CurrentX is: " + currentX);
-                background.compressedOptions[scrollX.id].x = currentX;
-
-                let hiddenNumber = (currentX / ticks);
-                hiddenNumber = Math.floor(hiddenNumber);
-
-                if (hiddenNumber == hiddenX)
-                    return;
-                else
-                    hiddenX = hiddenNumber;
-
-                LOG && console.log("Hidden number is: " + hiddenNumber);
-
-                let indentation;
-                for (let i = 1; i <= rows; i++) {
-                    for (let j = 0; j < columns; j++) {
-                        var leftHidden = false;
-                        var rightHidden = false;
-
-                        LOG && console.log("First visible is now: " + firstVisibleRow);
-                        if (columns == 1)
-                            indentation = (i - hiddenNumber - 1);
-                        else
-                            indentation = (j - hiddenNumber);
-
-                        let newXPosition = parseFloat(45 + (indentation * arrayElementsArray[i - 1][j].width));
-                        let elementWidth = arrayElementsArray[i - 1][j].width;
-                        LOG && console.log("XPosition: " + newXPosition + " and index: " + (i - 1) + ", " + (j));
-
-                        if (columns == 1) {
-                            if (hiddenNumber >= i || newXPosition < 45) {
-                                newXPosition = 45;
-                                leftHidden = true;
-                                areElementsOnLeft = true;
-                            }
-                        } else {
-                            if (hiddenNumber > j || newXPosition < 45) {
-                                newXPosition = 45;
-                                leftHidden = true;
-                                areElementsOnLeft = true;
-                            }
-                        }
-
-                        if (newXPosition + elementWidth > (background.width - 45)) {
-                            newXPosition = background.width - 45;
-                            rightHidden = true;
-                            areElementsOnRight = true;
-                        }
-                        background.expandedOptions[arrayElementsArray[i - 1][j].id].x = newXPosition;
-                        background.compressedOptions[arrayElementsArray[i - 1][j].id].x = newXPosition;
-                        if (leftHidden) {
-                            background.expandedOptions[arrayElementsArray[i - 1][j].id].opacity = 0;
-                            background.compressedOptions[arrayElementsArray[i - 1][j].id].opacity = 0;
-                            topHidden = hiddenNumber;
-                            LOG && console.log("Hidden left is now: " + topHidden);
-                            // Move it to the left
-                            LOG && console.log("Array index: " + (i - 1) + ", " + (j) + " going to hide left");
-                            arrayElementsArray[i - 1][j].setVisible(false);
-                        } else if (rightHidden) {
-                            LOG && console.log("Hiding to the right");
-                            background.expandedOptions[arrayElementsArray[i - 1][j].id].opacity = 0;
-                            background.compressedOptions[arrayElementsArray[i - 1][j].id].opacity = 0;
-                            arrayElementsArray[i - 1][j].setVisible(false);
-
-                            LOG && console.log("Array index: " + (i - 1) + ", " + (j) + " going to hide right");
-                        } else { // Visible
-                            if (!updatedFirstVisible) {
-                                updatedFirstVisible = true;
-                                if (columns == 1)
-                                    firstVisibleRow = i;
-                                else
-                                    firstVisibleRow = j;
-                            }
-
-                            let maxHeight = 130;
-                            if (background.expandedOptions[arrayElementsArray[i - 1][j].id].y > maxHeight)
-                                continue;
-                            arrayElementsArray[i - 1][j].setVisible(true);
-
-                            arrayElementsArray[i - 1][j].opacity = 1;
-                            background.expandedOptions[arrayElementsArray[i - 1][j].id].opacity = 1;
-                            background.compressedOptions[arrayElementsArray[i - 1][j].id].opacity = 1;
-                            if (columns == 1)
-                                lastVisible = i;
-                            else
-                                lastVisible = j;
-                        }
-                    }
-                }
-
-                // 1D array
-                if (columns == 1) {
-                    if (lastVisible == (rows)) {
-                        areElementsOnRight = false;
-                    }
-
-                    if (firstVisibleRow == 1) {
-                        areElementsOnLeft = false;
-                    }
-                } else {
-                    if (lastVisible == (columns - 1)) {
-                        areElementsOnRight = false;
-                    }
-
-                    if (firstVisibleRow == 1) {
-                        areElementsOnLeft = false;
-                    }
-                }
-
-                background.positionObjects();
-//                if (areElementsOnLeft) {
-//                    background.expandedOptions[background.leftBuffer.id].opacity = 1;
-//                    background.compressedOptions[background.leftBuffer.id].opacity = 1;
-//                } else {
-//                    background.expandedOptions[background.leftBuffer.id].opacity = 0;
-//                    background.compressedOptions[background.leftBuffer.id].opacity = 0;
-//
-//                }
-
-//                if (areElementsOnRight) {
-//                    background.expandedOptions[background.rightBuffer.id].opacity = 1;
-//                    background.compressedOptions[background.rightBuffer.id].opacity = 1;
-//                } else {
-//                    background.expandedOptions[background.rightBuffer.id].opacity = 0;
-//                    background.compressedOptions[background.rightBuffer.id].opacity = 0;
-//                }
+            scrollX.registerListener('moving', function () {
+                moveScrollX(background);
             });
+
             leftArrow.on('mouseup', function () {
-                if (hiddenX <= 0)
-                    return;
-
-                var hiddenNumber = hiddenX - 1;
-                hiddenX = hiddenNumber;
-
-                var updatedFirstVisible = false;
-                var updatedLastVisible = false;
-
-                let indentation;
-                for (let i = 1; i <= rows; i++) {
-                    for (let j = 0; j < columns; j++) {
-                        var leftHidden = false;
-                        var rightHidden = false;
-
-                        console.log("First visible is now: " + firstVisibleRow);
-                        if (columns == 1)
-                            indentation = (i - hiddenNumber - 1);
-                        else
-                            indentation = (j - hiddenNumber);
-
-                        let newXPosition = parseFloat(45 + (indentation * arrayElementsArray[i - 1][j].width));
-                        let elementWidth = arrayElementsArray[i - 1][j].width;
-                        console.log("XPosition: " + newXPosition + " and index: " + (i - 1) + ", " + (j));
-
-                        if (columns == 1) {
-                            if (hiddenNumber >= i || newXPosition < 45) {
-                                newXPosition = 45;
-                                leftHidden = true;
-                                areElementsOnLeft = true;
-                            }
-                        } else {
-                            if (hiddenNumber > j || newXPosition < 45) {
-                                newXPosition = 45;
-                                leftHidden = true;
-                                areElementsOnLeft = true;
-                            }
-                        }
-
-                        if (newXPosition + elementWidth > (background.width - 45)) {
-                            newXPosition = background.width - 45;
-                            rightHidden = true;
-                            areElementsOnRight = true;
-                        }
-                        background.expandedOptions[arrayElementsArray[i - 1][j].id].x = newXPosition;
-                        background.compressedOptions[arrayElementsArray[i - 1][j].id].x = newXPosition;
-                        if (leftHidden) {
-                            //arrayElementsArray[i - 1].opacity = 0;
-                            background.expandedOptions[arrayElementsArray[i - 1][j].id].opacity = 0;
-                            background.compressedOptions[arrayElementsArray[i - 1][j].id].opacity = 0;
-                            topHidden = hiddenNumber;
-                            console.log("Hidden left is now: " + topHidden);
-                            // Move it to the left
-                            console.log("Array index: " + (i - 1) + ", " + (j) + " going to hide left");
-                            arrayElementsArray[i - 1][j].setVisible(false);
-                        } else if (rightHidden) {
-                            console.log("Hiding to the right");
-                            background.expandedOptions[arrayElementsArray[i - 1][j].id].opacity = 0;
-                            background.compressedOptions[arrayElementsArray[i - 1][j].id].opacity = 0;
-                            arrayElementsArray[i - 1][j].setVisible(false);
-
-                            console.log("Array index: " + (i - 1) + ", " + (j) + " going to hide right");
-                        } else { // Visible
-                            if (!updatedFirstVisible) {
-                                updatedFirstVisible = true;
-                                if (columns == 1)
-                                    firstVisibleRow = i;
-                                else
-                                    firstVisibleRow = j;
-                            }
-
-                            let maxHeight = 130;
-                            if (background.expandedOptions[arrayElementsArray[i - 1][j].id].y > maxHeight)
-                                continue;
-                            arrayElementsArray[i - 1][j].setVisible(true);
-
-                            arrayElementsArray[i - 1][j].opacity = 1;
-                            console.log("Array index: " + (i - 1) + ", " + (j) + " is visible");
-                            background.expandedOptions[arrayElementsArray[i - 1][j].id].opacity = 1;
-                            background.compressedOptions[arrayElementsArray[i - 1][j].id].opacity = 1;
-                            if (columns == 1)
-                                lastVisible = i;
-                            else
-                                lastVisible = j;
-                        }
-                    }
-                }
-                background.positionObjects();
-//                if (areElementsOnLeft) {
-//                    background.expandedOptions[background.leftBuffer.id].opacity = 1;
-//                    background.compressedOptions[background.leftBuffer.id].opacity = 1;
-//                } else {
-//                    background.expandedOptions[background.leftBuffer.id].opacity = 0;
-//                    background.compressedOptions[background.leftBuffer.id].opacity = 0;
-//
-//                }
-
-//                if (areElementsOnRight) {
-//                    background.expandedOptions[background.rightBuffer.id].opacity = 1;
-//                    background.compressedOptions[background.rightBuffer.id].opacity = 1;
-//                } else {
-//                    background.expandedOptions[background.rightBuffer.id].opacity = 0;
-//                    background.compressedOptions[background.rightBuffer.id].opacity = 0;
-//                }
-                console.log("X is now: " + background.expandedOptions[scrollX.id].x);
+                leftArrowScroll(background);
             });
 
             rightArrow.on('mouseup', function () {
-                if (columns == 1) {
-                    if (hiddenX >= rows)
-                        return;
-                } else {
-                    if (hiddenX >= columns)
-                        return;
-                }
-
-                var hiddenNumber = hiddenX + 1;
-                hiddenX = hiddenNumber;
-
-                var updatedFirstVisible = false;
-                var updatedLastVisible = false;
-
-                let indentation;
-                for (let i = 1; i <= rows; i++) {
-                    for (let j = 0; j < columns; j++) {
-                        var leftHidden = false;
-                        var rightHidden = false;
-
-                        console.log("First visible is now: " + firstVisibleRow);
-                        if (columns == 1)
-                            indentation = (i - hiddenNumber - 1);
-                        else
-                            indentation = (j - hiddenNumber);
-
-                        let newXPosition = parseFloat(45 + (indentation * arrayElementsArray[i - 1][j].width));
-                        let elementWidth = arrayElementsArray[i - 1][j].width;
-                        console.log("XPosition: " + newXPosition + " and index: " + (i - 1) + ", " + (j));
-
-                        if (columns == 1) {
-                            if (hiddenNumber >= i || newXPosition < 45) {
-                                newXPosition = 45;
-                                leftHidden = true;
-                                areElementsOnLeft = true;
-                            }
-                        } else {
-                            if (hiddenNumber > j || newXPosition < 45) {
-                                newXPosition = 45;
-                                leftHidden = true;
-                                areElementsOnLeft = true;
-                            }
-                        }
-
-                        if (newXPosition + elementWidth > (background.width - 45)) {
-                            newXPosition = background.width - 45;
-                            rightHidden = true;
-                            areElementsOnRight = true;
-                        }
-                        background.expandedOptions[arrayElementsArray[i - 1][j].id].x = newXPosition;
-                        background.compressedOptions[arrayElementsArray[i - 1][j].id].x = newXPosition;
-                        if (leftHidden) {
-                            //arrayElementsArray[i - 1].opacity = 0;
-                            background.expandedOptions[arrayElementsArray[i - 1][j].id].opacity = 0;
-                            background.compressedOptions[arrayElementsArray[i - 1][j].id].opacity = 0;
-                            topHidden = hiddenNumber;
-                            console.log("Hidden left is now: " + topHidden);
-                            // Move it to the left
-                            console.log("Array index: " + (i - 1) + ", " + (j) + " going to hide left");
-                            arrayElementsArray[i - 1][j].setVisible(false);
-                        } else if (rightHidden) {
-                            console.log("Hiding to the right");
-                            background.expandedOptions[arrayElementsArray[i - 1][j].id].opacity = 0;
-                            background.compressedOptions[arrayElementsArray[i - 1][j].id].opacity = 0;
-                            arrayElementsArray[i - 1][j].setVisible(false);
-
-                            console.log("Array index: " + (i - 1) + ", " + (j) + " going to hide right");
-                        } else { // Visible
-                            if (!updatedFirstVisible) {
-                                updatedFirstVisible = true;
-                                if (columns == 1)
-                                    firstVisibleRow = i;
-                                else
-                                    firstVisibleRow = j;
-                            }
-
-                            let maxHeight = 130;
-                            if (background.expandedOptions[arrayElementsArray[i - 1][j].id].y > maxHeight)
-                                continue;
-                            arrayElementsArray[i - 1][j].setVisible(true);
-
-                            arrayElementsArray[i - 1][j].opacity = 1;
-                            console.log("Array index: " + (i - 1) + ", " + (j) + " is visible");
-                            background.expandedOptions[arrayElementsArray[i - 1][j].id].opacity = 1;
-                            background.compressedOptions[arrayElementsArray[i - 1][j].id].opacity = 1;
-                            if (columns == 1)
-                                lastVisible = i;
-                            else
-                                lastVisible = j;
-                        }
-                    }
-                }
-                background.positionObjects();
-//                if (areElementsOnLeft) {
-//                    background.expandedOptions[background.leftBuffer.id].opacity = 1;
-//                    background.compressedOptions[background.leftBuffer.id].opacity = 1;
-//                } else {
-//                    background.expandedOptions[background.leftBuffer.id].opacity = 0;
-//                    background.compressedOptions[background.leftBuffer.id].opacity = 0;
-//
-//                }
-
-//                if (areElementsOnRight) {
-//                    background.expandedOptions[background.rightBuffer.id].opacity = 1;
-//                    background.compressedOptions[background.rightBuffer.id].opacity = 1;
-//                } else {
-//                    background.expandedOptions[background.rightBuffer.id].opacity = 0;
-//                    background.compressedOptions[background.rightBuffer.id].opacity = 0;
-//                }
-                console.log("X is now: " + background.expandedOptions[scrollX.id].x);
-
-//
-//                                // Update bar position
-//                                console.log("Updating bar position");
-//                                let leftArrowX = parseFloat(background.expandedOptions[leftArrow.id].x)
-//                                        + parseFloat(leftArrow.width);
-//
-//                                console.log("LeftArrowX: " + leftArrowX);
-//                                let rightArrowX = parseFloat(background.expandedOptions[rightArrow.id].x);
-//                                console.log("RightArrowX: " + rightArrowX);
-//
-//                                let distance = rightArrowX - leftArrowX;
-//                                let tickDistance;
-//
-//                                if (columns == 1)
-//                                    tickDistance = distance / rows;
-//                                else
-//                                    tickDistance = distance / columns;
-//
-//                                console.log("Distance: " + distance + " and tick distance: " + tickDistance);
-//
-//                                let moveBarDistance;
-//
-//                                if (columns == 1)
-//                                    moveBarDistance = tickDistance * (i - 1) - (scrollX.width) / 2;
-//                                else
-//                                    moveBarDistance = tickDistance * (j - 1) - (scrollX.width) / 2;
-//
-//                                background.expandedOptions[scrollX.id].x = moveBarDistance;
-//                                background.compressedOptions[scrollX.id].x = moveBarDistance;
-//                            }
-//                        }
-//                    }
-//
+                rightArrowScroll(background);
             });
 
             canvas.add(scrollX);
@@ -1582,18 +1251,8 @@ class ArraySymbol extends ConnectableWidget {
             background.children.push(background.scrollX);
             background.children.push(background.leftArrow);
             background.children.push(background.rightArrow);
-
-            scrollX.processConnectionRequest = function (connection) {
-                return {
-                    connectionAccepted: true,
-                    message: 'The object refused to accept the connection!',
-                    processedValue: null
-                };
-            }
-
-            scrollX.acceptConnection = function (connection, processedValue) {
-                console.log("Connection accepted!")
-            }
+            console.log("Background is: ");
+            console.log(background);
         }
 
         background.addColorWidget = function () {
@@ -1624,7 +1283,7 @@ class ArraySymbol extends ConnectableWidget {
             canvas.add(arrayColorWidget);
         }
 
-        this.addAll = function () {
+        background.addAll = function () {
             background.expand();
 
             background.children.forEach(function (child) {
@@ -1634,7 +1293,7 @@ class ArraySymbol extends ConnectableWidget {
         }
 
         // Use compressed and expanded options. compress() and expand()
-        this.removeAll = function () {
+        background.removeAll = function () {
             background.compress();
 
             background.children.forEach(function (child) {
@@ -1642,7 +1301,7 @@ class ArraySymbol extends ConnectableWidget {
             });
         }
 
-        this.progvolverType = "CodeNote";
+        background.progvolverType = "Array widget";
         registerProgvolverObject(this);
 
         background.clone = function () {
