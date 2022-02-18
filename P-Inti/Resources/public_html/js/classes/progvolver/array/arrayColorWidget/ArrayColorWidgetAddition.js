@@ -10,16 +10,20 @@ class ArrayColorWidgetAddition {
         options.hasBorders = false;
 
         var background = createObjectBackground(fabric.Circle, options, this);
+        background.parent = options.parent;
+        background.array = options.array;
 
         background.oldRender = background.render;
         background.render = function (ctx) {
-            ctx.save();
-            ctx.font = "12px Helvetica";
-            background.oldRender(ctx);
-            var center = background.getPointByOrigin('center', 'center');
-            ctx.fillText("+", center.x , center.y + 1);
+            if (!background.array.isCompressed) {
+                ctx.save();
+                ctx.font = "12px Helvetica";
+                background.oldRender(ctx);
+                var center = background.getPointByOrigin('center', 'center');
+                ctx.fillText("+", center.x, center.y + 1);
 
-            ctx.restore();
+                ctx.restore();
+            }
         };
 
         this.progvolverType = "ArrayColorWidgetAddition";

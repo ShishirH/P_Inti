@@ -21,6 +21,7 @@ class ArrayColorWidget {
         var addColorWidgetButton = function () {
             var colorWidgetAddition = new ArrayColorWidgetAddition({
                 parent: background,
+                array: background.array,
                 radius: 6
             });
 
