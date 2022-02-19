@@ -169,7 +169,6 @@ class ArraySymbol {
         };
 
         background.setProgramTime = function (time) {
-
             // 'this' here refers to the variable background
             background.time = time;
             background.currentTime = time;
@@ -1504,7 +1503,6 @@ class ArraySymbol {
             return [rows, columns, defaultValue]
         }
 
-        registerProgvolverObject(this);
         return background;
     }
 

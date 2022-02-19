@@ -427,7 +427,6 @@ class ArrayElementObject {
         })
 
         this.progvolverType = "CodeNote";
-        registerProgvolverObject(this);
         return this.background;
     }
 }

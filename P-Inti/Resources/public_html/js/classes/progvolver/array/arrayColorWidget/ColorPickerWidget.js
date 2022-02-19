@@ -84,7 +84,6 @@ class ColorPickerWidget {
         }
 
         this.progvolverType = "ColorPickerWidget";
-        registerProgvolverObject(this);
 
         return background;
     }

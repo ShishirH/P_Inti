@@ -68,7 +68,6 @@ class ArrayColorWidgetOutput {
         });
 
         this.progvolverType = "ArrayColorWidgetOutput";
-        registerProgvolverObject(this);
 
         return background;
     }

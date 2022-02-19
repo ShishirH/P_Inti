@@ -528,8 +528,16 @@ class ReferenceWidget {
             background.object.setValue(newValue);
         }
 
+        background.setProgramTime = function (currentTime) {
+            background.object.setProgramTime(currentTime);
+        }
+
+        background.setHistory = function () {
+            background.object.history = window.logData.filter(item => item.widgetsID.indexOf(background.object.id) != -1);
+        }
+
         this.progvolverType = "ReferenceWidget";
-        registerProgvolverObject(this);
+        registerProgvolverObject(background);
 
         console.log("Adding to persistent entry")
         PERSISTENT_CANVAS_ENTRIES.push(background);

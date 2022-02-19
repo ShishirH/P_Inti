@@ -27,7 +27,6 @@ class ArrayColorWidgetAddition {
         };
 
         this.progvolverType = "ArrayColorWidgetAddition";
-        registerProgvolverObject(this);
 
         return background;
     }
