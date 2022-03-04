@@ -182,6 +182,9 @@
         <script type="text/javascript" src="js/interaction/interactionEvents/MovementInteractionEvent.js"></script>
         <script type="text/javascript" src="js/interaction/interactionEvents/DisappearanceInteractionEvent.js"></script>
 
+        <script type="text/javascript" src="js/classes/progvolver/logicalOperatorWidget/ComparisonOperators.js"></script>
+        <script type="text/javascript" src="js/classes/progvolver/logicalOperatorWidget/VariableInputConnection.js"></script>
+
         <link rel="stylesheet" type="text/css" href="./js/spectrum.min.css"/>
         <script src="./js/spectrum.min.js"></script>
         <script src="./js/d3.v6.js"></script>
@@ -1491,6 +1494,18 @@
         //
         // canvas.add(arrayControls);
         // canvas.add(codeControls);
+
+        var comparisonOperator = new ComparisonOperators({
+            fill: '#F02466',
+            stroke: '#F02466',
+            y: 250,
+            x: 250,
+            top: 250,
+            left: 250
+        });
+
+        canvas.add(comparisonOperator);
+
     </script>
 </body>
 </html>
