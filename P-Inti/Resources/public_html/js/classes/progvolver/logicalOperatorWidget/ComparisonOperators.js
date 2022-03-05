@@ -97,7 +97,37 @@ class ComparisonOperators {
             background.children.push(inputPortRight);
         }
 
+        var addOutputPort = function () {
+            var outputPort = new LogicalInputConnection({
+                background: background,
+            });
+
+            var originParent = {originX: 'center', originY: 'bottom'};
+            var originChild = {originX: 'center', originY: 'top'};
+
+
+            background.addChild(outputPort, {
+                whenCompressed: {
+                    x: 0, y: 5,
+                    scaleX: 1, scaleY: 1, opacity: 1,
+                    originParent: originParent,
+                    originChild: originChild
+                },
+                whenExpanded: {
+                    x: 0, y: 5,
+                    originParent: originParent,
+                    originChild: originChild
+                },
+                movable: false
+            });
+
+            background.outputPort = outputPort;
+            background.children.push(outputPort);
+        }
+
+
         addInputPorts();
+        addOutputPort();
         //addEvents();
 
         this.addEvents = function (options) {
@@ -117,6 +147,7 @@ class ComparisonOperators {
                     'font': 'Helvetica',
                     'border-radius': '0px',
                     'font-size': '17px',
+                    'text-align-last': 'center',
                     'color': 'rgba(65, 65, 65, 1)',
                     border: background.stroke + ' 1px solid',
                     resize: 'both',
@@ -137,11 +168,6 @@ class ComparisonOperators {
                 console.log(selectDropdown[0].value);
                 background.currentOperator = selectDropdown[0].value;
             });
-
-//            selectDropdown.change(function (e) {
-//                console.log(selectDropdown[0].value);
-//                background.event = selectDropdown[0].value;
-//            });
 
             var positionDropdown = function () {
                 /*console.log(background.getScaledWidth());
@@ -164,26 +190,6 @@ class ComparisonOperators {
                 });
             };
 
-            var sc = getScreenCoordinates(background.getPointByOrigin('center', 'top'));
-            var offset = $('#canvasContainer').offset();
-            var zoom = canvas.getZoom();
-            var borderWidth = parseFloat(selectDropdown.css('borderWidth'));
-            var newLeft = sc.x + (offset.left + background.strokeWidth / 2 - borderWidth) * zoom;
-            var newTop = sc.y + (background.strokeWidth / 2) * zoom;
-
-//            console.log("sc");
-//            console.log(sc);
-//            console.log("offset");
-//            console.log(offset);
-//            console.log("Zoom");
-//            console.log(zoom);
-//            console.log("borderWidth");
-//            console.log(borderWidth);
-//            console.log("newLeft");
-//            console.log(newLeft);
-//            console.log("newTop");
-//            console.log(newTop);
-
             background.operations = selectDropdown;
             background.addHtmlChild(selectDropdown, positionDropdown);
             background.positionHtmlObjects();
@@ -194,6 +200,7 @@ class ComparisonOperators {
         background.registerListener('added', function (options) {
             canvas.add(background.inputPortLeft);
             canvas.add(background.inputPortRight);
+            canvas.add(background.outputPort);
             background.positionHtmlObjects();
             background.positionObjects();
         });
