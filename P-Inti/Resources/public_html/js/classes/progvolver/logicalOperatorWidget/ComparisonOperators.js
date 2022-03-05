@@ -72,8 +72,8 @@ class ComparisonOperators {
                 background: background,
             });
 
-            var originParent = {originX: 'right', originY: 'center'};
-            var originChild = {originX: 'left', originY: 'center'};
+            originParent = {originX: 'right', originY: 'center'};
+            originChild = {originX: 'left', originY: 'center'};
 
 
             background.addChild(inputPortRight, {

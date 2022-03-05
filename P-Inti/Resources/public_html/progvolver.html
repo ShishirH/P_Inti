@@ -186,6 +186,7 @@
         <script type="text/javascript" src="js/classes/progvolver/logicalOperatorWidget/LogicalOperators.js"></script>
         <script type="text/javascript" src="js/classes/progvolver/logicalOperatorWidget/VariableInputConnection.js"></script>
         <script type="text/javascript" src="js/classes/progvolver/logicalOperatorWidget/LogicalInputConnection.js"></script>
+        <script type="text/javascript" src="js/classes/progvolver/logicalOperatorWidget/ResultWidget.js"></script>
 
         <link rel="stylesheet" type="text/css" href="./js/spectrum.min.css"/>
         <script src="./js/spectrum.min.js"></script>
@@ -1508,14 +1509,23 @@
 
         canvas.add(comparisonOperator);
 
-        var logicalOperator = new LogicalOperators({
+        // var logicalOperator = new LogicalOperators({
+        //     y: 500,
+        //     x: 500,
+        //     top: 500,
+        //     left: 500
+        // });
+        //
+        // canvas.add(logicalOperator);
+
+        var resultWidget = new ResultWidget({
             y: 500,
             x: 500,
             top: 500,
             left: 500
         });
 
-        canvas.add(logicalOperator);
+        canvas.add(resultWidget);
 
 
     </script>

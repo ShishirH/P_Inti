@@ -1,24 +1,83 @@
-var ResultWidget = iVoLVER.util.createClass(fabric.Rect, {
-    initialize: function (options) {
-        options.width = options.width || 20;
-        options.height = options.height || 35;
-        this.callSuper('initialize', options);
-        this.value = options.value;
-        this.parent = options.parent;
+class ResultWidget {
+    constructor(options) {
+        var symbolFont = '17px Helvetica';
 
-        this.oldRender = this.render;
-        this.render = function (ctx) {
-            this.oldRender(ctx);
+        options.height = 44;
+        options.width = 110;
+        options.rx = options.rx || 0;
+        options.ry = options.ry || 0;
+        options.fill = WHEN_WIDGET_FILL;
+        options.stroke = darken(options.fill);
+        options.strokeWidth = options.strokeWidth || 2;
 
-            if (!this.parent.isCompressed) {
-                ctx.font = '8px Helvetica';
-                ctx.fillStyle = 'white';
-                ctx.textAlign = "center";
-                ctx.textBaseline = "middle";
-                var center = this.getPointByOrigin('center', 'center');
-                ctx.fillText(this.value, center.x, center.y);
+        options.hasControls = false;
+        options.hasBorders = false;
+
+        var background = createObjectBackground(fabric.Rect, options, this);
+        background.children = [];
+
+        this.background = background;
+        background.noScaleCache = false;
+
+        this.value = options.value || '';
+
+
+        background.oldRender = background.render;
+        background.render = function (ctx) {
+            background.oldRender(ctx);
+            ctx.save();
+            ctx.font = symbolFont;
+            ctx.fillStyle = 'rgba(65, 65, 65, ' + background.opacity + ')';
+            ctx.textAlign = "left";
+            ctx.textBaseline = "middle";
+            var center = background.getPointByOrigin('left', 'center');
+
+            if (background.value) {
+                var renderableValue = background.value;
+                ctx.fillText(renderableValue, center.x + 22, center.y);
             }
+            ctx.restore();
         };
 
+        var addInputPort = function () {
+            var inputPort = new VariableInputConnection({
+                background: background,
+            });
+
+            var originParent = {originX: 'center', originY: 'top'};
+            var originChild = {originX: 'center', originY: 'bottom'};
+
+
+            background.addChild(inputPort, {
+                whenCompressed: {
+                    x: 0, y: -5,
+                    scaleX: 1, scaleY: 1, opacity: 1,
+                    originParent: originParent,
+                    originChild: originChild
+                },
+                whenExpanded: {
+                    x: 0, y: -5,
+                    originParent: originParent,
+                    originChild: originChild
+                },
+                movable: false
+            });
+
+            background.inputPort = inputPort;
+            background.children.push(inputPort);
+        }
+
+        addInputPort();
+        //addEvents();
+
+        background.registerListener('added', function (options) {
+            canvas.add(background.inputPort);
+            background.positionObjects();
+        });
+
+        this.progvolverType = "ResultWidget";
+        registerProgvolverObject(this);
+
+        return this.background;
     }
-});
+}
