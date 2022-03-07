@@ -27,27 +27,21 @@ class CanvasVariable {
         background.children = [];
         background.expandedHeight = 30;
 
-        function getValueWidth(theFont) {
+        function getValueWidth(newValue, theFont) {
             var ctx = canvas.getContext();
             ctx.save();
             ctx.font = theFont;
 
-            var renderableValue = background.value;
-            if (!iVoLVER.util.isUndefined(background.value) && iVoLVER.util.isNumber(background.value)) {
-                renderableValue = background.value.toFixed(2);
-            }
-
-            return ctx.measureText(renderableValue).width;
+            return ctx.measureText(newValue).width;
         }
 
         background.setValue = function (newValue, withAnimation) {
             background.value = newValue;
-            background.set('width', getValueWidth(symbolFont) + 10 > 40 ? getValueWidth(symbolFont) + 10 : 40);
+            background.textField.text = newValue;
+            background.connectionPort.value = newValue;
+            background.set('width', getValueWidth(newValue, symbolFont) + 10 > 40 ? getValueWidth(newValue, symbolFont) + 10 : 40);
             background.expandedWidth = background.width;
         }
-
-        background.setValue(background.value);
-
 
         background.oldRender = background.render;
         background.render = function (ctx) {
@@ -58,12 +52,12 @@ class CanvasVariable {
             ctx.textBaseline = "middle";
             var center = background.getPointByOrigin('center', 'center');
 
-            var renderableValue = background.value;
-            if (!iVoLVER.util.isUndefined(background.value) && iVoLVER.util.isNumber(background.value)) {
-                renderableValue = background.value.toFixed(2);
-            }
-
-            ctx.fillText(renderableValue, center.x, center.y + 3);
+            // var renderableValue = background.value;
+            // if (!iVoLVER.util.isUndefined(background.value) && iVoLVER.util.isNumber(background.value)) {
+            //     renderableValue = background.value.toFixed(2);
+            // }
+            //
+            // ctx.fillText(renderableValue, center.x, center.y + 3);
         };
 
 
@@ -141,8 +135,8 @@ class CanvasVariable {
             var originChild;
 
             var x = 0, y = 0;
-            originParent = {originX: 'left', originY: 'center'};
-            originChild = {originX: 'right', originY: 'center'};
+            originParent = {originX: 'right', originY: 'center'};
+            originChild = {originX: 'left', originY: 'center'};
             x = (background.strokeWidth + 1);
 
 
@@ -180,7 +174,7 @@ class CanvasVariable {
                     originChild: originChild
                 },
                 whenExpanded: {
-                    x: -x, y: y,
+                    x: +x, y: y,
                     originParent: originParent,
                     originChild: originChild
                 },
@@ -188,9 +182,61 @@ class CanvasVariable {
             });
 
             canvas.add(thePort);
+            background.connectionPort = thePort;
+        }
+
+        background.addTextField = function () {
+            let textField = new fabric.IText("Val", {
+                fontFamily: 'Helvetica',
+                fill: '#333',
+                padding: 3,
+                fontSize: 20,
+                hasControls: false,
+                borderColor: 'white',
+                textAlign: 'left',
+                editingBorderColor: 'white',
+            });
+
+            var originParent = {originX: 'center', originY: 'center'};
+            var originChild = {originX: 'center', originY: 'center'};
+
+            let scaleX, scaleY, opacity;
+
+            scaleX = 1;
+            scaleY = 1;
+            opacity = 1;
+
+
+            background.addChild(textField, {
+                whenCompressed: {
+                    x: 0, y: 0,
+                    scaleX: scaleX, scaleY: scaleY, opacity: opacity,
+                    originParent: originParent,
+                    originChild: originChild
+                },
+                whenExpanded: {
+                    x: 0, y: 0,
+                    scaleX: 1, scaleY: 1, opacity: 1,
+                    originParent: originParent,
+                    originChild: originChild
+                },
+                movable: false
+            });
+
+            console.log("textField is: ");
+            console.log(textField);
+            textField.on('changed', function () {
+                background.positionObject(textField);
+                background.setValue(textField.text);
+            });
+
+            background.textField = textField;
+            background.children.push(background.textField);
         }
 
         background.addConnectionPort();
+        background.addTextField();
+        background.setValue("Val");
 
         background.registerListener('mouseup', function() {
             if (background.isCompressed) {
@@ -198,6 +244,11 @@ class CanvasVariable {
             } else {
                 background.compress();
             }
+        });
+
+        background.registerListener('added', function() {
+            canvas.add(background.textField);
+            background.textField.bringToFront();
         })
         background.clone = function () {
             return new ProgvolverSymbol({

@@ -19,9 +19,7 @@ var CanvasVariableConnectionPort = iVoLVER.util.createClass(fabric.Circle, {
         var message = '';
 
         this.inConnection = source;
-
-        console.log("Connection source is: ");
-        console.log(connection);
+        this.parent.setValue(source.value);
         return {
             connectionAccepted: connectionAccepted,
             message: message
