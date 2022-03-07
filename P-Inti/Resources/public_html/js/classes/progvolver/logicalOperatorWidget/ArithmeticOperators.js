@@ -1,4 +1,4 @@
-class ArthimeticOperators {
+class ArithmeticOperators {
     constructor(options) {
         var symbolFont = '17px Helvetica';
 
@@ -210,25 +210,6 @@ class ArthimeticOperators {
             background.positionHtmlObjects();
             background.positionObjects();
         });
-
-        background.setUpdatedValue = function (value, isLeft) {
-            console.log("isLeft : ");
-            console.log(isLeft);
-
-            console.log("Value is: ");
-            console.log(value);
-
-            if (isLeft) {
-                background.leftOperandValue = value;
-            } else {
-                background.rightOperandValue = value;
-            }
-
-            console.log("Left operand is: ");
-            console.log(background.leftOperandValue);
-            console.log("Right operand is: ");
-            console.log(background.rightOperandValue)
-        }
 
 
         this.progvolverType = "LogicalOperator";

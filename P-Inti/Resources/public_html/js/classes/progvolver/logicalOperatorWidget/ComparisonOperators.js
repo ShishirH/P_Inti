@@ -197,6 +197,25 @@ class ComparisonOperators {
             background.positionHtmlObjects();
         };
 
+        background.setUpdatedValue = function (value, isLeft) {
+            console.log("isLeft : ");
+            console.log(isLeft);
+
+            console.log("Value is: ");
+            console.log(value);
+
+            if (isLeft) {
+                background.leftOperandValue = value;
+            } else {
+                background.rightOperandValue = value;
+            }
+
+            console.log("Left operand is: ");
+            console.log(background.leftOperandValue);
+            console.log("Right operand is: ");
+            console.log(background.rightOperandValue)
+        }
+
         background.setProgramTime = function (time) {
             // 'this' here refers to the variable background
             console.log("This is being run!");
