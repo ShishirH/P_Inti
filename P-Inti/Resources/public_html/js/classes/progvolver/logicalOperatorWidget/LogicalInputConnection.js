@@ -13,64 +13,109 @@ var LogicalInputConnection = iVoLVER.util.createClass(fabric.Circle, {
 
         this.callSuper('initialize', options);
         this.initConnectable();
-        this.id = options.id;
-        this.numberOfSignalsEmitted = 0;
-        registerProgvolverObject(this);
+        this.parent = options.parent;
+        this.result = undefined;
+        this.isLogicalInputConnection = true;
+        this.connectionOutputPort = undefined;
+        this.isOutputPort = options.isOutputPort;
+        this.isLeft = options.isLeft;
 
-        this.setSignalData = function () {
-            this.signals = window.signalData.filter(item => item.widgetsID == this.id);
+        this.setUpdatedValue = function (value) {
+            console.log("Value is now: ");
+            console.log(value);
+            console.log("Parent is: ");
+            console.log(this.parent);
 
-            this.afterSettingSignalData && this.afterSettingSignalData();
-        };
+            this.parent.setUpdatedValue(value);
+        }
+        this.updateOutput = function () {
+            console.log("I am being called");
+            console.log("isLeft is: " + this.isLeft);
 
-        this.afterSettingSignalData = function () {
-        };
+            let operandA = this.parent.inputPortLeft.operandValue;
+            let operandB = this.parent.inputPortRight.operandValue;
 
-        this.setProgramTime = function (time) {
-            if (this.signals) {
-                this.values = this.signals.filter(item => item.time <= time);
-                if (this.values.length) {
-                    this.onValuesUpdated && this.onValuesUpdated(this.values.length);
+            console.log("A is: " + operandA);
+            console.log("B is: " + operandB);
+
+            if (this.parent.inputPortLeft && this.parent.inputPortLeft.operandValue !== undefined) {
+                if (this.parent.inputPortRight && this.parent.inputPortRight.operandValue !== undefined) {
+                    let operandA = this.parent.inputPortLeft.operandValue;
+                    let operandB = this.parent.inputPortRight.operandValue;
+
+                    console.log("A is: " + operandA);
+                    console.log("B is: " + operandB);
+                    let operator = this.parent.currentOperator;
+                    console.log("Operator is: " + operator);
+                    let result;
+
+                    switch(operator) {
+                        case ">":
+                            result = operandA > operandB;
+                            break;
+                        case "<":
+                            result = operandA < operandB;
+                            break;
+                        case ">=":
+                            result = operandA >= operandB;
+                            break;
+                        case "<=":
+                            result = operandA <= operandB;
+                            break;
+                        case "==":
+                            result = operandA == operandB;
+                            break;
+                        case "&&":
+                            result = operandA && operandB;
+                            break;
+                        case "||":
+                            result = operandA || operandB;
+                            break;
+                        case "!":
+                            result = operandA || operandB;
+                            break;
+                    }
+
+                    console.log("Result is: " + result);
+                    this.result = result;
+                    this.value = result;
+                    if (this.connectionOutputPort && this.isOutputPort) {
+                        console.log("I am here!");
+                        console.log("isLeft is: " + this.isLeft);
+                        this.connectionOutputPort.setUpdatedValue(result, this.isLeft);
+                    }
                 }
             }
-        };
-
-        this.oldRender = this.render;
-        this.render = function (ctx) {
-            this.oldRender(ctx);
-        };
-
-        this.onValuesUpdated = function (numberOfSignals) {
-            if (this.numberOfSignalsEmitted < numberOfSignals) {
-                this.emitSignal();
-                this.numberOfSignalsEmitted += 1;
-            }
-        };
-
-        this.emitSignal = function () {
-            this.outConnections.forEach(function (outConnection) {
-                outConnection.target.signalEmitted();
-            })
-        };
-
+        }
     },
     processConnectionRequest: function (connection) {
-        var source = connection.source;
-        var connectionAccepted = (source.isCircle && (source.getInConnections().length + source.getOutConnections().length) === 1) || (source.isTriangle && (source.getInConnections().length >= 2));
-        var message = '';
+        this.inConnection = connection;
+        let source = connection.source;
+        console.log("Connection is: ");
+        console.log(connection);
+        console.log("Source is: ");
+        console.log(connection.source);
+
+        this.operandValue = source.result;
+
+        let connectionAccepted = false;
+
+        if (connection.source.isLogicalInputConnection && connection.source.isOutputPort) {
+            connectionAccepted = true;
+            connection.source.connectionOutputPort = this;
+        }
+        let message = '';
         if (!connectionAccepted) {
-            if (source.isCircle) {
-                message = 'Sorry, I only accept unconnected Circles.';
-            } else if (source.isTriangle) {
-                message = 'Sorry, I only accept Triangles with at least two incoming connections.';
-            } else {
-                message = 'Sorry, I don\'t accept connections from Squares.';
-            }
+            message = "Could not make a connection."
         }
         return {
             connectionAccepted: connectionAccepted,
             message: message
         };
     },
+    inValueUpdated: function (options) {
+        var inConnection = this.inConnection;
+        this.operandValue = Number(inConnection.source.value);
+    }
 });
 iVoLVER.util.extends(LogicalInputConnection.prototype, iVoLVER.model.Connectable);

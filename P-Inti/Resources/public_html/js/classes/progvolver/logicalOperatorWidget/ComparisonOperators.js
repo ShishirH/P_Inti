@@ -46,7 +46,7 @@ class ComparisonOperators {
 
         var addInputPorts = function () {
             var inputPortLeft = new VariableInputConnection({
-                background: background,
+                parent: background,
             });
 
             var originParent = {originX: 'left', originY: 'center'};
@@ -69,7 +69,7 @@ class ComparisonOperators {
             });
 
             var inputPortRight = new VariableInputConnection({
-                background: background,
+                parent: background,
             });
 
             originParent = {originX: 'right', originY: 'center'};
@@ -99,7 +99,8 @@ class ComparisonOperators {
 
         var addOutputPort = function () {
             var outputPort = new LogicalInputConnection({
-                background: background,
+                parent: background,
+                isOutputPort: true
             });
 
             var originParent = {originX: 'center', originY: 'bottom'};
@@ -167,6 +168,7 @@ class ComparisonOperators {
             selectDropdown.change(function (e) {
                 console.log(selectDropdown[0].value);
                 background.currentOperator = selectDropdown[0].value;
+                background.outputPort.updateOutput();
             });
 
             var positionDropdown = function () {
@@ -195,6 +197,13 @@ class ComparisonOperators {
             background.positionHtmlObjects();
         };
 
+        background.setProgramTime = function (time) {
+            // 'this' here refers to the variable background
+            console.log("This is being run!");
+            background.outputPort.updateOutput();
+        };
+
+
         this.addEvents(options);
 
         background.registerListener('added', function (options) {
@@ -205,8 +214,13 @@ class ComparisonOperators {
             background.positionObjects();
         });
 
+
+
         this.progvolverType = "ComparisonOperator";
-        registerProgvolverObject(this);
+        registerProgvolverObject(background);
+
+        console.log("Background is: ");
+        console.log(background);
 
         return this.background;
     }

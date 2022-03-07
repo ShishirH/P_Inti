@@ -1487,7 +1487,15 @@ namespace P_Inti
 
                 var compilationMessage = CodeAnalyzer.analyzeCode(windowControl.assembledSolution, outputDir, fileNames, positions, trackedSymbolsIDs, trackedExpressionsIDs, out logFileContent, out scopeFileContent, windowControl, out success);
 
-                string[] signalFileContent = File.ReadAllLines(outputDir + "\\" + "run" + ".signal");
+                string[] signalFileContent = { };
+                string signalFilePath = outputDir + "\\" + "run" + ".signal";
+
+                FileInfo signalFileInfo = new FileInfo(signalFilePath);
+
+                if (signalFileInfo.Exists)
+                {
+                    signalFileContent = File.ReadAllLines(outputDir + "\\" + "run" + ".signal");
+                }
 
                 result.Add("trackedSymbolsIDs", trackedSymbolsIDs.ToArray());
                 result.Add("trackedExpressionsIDs", trackedExpressionsIDs.ToArray());

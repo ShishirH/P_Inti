@@ -40,8 +40,8 @@ class ResultWidget {
         };
 
         var addInputPort = function () {
-            var inputPort = new VariableInputConnection({
-                background: background,
+            var inputPort = new LogicalInputConnection({
+                parent: background,
             });
 
             var originParent = {originX: 'center', originY: 'top'};
@@ -75,8 +75,18 @@ class ResultWidget {
             background.positionObjects();
         });
 
+        background.setUpdatedValue = function (value) {
+            console.log("Updating value to : ");
+            console.log(value);
+
+            if (value) {
+                this.value = "True";
+            } else {
+                this.value = "False";
+            }
+        }
         this.progvolverType = "ResultWidget";
-        registerProgvolverObject(this);
+        registerProgvolverObject(background);
 
         return this.background;
     }

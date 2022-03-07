@@ -17,8 +17,6 @@ class LogicalOperators {
 
         var background = createObjectBackground(fabric.Rect, options, this);
 
-        background.hMargin = 5;
-        background.vMargin = 35;
         background.children = [];
 
         this.background = background;
@@ -45,7 +43,8 @@ class LogicalOperators {
 
         var addInputPorts = function () {
             var inputPortLeft = new LogicalInputConnection({
-                background: background,
+                parent: background,
+                isLeft: true
             });
 
             var originParent = {originX: 'left', originY: 'center'};
@@ -68,11 +67,12 @@ class LogicalOperators {
             });
 
             var inputPortRight = new LogicalInputConnection({
-                background: background,
+                parent: background,
+                isLeft: false
             });
 
-            var originParent = {originX: 'right', originY: 'center'};
-            var originChild = {originX: 'left', originY: 'center'};
+            originParent = {originX: 'right', originY: 'center'};
+            originChild = {originX: 'left', originY: 'center'};
 
 
             background.addChild(inputPortRight, {
@@ -98,7 +98,8 @@ class LogicalOperators {
 
         var addOutputPort = function () {
             var outputPort = new LogicalInputConnection({
-                background: background,
+                parent: background,
+                isOutputPort: true
             });
 
             var originParent = {originX: 'center', originY: 'bottom'};
@@ -163,6 +164,7 @@ class LogicalOperators {
             selectDropdown.change(function (e) {
                 console.log(selectDropdown[0].value);
                 background.currentOperator = selectDropdown[0].value;
+                background.outputPort.updateOutput();
             });
 
             var positionDropdown = function () {
@@ -193,6 +195,12 @@ class LogicalOperators {
 
         this.addEvents(options);
 
+        background.setProgramTime = function (time) {
+            // 'this' here refers to the variable background
+            console.log("This is being run!");
+            background.outputPort.updateOutput();
+        };
+
         background.registerListener('added', function (options) {
             canvas.add(background.inputPortLeft);
             canvas.add(background.inputPortRight);
@@ -201,9 +209,30 @@ class LogicalOperators {
             background.positionObjects();
         });
 
-        this.progvolverType = "ComparisonOperator";
-        registerProgvolverObject(this);
+        background.setUpdatedValue = function (value, isLeft) {
+            console.log("isLeft : ");
+            console.log(isLeft);
 
+            console.log("Value is: ");
+            console.log(value);
+
+            if (isLeft) {
+                background.leftOperandValue = value;
+            } else {
+                background.rightOperandValue = value;
+            }
+
+            console.log("Left operand is: ");
+            console.log(background.leftOperandValue);
+            console.log("Right operand is: ");
+            console.log(background.rightOperandValue)
+        }
+
+
+        this.progvolverType = "LogicalOperator";
+        registerProgvolverObject(background);
+
+        window.logicalOperator = background;
         return this.background;
     }
 }

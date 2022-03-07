@@ -1509,14 +1509,25 @@
 
         canvas.add(comparisonOperator);
 
-        // var logicalOperator = new LogicalOperators({
-        //     y: 500,
-        //     x: 500,
-        //     top: 500,
-        //     left: 500
-        // });
-        //
-        // canvas.add(logicalOperator);
+        var anotherComparison = new ComparisonOperators({
+            fill: '#F02466',
+            stroke: '#F02466',
+            y: 250,
+            x: 500,
+            top: 250,
+            left: 250
+        });
+
+        canvas.add(anotherComparison);
+
+        var logicalOperator = new LogicalOperators({
+            y: 400,
+            x: 500,
+            top: 500,
+            left: 500
+        });
+
+        canvas.add(logicalOperator);
 
         var resultWidget = new ResultWidget({
             y: 500,

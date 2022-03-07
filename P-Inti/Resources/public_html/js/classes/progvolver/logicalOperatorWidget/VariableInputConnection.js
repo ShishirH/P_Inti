@@ -13,7 +13,7 @@ var VariableInputConnection = iVoLVER.util.createClass(fabric.Circle, {
 
         this.callSuper('initialize', options);
         this.initConnectable();
-        registerProgvolverObject(this);
+        this.parent = options.parent;
 
         this.oldRender = this.render;
         this.render = function (ctx) {
@@ -24,6 +24,7 @@ var VariableInputConnection = iVoLVER.util.createClass(fabric.Circle, {
         let source = connection.source;
         this.operandValue = Number(source.value);
 
+        console.log("Operand value is: " + this.operandValue);
         var connectionAccepted = true;
         this.inConnection = connection;
         return {
@@ -33,7 +34,10 @@ var VariableInputConnection = iVoLVER.util.createClass(fabric.Circle, {
         };
     },
 
-    acceptConnection: function (connection, processedValue) {},
+    acceptConnection: function (connection, processedValue) {
+        console.log("Calling this");
+        this.parent.outputPort && this.parent.outputPort.updateOutput && this.parent.outputPort.updateOutput();
+    },
 
     connectionAccepted: function (connection) {},
 
