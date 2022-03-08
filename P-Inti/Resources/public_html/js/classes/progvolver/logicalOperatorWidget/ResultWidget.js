@@ -81,8 +81,10 @@ class ResultWidget {
 
             if (value) {
                 this.value = "True";
+                this.set('fill', 'LimeGreen')
             } else {
                 this.value = "False";
+                this.set('fill', 'Tomato');
             }
         }
         this.progvolverType = "ResultWidget";
