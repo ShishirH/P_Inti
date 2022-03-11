@@ -190,10 +190,8 @@ class LollipopPlot extends ConnectableWidget {
         // }
 
         this.updatePlot = function (svg, data, newWidth, newHeight, doNotAnimate, xCoord) {
-
-
-//            console.log("data:");
-//            console.log(data);
+           console.log("data:");
+           console.log(data);
 
             let duration = doNotAnimate ? 0 : 500;
 
@@ -265,7 +263,7 @@ class LollipopPlot extends ConnectableWidget {
                 .attr("stroke-width", 0.25)
                 .transition()
                 .duration(duration)
-                .attr("y2", d => yScale(d.value))
+                .attr("y2", d => yScale(d.values))
                 .attr("opacity", 1)
 
             // update
@@ -274,7 +272,7 @@ class LollipopPlot extends ConnectableWidget {
                 .duration(duration)
                 .attr("x1", d => xScale(d[xCoord]))
                 .attr("x2", d => xScale(d[xCoord]))
-                .attr("y1", d => yScale(d.value))
+                .attr("y1", d => yScale(d.values))
                 .attr("y2", d => endPoint(d))
                 .attr("stroke", d => darken(colorScale(d.symbolName)))
 
@@ -308,7 +306,7 @@ class LollipopPlot extends ConnectableWidget {
                 .attr("stroke-width", 0.5)
                 .transition()
                 .duration(duration)
-                .attr("cy", d => yScale(d.value))
+                .attr("cy", d => yScale(d.values))
                 .attr("opacity", 1)
 
 
@@ -316,7 +314,7 @@ class LollipopPlot extends ConnectableWidget {
                 .transition()
                 .duration(duration)
                 .attr("cx", d => xScale(d[xCoord]))
-                .attr("cy", d => yScale(d.value))
+                .attr("cy", d => yScale(d.values))
                 .style("fill", d => colorScale(d.symbolName))
                 .attr("stroke", d => darken(colorScale(d.symbolName)))
 
