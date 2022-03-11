@@ -1,14 +1,19 @@
-var LogicalInputConnection = iVoLVER.util.createClass(fabric.Circle, {
-    isCircle: true,
+var LogicalInputConnection = iVoLVER.util.createClass(fabric.Rect, {
     initialize: function (options) {
         options || (options = {});
         options.hasControls = false;
         options.originX = 'center';
-        options.radius = options.radius || 6;
-        options.fill = SIGNAL_FILL;
-        options.stroke = darken(SIGNAL_FILL);
+        options.width = options.width || 35;
+        options.height = options.height || 28;
+        options.rx = options.rx || 5;
+        options.ry = options.ry || 5;
+        options.fill = "white";
+        options.strokeWidth = options.strokeWidth || 2;
+        options.stroke = darken(options.fill);
         options.nonResizable = false;
-        options.hasControls = false;
+        options.allowInConnections = true;
+        options.allowOutConnections = true;
+        options.value = "";
         options.movable = true;
 
         this.callSuper('initialize', options);
@@ -19,6 +24,17 @@ var LogicalInputConnection = iVoLVER.util.createClass(fabric.Circle, {
         this.connectionOutputPort = undefined;
         this.isOutputPort = options.isOutputPort;
         this.isLeft = options.isLeft;
+
+        this.oldRender = this.render;
+        this.render = function (ctx) {
+            this.oldRender(ctx);
+            ctx.font = 'bold 17px Helvetica';
+            ctx.fillStyle = 'rgba(65, 65, 65, ' + 1 + ')';
+            ctx.textAlign = "center";
+            ctx.textBaseline = "middle";
+            var center = this.getPointByOrigin('center', 'center');
+            ctx.fillText(this.value, center.x, center.y + 3);
+        };
 
         this.setUpdatedValue = function (value) {
             console.log("Value is now: ");
@@ -96,15 +112,14 @@ var LogicalInputConnection = iVoLVER.util.createClass(fabric.Circle, {
         console.log("Source is: ");
         console.log(connection.source);
 
+        this.set('fill', connection.source.fill);
+        this.set('stroke', connection.source.stroke);
+
         this.operandValue = source.result;
 
-        let connectionAccepted = false;
+        let connectionAccepted = true;
 
-        if (connection.source.isLogicalInputConnection && connection.source.isOutputPort) {
-            connectionAccepted = true;
-            connection.source.connectionOutputPort = this;
-        }
-        let message = '';
+         let message = '';
         if (!connectionAccepted) {
             message = "Could not make a connection."
         }

@@ -66,14 +66,19 @@ class CanvasVariable {
                 0: {}
             };
 
-            for (var i = 0; i < background.dataType.length; i++) {
-                styles['0']['' + i] = {fill: 'rgb(0,0,255)'};
-            }
-            for (var i = background.dataType.length + 1; i < background.dataType.length + 1 + background.name.length; i++) {
+            // for (var i = 0; i < background.dataType.length; i++) {
+            //     styles['0']['' + i] = {fill: 'rgb(0,0,255)'};
+            // }
+            // for (var i = background.dataType.length + 1; i < background.dataType.length + 1 + background.name.length; i++) {
+            //     styles['0']['' + i] = {fontWeight: 'bold', fill: 'rgb(0,0,0)'};
+            // }
+
+            for (var i = 0; i < background.name.length; i++) {
                 styles['0']['' + i] = {fontWeight: 'bold', fill: 'rgb(0,0,0)'};
             }
 
-            var nameObject = new fabric.IText(background.dataType + " " + background.name, {
+            // background.dataType + " " + background.name
+            var nameObject = new fabric.IText(background.name, {
                 fontFamily: 'Helvetica',
                 fill: '#333',
                 padding: 3,
@@ -113,6 +118,7 @@ class CanvasVariable {
 
             nameObject.on('changed', function () {
                 background.positionObject(nameObject);
+                background.name = nameObject.text;
             });
 //            nameObject.on('editing:entered', function () {
 //                nameObject.set('backgroundColor', 'rgba(255,255,255,0.9)');

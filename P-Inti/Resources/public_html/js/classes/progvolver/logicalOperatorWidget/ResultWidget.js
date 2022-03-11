@@ -40,7 +40,7 @@ class ResultWidget {
         };
 
         var addInputPort = function () {
-            var inputPort = new LogicalInputConnection({
+            var inputPort = new LogicalOutputConnection({
                 parent: background,
             });
 

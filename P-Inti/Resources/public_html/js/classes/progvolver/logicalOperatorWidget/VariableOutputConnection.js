@@ -1,19 +1,14 @@
-var VariableInputConnection = iVoLVER.util.createClass(fabric.Rect, {
+var VariableOutputConnection = iVoLVER.util.createClass(fabric.Circle, {
     isCircle: true,
     initialize: function (options) {
         options || (options = {});
         options.hasControls = false;
         options.originX = 'center';
-        options.width = options.width || 35;
-        options.height = options.height || 28;
-        options.rx = options.rx || 5;
-        options.ry = options.ry || 5;
-        options.fill = "white";
-        options.strokeWidth = options.strokeWidth || 2;
+        options.radius = options.radius || 6;
+        options.fill = "#DFE3B3";
         options.stroke = darken(options.fill);
-        options.allowInConnections = true;
-        options.allowOutConnections = true;
         options.nonResizable = false;
+        options.hasControls = false;
         options.movable = true;
 
         this.callSuper('initialize', options);
@@ -23,17 +18,10 @@ var VariableInputConnection = iVoLVER.util.createClass(fabric.Rect, {
         this.connectionOutputPort = undefined;
         this.isOutputPort = options.isOutputPort;
         this.isLeft = options.isLeft;
-        this.value = "";
 
         this.oldRender = this.render;
         this.render = function (ctx) {
             this.oldRender(ctx);
-            ctx.font = 'bold 17px Helvetica';
-            ctx.fillStyle = 'rgba(65, 65, 65, ' + 1 + ')';
-            ctx.textAlign = "center";
-            ctx.textBaseline = "middle";
-            var center = this.getPointByOrigin('center', 'center');
-            ctx.fillText(this.value, center.x, center.y + 3);
         };
 
         this.setUpdatedValue = function (value) {
@@ -76,6 +64,7 @@ var VariableInputConnection = iVoLVER.util.createClass(fabric.Rect, {
 
                     console.log("Result is: " + result);
                     this.result = result;
+                    this.value = result;
                     if (this.connectionOutputPort && this.isOutputPort) {
                         console.log("I am here!");
                         console.log("isLeft is: " + this.isLeft);
@@ -89,15 +78,6 @@ var VariableInputConnection = iVoLVER.util.createClass(fabric.Rect, {
         this.inConnection = connection;
         let source = connection.source;
         this.operandValue = Number(source.value);
-
-        if (connection.source.background && connection.source.background.name) {
-            this.value = (connection.source.background.name)
-        } else {
-            this.value = "";
-        }
-
-        this.set('fill', connection.source.fill);
-        this.set('stroke', connection.source.stroke);
 
         console.log("Operand value is: " + this.operandValue);
         var connectionAccepted = false;
@@ -129,4 +109,4 @@ var VariableInputConnection = iVoLVER.util.createClass(fabric.Rect, {
         this.operandValue = Number(inConnection.source.value);
     }
 });
-iVoLVER.util.extends(VariableInputConnection.prototype, iVoLVER.model.Connectable);
+iVoLVER.util.extends(VariableOutputConnection.prototype, iVoLVER.model.Connectable);

@@ -3,10 +3,10 @@ class LogicalOperators {
         var symbolFont = '17px Helvetica';
 
         options.height = 44;
-        options.width = 110;
+        options.width = 140;
         options.rx = options.rx || 0;
         options.ry = options.ry || 0;
-        options.fill = WHEN_WIDGET_FILL;
+        options.fill = "#ffbf80";
         options.stroke = darken(options.fill);
         options.strokeWidth = options.strokeWidth || 2;
 
@@ -48,18 +48,18 @@ class LogicalOperators {
             });
 
             var originParent = {originX: 'left', originY: 'center'};
-            var originChild = {originX: 'right', originY: 'center'};
+            var originChild = {originX: 'left', originY: 'center'};
 
 
             background.addChild(inputPortLeft, {
                 whenCompressed: {
-                    x: -5, y: 0,
+                    x: 5, y: 0,
                     scaleX: 1, scaleY: 1, opacity: 1,
                     originParent: originParent,
                     originChild: originChild
                 },
                 whenExpanded: {
-                    x: -5, y: 0,
+                    x: 5, y: 0,
                     originParent: originParent,
                     originChild: originChild
                 },
@@ -72,18 +72,18 @@ class LogicalOperators {
             });
 
             originParent = {originX: 'right', originY: 'center'};
-            originChild = {originX: 'left', originY: 'center'};
+            originChild = {originX: 'right', originY: 'center'};
 
 
             background.addChild(inputPortRight, {
                 whenCompressed: {
-                    x: +5, y: 0,
+                    x: -5, y: 0,
                     scaleX: 1, scaleY: 1, opacity: 1,
                     originParent: originParent,
                     originChild: originChild
                 },
                 whenExpanded: {
-                    x: +5, y: 0,
+                    x: -5, y: 0,
                     originParent: originParent,
                     originChild: originChild
                 },
@@ -97,7 +97,7 @@ class LogicalOperators {
         }
 
         var addOutputPort = function () {
-            var outputPort = new LogicalInputConnection({
+            var outputPort = new LogicalOutputConnection({
                 parent: background,
                 isOutputPort: true
             });
@@ -181,9 +181,9 @@ class LogicalOperators {
                 selectDropdown.css({
                     'transform-origin': 'top left',
                     transform: 'scale(' + canvas.getZoom() + ', ' + canvas.getZoom() + ')',
-                    left: newLeft + (-92 * canvas.getZoom()) + 'px',
+                    left: newLeft + (-97 * canvas.getZoom()) + 'px',
                     top: newTop + (6 * canvas.getZoom()) + 'px',
-                    width: 70 + 'px',
+                    width: 50 + 'px',
                     height: 30 + 'px',
                 });
             };
