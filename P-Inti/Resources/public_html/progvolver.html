@@ -1505,16 +1505,16 @@
         // canvas.add(arrayControls);
         // canvas.add(codeControls);
 
-        var comparisonOperator = new ComparisonOperators({
-            fill: '#F02466',
-            stroke: '#F02466',
-            y: 250,
-            x: 250,
-            top: 250,
-            left: 250
-        });
-
-        canvas.add(comparisonOperator);
+        // var comparisonOperator = new ComparisonOperators({
+        //     fill: '#F02466',
+        //     stroke: '#F02466',
+        //     y: 250,
+        //     x: 250,
+        //     top: 250,
+        //     left: 250
+        // });
+        //
+        // canvas.add(comparisonOperator);
         //
         // var anotherComparison = new ComparisonOperators({
         //     fill: '#F02466',
@@ -1527,45 +1527,45 @@
         //
         // canvas.add(anotherComparison);
 
-        var logicalOperator = new LogicalOperators({
-            y: 400,
-            x: 400,
-            top: 400,
-            left: 400
-        });
-
-        canvas.add(logicalOperator);
-        //
-        var arithmeticOperator = new ArithmeticOperators({
-            y: 400,
-            x: 500,
-            top: 500,
-            left: 500
-        });
-
-        canvas.add(arithmeticOperator);
-        //
-        //
-        var resultWidget = new ResultWidget({
-            y: 500,
-            x: 500,
-            top: 500,
-            left: 500
-        });
-
-        canvas.add(resultWidget);
-
-
-        // var plotter = new ScatterPlot({
-        //     x: 250,
-        //     y: 250,
-        //     width: 250,
-        //     height: 250,
-        //     programElementType: "...",
-        //     drawIconSpace: true,
+        // var logicalOperator = new LogicalOperators({
+        //     y: 400,
+        //     x: 400,
+        //     top: 400,
+        //     left: 400
         // });
         //
-        // canvas.add(plotter);
+        // canvas.add(logicalOperator);
+        // //
+        // var arithmeticOperator = new ArithmeticOperators({
+        //     y: 400,
+        //     x: 500,
+        //     top: 500,
+        //     left: 500
+        // });
+        //
+        // canvas.add(arithmeticOperator);
+        // //
+        // //
+        // var resultWidget = new ResultWidget({
+        //     y: 500,
+        //     x: 500,
+        //     top: 500,
+        //     left: 500
+        // });
+        //
+        // canvas.add(resultWidget);
+
+
+        var plotter = new LollipopPlot({
+            x: 650,
+            y: 350,
+            width: 250,
+            height: 250,
+            programElementType: "...",
+            drawIconSpace: true,
+        });
+
+        canvas.add(plotter);
 
     </script>
 </body>

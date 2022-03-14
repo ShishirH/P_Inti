@@ -11,8 +11,7 @@ class LollipopPlot extends ConnectableWidget {
 
         let margin = {top: 15, right: 20, bottom: 30, left: 35};
         let xScale, yScale, colorScale, xAxisGenerator, xAxis, yAxisGenerator, yAxis;
-        background.grayOutData = null;
-        background.allData = null;
+        background.grayOutIndex = {};
 
         background.widget.labelObject.on({
             mouseup: function (options) {
@@ -114,12 +113,6 @@ class LollipopPlot extends ConnectableWidget {
             var minValue = d3.min(data, d => d.values);
             var maxValue = d3.max(data, d => d.values);
 
-            console.log("MinY is: ");
-            console.log(minValue);
-
-            console.log("MaxY: ");
-            console.log(maxValue);
-
             yScale = d3.scaleLinear()
                 .domain([minValue, maxValue])
                 .range([height, 0]);
@@ -131,6 +124,9 @@ class LollipopPlot extends ConnectableWidget {
                 .domain(background.symbols)
                 .range(d3.schemeCategory10);
 
+            console.log("color scale is: ");
+            console.log(colorScale);
+            console.log(colorScale("b"));
             svg.append("line")
                 .attr("class", "zeroLine")
                 .attr("x1", xScale(minX))
@@ -140,61 +136,20 @@ class LollipopPlot extends ConnectableWidget {
                 .attr("stroke", 'grey')
         }
 
-        // this.setUpD3 = function (plottingDiv, data, svg, availableWidth, availableHeight, xCoord) {
-        //
-        //     let width = availableWidth - margin.left - margin.right,
-        //         height = availableHeight - margin.top - margin.bottom;
-        //
-        //     svg.attr("width", plottingDiv.width())
-        //         .attr("height", plottingDiv.height())
-        //         .append("g")
-        //         .attr("transform",
-        //             "translate(" + margin.left + "," + margin.top + ")");
-        //
-        //     let minX = d3.min(data, d => d[xCoord]);
-        //     let maxX = d3.max(data, d => d[xCoord]);
-        //
-        //     xScale = d3.scaleLinear()
-        //         .range([0, width])
-        //         .domain([minX, maxX]);
-        //
-        //     xAxisGenerator = d3.axisBottom(xScale);
-        //     xAxis = svg.append("g")
-        //         .attr("transform", "translate(0," + height + ")")
-        //         .call(xAxisGenerator);
-        //
-        //     xAxis.selectAll("text")
-        //         .attr("transform", "translate(-10,0)rotate(-45)")
-        //         .style("text-anchor", "end");
-        //
-        //     var minValue = d3.min(data, d => d.value);
-        //     var maxValue = d3.max(data, d => d.value);
-        //     yScale = d3.scaleLinear()
-        //         .domain([minValue, maxValue])
-        //         .range([height, 0]);
-        //
-        //     yAxisGenerator = d3.axisLeft(yScale).ticks(3);
-        //     yAxis = svg.append("g").call(yAxisGenerator);
-        //
-        //     colorScale = d3.scaleOrdinal()
-        //         .domain(background.symbols)
-        //         .range(d3.schemeCategory10);
-        //
-        //     svg.append("line")
-        //         .attr("class", "zeroLine")
-        //         .attr("x1", xScale(minX))
-        //         .attr("x2", xScale(maxX))
-        //         .attr("y1", 0)
-        //         .attr("y2", 0)
-        //         .attr("stroke", 'grey')
-        //
-        //
-        // }
+        background.giveFillForLine = function (element) {
+            if (Object.keys(background.grayOutIndex).length === 0 || element.index < background.grayOutIndex[element.symbols]) {
+                return "red";//colorScale(element.symbols);
+            } else {
+                return "gray";
+            }
+        }
 
         this.updatePlot = function (svg, data, newWidth, newHeight, doNotAnimate, xCoord) {
            console.log("data:");
            console.log(data);
 
+           console.log("GrayIndex is: ");
+           console.log(background.grayOutIndex);
             let duration = doNotAnimate ? 0 : 500;
 
 //                console.log(data);
@@ -261,7 +216,7 @@ class LollipopPlot extends ConnectableWidget {
                 .attr("x2", d => xScale(d[xCoord]))
                 .attr("y1", d => endPoint(d))
                 .attr("y2", d => endPoint(d))
-                .attr("stroke", d => darken(colorScale(d.symbolName)))
+                .attr("stroke", d => darken(background.giveFillForLine(d)))
                 .attr("stroke-width", 0.25)
                 .transition()
                 .duration(duration)
@@ -276,7 +231,7 @@ class LollipopPlot extends ConnectableWidget {
                 .attr("x2", d => xScale(d[xCoord]))
                 .attr("y1", d => yScale(d.values))
                 .attr("y2", d => endPoint(d))
-                .attr("stroke", d => darken(colorScale(d.symbolName)))
+                .attr("stroke", d => darken(background.giveFillForLine(d)))
 
             // lines that have to be removed
             linesJoin.exit()
@@ -284,14 +239,6 @@ class LollipopPlot extends ConnectableWidget {
                 .duration(duration)
                 .attr("opacity", 0)
                 .remove()
-
-
-
-
-
-
-
-
 
             let circlesJoin = svg.selectAll("circle.pepe")
                 .data(data);
@@ -303,8 +250,8 @@ class LollipopPlot extends ConnectableWidget {
                 .attr("cx", d => xScale(d[xCoord]))
                 .attr("cy", d => endPoint(d))
                 .attr("r", "2")
-                .style("fill", d => colorScale(d.symbolName))
-                .attr("stroke", d => darken(colorScale(d.symbolName)))
+                .attr("stroke", d => background.giveFillForLine(d))
+                .attr("stroke", d => darken(background.giveFillForLine(d)))
                 .attr("stroke-width", 0.5)
                 .transition()
                 .duration(duration)
@@ -317,8 +264,8 @@ class LollipopPlot extends ConnectableWidget {
                 .duration(duration)
                 .attr("cx", d => xScale(d[xCoord]))
                 .attr("cy", d => yScale(d.values))
-                .style("fill", d => colorScale(d.symbolName))
-                .attr("stroke", d => darken(colorScale(d.symbolName)))
+                .attr("stroke", d => background.giveFillForLine(d))
+                .attr("stroke", d => darken(background.giveFillForLine(d)))
 
             circlesJoin.exit()
                 .transition()
@@ -343,8 +290,10 @@ class LollipopPlot extends ConnectableWidget {
             let dataToBeDisplayed;
 
             if (allValues && allValues.length !== 0) {
+                console.log("All data is here");
                 dataToBeDisplayed = allValues;
             } else {
+                console.log("Displaying normal data");
                 dataToBeDisplayed = data;
             }
 
@@ -602,7 +551,7 @@ class LollipopPlot extends ConnectableWidget {
                     height: newHeight + 'px',
                 });
 
-                background.updatePlotWithCurrentTime(svg, background.currentData, background.grayOutData, background.allData, newWidth, newHeight, true, background.currentXCoord);
+                background.updatePlot(svg, background.currentData, newWidth, newHeight, true, background.currentXCoord);
             };
 
             this.plottingDiv = plottingDiv;
@@ -724,7 +673,7 @@ class LollipopPlot extends ConnectableWidget {
                                 background.currentData = background.currentData.concat(symbolData);
                             }
 
-                            background.updatePlotWithCurrentTime(background.svg, background.currentData, background.grayOutData, background.allData, newWidth, newHeight, false, background.currentXCoord);
+                            background.updatePlot(background.svg, background.currentData, newWidth, newHeight, false, background.currentXCoord);
 
                         }
                     }
@@ -776,7 +725,7 @@ class LollipopPlot extends ConnectableWidget {
 
                         console.log(size);
 
-                        background.updatePlotWithCurrentTime(background.svg, background.currentData, background.grayOutData, background.allData, newWidth, newHeight, false, background.currentXCoord);
+                        background.updatePlot(background.svg, background.currentData, newWidth, newHeight, false, background.currentXCoord);
 
                     }
                 }
@@ -982,7 +931,7 @@ class LollipopPlot extends ConnectableWidget {
 
             inputPort.acceptConnection = function (theConnector, value) {
                 var connectedHistory = theConnector.source.background.history;
-                var symbolName = connectedHistory[0].symbolName;
+                var symbolName = connectedHistory[0].symbols;
 
                 console.log("connectedHistory BEFORE: ");
                 console.log(connectedHistory);
@@ -991,6 +940,7 @@ class LollipopPlot extends ConnectableWidget {
                 // Assigning the local index variable
                 connectedHistory.forEach(function (element, index) {
                     element.localIndex = index;
+                    element.localTime = element.time / 1000;
                 });
 
                 console.log("connectedHistory AFTER: ");
@@ -1013,7 +963,7 @@ class LollipopPlot extends ConnectableWidget {
 
                 let newWidth = (background.getScaledWidth() - background.hMargin * 2 - background.strokeWidth);
                 let newHeight = (background.getScaledHeight() - background.vMargin - background.hMargin - background.strokeWidth);
-                background.updatePlotWithCurrentTime(background.svg, background.currentData, background.grayOutData, background.allData, newWidth, newHeight, false, background.currentXCoord);
+                background.updatePlot(background.svg, background.currentData, newWidth, newHeight, false, background.currentXCoord);
 
 //                console.log("theConnector.source.values");
 //                console.log(theConnector.source.values);
@@ -1036,7 +986,7 @@ class LollipopPlot extends ConnectableWidget {
 //        background.currentData = background.getDataOfSymbol("symbol1"); // TMP
 //        background.currentData = plotterData;
         background.currentData = new Array();
-        background.currentXCoord = 'time';
+        background.currentXCoord = 'localTime';
 
 
 
@@ -1056,29 +1006,21 @@ class LollipopPlot extends ConnectableWidget {
             var symbolNames = Object.keys(background.histories);
 
             var valuesToPlot = new Array();
-            var grayOutValues = new Array();
-            var allValues = new Array();
 
             symbolNames.forEach(function (symbolName) {
                 var symbolHistory = background.histories[symbolName];
                 var currentValues = symbolHistory.filter(item => item.time <= time);
-                var futureValues = symbolHistory.filter(item => item.time > time);
-                valuesToPlot = valuesToPlot.concat(currentValues);
-                grayOutValues = grayOutValues.concat(futureValues);
-                allValues = allValues.concat(symbolHistory);
+                valuesToPlot = valuesToPlot.concat(symbolHistory);
+
+                background.grayOutIndex[symbolName] = currentValues.length + 1;
             });
 
             // we need to modify (i.e., filter) the values of what we are showing at this point)
             background.currentData = valuesToPlot;
-            background.grayOutData = grayOutValues;
-            background.allData = allValues;
 
             let newWidth = (background.getScaledWidth() - background.hMargin * 2 - background.strokeWidth);
             let newHeight = (background.getScaledHeight() - background.vMargin - background.hMargin - background.strokeWidth);
-            background.updatePlotWithCurrentTime(background.svg, background.currentData, background.grayOutData, background.allData, newWidth, newHeight, true, background.currentXCoord);
-
-//            console.log("Aqui version overloaded");
-
+            background.updatePlot(background.svg, background.currentData, newWidth, newHeight, true, background.currentXCoord);
         }
 
         return this;

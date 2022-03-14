@@ -5615,9 +5615,6 @@ iVoLVER.model.Connectable = {
 
         var theConnectable = this;
         var oldValue = theConnectable.value;
-        
-        console.log("Old value is: ");
-        console.log(oldValue);
 
         if (iVoLVER.util.isUndefined(doNotChangeValue)) {
             // we try to change the value

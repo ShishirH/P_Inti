@@ -200,8 +200,6 @@ class ProgvolverSymbol extends ConnectableWidget {
 
             theWidget.thePorts && theWidget.thePorts.forEach(function (port) {
 //                port.setValue(iVoLVER_Value, withAnimation);
-                console.log("The port is");
-                console.log(port);
                 port.setValue(newValue, withAnimation);
             });
 
