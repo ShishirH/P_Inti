@@ -109,7 +109,9 @@ class ScatterPlot extends ConnectableWidget {
                     .range([0, width])
                     .domain([minX, maxX]);
 
-                xAxisGenerator = d3.axisBottom(xScale);
+                let xAxisTicks = xScale.ticks().filter(tick => Number.isInteger(tick))
+                xAxisGenerator = d3.axisBottom(xScale)
+                    .tickValues(xAxisTicks);
                 xAxis = svg.append("g")
                     .attr("transform", "translate(0," + height + ")")
                     .call(xAxisGenerator);
@@ -229,15 +231,31 @@ class ScatterPlot extends ConnectableWidget {
                 .range([height, 0]);
             yAxis.transition().duration(duration).call(yAxisGenerator.scale(yScale));
 
+            function endpoint(d) {
+                    var value = 0;
+                    if (onlyPositives) {
+                        value = minY;
+                    } else if (onlyNegatives) {
+                        value = maxY;
+                    }
+                    return yScale(value);
+            }
+
             svg.append('g')
                 .selectAll("dot")
                 .data(combinedData)
                 .enter()
                 .append("circle")
                 .attr("cx", function (d) { return xScale(d.xValue); } )
-                .attr("cy", function (d) { return yScale(d.yValue); } )
+                .attr("cy", function (d) { endpoint(d) } )
                 .attr("r", 5)
                 .style("fill", function (d) { return colorScale(d.symbols) } )
+                .attr("stroke", d => darken(colorScale(d.symbols)))
+                .attr("stroke-width", 0.5)
+                .transition()
+                .duration(duration)
+                .attr("cy", d => yScale(d.yValue))
+                .attr("opacity", 1);
 
             // let circlesJoin = svg.selectAll("circle.pepe")
             //     .data(combinedData);

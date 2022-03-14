@@ -1333,6 +1333,12 @@ class ArraySymbol {
         background.setValue = function (newValue) {
             // [3;40;60;100000000;0;0;0;0;0]
 
+            console.log("New value is: ");
+            console.log(newValue);
+
+            if (!newValue)
+                return;
+
             var valuesArray = newValue.substring(1, newValue.length - 1).split(';');
             for (let i = 0; i < valuesArray.length; i++) {
                 let currentValue = arrayElementsArray[i][0].element;

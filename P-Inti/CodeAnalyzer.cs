@@ -815,7 +815,10 @@ namespace TestingCodeAnalysis
                         SyntaxKind parentType = parent.Kind();
                         string parentStatement = parent.ToString().Replace("\"", "\\\"").Replace("{", "{{").Replace("}", "}}");
 
-                        allSymbols.Add(symbol, location);
+                        if (!allSymbols.ContainsKey(symbol))
+                        {
+                            allSymbols.Add(symbol, location);
+                        }
 
                         MyWindowControl.printInBrowserConsole("Node: ");
                         //JsHandler.printNodeHeirarchy(node);

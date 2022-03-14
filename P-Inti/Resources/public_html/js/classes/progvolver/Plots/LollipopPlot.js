@@ -11,6 +11,8 @@ class LollipopPlot extends ConnectableWidget {
 
         let margin = {top: 15, right: 20, bottom: 30, left: 35};
         let xScale, yScale, colorScale, xAxisGenerator, xAxis, yAxisGenerator, yAxis;
+        background.grayOutData = null;
+        background.allData = null;
 
         background.widget.labelObject.on({
             mouseup: function (options) {
@@ -326,6 +328,215 @@ class LollipopPlot extends ConnectableWidget {
 
         }
 
+        this.updatePlotWithCurrentTime = function (svg, data, grayOutData, allValues, newWidth, newHeight, doNotAnimate, xCoord) {
+            console.log("data is: ");
+            console.log(data);
+            console.log("Grayout");
+            console.log(grayOutData);
+            console.log("alldata");
+            console.log(allValues);
+            let duration = doNotAnimate ? 0 : 500;
+
+            let width = newWidth - margin.left - margin.right;
+            let height = newHeight - margin.top - margin.bottom;
+
+            let dataToBeDisplayed;
+
+            if (allValues && allValues.length !== 0) {
+                dataToBeDisplayed = allValues;
+            } else {
+                dataToBeDisplayed = data;
+            }
+
+            let minX = d3.min(dataToBeDisplayed, d => d[xCoord]);
+            let maxX = d3.max(dataToBeDisplayed, d => d[xCoord]);
+
+            if (!xScale)
+                return;
+
+            xScale.range([0, width])
+                .domain([minX, maxX]);
+
+            xAxisGenerator.scale(xScale);
+            xAxis.attr("transform", "translate(0," + height + ")")
+                .transition().duration(duration).call(xAxisGenerator)
+
+            xAxis.selectAll("text")
+                .attr("transform", "translate(-10,0)rotate(-45)")
+                .style("text-anchor", "end");
+
+            let minValue = d3.min(dataToBeDisplayed, d => d.values);
+            let maxValue = d3.max(dataToBeDisplayed, d => d.values);
+
+            var onlyPositives = minValue > 0 && maxValue > 0;
+            var onlyNegatives = minValue < 0 && maxValue < 0;
+
+            yScale.domain([minValue, maxValue])
+                .range([height, 0]);
+            yAxis.transition().duration(duration).call(yAxisGenerator.scale(yScale));
+
+            svg.selectAll("line.zeroLine")
+                .transition().duration(duration)
+                .attr("x1", xScale(minX))
+                .attr("x2", xScale(maxX))
+                .attr("y1", yScale(0))
+                .attr("y2", yScale(0))
+                .attr("opacity", !onlyPositives && !onlyNegatives ? 1 : 0)
+
+            var currentLines = svg.selectAll("line.pancho")
+                .data(data);
+
+            function endPoint(d) {
+                var value = 0;
+                if (onlyPositives) {
+                    value = minValue;
+                } else if (onlyNegatives) {
+                    value = maxValue;
+                }
+                return yScale(value);
+            }
+
+            currentLines.enter()
+                .append("line")
+                .classed("pancho", true)
+                .attr("opacity", 0)
+                .attr("x1", d => xScale(d[xCoord]))
+                .attr("x2", d => xScale(d[xCoord]))
+                .attr("y1", d => endPoint(d))
+                .attr("y2", d => endPoint(d))
+                .attr("stroke", d => darken(colorScale(d.symbols)))
+                .attr("stroke-width", 0.5)
+                .transition()
+                .duration(duration)
+                .attr("y2", d => yScale(d.values))
+                .attr("opacity", 1)
+
+            if (background.grayOutData && background.grayOutData.length != 0) {
+
+                console.log("Entering here!");
+                var grayOutLines = svg.selectAll("line.pancho")
+                    .data(grayOutData);
+
+                grayOutLines.enter()
+                    .append("line")
+                    .classed("pancho", true)
+                    .attr("opacity", 0)
+                    .attr("x1", d => xScale(d[xCoord]))
+                    .attr("x2", d => xScale(d[xCoord]))
+                    .attr("y1", d => endPoint(d))
+                    .attr("y2", d => endPoint(d))
+                    .attr("stroke", d => "gray")
+                    .attr("stroke-width", 0.25)
+                    .transition()
+                    .duration(duration)
+                    .attr("y2", d => yScale(d.values))
+                    .attr("opacity", 1)
+
+                grayOutLines
+                    .transition()
+                    .duration(duration)
+                    .attr("x1", d => xScale(d[xCoord]))
+                    .attr("x2", d => xScale(d[xCoord]))
+                    .attr("y1", d => yScale(d.values))
+                    .attr("y2", d => endPoint(d))
+                    .attr("stroke", d => darken(colorScale(d.symbols)))
+
+
+                // lines that have to be removed
+                grayOutLines.exit()
+                    .transition()
+                    .duration(duration)
+                    .attr("opacity", 0)
+                    .remove()
+
+                let grayCircles = svg.selectAll("circle.pepe")
+                    .data(grayOutData);
+
+                grayCircles.enter()
+                    .append("circle")
+                    .classed("pepe", true)
+                    .attr("opacity", 0.5)
+                    .attr("cx", d => xScale(d[xCoord]))
+                    .attr("cy", d => endPoint(d))
+                    .attr("r", "2")
+                    .style("fill", d => "gray")
+                    .attr("stroke", d => darken("gray"))
+                    .attr("stroke-width", 0.5)
+                    .transition()
+                    .duration(duration)
+                    .attr("cy", d => yScale(d.values))
+                    .attr("opacity", 1)
+
+
+                grayCircles
+                    .transition()
+                    .duration(duration)
+                    .attr("cx", d => xScale(d[xCoord]))
+                    .attr("cy", d => yScale(d.values))
+                    .style("fill", d => "gray")
+                    .attr("stroke", d => darken("gray"))
+
+                grayCircles.exit()
+                    .transition()
+                    .duration(duration)
+                    .attr("opacity", 0)
+                    .remove()
+            } else {
+                console.log("Not entering here");
+            }
+
+            // update
+            currentLines
+                .transition()
+                .duration(duration)
+                .attr("x1", d => xScale(d[xCoord]))
+                .attr("x2", d => xScale(d[xCoord]))
+                .attr("y1", d => yScale(d.values))
+                .attr("y2", d => endPoint(d))
+                .attr("stroke", d => darken(colorScale(d.symbolName)))
+
+
+            // lines that have to be removed
+            currentLines.exit()
+                .transition()
+                .duration(duration)
+                .attr("opacity", 0)
+                .remove()
+
+            let circlesJoin = svg.selectAll("circle.pepe")
+                .data(data);
+
+            circlesJoin.enter()
+                .append("circle")
+                .classed("pepe", true)
+                .attr("opacity", 0.5)
+                .attr("cx", d => xScale(d[xCoord]))
+                .attr("cy", d => endPoint(d))
+                .attr("r", "2")
+                .style("fill", d => colorScale(d.symbolName))
+                .attr("stroke", d => darken(colorScale(d.symbolName)))
+                .attr("stroke-width", 0.5)
+                .transition()
+                .duration(duration)
+                .attr("cy", d => yScale(d.values))
+                .attr("opacity", 1)
+
+
+            circlesJoin
+                .transition()
+                .duration(duration)
+                .attr("cx", d => xScale(d[xCoord]))
+                .attr("cy", d => yScale(d.values))
+                .style("fill", d => colorScale(d.symbolName))
+                .attr("stroke", d => darken(colorScale(d.symbolName)))
+
+            circlesJoin.exit()
+                .transition()
+                .duration(duration)
+                .attr("opacity", 0)
+                .remove()
+
+        }
 
         this.addPlottingArea = function (options) {
 
@@ -391,9 +602,7 @@ class LollipopPlot extends ConnectableWidget {
                     height: newHeight + 'px',
                 });
 
-                background.updatePlot(svg, background.currentData, newWidth, newHeight, true, background.currentXCoord);
-
-
+                background.updatePlotWithCurrentTime(svg, background.currentData, background.grayOutData, background.allData, newWidth, newHeight, true, background.currentXCoord);
             };
 
             this.plottingDiv = plottingDiv;
@@ -515,7 +724,7 @@ class LollipopPlot extends ConnectableWidget {
                                 background.currentData = background.currentData.concat(symbolData);
                             }
 
-                            background.updatePlot(background.svg, background.currentData, newWidth, newHeight, false, background.currentXCoord);
+                            background.updatePlotWithCurrentTime(background.svg, background.currentData, background.grayOutData, background.allData, newWidth, newHeight, false, background.currentXCoord);
 
                         }
                     }
@@ -567,7 +776,7 @@ class LollipopPlot extends ConnectableWidget {
 
                         console.log(size);
 
-                        background.updatePlot(background.svg, background.currentData, newWidth, newHeight, false, background.currentXCoord);
+                        background.updatePlotWithCurrentTime(background.svg, background.currentData, background.grayOutData, background.allData, newWidth, newHeight, false, background.currentXCoord);
 
                     }
                 }
@@ -795,9 +1004,6 @@ class LollipopPlot extends ConnectableWidget {
                     background.setUpD3(background.plottingDiv, connectedHistory, background.svg, background.plottingDiv.width(), background.plottingDiv.height(), background.currentXCoord);
                 }
 
-
-
-
 //                console.log("background.histories:");
 //                console.log(background.histories);
 
@@ -807,11 +1013,7 @@ class LollipopPlot extends ConnectableWidget {
 
                 let newWidth = (background.getScaledWidth() - background.hMargin * 2 - background.strokeWidth);
                 let newHeight = (background.getScaledHeight() - background.vMargin - background.hMargin - background.strokeWidth);
-                background.updatePlot(background.svg, background.currentData, newWidth, newHeight, false, background.currentXCoord);
-
-
-
-
+                background.updatePlotWithCurrentTime(background.svg, background.currentData, background.grayOutData, background.allData, newWidth, newHeight, false, background.currentXCoord);
 
 //                console.log("theConnector.source.values");
 //                console.log(theConnector.source.values);
@@ -854,31 +1056,26 @@ class LollipopPlot extends ConnectableWidget {
             var symbolNames = Object.keys(background.histories);
 
             var valuesToPlot = new Array();
+            var grayOutValues = new Array();
+            var allValues = new Array();
 
             symbolNames.forEach(function (symbolName) {
-
                 var symbolHistory = background.histories[symbolName];
-
                 var currentValues = symbolHistory.filter(item => item.time <= time);
-
+                var futureValues = symbolHistory.filter(item => item.time > time);
                 valuesToPlot = valuesToPlot.concat(currentValues);
-
-                // we need to send this to the D3 functions
-
-
-//             console.log("valuesToPlot");
-//             console.log(valuesToPlot);
-
-
+                grayOutValues = grayOutValues.concat(futureValues);
+                allValues = allValues.concat(symbolHistory);
             });
-
 
             // we need to modify (i.e., filter) the values of what we are showing at this point)
             background.currentData = valuesToPlot;
+            background.grayOutData = grayOutValues;
+            background.allData = allValues;
 
             let newWidth = (background.getScaledWidth() - background.hMargin * 2 - background.strokeWidth);
             let newHeight = (background.getScaledHeight() - background.vMargin - background.hMargin - background.strokeWidth);
-            background.updatePlot(background.svg, background.currentData, newWidth, newHeight, true, background.currentXCoord);
+            background.updatePlotWithCurrentTime(background.svg, background.currentData, background.grayOutData, background.allData, newWidth, newHeight, true, background.currentXCoord);
 
 //            console.log("Aqui version overloaded");
 
