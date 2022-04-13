@@ -4,6 +4,66 @@ progvolver = {
     objects: {}
 };
 
+function drawCurveThroughPoints(ctx, points) {
+    ctx.save();
+    ctx.lineWidth = 2;
+    ctx.strokeStyle = rgba(255, 255, 0, 0.5);
+    ctx.moveTo((points[0].x), points[0].y);
+
+    if (points.length === 3) {
+        ctx.quadraticCurveTo(points[1].x, points[1].y, points[2].x, points[2].y);
+    } else {
+        for (var i = 0; i < points.length - 1; i++) {
+            var x_mid = (points[i].x + points[i + 1].x) / 2;
+            var y_mid = (points[i].y + points[i + 1].y) / 2;
+            var cp_x1 = (x_mid + points[i].x) / 2;
+            var cp_x2 = (x_mid + points[i + 1].x) / 2;
+            ctx.quadraticCurveTo(cp_x1, points[i].y, x_mid, y_mid);
+            ctx.quadraticCurveTo(cp_x2, points[i + 1].y, points[i + 1].x, points[i + 1].y);
+        }
+    }
+    //ctx.stroke();
+    ctx.restore();
+}
+
+function getQuadraticBezierXYatT(startPt, controlPt, endPt, T) {
+    var x = Math.pow(1 - T, 2) * startPt.x + 2 * (1 - T) * T * controlPt.x + Math.pow(T, 2) * endPt.x;
+    var y = Math.pow(1 - T, 2) * startPt.y + 2 * (1 - T) * T * controlPt.y + Math.pow(T, 2) * endPt.y;
+    return ({
+        x: x,
+        y: y
+    });
+}
+
+function drawCirclesAlongCurve(ctx, points) {
+    ctx.save();
+    let radius = 6.0;
+    let opacity = 0.3;
+    for (var t = 0; t < 101; t += 5) {
+        var point = getQuadraticBezierXYatT(points[0], points[1], points[2], t / 100);
+        ctx.beginPath();
+        ctx.arc(point.x, point.y, radius, 0, Math.PI * 2);
+        ctx.closePath();
+        ctx.fillStyle = rgba(255, 255, 0, opacity);
+        ctx.fill();
+        radius = radius + 0.3;
+        opacity = opacity + 0.015;
+    }
+    ctx.restore();
+}
+
+function demoShootingStars(widget1, widget2) {
+    let ctx = canvas.getContext();
+    var shootingStarStart = widget1.getPointByOrigin('right', 'center');
+    shootingStarStart.x += 5;
+    let shootingStarCenter = {x: shootingStarStart.x + 100, y: shootingStarStart.y + 100};
+    let shootingStarEnd = widget2.getPointByOrigin('right', 'center');
+
+    var points = [shootingStarStart, shootingStarCenter, shootingStarEnd];
+    drawCurveThroughPoints(ctx, points);
+    drawCirclesAlongCurve(ctx, points);
+}
+
 function createObjectBackground(baseClass, options, theWidget) {
     var BackgroundClass = iVoLVER.util.createClass(baseClass, {
         initialize: function (options) {
@@ -9435,9 +9495,6 @@ function stopEditingITexts() {
         }
     });
 }
-
-
-
 
 function processLogFiles(logFileContent, scopeFileContent, signalFileContent) {
 

@@ -218,11 +218,22 @@ class ProgvolverSymbol extends ConnectableWidget {
         background.oldRender = background.render;
         background.render = function (ctx) {
             background.oldRender(ctx);
+
             ctx.font = symbolFont;
             ctx.fillStyle = background.fontColor;
             ctx.textAlign = "center";
             ctx.textBaseline = "middle";
             var center = background.getPointByOrigin('center', 'center');
+
+            //Drawing shooting stars
+            // var shootingStarStart = background.getPointByOrigin('right', 'center');
+            // shootingStarStart.x += 5;
+            // let shootingStarCenter = {x: shootingStarStart.x + 100, y: shootingStarStart.y + 100};
+            // let shootingStarEnd = {x: shootingStarStart.x + 250, y: shootingStarStart.y};
+            //
+            // var points = [shootingStarStart, shootingStarCenter, shootingStarEnd];
+            // drawCurveThroughPoints(ctx, points);
+            // drawCirclesAlongCurve(ctx, points);
 
             var renderableValue = background.value;
             if (!iVoLVER.util.isUndefined(background.value) && iVoLVER.util.isNumber(background.value)) {

@@ -9,7 +9,7 @@ class LollipopPlot extends ConnectableWidget {
 
         background.symbols = new Array();
 
-        let margin = {top: 15, right: 20, bottom: 30, left: 35};
+        let margin = {top: 15, right: 20, bottom: 50, left: 35};
         let xScale, yScale, colorScale, xAxisGenerator, xAxis, yAxisGenerator, yAxis;
         background.grayOutIndex = {};
 
@@ -49,7 +49,7 @@ class LollipopPlot extends ConnectableWidget {
         this.drawIconSpace = options.programElementType && options.programElementType != '';
         this.metadata = options.metadata || "";
         this.enterEditing = !options.title;
-        this.title = options.title || "[Note's title]";
+        this.title = options.title || "[Plot title]";
         this.addWithAnimation = options.addWithAnimation;
         background.oldRender = background._render;
         background._render = function (ctx) {
@@ -110,6 +110,15 @@ class LollipopPlot extends ConnectableWidget {
                 .attr("transform", "translate(-10,0)rotate(-45)")
                 .style("text-anchor", "end");
 
+            // text label for the x axis
+            svg.append("text")
+                .attr("transform",
+                    "translate(" + (width/2) + " ," +
+                    (height + margin.bottom - 5) + ")")
+                .style("text-anchor", "middle")
+                .style("font-size", "14px")
+                .text("Time");
+
             var minValue = d3.min(data, d => d.values);
             var maxValue = d3.max(data, d => d.values);
 
@@ -118,7 +127,9 @@ class LollipopPlot extends ConnectableWidget {
                 .range([height, 0]);
 
             yAxisGenerator = d3.axisLeft(yScale).ticks(3);
-            yAxis = svg.append("g").call(yAxisGenerator);
+            yAxis = svg.append("g")
+                .attr("transform", "translate(-5, 0)")
+                .call(yAxisGenerator);
 
             colorScale = d3.scaleOrdinal()
                 .domain(background.symbols)
@@ -138,18 +149,30 @@ class LollipopPlot extends ConnectableWidget {
 
         background.giveFillForLine = function (element) {
             if (Object.keys(background.grayOutIndex).length === 0 || element.index < background.grayOutIndex[element.symbols]) {
-                return "red";//colorScale(element.symbols);
+                return colorScale(element.symbols);
             } else {
                 return "gray";
             }
         }
 
-        this.updatePlot = function (svg, data, newWidth, newHeight, doNotAnimate, xCoord) {
-           console.log("data:");
-           console.log(data);
+        background.giveOpacityForLine = function (element) {
+            if (Object.keys(background.grayOutIndex).length === 0 || element.index < background.grayOutIndex[element.symbols]) {
+                return 1;
+            } else {
+                return 0.3;
+            }
+        }
 
-           console.log("GrayIndex is: ");
-           console.log(background.grayOutIndex);
+        background.giveStrokeWidthForLine = function (element) {
+            if (Object.keys(background.grayOutIndex).length === 0 || element.index < background.grayOutIndex[element.symbols]) {
+                return 1;
+            } else {
+                return 0.5;
+            }
+        }
+
+
+        this.updatePlot = function (svg, data, newWidth, newHeight, doNotAnimate, xCoord) {
             let duration = doNotAnimate ? 0 : 500;
 
 //                console.log(data);
@@ -217,11 +240,11 @@ class LollipopPlot extends ConnectableWidget {
                 .attr("y1", d => endPoint(d))
                 .attr("y2", d => endPoint(d))
                 .attr("stroke", d => darken(background.giveFillForLine(d)))
-                .attr("stroke-width", 0.25)
+                .attr("stroke-width", d => background.giveStrokeWidthForLine(d))
                 .transition()
                 .duration(duration)
                 .attr("y2", d => yScale(d.values))
-                .attr("opacity", 1)
+                .attr("opacity", d => background.giveOpacityForLine(d))
 
             // update
             linesJoin
@@ -232,6 +255,8 @@ class LollipopPlot extends ConnectableWidget {
                 .attr("y1", d => yScale(d.values))
                 .attr("y2", d => endPoint(d))
                 .attr("stroke", d => darken(background.giveFillForLine(d)))
+                .attr("stroke-width", d => background.giveStrokeWidthForLine(d))
+                .attr("opacity", d => background.giveOpacityForLine(d))
 
             // lines that have to be removed
             linesJoin.exit()
@@ -250,13 +275,13 @@ class LollipopPlot extends ConnectableWidget {
                 .attr("cx", d => xScale(d[xCoord]))
                 .attr("cy", d => endPoint(d))
                 .attr("r", "2")
-                .attr("stroke", d => background.giveFillForLine(d))
+                .attr("fill", d => background.giveFillForLine(d))
                 .attr("stroke", d => darken(background.giveFillForLine(d)))
                 .attr("stroke-width", 0.5)
                 .transition()
                 .duration(duration)
                 .attr("cy", d => yScale(d.values))
-                .attr("opacity", 1)
+                .attr("opacity", d => background.giveOpacityForLine(d))
 
 
             circlesJoin
@@ -264,8 +289,9 @@ class LollipopPlot extends ConnectableWidget {
                 .duration(duration)
                 .attr("cx", d => xScale(d[xCoord]))
                 .attr("cy", d => yScale(d.values))
-                .attr("stroke", d => background.giveFillForLine(d))
+                .attr("fill", d => background.giveFillForLine(d))
                 .attr("stroke", d => darken(background.giveFillForLine(d)))
+                .attr("opacity", d => background.giveOpacityForLine(d))
 
             circlesJoin.exit()
                 .transition()
@@ -887,7 +913,6 @@ class LollipopPlot extends ConnectableWidget {
             var y = 0;
 
             var inputPort = new ConnectionPort({
-                radius: 15,
                 fill: background.fill,
                 stroke: darken(background.stroke),
                 strokeWidth: 1,
