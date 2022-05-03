@@ -65,6 +65,17 @@ class ColorPickerWidget {
                         }
                         
                         background.parent.signalReceiver.updateFill();
+                        background.parent.colorWidgetOutput.set('fill', fill);
+                        background.parent.colorWidgetOutput.set('stroke', stroke);
+
+                        background.parent.colorWidgetOutput.outputNumberHolders.forEach(function (outputNumberHolder) {
+                            outputNumberHolder.set('fill', fill);
+                            outputNumberHolder.set('stroke', stroke);
+                        })
+
+                        background.parent.colorWidgetOutput.outConnections.forEach(function(connection) {
+                            connection.set('stroke', stroke);
+                        })
                     }
                 })
             }

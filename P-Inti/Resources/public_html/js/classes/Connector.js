@@ -132,24 +132,25 @@ var Connector = fabric.util.createClass(fabric.Line, {
          theConnector.source.on('modified', updatingSource);
          }*/
 
-        /*if (theDestination) {
-         
-         var updatingDestination = function () {
-         var massCenter = theDestination.getPointByOrigin('center', 'center');
-         if (theDestination.getCompressedMassPoint) {
-         massCenter = theDestination.getCompressedMassPoint();
-         }
-         theConnector.set({'x2': massCenter.x, 'y2': massCenter.y});
-         theConnector.setCoords();
-         if (LOG) {
-         console.log("connector target moving");
-         }
-         };
-         
-         theConnector.target.on('moving', updatingDestination);
-         theConnector.target.on('scaling', updatingDestination);
-         theConnector.target.on('modified', updatingDestination);
-         }*/
+        if (theDestination) {
+
+            var updatingDestination = function () {
+                console.log("This is getting called!");
+                var massCenter = theDestination.getPointByOrigin('center', 'center');
+                if (theDestination.getCompressedMassPoint) {
+                    massCenter = theDestination.getCompressedMassPoint();
+                }
+                theConnector.set({'x2': massCenter.x, 'y2': massCenter.y});
+                theConnector.setCoords();
+                if (LOG) {
+                    console.log("connector target moving");
+                }
+            };
+
+            theConnector.target.on('moving', updatingDestination);
+            theConnector.target.on('scaling', updatingDestination);
+            theConnector.target.on('modified', updatingDestination);
+        }
 
         theConnector.initExpandable();
 
@@ -773,18 +774,18 @@ var Connector = fabric.util.createClass(fabric.Line, {
     },
     wavy: function (from, to, endPoint, ctx) {
         var cx = 0,
-                cy = 0,
-                fx = from.x,
-                fy = from.y,
-                tx = to.x,
-                ty = to.y,
-                i = 0,
-                step = 4,
-                waveOffsetLength = 0,
-                ang = Math.atan2(ty - fy, tx - fx),
-                distance = Math.sqrt((fx - tx) * (fx - tx) + (fy - ty) * (fy - ty)),
-                amplitude = -7,
-                f = Math.PI * distance / 20;
+            cy = 0,
+            fx = from.x,
+            fy = from.y,
+            tx = to.x,
+            ty = to.y,
+            i = 0,
+            step = 4,
+            waveOffsetLength = 0,
+            ang = Math.atan2(ty - fy, tx - fx),
+            distance = Math.sqrt((fx - tx) * (fx - tx) + (fy - ty) * (fy - ty)),
+            amplitude = -7,
+            f = Math.PI * distance / 20;
 
 
         var counter = 0;
@@ -822,7 +823,7 @@ var Connector = fabric.util.createClass(fabric.Line, {
         var len = Math.sqrt(((point2.x - point1.x) * (point2.x - point1.x)) + ((point2.y - point1.y) * (point2.y - point1.y)));
         var t = (dist) / len;
         var x3 = ((1 - t) * point1.x) + (t * point2.x),
-                y3 = ((1 - t) * point1.y) + (t * point2.y);
+            y3 = ((1 - t) * point1.y) + (t * point2.y);
         return new fabric.Point(x3, y3);
     },
 });

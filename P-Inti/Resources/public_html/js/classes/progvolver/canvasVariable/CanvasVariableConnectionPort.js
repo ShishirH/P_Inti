@@ -49,6 +49,15 @@ var CanvasVariableConnectionPort = iVoLVER.util.createClass(fabric.Circle, {
                 connector.objectCaching = false;
             }, 500);
         }
+    },
+
+    setOperandValue: function (newValue) {
+        let connectionPort = this;
+
+        if (connectionPort.outConnections && connectionPort.outConnections.length > 0) {
+            let connector = connectionPort.outConnections[0];
+            connector.target.operandValue = parseFloat(newValue);
+        }
     }
 });
 iVoLVER.util.extends(CanvasVariableConnectionPort.prototype, iVoLVER.model.Connectable);

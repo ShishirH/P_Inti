@@ -148,7 +148,7 @@ var iVoLVER = {
 
             //        if (iVoLVER.LOG) {
             // console.log("%cRegistering new Operator:" + parameters.name + "...", "background: blue; color: white;");
-//        }        
+//        }
 
             var operatorName = removeSpaces(parameters.name);
 
@@ -208,7 +208,7 @@ var iVoLVER = {
                 constructor: functionName
             };
 
-            // this is not done anymore here 
+            // this is not done anymore here
 //            iVoLVER.data.associateOperationsForType(requiredOperation, commutative, operationName, binary);
 
             window[functionName] = function () {
@@ -239,7 +239,7 @@ var iVoLVER = {
                     maxInputs: maxInputs
                 });
 
-                // these functions cannot be sent initialization options becuause fabric.js will invoke all the functions 
+                // these functions cannot be sent initialization options becuause fabric.js will invoke all the functions
                 // during the initialization without sending the right parameters to the acceptSingleVals & acceptCollectiveVals methods
                 newOperator.acceptSingleVals = iVoLVER.util.isUndefined(parameters.acceptSingleVals) ? true : parameters.acceptSingleVals;
                 newOperator.acceptCollectiveVals = iVoLVER.util.isUndefined(parameters.acceptCollectiveVals) ? false : parameters.acceptCollectiveVals;
@@ -401,7 +401,7 @@ var iVoLVER = {
                                      // console.log("incomingType: " + incomingType);
                                      // console.log("requiredOperation: " + requiredOperation);
                                      var a = currentResult.implements(requiredOperation, incomingType);
-                                     var b = sampleValue.implements(requiredOperation, currentType);                                
+                                     var b = sampleValue.implements(requiredOperation, currentType);
                                      // console.log("a: " + a);
                                      // console.log("b: " + b);*/
                                     operationSupportComplete = currentResult.implementsOn(requiredOperation, incomingType);
@@ -512,67 +512,67 @@ var iVoLVER = {
                  var message = null;
                  var processedValue = null;
                  var theOperator = this;
-                 
+
                  // OPERATORs can NOT be located. So, connections from locators should be rejected
                  if (sourceObject.isLocator) {
-                 
+
                  connectionAccepted = false;
                  message = 'This element cannot be located.';
-                 
+
                  } else {
-                 
+
                  var incommingValue = theConnector.value;
-                 
+
                  if (iVoLVER.util.isUndefined(incommingValue) || iVoLVER.util.isNull(incommingValue)) {
                  connectionAccepted = false;
                  message = 'The source object <b>does not contain</b> a value';
                  } else {
-                 
+
                  var sampleValue = incommingValue;
                  if ($.isArray(incommingValue)) {
                  sampleValue = incommingValue[0];
                  }
                  var incomingType = sampleValue.getDataType();
-                 
+
                  //                            // Independent code to checks whether a value is acceptable for this operator depending whether it is
                  //                            // a single value or a collection
-                 
+
                  var acceptableValue = newOperator.checkForAcceptableValues(incommingValue);
-                 
+
                  // independent code to determine the lists of required and missing operations
                  // this only considers the information contained by the operator
                  var requiredOperation = theOperator.requiredOperation;
                  var operationIsRequired = !iVoLVER.util.isUndefined(requiredOperation) && !iVoLVER.util.isNull(requiredOperation);
-                 
+
                  // we check whether the given input implements or not the operation(s) that the operator requires
                  var obj = theOperator.getRequiredAndMissingOperations(incomingType);
                  var operationsRequired = obj.operationsRequired;
                  var operationsMissing = obj.operationsMissing;
-                 
-                 
-                 
-                 
-                 
-                 
-                 
+
+
+
+
+
+
+
                  var inputValueLmplementsRequiredOperation = operationsMissing.length === 0;
                  var operatorIsEmpty = theOperator.inConnections.length < 1; // nothing has been fed to the operator yet
-                 
+
                  var currentResult = theOperator.value;
-                 
+
                  if (!operatorIsEmpty && currentResult) {
                  // the incoming value should get then the support it requires for the operation of this operator from the current result
                  sampleValue.addOperationSupportForType(currentResult.getDataType());
                  // we change this in case the support was indeed found
                  inputValueLmplementsRequiredOperation = sampleValue.supports[requiredOperation][currentResult.getDataType()];
-                 
-                 
+
+
                  var pepe = sampleValue.getSupportedOperations();
                  // console.log("pepe -***********************");
                  // console.log(pepe);
-                 
+
                  }
-                 
+
                  if (iVoLVER.LOG) {
                  // console.log("%c                                                   ", "background: blue; color: white;");
                  // console.log("%coperationsRequired:", "background: blue; color: white;");
@@ -586,35 +586,35 @@ var iVoLVER = {
                  // console.log("%ctheOperator.commutative: " + theOperator.commutative, "background: blue; color: white;");
                  // console.log("%cacceptableValue: " + acceptableValue, "background: blue; color: white;");
                  }
-                 
-                 
-                 
-                 
+
+
+
+
                  var operationImplementedByIncomingValue = false;
-                 
+
                  var implementedOperations = sampleValue.getImplementedOperations();
                  //                            if () {
-                 
+
                  //                            }
-                 
+
                  var operationSupportedByOtherTypes = false;
-                 
-                 
-                 
-                 
-                 
-                 
+
+
+
+
+
+
                  if (operatorIsEmpty) {
-                 
-                 
-                 
-                 
+
+
+
+
                  if (inputValueLmplementsRequiredOperation || !operationIsRequired) {
                  if (theOperator.binary && !theOperator.commutative) {
-                 
+
                  // when an operator has two operands and it represents a non commutative operation,
                  // it cannot accept incoming connections. The connections should be done directly to the operands.
-                 
+
                  connectionAccepted = false;
                  if (theOperator.isCompressed) {
                  message = 'Which <b>operand</b> are you trying to set?';
@@ -634,24 +634,24 @@ var iVoLVER = {
                  }
                  }
                  }
-                 
+
                  } else {
                  connectionAccepted = false;
-                 
+
                  // console.log("+++++++++++++++operationsMissing");
                  // console.log(operationsMissing);
-                 
+
                  message = iVoLVER._buildMissingOperationsErrorMessage(operationName, sampleValue.getDataType(), operationsMissing);
                  }
-                 
+
                  } else { // the operator currently holds a value
-                 
+
                  if (theOperator.commutative) {
-                 
+
                  if (inputValueLmplementsRequiredOperation || !operationIsRequired) {
-                 
+
                  if (theOperator.binary && !theOperator.commutative) {
-                 
+
                  connectionAccepted = false;
                  if (theOperator.isCompressed) {
                  message = 'Which <b>operand</b> are you trying to set?';
@@ -662,31 +662,31 @@ var iVoLVER = {
                  } else {
                  // for commutative operators that can handle any number of inputs
                  if (acceptableValue) {
-                 
+
                  // values have been fed to the operator already. Hence, the operator holds a resulting value
                  // we need to check the compatibility of that resulting value with the new input
-                 
-                 
-                 
+
+
+
                  if (!iVoLVER.util.isUndefined(currentResult) && !iVoLVER.util.isNull(currentResult)) { // the result held by the operator is valid
-                 
+
                  // console.log("%c           RESULT  VALID  IN  THE  OPERATOR                                        ", "background: red; color: white;");
                  // console.log(operationsRequired.length);
                  // console.log(!theOperator.customResultComputation);
-                 
+
                  if (operationsRequired.length === 1 && !theOperator.customResultComputation) {
-                 
+
                  var operationRequiredNow = operationsRequired[0];
-                 
-                 
+
+
                  // console.log("%coperationRequiredNow: " + operationRequiredNow, "background: blue; color: white;");
-                 
+
                  //                                            var methodRequiredNow = operationRequiredNow + '' + sampleValue.getDataType();
                  //                                            var operationIsPossible = !iVoLVER.util.isUndefined(currentResult[methodRequiredNow]) && !iVoLVER.util.isNull(currentResult[methodRequiredNow]);
-                 
+
                  var operationCode = iVoLVER._dataTypes[currentResult.getDataType()].operations[operationRequiredNow][sampleValue.getDataType()];
                  var operationIsPossible = !iVoLVER.util.isUndefined(operationCode) && !iVoLVER.util.isNull(operationCode);
-                 
+
                  if (operationIsPossible) {
                  if (!acceptableValue) {
                  if (iVoLVER.util.isNull(incommingKind)) {
@@ -701,25 +701,25 @@ var iVoLVER = {
                  connectionAccepted = false;
                  message = 'This operator holds a <b>' + currentResult.getDataType() + '</b> value. The <b>' + operationRequiredNow + '</b> operation is not defined between this type and a <b>' + sampleValue.getDataType() + '</b> value.';
                  }
-                 
+
                  }
-                 
-                 
+
+
                  // Is that value acceptable in the sense that is a collection?
-                 // can that value 
-                 
-                 
+                 // can that value
+
+
                  }
-                 
-                 
-                 
-                 
-                 
-                 
-                 
-                 
+
+
+
+
+
+
+
+
                  } else {
-                 
+
                  if (iVoLVER.util.isNull(incommingKind)) {
                  connectionAccepted = false;
                  message = 'This operator does not accept values.';
@@ -727,46 +727,46 @@ var iVoLVER = {
                  connectionAccepted = false;
                  message = 'This operator does not accept <b>' + incommingKind + '</b> values.';
                  }
-                 
-                 
+
+
                  }
                  }
-                 
+
                  } else {
-                 
-                 
-                 
-                 
-                 
-                 
+
+
+
+
+
+
                  connectionAccepted = false;
                  message = iVoLVER._buildMissingOperationsErrorMessage(operationName, sampleValue.getDataType(), operationsMissing);
-                 
+
                  }
-                 
+
                  } else {
-                 
+
                  // no support is required in the new input, as long as the current result can deal with it
-                 
+
                  var currentResult = theOperator.value;
                  var type1 = currentResult.getDataType();
-                 
+
                  if (iVoLVER.data.canOperateWith(type1, incomingType, theOperator.requiredOperation)) {
-                 
+
                  connectionAccepted = true;
-                 
+
                  } else {
-                 
+
                  connectionAccepted = false;
                  message = type1 + " Values cannot be " + theOperator.requiredOperation + "ed to " + incomingType + " values";
-                 
+
                  }
-                 
+
                  }
-                 
-                 
-                 
-                 
+
+
+
+
                  }
                  }
                  }
@@ -1259,7 +1259,7 @@ var iVoLVER = {
 
 //        if (iVoLVER.LOG) {
             // console.log("%cRegistering new data type:" + parameters.name + "...", "background: plum; color: black;");
-//        }        
+//        }
 
             var typeName = removeSpaces(parameters.name);
             var iconPath = parameters.iconPath;
@@ -1648,6 +1648,14 @@ var iVoLVER = {
             locators: 'Locators',
             functions: 'Functions'
         },
+        progvolverSectionTitles: {
+            canvasVariable: 'Canvas variable',
+            codeShift: 'Code Shift',
+            codeNote: 'Code Note',
+            plots: 'Plots',
+            signals: 'Signals',
+            logicalOperators: 'Logical Operators'
+        },
         getSectionByTitle: function (title) {
             var sections = iVoLVER.gui._paletteSections;
             var searchedID = null;
@@ -1658,6 +1666,246 @@ var iVoLVER = {
             });
             return searchedID;
         },
+
+        addCanvasVariablesSection: function () {
+            var canvasVariableSection = iVoLVER.gui.add.iconGroup({
+                title: iVoLVER.gui.progvolverSectionTitles.canvasVariable
+            });
+
+            iVoLVER.gui.add.draggableIcon({
+                sectionID: canvasVariableSection,
+                iconClass: 'fa-exchange',
+                tooltip: 'Canvas variable',
+                onMouseUp: function (x, y) {
+                    var canvasVariable = new CanvasVariable({
+                        type: "dataType",
+                        name: "name",
+                        left: x,
+                        top: y,
+                        x: x,
+                        y: y,
+                        value: ""
+                    });
+                    canvas.add(canvasVariable);
+                    animateBirth(canvasVariable, false, 1, 1);
+                }
+            });
+        },
+
+        addCodeShiftSection: function () {
+            var codeShiftSection = iVoLVER.gui.add.iconGroup({
+                title: iVoLVER.gui.progvolverSectionTitles.codeShift
+            });
+
+            iVoLVER.gui.add.draggableIcon({
+                sectionID: codeShiftSection,
+                iconClass: 'fa-exchange',
+                tooltip: 'Code Shift',
+                onMouseUp: function (x, y) {
+                    var codeControls = new CodeControls({
+                        x: x,
+                        y: y
+                    });
+                    canvas.add(codeControls);
+                    animateBirth(codeControls, false, 1, 1);
+                }
+            });
+        },
+
+        addCodeNoteSection: function () {
+            var codeNoteSection = iVoLVER.gui.add.iconGroup({
+                title: iVoLVER.gui.progvolverSectionTitles.codeNote
+            });
+
+            iVoLVER.gui.add.draggableIcon({
+                sectionID: codeNoteSection,
+                iconClass: 'fa-exchange',
+                tooltip: 'Code Note',
+                onMouseUp: function (x, y) {
+                    var note = new CodeNote({
+                        x: x,
+                        y: y,
+                        width: 250,
+                        height: 250,
+                        programElementType: "N",
+                        drawIconSpace: true,
+                    });
+                    canvas.add(note);
+                    animateBirth(note, false, 1, 1);
+                }
+            });
+        },
+
+        addSignalsSection: function () {
+            var signalsSection = iVoLVER.gui.add.iconGroup({
+                title: iVoLVER.gui.progvolverSectionTitles.signals
+            });
+
+            iVoLVER.gui.add.draggableIcon({
+                sectionID: signalsSection,
+                iconClass: 'fa-exchange',
+                tooltip: 'When Widget',
+                onMouseUp: function (x, y) {
+                    var whenWidget = new WhenWidget({
+                        fill: '#F02466',
+                        stroke: '#F02466',
+                        width: 180,
+                        height: 100,
+                        x: x,
+                        y: y,
+                        left: x,
+                        top: y
+                    });
+                    canvas.add(whenWidget);
+                    animateBirth(whenWidget, false, 1, 1);
+                }
+            });
+
+            iVoLVER.gui.add.draggableIcon({
+                sectionID: signalsSection,
+                iconClass: 'fa-exchange',
+                tooltip: 'When Widget',
+                onMouseUp: function (x, y) {
+                    var affectWidget = new AffectWidget({
+                        fill: '#F02466',
+                        stroke: '#F02466',
+                        width: 180,
+                        height: 100,
+                        x: x,
+                        y: y,
+                        left: x,
+                        top: y
+                    });
+                    canvas.add(affectWidget);
+                    animateBirth(affectWidget, false, 1, 1);
+                }
+            });
+
+            iVoLVER.gui.add.draggableIcon({
+                sectionID: signalsSection,
+                iconClass: 'fa-exchange',
+                tooltip: 'Snapshot Widget',
+                onMouseUp: function (x, y) {
+                    var snapshotWidget = new SnapshotWidget({
+                        fill: '#F02466',
+                        stroke: '#F02466',
+                        x: x,
+                        y: y,
+                        left: x,
+                        top: y
+                    });
+                    canvas.add(snapshotWidget);
+                    animateBirth(snapshotWidget, false, 1, 1);
+                }
+            });
+        },
+
+        addPlotsSection: function () {
+            var plotsSection = iVoLVER.gui.add.iconGroup({
+                title: iVoLVER.gui.progvolverSectionTitles.plots
+            });
+
+            iVoLVER.gui.add.draggableIcon({
+                sectionID: plotsSection,
+                iconClass: 'fa-exchange',
+                tooltip: 'Lollipop plot',
+                onMouseUp: function (x, y) {
+                    var plotter = new LollipopPlot({
+                        x: x,
+                        y: y,
+                        width: 250,
+                        height: 250,
+                        programElementType: "...",
+                        drawIconSpace: true,
+                    });
+                    canvas.add(plotter);
+                    animateBirth(plotter, false, 1, 1);
+                }
+            });
+
+            iVoLVER.gui.add.draggableIcon({
+                sectionID: plotsSection,
+                iconClass: 'fa-exchange',
+                tooltip: 'Scatter plot',
+                onMouseUp: function (x, y) {
+                    var plotter = new ScatterPlot({
+                        x: x,
+                        y: y,
+                        width: 250,
+                        height: 250,
+                        programElementType: "...",
+                        drawIconSpace: true,
+                    });
+                    canvas.add(plotter);
+                    animateBirth(plotter, false, 1, 1);
+                }
+            });
+
+        },
+
+        addLogicalOperatorsSection: function () {
+            var logicalOperatorsSection = iVoLVER.gui.add.iconGroup({
+                title: iVoLVER.gui.progvolverSectionTitles.logicalOperators
+            });
+
+            iVoLVER.gui.add.draggableIcon({
+                sectionID: logicalOperatorsSection,
+                iconClass: 'fa-exchange',
+                tooltip: 'Comparison operator',
+                onMouseUp: function (x, y) {
+                    var comparisonOperator = new ComparisonOperators({
+                        x: x,
+                        y: y,
+                    });
+                    canvas.add(comparisonOperator);
+                    animateBirth(comparisonOperator, false, 1, 1);
+                }
+            });
+
+            iVoLVER.gui.add.draggableIcon({
+                sectionID: logicalOperatorsSection,
+                iconClass: 'fa-exchange',
+                tooltip: 'Logical operator',
+                onMouseUp: function (x, y) {
+                    var logicalOperator = new LogicalOperators({
+                        x: x,
+                        y: y,
+                    });
+                    canvas.add(logicalOperator);
+                    animateBirth(logicalOperator, false, 1, 1);
+                }
+            });
+
+            iVoLVER.gui.add.draggableIcon({
+                sectionID: logicalOperatorsSection,
+                iconClass: 'fa-exchange',
+                tooltip: 'Arithmetic operator',
+                onMouseUp: function (x, y) {
+                    var arithmeticOperator = new ArithmeticOperators({
+                        x: x,
+                        y: y,
+                    });
+                    canvas.add(arithmeticOperator);
+                    animateBirth(arithmeticOperator, false, 1, 1);
+                }
+            });
+
+            iVoLVER.gui.add.draggableIcon({
+                sectionID: logicalOperatorsSection,
+                iconClass: 'fa-exchange',
+                tooltip: 'Result Widget',
+                onMouseUp: function (x, y) {
+                    var resultWidget = new ResultWidget({
+                        x: x,
+                        y: y,
+                    });
+                    canvas.add(resultWidget);
+                    animateBirth(resultWidget, false, 1, 1);
+                }
+            });
+        },
+
+
         addFunctionsSection: function () {
             var functionsSection = iVoLVER.gui.add.iconGroup({
                 title: iVoLVER.gui.sectionTitles.functions
@@ -2482,7 +2730,7 @@ var iVoLVER = {
                 valueHolder.configurator = mainDiv;
             }
 
-            // positioning and showing the configurator        
+            // positioning and showing the configurator
             var centerPoint = valueHolder.getPointByOrigin('center', 'center');
             var screenCoords = getScreenCoordinates(centerPoint);
             mainDiv.css('position', 'absolute');
@@ -3170,7 +3418,7 @@ var iVoLVER = {
         alertify.set({buttonReverse: true});
         var brushColor = "#000000";
         var brushWidth = 5;
-        // create a wrapper around native canvas element (with id="theCanvas")        
+        // create a wrapper around native canvas element (with id="theCanvas")
         var canvas = new fabric.Canvas('theCanvas', {
             backgroundColor: "#ffffff",
             renderOnAddRemove: false,
@@ -3345,7 +3593,7 @@ var iVoLVER = {
                 canvas.zoomToPoint(center, canvas.zoomBeforePanning * ev.scale);
             }
         });
-//        
+//
 
 
 
@@ -3418,13 +3666,19 @@ var iVoLVER = {
 
         iVoLVER.gui._paletteSections = {};
         // Uncomment for rightpane
-        //iVoLVER.gui.addExtractorsSection();
-        //iVoLVER.gui.addMarksSection();
-        //iVoLVER.gui.addValuesSection();
-        //iVoLVER.gui.addOperatorsSection();
-        //iVoLVER.gui.addCollectionsSection();
-        //iVoLVER.gui.addLocatorsSection();
-        //iVoLVER.gui.addFunctionsSection();
+        // iVoLVER.gui.addExtractorsSection();
+        // iVoLVER.gui.addMarksSection();
+        // iVoLVER.gui.addValuesSection();
+        // iVoLVER.gui.addOperatorsSection();
+        // iVoLVER.gui.addCollectionsSection();
+        // iVoLVER.gui.addLocatorsSection();
+        // iVoLVER.gui.addFunctionsSection();
+        iVoLVER.gui.addCanvasVariablesSection();
+        iVoLVER.gui.addCodeShiftSection();
+        iVoLVER.gui.addCodeNoteSection();
+        iVoLVER.gui.addSignalsSection();
+        iVoLVER.gui.addLogicalOperatorsSection();
+        iVoLVER.gui.addPlotsSection();
 
         iVoLVER._pendingConnections = null;
         iVoLVER._connectableElements = null;
@@ -3775,10 +4029,10 @@ iVoLVER.util = {
 
         /*objectPos = iVoLVER.util.getBoundingRect(object);
          referencePos = iVoLVER.util.getBoundingRect(referenceObject);
-         
+
          // console.log("objectPos:");
          // console.log(objectPos);
-         
+
          var objectRect = new fabric.Rect({
          top: objectPos.top,
          left: objectPos.left,
@@ -3797,10 +4051,10 @@ iVoLVER.util = {
          stroke: 'black',
          strokeWidth: 1,
          });
-         
+
          canvas.add(objectRect);
          canvas.add(referenceRect);
-         
+
          if (forHorizontalMovement) {
          coordinate = 'x';
          objectPos = objectRect.getPointByOrigin(constraint.origin, 'center');
@@ -3883,7 +4137,7 @@ iVoLVER.model.Value = function (options) {
     }
 
     // returns all the operations the value implements.
-    // Object with properties named as operations. Each of these properties has several functional objects with data types as keys 
+    // Object with properties named as operations. Each of these properties has several functional objects with data types as keys
     this.getImplementedOperations = function () {
         return iVoLVER.getOperationsForType(this.getDataType());
     };
@@ -4414,43 +4668,43 @@ iVoLVER.model.Value = function (options) {
     };
 
     /*this.subtract = function (theOtherValue, outputPrefix) {
-     
+
      var thisValue = this;
-     
+
      if (thisValue.isNumberValue) {
-     
+
      if (theOtherValue.isNumberValue) { /////////////// Subtracting NUMBERS ///////////////
-     
+
      return subtractNumbers(thisValue, theOtherValue, outputPrefix);
-     
+
      } else {
      return null;
      }
-     
+
      } else if (thisValue.isDateAndTimeValue) {
-     
+
      if (theOtherValue.isDateAndTimeValue) { /////////////// Subtracting DATES ///////////////
-     
+
      var outputUnits = outputPrefix || 'milliseconds';
-     
+
      return computeDateDifference(thisValue.moment, theOtherValue.moment, outputUnits);
-     
+
      } else {
      return null;
      }
-     
+
      } else if (thisValue.isColorValue) {
-     
+
      } else if (thisValue.isDurationValue) {
-     
+
      } else if (thisValue.isShapeValue) {
-     
+
      } else if (thisValue.isStringValue) {
-     
+
      } else {
      return null;
      }
-     
+
      };*/
 
     this.clone = function () {
@@ -5911,7 +6165,7 @@ iVoLVER.model.Connectable = {
 //                } else if (canvas.lastFound) {
 //
 //                    //if (canvas.lastFound !== theConnectable && !canvas.lastFound.isConnector) {
-//                        
+//
 //                        // console.log("OUT OF " + canvas.lastFound.type);
 //
 //                        if (canvas.lastFound.__eventListeners['mouseout']) {
@@ -6248,7 +6502,7 @@ iVoLVER.model.ValueHolder = iVoLVER.util.createClass(fabric.Path, {
 
                 theValueHolder.propertyTooltip = mainDiv;
 
-                // positioning and showing the configurator        
+                // positioning and showing the configurator
                 /*var centerPoint = theValueHolder.getPointByOrigin('center', 'center');
                  var screenCoords = getScreenCoordinates(centerPoint);
                  mainDiv.css('position', 'absolute');
@@ -6276,7 +6530,7 @@ iVoLVER.model.ValueHolder = iVoLVER.util.createClass(fabric.Path, {
         theValueHolder._setTooltipPosition = function () {
             var mainDiv = theValueHolder.propertyTooltip;
             if (mainDiv) {
-                // positioning and showing the configurator        
+                // positioning and showing the configurator
                 var centerPoint = theValueHolder.getPointByOrigin('center', 'center');
                 var screenCoords = getScreenCoordinates(centerPoint);
                 mainDiv.css('position', 'absolute');
@@ -6833,7 +7087,7 @@ iVoLVER.obj.Mark = {
 //        var y = 0;
 //
 //        if (theMark.anchorX === 'center') {
-//            x = -0.5; // for some reason, this value is constant regardless of the mark's strokeWidth 
+//            x = -0.5; // for some reason, this value is constant regardless of the mark's strokeWidth
 //        } else if (theMark.anchorX === 'left') {
 //            x = theMark.strokeWidth;
 //        } else if (theMark.anchorX === 'right') {
@@ -6841,7 +7095,7 @@ iVoLVER.obj.Mark = {
 //        }
 //
 //        if (theMark.anchorY === 'center') {
-//            y = -0.5; // for some reason, this value is constant regardless of the mark's strokeWidth 
+//            y = -0.5; // for some reason, this value is constant regardless of the mark's strokeWidth
 //        } else if (theMark.anchorY === 'top') {
 //            y = theMark.strokeWidth / 2;
 //        } else if (theMark.anchorY === 'bottom') {
@@ -6974,7 +7228,7 @@ iVoLVER.obj.Mark = {
          y1: 0,
          x2: 0,
          y2: object.getScaledHeight(),
-         colorStops: { 
+         colorStops: {
          0: 'rgb(255,255,255, 1)',
          0.5: 'rgba(242,242,242,0.75)',
          1: 'rgb(255,255,255, 1)'
@@ -11971,8 +12225,8 @@ iVoLVER.project = {
 
             var object = null;
             object = new reviver(parameters);
-//            
-//            
+//
+//
 //
             canvas.add(object);
 
@@ -12334,7 +12588,7 @@ iVoLVER.Mapper = fabric.util.createClass(fabric.Rect, {
                 // moving also the output port accordingly
                 theMapper.outputPort.top = theMapper.inputPort.top;
                 theMapper.outputPort.setCoords && theMapper.outputPort.setCoords();
-                // now we need to update the location options for the output port so that its position is kept 
+                // now we need to update the location options for the output port so that its position is kept
                 // after compression and/or expansion
                 var outputPortExpandedOptions = theMapper.getStateProperties(theMapper.outputPort, true);
                 outputPortExpandedOptions.y = newY;

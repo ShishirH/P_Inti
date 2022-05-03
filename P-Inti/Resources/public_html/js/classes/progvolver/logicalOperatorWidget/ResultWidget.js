@@ -18,6 +18,8 @@ class ResultWidget {
 
         this.background = background;
         background.noScaleCache = false;
+        background.trueText = "true";
+        background.falseText = "False";
 
         this.value = options.value || '';
 
@@ -67,11 +69,60 @@ class ResultWidget {
             background.children.push(inputPort);
         }
 
+        var addTextChange = function () {
+            var textChange = new TextChange({
+                parent: background,
+                fill: background.fill,
+                stroke: background.stroke
+            });
+
+            var originParent = {originX: 'right', originY: 'top'};
+            var originChild = {originX: 'left', originY: 'center'};
+
+
+            background.addChild(textChange, {
+                whenCompressed: {
+                    x: 5, y: -3,
+                    originParent: originParent,
+                    originChild: originChild
+                },
+                whenExpanded: {
+                    x: 5, y: -3,
+                    scaleX: 1, scaleY: 1, opacity: 1,
+                    originParent: originParent,
+                    originChild: originChild
+                },
+                movable: false
+            });
+            background.textChange = textChange;
+            background.textChange.lockMovementX = true;
+            background.textChange.lockMovementY = true;
+        }
+
+        addTextChange();
+
+        background.convertUnits = function(value) {
+            background.value = value * background.numberFormatter.unitMultiplier;
+        }
+
+        background.registerListener('mouseup', function () {
+            if (background.isCompressed) {
+                background.expand();
+                background.textChange && background.textChange.expand();
+            } else {
+                background.compress();
+                background.textChange && background.textChange.compress();
+            }
+        });
+
         addInputPort();
         //addEvents();
 
         background.registerListener('added', function (options) {
             canvas.add(background.inputPort);
+            canvas.add(background.textChange);
+            background.compress();
+            background.textChange && background.textChange.compress();
             background.positionObjects();
         });
 
@@ -80,10 +131,10 @@ class ResultWidget {
             console.log(value);
 
             if (value) {
-                this.value = "True";
+                this.value = background.trueText;
                 this.set('fill', 'LimeGreen')
             } else {
-                this.value = "False";
+                this.value = background.falseText;
                 this.set('fill', 'Tomato');
             }
         }

@@ -11,12 +11,13 @@ var ArrayElementSymbol = iVoLVER.util.createClass(fabric.Rect, {
         options.height = options.height || 35;
         options.fill = lighten('#DFE3B3', 15);
         this.callSuper('initialize', options);
+
         this.array = options.array;
         this.changeView = options.changeView;
         this.column = options.column;
         this.row = options.row;
         this.indexed = false;
-        this.indexedColor = null;
+        this.indexedColor = [];
         this.numberOfColumns = options.numberOfColumns;
         this.timeOfChange = null;
         this.fontColor = 'rgba(65, 65, 65, 1)';
@@ -68,14 +69,34 @@ var ArrayElementSymbol = iVoLVER.util.createClass(fabric.Rect, {
                     }
 
                     if (this.indexed) {
+                        let startPointOffset = parseFloat(1.5)
+                        let endPointOffset = parseFloat(2);
                         let leftCenter = this.getPointByOrigin('left', 'top');
+                        let strokeWidth = this.strokeWidth;
+                        let width = this.width;
+                        let height = this.height;
+
                         ctx.save();
-                        ctx.beginPath();
-                        ctx.rect(leftCenter.x + (this.strokeWidth * 1.5), leftCenter.y + (this.strokeWidth * 1.5), this.width - (this.strokeWidth * 2), this.height - (this.strokeWidth * 2));
-                        ctx.strokeStyle = this.indexedColor;
-                        ctx.stroke();
-                        
-                        ctx.closePath();
+                        this.indexedColor.forEach(function(color) {
+                            let startX = leftCenter.x + (strokeWidth * startPointOffset);
+                            let startY = leftCenter.y + (strokeWidth * startPointOffset);
+                            let endX = width - (strokeWidth * endPointOffset);
+                            let endY = height - (strokeWidth * endPointOffset);
+
+                            // console.log("startX: " + startX);
+                            // console.log("startY: " + startY);
+                            // console.log("endX: " + endX);
+                            // console.log("endY: " + endY);
+
+                            ctx.beginPath();
+                            ctx.rect(startX, startY, endX, endY);
+                            ctx.strokeStyle = color;
+                            ctx.stroke();
+                            ctx.closePath();
+
+                            startPointOffset += 2;
+                            endPointOffset += 4;
+                        })
                         ctx.restore();
                     }
                 }

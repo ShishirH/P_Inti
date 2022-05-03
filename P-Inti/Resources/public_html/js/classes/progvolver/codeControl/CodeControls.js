@@ -33,18 +33,18 @@ class CodeControls {
                 hoverCursor: "pointer"
             });
 
-            var originParent = {originX: 'center', originY: 'top'};
-            var originChild = {originX: 'center', originY: 'top'};
+            var originParent = {originX: 'left', originY: 'top'};
+            var originChild = {originX: 'left', originY: 'top'};
 
             background.addChild(labelObject, {
                 whenCompressed: {
-                    x: 0, y: 4,
+                    x: 5, y: 4,
                     scaleX: 1, scaleY: 1, opacity: 1,
                     originParent: originParent,
                     originChild: originChild
                 },
                 whenExpanded: {
-                    x: 0, y: 4,
+                    x: 5, y: 4,
                     scaleX: 1, scaleY: 1, opacity: 1,
                     originParent: originParent,
                     originChild: originChild
@@ -53,6 +53,39 @@ class CodeControls {
             });
 
             background.childrenOnTop.push(labelObject);
+        }
+
+        background.addSelectButton = function () {
+            var selectButton = new CodeControlCheckBox({
+                height: 15,
+                width: 15,
+                hasControls: false,
+                hasBorders: false,
+                stroke: darken(background.stroke),
+                fill: darken(background.fill)
+            });
+
+            var originParent = {originX: 'right', originY: 'top'};
+            var originChild = {originX: 'right', originY: 'top'};
+
+            background.addChild(selectButton, {
+                whenCompressed: {
+                    x: -5, y: 4,
+                    scaleX: 1, scaleY: 1, opacity: 1,
+                    originParent: originParent,
+                    originChild: originChild
+                },
+                whenExpanded: {
+                    x: -5, y: 4,
+                    scaleX: 1, scaleY: 1, opacity: 1,
+                    originParent: originParent,
+                    originChild: originChild
+                },
+                movable: false
+            });
+
+            background.selectButton = selectButton;
+            background.childrenOnTop.push(selectButton);
         }
 
         background.addControlAddition = new function () {
@@ -126,13 +159,16 @@ class CodeControls {
                 background.isOnCanvas = true;
                 addChildrenToCanvas(background);
             }
+
+            background.positionObjects();
         });
 
-        background.registerListener('mouseup', function (event) {
-            CodeControls.updateSelectedCodeControl(background);
-        })
+        // background.registerListener('mouseup', function (event) {
+        //     CodeControls.updateSelectedCodeControl(background);
+        // })
 
         background.addName();
+        background.addSelectButton();
         background.noScaleCache = false;
 
         // Add this to the list of code controls, and make this code control active.
@@ -162,6 +198,9 @@ class CodeControls {
             // Deselect previous selected code control
             window.selectedCodeControl.set('fill', window.selectedCodeControl.unsaturatedColor);
             window.selectedCodeControl.set('stroke', darken(window.selectedCodeControl.fill));
+            if (window.selectedCodeControl.selectButton) {
+                window.selectedCodeControl.selectButton.value = "";
+            }
             window.selectedCodeControl = background;
         }
 
@@ -171,8 +210,13 @@ class CodeControls {
             })
         }
 
-        window.selectedCodeControl.set('fill', window.selectedCodeControl.saturatedColor);
-        window.selectedCodeControl.set('stroke', darken(window.selectedCodeControl.fill));
+        if (window.selectedCodeControl) {
+            window.selectedCodeControl.set('fill', window.selectedCodeControl.saturatedColor);
+            window.selectedCodeControl.set('stroke', darken(window.selectedCodeControl.fill));
+
+            if (window.selectedCodeControl.selectButton)
+                window.selectedCodeControl.selectButton.value = "✓";
+        }
 
         //window.selectedCodeControl.set('stroke', 'rgba(130, 130, 130, 1)');
     }

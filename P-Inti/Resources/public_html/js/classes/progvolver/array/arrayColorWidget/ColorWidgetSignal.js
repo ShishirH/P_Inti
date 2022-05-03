@@ -103,7 +103,7 @@ var ColorWidgetSignal = iVoLVER.util.createClass(fabric.Circle, {
             let selectedElement = this.array.arrayElementsArray[this.oldIndex][0];
             selectedElement.set('objectCaching', false);
             selectedElement.set('indexed', false);
-            selectedElement.set('indexedColor', null);
+            selectedElement.indexedColor.pop();
             selectedElement.set('objectCaching', true);
         }
     },
@@ -119,20 +119,26 @@ var ColorWidgetSignal = iVoLVER.util.createClass(fabric.Circle, {
             outputNumberHolder.index = index;
             outputNumberHolder.originalValue = value;
             outputNumberHolder.value = value;
+
+            outputNumberHolder.setIndex && outputNumberHolder.setIndex(index);
+            outputNumberHolder.setValue && outputNumberHolder.setValue(value);
         });
     },
 
     updateSelectedElement: function (selectedElement) {
         selectedElement.set('objectCaching', false);
         selectedElement.set('indexed', true);
-        selectedElement.set('indexedColor', this.fill);
+        selectedElement.indexedColor.push(this.fill);
         selectedElement.set('objectCaching', true);
+
+        console.log("Indexed color is: ");
+        console.log(selectedElement.indexedColor);
     },
 
     resetSelectedElement: function (selectedElement) {
         selectedElement.set('objectCaching', false);
         selectedElement.set('indexed', false);
-        selectedElement.set('indexedColor', null);
+        selectedElement.indexedColor.pop();
         selectedElement.set('objectCaching', true);
     }
 

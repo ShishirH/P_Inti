@@ -1372,8 +1372,10 @@ class ArraySymbol {
                 parent: background,
                 array: background.array,
                 fill: colorsArray[colorIndex],
+                type: "ArrayColorWidgetOutput",
                 stroke: darken((colorsArray[colorIndex]))
             });
+
 
             let parentOrigin = {originX: 'left', originY: 'bottom'};
             let childOrigin = {originX: 'left', originY: 'top'};
@@ -1462,7 +1464,7 @@ class ArraySymbol {
                 console.log("Inner contents are: " + innerContents);
                 if (innerContents.indexOf('{') === -1) {
                     // 1, 2, 3, 4, 5 -> 1D array
-                    let rowNumbers = innerContents.split(',').map(function(item) {
+                    let rowNumbers = innerContents.split(',').map(function (item) {
                         return item.trim();
                     });
 
@@ -1475,12 +1477,12 @@ class ArraySymbol {
                     let rowIndex = 0;
                     let elementString = innerContents;
 
-                    while(elementString.substring(arrayElementStartIndex).indexOf('{') !== -1) {
+                    while (elementString.substring(arrayElementStartIndex).indexOf('{') !== -1) {
                         elementString = innerContents.substring(arrayElementStartIndex);
                         let braceStartIndex = elementString.indexOf('{');
                         let braceEndIndex = elementString.indexOf('}');
 
-                        let arrayRowNumbers = elementString.substring(braceStartIndex + 1, braceEndIndex).split(',').map(function(item) {
+                        let arrayRowNumbers = elementString.substring(braceStartIndex + 1, braceEndIndex).split(',').map(function (item) {
                             return item.trim();
                         });
 
@@ -1512,7 +1514,7 @@ class ArraySymbol {
         return background;
     }
 
-    static fromJson (json) {
+    static fromJson(json) {
         return new ArraySymbol({
             value: json['value'],
             type: json['type'],

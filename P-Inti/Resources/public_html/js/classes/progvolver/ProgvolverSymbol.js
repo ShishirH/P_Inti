@@ -73,8 +73,6 @@ class ProgvolverSymbol extends ConnectableWidget {
 //        this.expandedOptions[theWidget.ports['bottom'].id].y = 42;
 
 
-
-
         /*theWidget.thePorts.forEach(function (port) {
          port.connectionAccepted = function () {
          var dataForPlotter = background.values.map(function (item) {
@@ -235,6 +233,10 @@ class ProgvolverSymbol extends ConnectableWidget {
             // drawCurveThroughPoints(ctx, points);
             // drawCirclesAlongCurve(ctx, points);
 
+            if (background.shootingStarTarget) {
+                background.drawShootingStars(ctx);
+            }
+
             var renderableValue = background.value;
             if (!iVoLVER.util.isUndefined(background.value) && iVoLVER.util.isNumber(background.value)) {
                 renderableValue = background.value.toFixed(2);
@@ -307,7 +309,6 @@ class ProgvolverSymbol extends ConnectableWidget {
                         if (window.jsHandler.setEvaluatedLine) {
 
 
-
                             window.jsHandler.setEvaluatedLine({lineNumber: line}).then(function (response) {
 
                                 var args = {
@@ -339,7 +340,6 @@ class ProgvolverSymbol extends ConnectableWidget {
 
             let times = new Array();
             let colors = new Array();
-
 
 
             background.history.forEach(function (dataItem) {
@@ -444,7 +444,7 @@ class ProgvolverSymbol extends ConnectableWidget {
             background.movementInteractionEvent = movementInteractionEvent;
             background.disappearanceInteractionEvent = disappearanceInteraction;
 
-            background.registerListener('mouseup', function(event) {
+            background.registerListener('mouseup', function (event) {
                 var rightClick = (event.e.which) ? (event.e.which == 3) : (event.e.which == 2);
 
                 if (rightClick) {
@@ -730,7 +730,6 @@ class ProgvolverSymbol extends ConnectableWidget {
             });
 
 
-
             background.nameObject = nameObject;
             background.typeObject = typeObject;
 
@@ -781,7 +780,7 @@ class ProgvolverSymbol extends ConnectableWidget {
             json['x'] = background.left;
             json['y'] = background.top;
             json['fill'] = background.fill,
-            json['kind'] = "ProgvolverSymbol";
+                json['kind'] = "ProgvolverSymbol";
             return JSON.stringify(json);
         }
 
@@ -802,6 +801,37 @@ class ProgvolverSymbol extends ConnectableWidget {
             })
         }
 
+        background.drawShootingStars = function (ctx) {
+            let curveEndCoords = null;
+            let curveStartCoords = null;
+            let curveMidCoords = null;
+
+            curveStartCoords = background.getPointByOrigin('right', 'center');
+            curveStartCoords.y -= 1.5;
+
+            if (background.shootingStarTarget) {
+                curveEndCoords = background.shootingStarTarget.getPointByOrigin('left', 'center');
+            }
+
+            curveMidCoords = {x: curveStartCoords.x + 100, y: curveStartCoords.y + 100};
+
+            let radius = 6.0;
+            let opacity = 0.3;
+            for (var t = 0; t < 101; t += 5) {
+                var point = getQuadraticBezierXYatT(curveStartCoords, curveMidCoords, curveEndCoords, t / 100);
+                ctx.beginPath();
+                ctx.arc(point.x, point.y, radius, 0, Math.PI * 2);
+                ctx.closePath();
+                ctx.fillStyle = rgba(255, 255, 0, opacity);
+                ctx.fill();
+                radius = radius + 0.3;
+                opacity = opacity + 0.015;
+            }
+        };
+
+        console.log("Symbol is: ");
+        console.log(background);
+
         this.progvolverType = "CodeNote";
         if (!this.doNotRegisterObject)
             registerProgvolverObject(this);
@@ -813,10 +843,10 @@ class ProgvolverSymbol extends ConnectableWidget {
         return background;
     }
 
-    static fromJson (json) {
+    static fromJson(json) {
         console.log("This is being called");
 
-        let obj =  new ProgvolverSymbol({
+        let obj = new ProgvolverSymbol({
             value: json['value'],
             type: json['type'],
             name: json['name'],

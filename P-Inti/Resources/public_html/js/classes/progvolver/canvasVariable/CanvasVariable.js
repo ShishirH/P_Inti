@@ -22,6 +22,8 @@ class CanvasVariable {
         background.file = options.file;
         background.fileName = options.fileName;
         background.kind = options.kind;
+        background.isColorWidgetOutput = options.isColorWidgetOutput || false;
+
         background.fontColor = 'rgba(65, 65, 65, 1)';
 
         background.children = [];
@@ -39,8 +41,15 @@ class CanvasVariable {
             background.value = newValue;
             background.textField.text = newValue;
             background.connectionPort.value = newValue;
+            console.log("Connection port is: ");
+            console.log(background.connectionPort);
+            background.connectionPort.setOperandValue(newValue);
             background.set('width', getValueWidth(newValue, symbolFont) + 10 > 40 ? getValueWidth(newValue, symbolFont) + 10 : 40);
             background.expandedWidth = background.width;
+        }
+
+        background.setIndex = function (newIndex) {
+            background.nameObject.text = "" + newIndex;
         }
 
         background.oldRender = background.render;
@@ -134,7 +143,8 @@ class CanvasVariable {
 
         };
 
-        this.addProgvolverSymbolName();
+        //if (!background.isColorWidgetOutput)
+            this.addProgvolverSymbolName();
 
         background.addConnectionPort = function () {
             var originParent;
@@ -242,9 +252,11 @@ class CanvasVariable {
 
         background.addConnectionPort();
         background.addTextField();
-        background.setValue("Val");
 
-        background.registerListener('mouseup', function() {
+        if (!background.value)
+            background.setValue("Val");
+
+        background.registerListener('mouseup', function () {
             if (background.isCompressed) {
                 background.expand();
             } else {
@@ -252,9 +264,17 @@ class CanvasVariable {
             }
         });
 
-        background.registerListener('added', function() {
+        background.registerListener('added', function () {
             canvas.add(background.textField);
             background.textField.bringToFront();
+
+            console.log("Background value is: ");
+            console.log(background.value)
+            if (background.value) {
+                background.setValue(background.value);
+            }
+
+            background.positionObjects();
         })
         background.clone = function () {
             return new ProgvolverSymbol({
