@@ -65,6 +65,7 @@
     <Compile Include="CodeControlEditorAdornmentTextViewCreationListener.cs" />
     <Compile Include="CodeControlInfo.cs" />
     <Compile Include="CodeControls.cs" />
+    <Compile Include="CodeShiftAddBlock.cs" />
     <Compile Include="Controls\RelativePositionPanel.cs" />
     <Compile Include="DataTipIdentity.cs" />
     <Compile Include="DEBUGGER_OPTIONS.cs" />
@@ -217,6 +218,7 @@
     <None Include="Resources\public_html\js\contextMenu\jquery.contextMenu.min.js.map" />
     <None Include="Resources\public_html\js\graphlib.jscsrc" />
     <None Include="Resources\public_html\log.csv" />
+    <Content Include="Resources\CodeShiftAddBlock.png" />
     <Content Include="snapshot_blob.bin">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
       <IncludeInVSIX>true</IncludeInVSIX>
