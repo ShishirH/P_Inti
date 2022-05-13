@@ -2,6 +2,10 @@
 using System.Linq;
 using System.Diagnostics;
 using System.Text.RegularExpressions;
+using System.IO;
+using static P_Inti.CodeControlJsonResponse;
+using System.Collections.Generic;
+using Newtonsoft.Json;
 
 namespace P_Inti
 {
@@ -124,6 +128,11 @@ namespace P_Inti
             MyWindowControl.CurrentBranchID = branchName;
 
             MyWindowControl.printInBrowserConsole("Checkout out to new branch " + branchName);
+        }
+
+        public static void AddExistingCodeToCodeControl(string text)
+        {
+
         }
 
         public static void CheckoutToBranch(string solutionDir, string branch)
@@ -278,6 +287,46 @@ namespace P_Inti
 
             gitDiffProc.WaitForExit();
 
+        }
+
+        public static void InitializeJsonFile(string idStr, string branchIdStr, string codeControlFilePath)
+        {
+            String path = codeControlFilePath + "\\" + idStr + ".json";
+
+            if (!File.Exists(path))
+            {
+                CodeControlJsonResponse root = new CodeControlJsonResponse()
+                {
+                    shifts = new List<Shift>(),
+                };
+
+                Shift shift = new Shift()
+                {
+                    id = branchIdStr,
+                    changes = new List<string>(),
+                };
+
+                root.shifts.Add(shift);
+
+                string json = JsonConvert.SerializeObject(root, Formatting.Indented);
+
+                File.WriteAllText(path, json);
+            }
+            //    var list = JsonConvert.DeserializeObject<List<Person>>(myJsonString);
+            //    list.Add(new Person(1234, "carl2");
+            //    var convertedJson = JsonConvert.SerializeObject(list, Formatting.Indented);
+
+            //    string json = File.ReadAllText("settings.json");
+            //    dynamic jsonObj = Newtonsoft.Json.JsonConvert.DeserializeObject(json);
+            //    jsonObj["Bots"][0]["Password"] = "new password";
+            //    string output = Newtonsoft.Json.JsonConvert.SerializeObject(jsonObj, Newtonsoft.Json.Formatting.Indented);
+            //    File.WriteAllText("settings.json", output);
+            //}
+            //using (FileStream fs = File.Create(path))
+            //{
+            //    // write initial info?
+            //}
+            //throw new NotImplementedException();
         }
     }
 }

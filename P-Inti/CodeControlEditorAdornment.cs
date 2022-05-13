@@ -26,6 +26,11 @@ namespace P_Inti
         /// </summary>
         private static IWpfTextView view;
 
+        private static bool isInsideCodeControl = false;
+        private static string currentCodeControl = "";
+        private static string currentCodeControlBranch = "";
+        private static CodeControlInfo currentCodeControlInfo = null;
+
         /// <summary>
         /// Initializes a new instance of the <see cref="CodeControlEditorAdornment"/> class.
         /// </summary>
@@ -56,6 +61,7 @@ namespace P_Inti
         {
             foreach (ITextViewLine line in e.NewOrReformattedLines)
             {
+                MyWindowControl.printInBrowserConsole("Line is: " + line.ToString());
                 CodeControlEditorAdornment.CreateEditorVisuals(line);
             }
         }
@@ -66,72 +72,149 @@ namespace P_Inti
         /// <param name="line">Line to add the adornments</param>
         public static void CreateEditorVisuals(ITextViewLine line)
         {
-            IWpfTextViewLineCollection textViewLines = CodeControlEditorAdornment.view.TextViewLines;
-
-            foreach (KeyValuePair<string, CodeControlInfo> codeControlInfoPair in MyWindowControl.CodeControlInfos)
+            if (MyWindowControl.CodeControlInfos.Count == 0)
             {
-                string id = codeControlInfoPair.Key;
-                CodeControlInfo codeControlInfo = codeControlInfoPair.Value;
+                return;
+            }
+            
+            IWpfTextViewLineCollection textViewLines = CodeControlEditorAdornment.view.TextViewLines;
+            Color color;
 
-                Color color;
-
-                if (codeControlInfo == MyWindowControl.CurrentCodeControl)
+            foreach (ITextViewLine lineOfCode in textViewLines)
+            {
+                if (lineOfCode.Snapshot.GetText().StartsWith("//BEGIN"))
                 {
-                    color = codeControlInfo.SaturatedColor;
+                    isInsideCodeControl = true;
+
+                    MyWindowControl.printInBrowserConsole("Line is: " + lineOfCode.Snapshot.GetText());
+                    string codeControlName = lineOfCode.Snapshot.GetText().Split(' ')[1].Trim().Split(':')[0];
+
+                    foreach(KeyValuePair<string, CodeControlInfo> codeControlInfoPair in MyWindowControl.CodeControlInfos)
+                    {
+                        CodeControlInfo codeControl = codeControlInfoPair.Value;
+                        if (codeControlName == codeControl.Name)
+                        {
+                            currentCodeControl = codeControl.Id;
+                            currentCodeControlInfo = codeControl;
+                        }
+                    }
+                }
+                else if (lineOfCode.Snapshot.GetText().StartsWith("//END"))
+                {
+                    isInsideCodeControl = false;
+                    currentCodeControl = "";
                 }
                 else
                 {
-                    color = codeControlInfo.UnsaturatedColor;
-                }
-
-                SolidColorBrush brush = new SolidColorBrush(color);
-                brush.Freeze();
-
-                SolidColorBrush penBrush = new SolidColorBrush(color);
-                penBrush.Freeze();
-                Pen pen = new Pen(penBrush, 0.5);
-                pen.Freeze();
-
-                foreach (KeyValuePair<string, CodeControlBranchInfo> codeControlBranchInfoPair in codeControlInfo.CodeControlBranches)
-                {
-                    string branchId = codeControlBranchInfoPair.Key;
-                    CodeControlBranchInfo codeControlBranchInfo = codeControlBranchInfoPair.Value;
-
-                    for (int charIndex = textViewLines.FirstVisibleLine.Start; charIndex < textViewLines.LastVisibleLine.End; charIndex++)
+                    if (isInsideCodeControl == true)
                     {
-                        int currentLine = textViewLines.FormattedSpan.Snapshot.GetLineNumberFromPosition(charIndex);
-
-                        if (currentLine < codeControlBranchInfo.StartLine || currentLine > codeControlBranchInfo.EndLine)
+                        if (currentCodeControlInfo == MyWindowControl.CurrentCodeControl)
                         {
-                            continue;
+                            color = currentCodeControlInfo.SaturatedColor;
                         }
-
-                        SnapshotSpan span = new SnapshotSpan(CodeControlEditorAdornment.view.TextSnapshot, Span.FromBounds(charIndex, charIndex + 1));
-                        Geometry geometry = textViewLines.GetMarkerGeometry(span);
-                        if (geometry != null)
+                        else
                         {
-                            var drawing = new GeometryDrawing(brush, pen, geometry);
-                            drawing.Freeze();
+                            color = currentCodeControlInfo.UnsaturatedColor;
 
-                            var drawingImage = new DrawingImage(drawing);
-                            drawingImage.Freeze();
+                            SolidColorBrush brush = new SolidColorBrush(color);
+                            brush.Freeze();
 
-                            var image = new Image
+                            SolidColorBrush penBrush = new SolidColorBrush(color);
+                            penBrush.Freeze();
+                            Pen pen = new Pen(penBrush, 0.5);
+                            pen.Freeze();
+
+                            Geometry geometry = textViewLines.GetMarkerGeometry(lineOfCode.Extent);
+                            if (geometry != null)
                             {
-                                Source = drawingImage,
-                            };
+                                var drawing = new GeometryDrawing(brush, pen, geometry);
+                                drawing.Freeze();
 
-                            // Align the image with the top of the bounds of the text geometry
-                            Canvas.SetLeft(image, geometry.Bounds.Left);
-                            Canvas.SetTop(image, geometry.Bounds.Top);
+                                var drawingImage = new DrawingImage(drawing);
+                                drawingImage.Freeze();
 
-                            CodeControlEditorAdornment.layer.AddAdornment(AdornmentPositioningBehavior.TextRelative, span, null, image, null);
+                                var image = new Image
+                                {
+                                    Source = drawingImage,
+                                };
+
+                                // Align the image with the top of the bounds of the text geometry
+                                Canvas.SetLeft(image, geometry.Bounds.Left);
+                                Canvas.SetTop(image, geometry.Bounds.Top);
+
+                                CodeControlEditorAdornment.layer.AddAdornment(AdornmentPositioningBehavior.TextRelative, lineOfCode.Extent, null, image, null);
+                            }
+
                         }
 
                     }
-
                 }
             }
         }
+
+            //foreach (KeyValuePair<string, CodeControlInfo> codeControlInfoPair in MyWindowControl.CodeControlInfos)
+            //{
+            //    string id = codeControlInfoPair.Key;
+            //    CodeControlInfo codeControlInfo = codeControlInfoPair.Value;
+
+            //    Color color;
+
+            //    if (codeControlInfo == MyWindowControl.CurrentCodeControl)
+            //    {
+            //        color = codeControlInfo.SaturatedColor;
+            //    }
+            //    else
+            //    {
+            //        color = codeControlInfo.UnsaturatedColor;
+            //    }
+
+            //    SolidColorBrush brush = new SolidColorBrush(color);
+            //    brush.Freeze();
+
+            //    SolidColorBrush penBrush = new SolidColorBrush(color);
+            //    penBrush.Freeze();
+            //    Pen pen = new Pen(penBrush, 0.5);
+            //    pen.Freeze();
+
+                //foreach (KeyValuePair<string, CodeControlBranchInfo> codeControlBranchInfoPair in codeControlInfo.CodeControlBranches)
+                //{
+                //    string branchId = codeControlBranchInfoPair.Key;
+                //    CodeControlBranchInfo codeControlBranchInfo = codeControlBranchInfoPair.Value;
+
+                //    for (int charIndex = textViewLines.FirstVisibleLine.Start; charIndex < textViewLines.LastVisibleLine.End; charIndex++)
+                //    {
+                //        int currentLine = textViewLines.FormattedSpan.Snapshot.GetLineNumberFromPosition(charIndex);
+
+                //        if (currentLine < codeControlBranchInfo.StartLine || currentLine > codeControlBranchInfo.EndLine)
+                //        {
+                //            continue;
+                //        }
+
+                //        SnapshotSpan span = new SnapshotSpan(CodeControlEditorAdornment.view.TextSnapshot, Span.FromBounds(charIndex, charIndex + 1));
+                //        Geometry geometry = textViewLines.GetMarkerGeometry(span);
+                //        if (geometry != null)
+                //        {
+                //            var drawing = new GeometryDrawing(brush, pen, geometry);
+                //            drawing.Freeze();
+
+                //            var drawingImage = new DrawingImage(drawing);
+                //            drawingImage.Freeze();
+
+                //            var image = new Image
+                //            {
+                //                Source = drawingImage,
+                //            };
+
+                //            // Align the image with the top of the bounds of the text geometry
+                //            Canvas.SetLeft(image, geometry.Bounds.Left);
+                //            Canvas.SetTop(image, geometry.Bounds.Top);
+
+                //            CodeControlEditorAdornment.layer.AddAdornment(AdornmentPositioningBehavior.TextRelative, span, null, image, null);
+                //        }
+
+                    //}
+
+                //}
+            //}
     }
 }

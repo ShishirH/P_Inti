@@ -36,6 +36,15 @@ class CodeControls {
             var originParent = {originX: 'left', originY: 'top'};
             var originChild = {originX: 'left', originY: 'top'};
 
+            labelObject.on('editing:exited', function () {
+                if (window.jsHandler && window.jsHandler.updateCodeControlName) {
+                    window.jsHandler.updateCodeControlName({
+                        id: background.id,
+                        name: labelObject.text,
+                    });
+                }
+            });
+
             background.addChild(labelObject, {
                 whenCompressed: {
                     x: 5, y: 4,
@@ -160,6 +169,16 @@ class CodeControls {
                 addChildrenToCanvas(background);
             }
 
+            if (window.jsHandler && window.jsHandler.initializeCodeControl) {
+                window.jsHandler.initializeCodeControl({
+                    id: background.id,
+                    saturatedColor: background.saturatedColor,
+                    unsaturatedColor: background.unsaturatedColor
+                });
+            }
+
+            console.log("Code controls is: ");
+            console.log(background);
             background.positionObjects();
         });
 
@@ -173,14 +192,6 @@ class CodeControls {
 
         // Add this to the list of code controls, and make this code control active.
         codeControlsOnCanvas.push(background);
-
-        if (window.jsHandler && window.jsHandler.initializeCodeControl) {
-            window.jsHandler.initializeCodeControl({
-                id: background.id,
-                saturatedColor: background.saturatedColor,
-                unsaturatedColor: background.unsaturatedColor
-            });
-        }
 
         CodeControls.updateSelectedCodeControl(background);
 
@@ -205,6 +216,7 @@ class CodeControls {
         }
 
         if (window.jsHandler && window.jsHandler.updateSelectedCodeControl) {
+            console.log("Calling text thing")
             window.jsHandler.updateSelectedCodeControl({
                 id: background.id
             })

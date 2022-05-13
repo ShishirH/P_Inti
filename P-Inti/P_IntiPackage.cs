@@ -50,6 +50,7 @@ namespace P_Inti
             await this.JoinableTaskFactory.SwitchToMainThreadAsync(cancellationToken);
             await MyWindowCommand.InitializeAsync(this);
             await ProgvolverEditorContextualMenu.InitializeAsync(this);
+            await CodeControlAddExistingCode.InitializeAsync(this);
         }
 
         #endregion

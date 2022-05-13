@@ -179,6 +179,8 @@ class CodeControlBranch {
     }
 
     static getYPositionForIndex(index) {
+        console.log("Index is: " + index);
+        console.log("Returning: " + ((index * 30) + 25));
         return (index * 30) + 25;
     }
 }

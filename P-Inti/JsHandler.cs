@@ -50,6 +50,7 @@ namespace P_Inti
         public static string[] builtInTypes = { "bool", "byte", "sbyte", "char", "decimal", "double", "float", "int", "uint", "nint", "nuint", "long", "ulong", "short", "ushort", "string" };
 
 
+        public static string codeControlFilePath;
         public JsHandler(MyWindowControl windowControl, Dispatcher dispatcher)
         {
             this.theDispatcher = dispatcher;
@@ -1765,59 +1766,76 @@ namespace P_Inti
             return node;
         }
 
-        public Dictionary<string, object> createCodeControl(object arg)
+        public Dictionary<string, object> createCodeControlBranch(object arg)
         {
             Dictionary<string, object> result = new Dictionary<string, object>();
-            if (windowControl.projectOpen())
+            string idStr;
+            string branchIdStr;
+
+            if (arg != null)
             {
-                string solutionDir = System.IO.Path.GetDirectoryName(windowControl.dte.Solution.FullName);
-                MyWindowControl.printInBrowserConsole(solutionDir);
+                IDictionary<string, object> input = (IDictionary<string, object>)arg;
+                input.TryGetValue("id", out object id);
+                input.TryGetValue("branchId", out object branchId);
 
-                solutionDir = "\"" + solutionDir + "\"";
+                idStr = (string)id;
+                branchIdStr = (string)branchId;
 
-                // Initialize or Reinitialize git repo
-                CodeControls.InitializeGitRepo(solutionDir);
+                MyWindowControl.printInBrowserConsole(codeControlFilePath);
 
-                int numberOfBranches = CodeControls.GetNumberOfBranches(solutionDir);
-                MyWindowControl.printInBrowserConsole("Number of Branches: " + numberOfBranches);
-
-                string id = Utils.generateID();
-                string branchName = "";
-                if (numberOfBranches != -1)
-                {
-                    if (numberOfBranches == 0)
-                    {
-                        // No branches yet, commit everything on master
-                        branchName = "master";
-                        MyWindowControl.CurrentBranchID = id;
-                        MyWindowControl.CurrentBranch = branchName;
-                        MyWindowControl.GitBranchID.Add(branchName, id);
-
-                        CodeControls.ParseGitDiff(solutionDir, branchName, id);
-                        CodeControls.AddGitChanges(solutionDir);
-                        CodeControls.CommitGitChanges(solutionDir);
-                    }
-                    else
-                    {
-                        // Earlier commits already made. Commit changes to present branch and then checkout to new branch
-                        CodeControls.ParseGitDiff(solutionDir, MyWindowControl.CurrentBranch, MyWindowControl.CurrentBranchID);
-                        CodeControls.AddGitChanges(solutionDir);
-                        CodeControls.CommitGitChanges(solutionDir);
-
-                        branchName = id;
-                        MyWindowControl.CurrentBranchID = id;
-                        MyWindowControl.CurrentBranch = branchName;
-                        MyWindowControl.GitBranchID.Add(branchName, id);
-
-                        // branchName = id; TODO WHY???
-                        CodeControls.CreateAndCheckoutGitBranch(solutionDir, id);
-                        CodeControls.CommitGitChanges(solutionDir);
-                    }
-                }
-
-                result.Add("id", id);
-                result.Add("branchName", branchName);
+                // Initialize or Reinitialize JSON file
+                CodeControls.InitializeJsonFile(idStr, branchIdStr, codeControlFilePath);
             }
+            //if (windowControl.projectOpen())
+            //{
+            //    string solutionDir = System.IO.Path.GetDirectoryName(windowControl.dte.Solution.FullName);
+            //    MyWindowControl.printInBrowserConsole(solutionDir);
+
+            //    solutionDir = "\"" + solutionDir + "\"";
+
+            //    // Initialize or Reinitialize JSON file
+            //    CodeControls.InitializeGitRepo(solutionDir);
+
+            //    int numberOfBranches = CodeControls.GetNumberOfBranches(solutionDir);
+            //    MyWindowControl.printInBrowserConsole("Number of Branches: " + numberOfBranches);
+
+            //    string id = Utils.generateID();
+            //    string branchName = "";
+            //    if (numberOfBranches != -1)
+            //    {
+            //        if (numberOfBranches == 0)
+            //        {
+            //            // No branches yet, commit everything on master
+            //            branchName = "master";
+            //            MyWindowControl.CurrentBranchID = id;
+            //            MyWindowControl.CurrentBranch = branchName;
+            //            MyWindowControl.GitBranchID.Add(branchName, id);
+
+            //            CodeControls.ParseGitDiff(solutionDir, branchName, id);
+            //            CodeControls.AddGitChanges(solutionDir);
+            //            CodeControls.CommitGitChanges(solutionDir);
+            //        }
+            //        else
+            //        {
+            //            // Earlier commits already made. Commit changes to present branch and then checkout to new branch
+            //            CodeControls.ParseGitDiff(solutionDir, MyWindowControl.CurrentBranch, MyWindowControl.CurrentBranchID);
+            //            CodeControls.AddGitChanges(solutionDir);
+            //            CodeControls.CommitGitChanges(solutionDir);
+
+            //            branchName = id;
+            //            MyWindowControl.CurrentBranchID = id;
+            //            MyWindowControl.CurrentBranch = branchName;
+            //            MyWindowControl.GitBranchID.Add(branchName, id);
+
+            //            // branchName = id; TODO WHY???
+            //            CodeControls.CreateAndCheckoutGitBranch(solutionDir, id);
+            //            CodeControls.CommitGitChanges(solutionDir);
+            //        }
+            //    }
+
+            //    result.Add("id", id);
+            //    result.Add("branchName", branchName);
+            //}
             return result;
         }
 
@@ -1933,6 +1951,35 @@ namespace P_Inti
                     Color.FromArgb(unsaturatedColor.A, unsaturatedColor.R, unsaturatedColor.G, unsaturatedColor.B), null, null);
 
                 MyWindowControl.CodeControlInfos.Add(idStr, codeControlInfo);
+                MyWindowControl.CurrentCodeControl = codeControlInfo;
+            }
+            return result;
+        }
+
+        public Dictionary<string, object> updateCodeControlName(object arg)
+        {
+            Dictionary<string, object> result = new Dictionary<string, object>();
+
+            if (arg != null)
+            {
+                IDictionary<string, object> input = (IDictionary<string, object>)arg;
+                input.TryGetValue("id", out object id);
+                input.TryGetValue("name", out object name);
+
+                string idStr = (string)id;
+                string nameStr = (string)name;
+
+                MyWindowControl.printInBrowserConsole("Name of code control");
+                MyWindowControl.printInBrowserConsole("idStr: " + nameStr);
+                MyWindowControl.CodeControlInfos[idStr].Name = nameStr;
+
+                //if (MyWindowControl.controlEditorAdornment != null)
+                //{
+                //    MyWindowControl.currentDispatcher.Invoke(new Action(() =>
+                //    {
+                //        CodeControlEditorAdornment.CreateEditorVisuals(null);
+                //    }));
+                //}
             }
             return result;
         }

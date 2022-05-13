@@ -26,16 +26,16 @@ class CodeControlAddition {
         background.createCodeControl = function () {
             if (window.selectedCodeControl === background.parent) {
                 if (window.jsHandler) {
-                    if (window.jsHandler.createCodeControl) {
-                        window.jsHandler.createCodeControl(null).then(function (response) {
-
-                            console.log("Response ID: " + response.id);
-                            console.log("Branch name: " + response.branchName);
+                    if (window.jsHandler.createCodeControlBranch) {
+                        window.jsHandler.createCodeControlBranch({
+                            id: background.parent.id,
+                            branchId: background.id
+                        }).then(function (response) {
 
                             let codeControlBranch = new CodeControlBranch({
                                 parent: background.parent,
-                                id: response.id,
-                                branchName: response.branchName
+                                id: background.id,
+                                branchName: background.id
                             });
 
                             const originParent = {originX: 'center', originY: 'top'};
@@ -43,6 +43,7 @@ class CodeControlAddition {
 
                             let yPosition = CodeControlBranch.getYPositionForIndex(background.parent.codeBranches.length);
 
+                            console.log("yPosition is: " + yPosition);
                             background.parent.addChild(codeControlBranch, {
                                 whenCompressed: {
                                     x: 0, y: yPosition,
