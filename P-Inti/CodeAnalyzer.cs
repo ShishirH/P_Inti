@@ -490,7 +490,8 @@ namespace TestingCodeAnalysis
 
             Dictionary<ISymbol, ReferenceLocation>.KeyCollection theKyes = symbols.Keys;
             List<ISymbol> theSymbols = theKyes.ToList();
-            theSymbols.Sort(delegate (ISymbol x, ISymbol y) {
+            theSymbols.Sort(delegate (ISymbol x, ISymbol y)
+            {
                 return x.Name.CompareTo(y.Name);
             });
 
@@ -507,7 +508,8 @@ namespace TestingCodeAnalysis
                 if (theSymbols.Count() == expressionSymbols.Count())
                 {
 
-                    expressionSymbols.Sort(delegate (ISymbol x, ISymbol y) {
+                    expressionSymbols.Sort(delegate (ISymbol x, ISymbol y)
+                    {
                         return x.Name.CompareTo(y.Name);
                     });
                     MyWindowControl.printInBrowserConsole("$$$$$$$$$$$$$$ AFTER SORTING $$$$$$$$$$$$$$");
@@ -820,6 +822,7 @@ namespace TestingCodeAnalysis
 
                         if (!allSymbols.ContainsKey(symbol))
                         {
+
                             allSymbols.Add(symbol, location);
 
 
@@ -895,12 +898,18 @@ namespace TestingCodeAnalysis
                     MyWindowControl.printInBrowserConsole("parentExpressions: ");
                     MyWindowControl.printInBrowserConsole(parentStatements);
 
+                    if (symbolsString.StartsWith("["))
+                    {
+                        symbolsString = symbolsString.Substring(1, symbolsString.Length - 1);
+                    }
+
                     string logReferenceString = " Logger.logReferences(\"{5}\", \"{0}~{1}~{6}~{{0}}~{2}~{3}~{4}\", {1});";
 
                     if (closestControlAncestor != null)
                     {
+                        MyWindowControl.printInBrowserConsole("AAAA symbolsString " + symbolsString);
 
-                        var key = "ancestor at " + fileName + " line " + (line + 1) + "_" + symbolsString + "_" + widgetsIDs + Utils.generateID();
+                        var key = "RAND ancestor at " + fileName + " line " + (line + 1) + "_" + symbolsString + "_" + widgetsIDs + Utils.generateID();
 
                         int ancestorLine = closestControlAncestor.GetLocation().GetLineSpan().StartLinePosition.Line;
                         if (ancestorLine == line)
@@ -909,24 +918,31 @@ namespace TestingCodeAnalysis
                             MyWindowControl.printInBrowserConsole("closestControlAncestor.ToString(): " + closestControlAncestor.ToString());
 
                             StringBuilder beforeControlSB = new StringBuilder();
-                            // beforeControlSB.AppendFormat(logReferenceString, symbolsString, parentStatements, line + 1, fileName, widgetsIDs, key, types);
+                            //beforeControlSB.AppendFormat(logReferenceString, symbolsString, parentStatements, line + 1, fileName, widgetsIDs, key, types);
                             beforeControlSB.AppendFormat(logReferenceString, symbolsString, symbolsString, line + 1, fileName, widgetsIDs, key, types);
                             String beforeString = beforeControlSB.ToString();
-                            MyWindowControl.printInBrowserConsole("Types is: " + types);
-                            MyWindowControl.printInBrowserConsole("beforeString: " + beforeString);
 
                             StringBuilder insideControlSB = new StringBuilder();
+                            if (onlyParentType == SyntaxKind.ElementAccessExpression)
+                            {
+                                insideControlSB.AppendFormat(" if ( Logger.getExecutionCount(\"{5}\") != 1 ) {{ " + logReferenceString + " }} else {{ Logger.increaseExecutionCount(\"{5}\"); }}", symbolsString, symbolsString, line + 1, fileName, widgetsIDs, key, types);
+
+                            }
+                            else
+                            {
+                                insideControlSB.AppendFormat(" if ( Logger.getExecutionCount(\"{5}\") != 1 ) {{ " + logReferenceString + " }} else {{ Logger.increaseExecutionCount(\"{5}\"); }}", symbolsString, symbolsString, line + 1, fileName, widgetsIDs, key, types);
+
+                            }
                             //insideControlSB.AppendFormat(" if ( Logger.getExecutionCount(\"{5}\") != 1 ) {{ " + logReferenceString + " }} else {{ Logger.increaseExecutionCount(\"{5}\"); }}", symbolsString, parentStatements, line + 1, fileName, widgetsIDs, key, types);
-                            insideControlSB.AppendFormat(" if ( Logger.getExecutionCount(\"{5}\") != 1 ) {{ " + logReferenceString + " }} else {{ Logger.increaseExecutionCount(\"{5}\"); }}", symbolsString, symbolsString, line + 1, fileName, widgetsIDs, key, types);
+                            //insideControlSB.AppendFormat(" if ( Logger.getExecutionCount(\"{5}\") != 1 ) {{ " + logReferenceString + " }} else {{ Logger.increaseExecutionCount(\"{5}\"); }}", symbolsString, symbolsString, line + 1, fileName, widgetsIDs, key, types);
                             String afterString = insideControlSB.ToString();
-                            MyWindowControl.printInBrowserConsole("afterString: " + afterString);
 
                             string tmp = string.Concat(beforeString, docContent[line]);
                             docContent[line] = string.Concat(tmp, afterString);
 
                             int endOfWhile = closestControlAncestor.GetLocation().GetLineSpan().EndLinePosition.Line;
 
-                            // at the end of the loop, we need to log the final value of the expression
+                            // at the end of the loop, we need to log the final value of the expression 
                             // This has to be done ONLY IF the program actually entered into the while loop
 
                             StringBuilder afterControlSB = new StringBuilder();
@@ -939,7 +955,15 @@ namespace TestingCodeAnalysis
                         {
                             // the while loop found is not on the same line as the symbols
                             StringBuilder useStringBuilder = new StringBuilder();
-                            useStringBuilder.AppendFormat(logReferenceString, symbolsString, parentStatements, line + 1, fileName, widgetsIDs, null, types);
+                            if (onlyParentType == SyntaxKind.ElementAccessExpression)
+                            {
+                                useStringBuilder.AppendFormat(logReferenceString, symbolsString, symbolsString, line + 1, fileName, widgetsIDs, null, types);
+                            }
+                            else
+                            {
+                                useStringBuilder.AppendFormat(logReferenceString, symbolsString, parentStatements, line + 1, fileName, widgetsIDs, null, types);
+
+                            }
                             docContent[line] = string.Concat(useStringBuilder.ToString(), docContent[line]);
                         }
                     }
@@ -950,7 +974,15 @@ namespace TestingCodeAnalysis
 
                         MyWindowControl.printInBrowserConsole("\t 888888888888888888888888888888 types: " + types);
 
-                        useStringBuilder.AppendFormat(logReferenceString, symbolsString, parentStatements, line + 1, fileName, widgetsIDs, null, types);
+                        if (onlyParentType == SyntaxKind.ElementAccessExpression)
+                        {
+                            useStringBuilder.AppendFormat(logReferenceString, symbolsString, symbolsString, line + 1, fileName, widgetsIDs, null, types);
+                        }
+                        else
+                        {
+                            useStringBuilder.AppendFormat(logReferenceString, symbolsString, parentStatements, line + 1, fileName, widgetsIDs, null, types);
+                        }
+
                         docContent[line] = string.Concat(docContent[line], useStringBuilder.ToString());
                     }
 
@@ -1096,7 +1128,7 @@ namespace TestingCodeAnalysis
 
                     int endOfWhile = closestControlAncestor.GetLocation().GetLineSpan().EndLinePosition.Line;
 
-                    // at the end of the loop, we need to log the final value of the expression
+                    // at the end of the loop, we need to log the final value of the expression 
                     // This has to be done ONLY IF the program actually entered into the while loop
 
                     StringBuilder afterWhileSB = new StringBuilder();
@@ -1573,7 +1605,7 @@ namespace TestingCodeAnalysis
 
                 CompilerParameters cp = new CompilerParameters();
 
-                // Generate an executable instead of
+                // Generate an executable instead of 
                 // a class library.
                 cp.GenerateExecutable = true;
 

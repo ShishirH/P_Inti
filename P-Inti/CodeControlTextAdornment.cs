@@ -1,7 +1,11 @@
-﻿using Microsoft.VisualStudio.Text;
+﻿using EnvDTE;
+using Microsoft.VisualStudio.Shell;
+using Microsoft.VisualStudio.Shell.Interop;
+using Microsoft.VisualStudio.Text;
 using Microsoft.VisualStudio.Text.Editor;
 using Microsoft.VisualStudio.Text.Formatting;
 using System;
+using System.IO;
 using System.Windows.Controls;
 using System.Windows.Media;
 
@@ -71,10 +75,66 @@ namespace P_Inti
         {
             foreach (ITextViewLine line in e.NewOrReformattedLines)
             {
-                this.CreateVisuals(line);
+                if (MyWindowControl.CurrentCodeControl != null)
+                    this.AddNewTextToCodeControl(line);
             }
         }
 
+        public void AddNewTextToCodeControl(ITextViewLine line)
+        {
+            bool currentInsideCodeControl = false;
+
+            string currentLineContent = line.Extent.GetText();
+
+            int lineNumber = line.Start.GetContainingLine().LineNumber;
+
+            EnvDTE.DTE dte = Package.GetGlobalService(typeof(SDTE)) as DTE;
+
+            // Get current document contents
+            EnvDTE.TextDocument textDocument = (EnvDTE.TextDocument)dte.ActiveDocument.Object("TextDocument");
+            EnvDTE.EditPoint editPoint = textDocument.StartPoint.CreateEditPoint();
+            string result = editPoint.GetText(textDocument.EndPoint);
+
+            var activePoint = ((EnvDTE.TextSelection)dte.ActiveDocument.Selection).ActivePoint;
+            
+            // Iterate over the multi line string, line by line
+            using (StringReader reader = new StringReader(result))
+            {
+                string lineOfCode = string.Empty;
+                do
+                {
+                    lineOfCode = reader.ReadLine();
+                    if (lineOfCode != null)
+                    {
+                        if (lineOfCode == currentLineContent)
+                        {
+                            break;
+                        }
+
+                        if (lineOfCode.StartsWith("// BEGIN"))
+                        {
+                            currentInsideCodeControl = true;
+                        }
+                        
+                        if (lineOfCode.StartsWith("// END"))
+                        {
+                            currentInsideCodeControl = false;
+                        }
+                    }
+
+                } while (lineOfCode != null);
+            }
+
+            // Already inside a block of // BEGIN and // END
+            if (currentInsideCodeControl)
+            {
+                // just color the new now line
+            }
+            else
+            {
+                // Add BEGIN AND END
+            }
+        }
         /// <summary>
         /// Adds the scarlet box behind the 'a' characters within the given line
         /// </summary>

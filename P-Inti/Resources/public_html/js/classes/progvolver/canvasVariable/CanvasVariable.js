@@ -209,7 +209,7 @@ class CanvasVariable {
                 fontSize: 20,
                 hasControls: false,
                 borderColor: 'white',
-                textAlign: 'left',
+                textAlign: 'center',
                 editingBorderColor: 'white',
             });
 
@@ -275,6 +275,7 @@ class CanvasVariable {
             }
 
             background.positionObjects();
+            background.positionHtmlObjects();
         })
         background.clone = function () {
             return new ProgvolverSymbol({
