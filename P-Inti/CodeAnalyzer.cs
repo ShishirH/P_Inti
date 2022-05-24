@@ -465,6 +465,7 @@ namespace TestingCodeAnalysis
             Dictionary<string, Tuple<List<ISymbol>, List<SyntaxNode>>> symbolsPerExpressions = new Dictionary<string, Tuple<List<ISymbol>, List<SyntaxNode>>>();
             foreach (KeyValuePair<string, Tuple<SyntaxNode, string>> kvp in expressions)
             {
+                MyWindowControl.printInBrowserConsole("kvp value " + kvp.Value);
                 string expressionID = kvp.Key;
                 Tuple<SyntaxNode, string> expressionTuple = kvp.Value;
                 SyntaxNode expressionNode = expressionTuple.Item1;
@@ -507,6 +508,7 @@ namespace TestingCodeAnalysis
 
                 if (theSymbols.Count() == expressionSymbols.Count())
                 {
+                    MyWindowControl.printInBrowserConsole("ttttttttt ttttt");
 
                     expressionSymbols.Sort(delegate (ISymbol x, ISymbol y)
                     {
@@ -532,25 +534,35 @@ namespace TestingCodeAnalysis
                         ISymbol symbol2 = expressionSymbols.ElementAt(i);
                         if (symbol1.Name == symbol2.Name && symbol1.Kind == symbol2.Kind && location1.Location.GetLineSpan().StartLinePosition.Line == location2.GetLineSpan().StartLinePosition.Line)
                         {
+                            MyWindowControl.printInBrowserConsole("mmmmmmmmmmmmm");
+
                             totalCoincidences++;
                         }
                         else
                         {
+                            MyWindowControl.printInBrowserConsole("bbbbbbbbbbbbbb");
+
                             MyWindowControl.printInBrowserConsole($"The symbols {symbol1} did not coincide {symbol2} at locations {location1} and {location2}");
                         }
                     }
                     if (totalCoincidences == totalSymbols)
                     {
+                        MyWindowControl.printInBrowserConsole("qqqqqqqqqqqqqqqqq");
+
                         expression = currentExpression;
                         return key;
                     }
                     else
                     {
+                        MyWindowControl.printInBrowserConsole("zzzzzzzzzzzzzzzzzzzz");
+
                         MyWindowControl.printInBrowserConsole($"Only {totalCoincidences} were found.");
                     }
                 }
                 else
                 {
+                    MyWindowControl.printInBrowserConsole("pppppppppppppppppp");
+
                     MyWindowControl.printInBrowserConsole("PROBLEM: The compared collections have different sizes");
                 }
 
@@ -721,7 +733,11 @@ namespace TestingCodeAnalysis
                 i++;
             }
 
+            MyWindowControl.printInBrowserConsole(" &*&*&*&*&* windowControl.trackedExpressions " + windowControl.trackedExpressions.Count());
+
             Dictionary<string, Tuple<List<ISymbol>, List<SyntaxNode>>> symbolsPerExpressions = getSymbolsPerExpressions(windowControl.trackedExpressions, allDocuments);
+
+            MyWindowControl.printInBrowserConsole("symbolsPerExpressions: " + symbolsPerExpressions);
 
             // scope of the symbols that compose the EXPRESSIONS dragged onto the canvas
             foreach (string expressionId in windowControl.trackedExpressionsIDs)
@@ -773,7 +789,7 @@ namespace TestingCodeAnalysis
 
                 MyWindowControl.printInBrowserConsole("\n\nOnlyParentType: " + onlyParentType.ToString());
                 MyWindowControl.printInBrowserConsole("Line number: " + line);
-                if (tuples.Count() == 1 && (onlyParentType == SyntaxKind.SimpleAssignmentExpression ||
+                if (tuples.Count == 1 && (onlyParentType == SyntaxKind.SimpleAssignmentExpression ||
                             onlyParentType == SyntaxKind.PreDecrementExpression ||
                             onlyParentType == SyntaxKind.PostDecrementExpression ||
                             onlyParentType == SyntaxKind.PreIncrementExpression ||
@@ -825,6 +841,12 @@ namespace TestingCodeAnalysis
 
                             allSymbols.Add(symbol, location);
 
+                            string symbolName = symbol.ToString();
+
+                            if (symbolName.StartsWith("["))
+                            {
+                                symbolName = symbolName.Substring(1, symbolName.Length - 1);
+                            }
 
                             MyWindowControl.printInBrowserConsole("Node: ");
                             //JsHandler.printNodeHeirarchy(node);
@@ -834,13 +856,12 @@ namespace TestingCodeAnalysis
                             MyWindowControl.printInBrowserConsole("\tnode: " + node.ToString());
                             MyWindowControl.printInBrowserConsole("\tnodeID: " + symbolID);
 
-                            symbolsString += symbol + ",";
-                            values += symbol + ",";
+                            symbolsString += symbolName + ",";
+                            values += symbolName + ",";
                             parentStatements += parentStatement + ",";
                             widgetsIDs += symbolID + ",";
                             //types += node.Kind() + ",";
                             types += parent.Kind() + ",";
-
                         }
 
 
@@ -866,6 +887,8 @@ namespace TestingCodeAnalysis
 
                     if (containingExpression != null)
                     {
+                        MyWindowControl.printInBrowserConsole("\t eeeeeeeeeee else types: " + types);
+
 
                         symbolsString += "," + containingExpression.ToString();
                         values += "," + containingExpression;
@@ -882,6 +905,7 @@ namespace TestingCodeAnalysis
                     }
                     else
                     {
+                        MyWindowControl.printInBrowserConsole("\t ffffffffff else types: " + types);
 
                         MyWindowControl.printInBrowserConsole($"No expression was found for the symbols {symbolsString} at the location {line + 1}!!!");
                         SyntaxNode firstNode = tuples.FirstOrDefault().Item1;
@@ -891,17 +915,14 @@ namespace TestingCodeAnalysis
 
                     if (controlAncestors != null && controlAncestors.Count() > 0)
                     {
+                        MyWindowControl.printInBrowserConsole("\t 00000000000 else types: " + types);
+
                         closestControlAncestor = controlAncestors.First();
                         MyWindowControl.printInBrowserConsole("closestControlAncestor.ToString(): " + closestControlAncestor.ToString());
                     }
 
                     MyWindowControl.printInBrowserConsole("parentExpressions: ");
                     MyWindowControl.printInBrowserConsole(parentStatements);
-
-                    if (symbolsString.StartsWith("["))
-                    {
-                        symbolsString = symbolsString.Substring(1, symbolsString.Length - 1);
-                    }
 
                     string logReferenceString = " Logger.logReferences(\"{5}\", \"{0}~{1}~{6}~{{0}}~{2}~{3}~{4}\", {1});";
 
@@ -915,6 +936,8 @@ namespace TestingCodeAnalysis
                         if (ancestorLine == line)
                         {
 
+                            MyWindowControl.printInBrowserConsole("\t 12121212 else types: " + types);
+
                             MyWindowControl.printInBrowserConsole("closestControlAncestor.ToString(): " + closestControlAncestor.ToString());
 
                             StringBuilder beforeControlSB = new StringBuilder();
@@ -925,11 +948,15 @@ namespace TestingCodeAnalysis
                             StringBuilder insideControlSB = new StringBuilder();
                             if (onlyParentType == SyntaxKind.ElementAccessExpression)
                             {
+                                MyWindowControl.printInBrowserConsole("\t ssssssssss else types: " + types);
+
                                 insideControlSB.AppendFormat(" if ( Logger.getExecutionCount(\"{5}\") != 1 ) {{ " + logReferenceString + " }} else {{ Logger.increaseExecutionCount(\"{5}\"); }}", symbolsString, symbolsString, line + 1, fileName, widgetsIDs, key, types);
 
                             }
                             else
                             {
+                                MyWindowControl.printInBrowserConsole("\t gggggggggg else types: " + types);
+
                                 insideControlSB.AppendFormat(" if ( Logger.getExecutionCount(\"{5}\") != 1 ) {{ " + logReferenceString + " }} else {{ Logger.increaseExecutionCount(\"{5}\"); }}", symbolsString, symbolsString, line + 1, fileName, widgetsIDs, key, types);
 
                             }
@@ -953,14 +980,20 @@ namespace TestingCodeAnalysis
                         }
                         else
                         {
+                            MyWindowControl.printInBrowserConsole("\t 555555555555 else types: " + types);
+
                             // the while loop found is not on the same line as the symbols
                             StringBuilder useStringBuilder = new StringBuilder();
                             if (onlyParentType == SyntaxKind.ElementAccessExpression)
                             {
+                                MyWindowControl.printInBrowserConsole("\t ccccccccccc else types: " + types);
+
                                 useStringBuilder.AppendFormat(logReferenceString, symbolsString, symbolsString, line + 1, fileName, widgetsIDs, null, types);
                             }
                             else
                             {
+                                MyWindowControl.printInBrowserConsole("\t vvvvvvvvv else types: " + types);
+
                                 useStringBuilder.AppendFormat(logReferenceString, symbolsString, parentStatements, line + 1, fileName, widgetsIDs, null, types);
 
                             }
@@ -976,10 +1009,14 @@ namespace TestingCodeAnalysis
 
                         if (onlyParentType == SyntaxKind.ElementAccessExpression)
                         {
+                            MyWindowControl.printInBrowserConsole("\t 66666666666 if types: " + types);
+
                             useStringBuilder.AppendFormat(logReferenceString, symbolsString, symbolsString, line + 1, fileName, widgetsIDs, null, types);
                         }
                         else
                         {
+                            MyWindowControl.printInBrowserConsole("\t 7777777777 else types: " + types);
+
                             useStringBuilder.AppendFormat(logReferenceString, symbolsString, parentStatements, line + 1, fileName, widgetsIDs, null, types);
                         }
 
