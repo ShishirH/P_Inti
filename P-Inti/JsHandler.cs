@@ -811,6 +811,7 @@ namespace P_Inti
             return sb.ToString();
         }
 
+        // LOOK AT THIS
         public static Dictionary<string, object> getScope(ISymbol symbol, Document document, MyWindowControl windowControl)
         {
 
@@ -824,6 +825,7 @@ namespace P_Inti
 
                 SyntaxNode node = syntaxReference.GetSyntax();
 
+                // LOOK AT THIS
                 int declareAtFrom = node.GetLocation().GetLineSpan().StartLinePosition.Line + 1;
                 int declareAtTo = node.GetLocation().GetLineSpan().EndLinePosition.Line + 1;
                 results.Add("declareAtFrom", declareAtFrom);

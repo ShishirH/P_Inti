@@ -838,7 +838,6 @@ namespace TestingCodeAnalysis
 
                         if (!allSymbols.ContainsKey(symbol))
                         {
-
                             allSymbols.Add(symbol, location);
 
                             string symbolName = symbol.ToString();
@@ -932,10 +931,9 @@ namespace TestingCodeAnalysis
 
                         var key = "RAND ancestor at " + fileName + " line " + (line + 1) + "_" + symbolsString + "_" + widgetsIDs + Utils.generateID();
 
-                        int ancestorLine = closestControlAncestor.GetLocation().GetLineSpan().StartLinePosition.Line;
+                        int ancestorLine = closestControlAncestor.GetLocation().GetLineSpan().StartLinePosition.Line; // LOG AT END LINE POSITION
                         if (ancestorLine == line)
                         {
-
                             MyWindowControl.printInBrowserConsole("\t 12121212 else types: " + types);
 
                             MyWindowControl.printInBrowserConsole("closestControlAncestor.ToString(): " + closestControlAncestor.ToString());
@@ -964,7 +962,7 @@ namespace TestingCodeAnalysis
                             //insideControlSB.AppendFormat(" if ( Logger.getExecutionCount(\"{5}\") != 1 ) {{ " + logReferenceString + " }} else {{ Logger.increaseExecutionCount(\"{5}\"); }}", symbolsString, symbolsString, line + 1, fileName, widgetsIDs, key, types);
                             String afterString = insideControlSB.ToString();
 
-                            string tmp = string.Concat(beforeString, docContent[line]);
+                            string tmp = string.Concat(beforeString, docContent[line]); // WHAT ABOUT IF EMPTY LINES EXIST AFTER FOR BEFORE BRACE
                             docContent[line] = string.Concat(tmp, afterString);
 
                             int endOfWhile = closestControlAncestor.GetLocation().GetLineSpan().EndLinePosition.Line;
