@@ -796,7 +796,7 @@ namespace TestingCodeAnalysis
                             onlyParentType == SyntaxKind.PostIncrementExpression ||
                             onlyParentType == SyntaxKind.ElementAccessExpression))
                 {
-
+                    MyWindowControl.printInBrowserConsole("Single tuple case: ");
                     string widgetID = onlyTuple.Item2;
                     ReferenceLocation location = onlyTuple.Item3;
                     ISymbol symbol = onlyTuple.Item4;
@@ -811,6 +811,7 @@ namespace TestingCodeAnalysis
                 {
 
 
+                    MyWindowControl.printInBrowserConsole("co-occurence tuple case: ");
 
                     // we are here in a co-ocurrence case (i.e., one or variables are being referred together)
 
@@ -843,9 +844,27 @@ namespace TestingCodeAnalysis
 
                             string symbolName = symbol.ToString();
 
+                            // TODO WHY DO THIS?
+                            if (parentStatement.StartsWith("["))
+                            {
+                                MyWindowControl.printInBrowserConsole("ASASAS Parent statement is: ");
+                                MyWindowControl.printInBrowserConsole(parentStatement);
+
+                                int startIndex = parentStatement.IndexOf('[');
+                                int endIndex = parentStatement.IndexOf(']');
+
+                                parentStatement = parentStatement.Substring(startIndex + 1, endIndex - 1);
+                                MyWindowControl.printInBrowserConsole(parentStatement);
+                            }
+
                             if (symbolName.StartsWith("["))
                             {
                                 symbolName = symbolName.Substring(1, symbolName.Length - 1);
+                            }
+                            else
+                            {
+                                string useString = processAssignmentNode(windowControl, onlyNode, location, symbolID, symbol, document);
+                                docContent[line] = string.Concat(docContent[line], useString);
                             }
 
                             MyWindowControl.printInBrowserConsole("Node: ");
@@ -866,9 +885,6 @@ namespace TestingCodeAnalysis
 
 
                     }
-
-
-
 
                     symbolsString = symbolsString.TrimEnd(',');
                     values = values.TrimEnd(',');
