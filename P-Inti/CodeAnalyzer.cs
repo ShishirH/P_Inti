@@ -835,6 +835,7 @@ namespace TestingCodeAnalysis
                         Document document = tuple.Item5;
                         SyntaxNode parent = node.Parent;
                         SyntaxKind parentType = parent.Kind();
+                        // TODO CHECK IF IT DEPENDS ON TYPE
                         string parentStatement = parent.ToString().Replace("\"", "\\\"").Replace("{", "{{").Replace("}", "}}");
 
                         if (!allSymbols.ContainsKey(symbol))
@@ -845,6 +846,7 @@ namespace TestingCodeAnalysis
                             string symbolName = symbol.ToString();
 
                             // TODO WHY DO THIS?
+                            // ONLY DO IT WHEN PARTICULAR TYPE OF EXPRESSION?? ELEMENTACCESS
                             if (parentStatement.StartsWith("["))
                             {
                                 MyWindowControl.printInBrowserConsole("ASASAS Parent statement is: ");
@@ -863,6 +865,14 @@ namespace TestingCodeAnalysis
                             }
                             else
                             {
+                                MyWindowControl.printInBrowserConsole("Size of symbols is: " + symbolsPerExpressions.Count);
+
+                                foreach (string key in symbolsPerExpressions.Keys)
+                                {
+                                    MyWindowControl.printInBrowserConsole("Key is: " + key);
+                                }
+                                symbolsPerExpressions.Remove(symbolID);
+
                                 string useString = processAssignmentNode(windowControl, onlyNode, location, symbolID, symbol, document);
                                 docContent[line] = string.Concat(docContent[line], useString);
                             }
