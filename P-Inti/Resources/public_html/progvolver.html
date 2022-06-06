@@ -549,7 +549,11 @@
                             var logFileContent = response.logFileContent.join("\n");
                             var scopeFileContent = response.scopeFileContent.join("\n");
                             var signalFileContent = response.signalFileContent.join("\n");
-                            //console.log("Signal file content is: " + response.signalFileContent.join("\n"));
+                            console.log("logFileContent is: ");
+                            console.log(logFileContent);
+                            logFileContent = preProcessLogFileForDuplicates(logFileContent);
+                            console.log("logFileContent now is: ");
+                            console.log(logFileContent);
                             processLogFiles(logFileContent, scopeFileContent, signalFileContent);
                             window.snapshotWidget && window.snapshotWidget.parseMemberValues();
                             waitingDialog.dialog('content', '<div style="text-align: center; margin-top: 20px;"><span align="center" style="font-size: 150%;">' + response.response + '</span></div>');

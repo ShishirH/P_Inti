@@ -9366,6 +9366,73 @@ function stopEditingITexts() {
     });
 }
 
+function getHashCodeForString(str) {
+    var hash = 0, i, chr;
+    if (str.length === 0) return hash;
+    for (i = 0; i < str.length; i++) {
+        chr   = str.charCodeAt(i);
+        hash  = ((hash << 5) - hash) + chr;
+        hash |= 0; // Convert to 32bit integer
+    }
+    return hash;
+}
+
+function removeLinesFromFile(data, lines = []) {
+    return data
+        .split('\n')
+        .filter((val, idx) => lines.indexOf(idx) === -1)
+        .join('\n');
+}
+
+function preProcessLogFileForDuplicates(logFileContent) {
+    let linesToRemove = [];
+    Papa.parse(logFileContent.trim(), {
+        delimiter: "~",
+        header: true,
+        dynamicTyping: true,
+        complete: function (logData) {
+
+            // index~symbols~expressions~types~values~line~file~widgetsID~time~column~row~array
+            if (logData && logData.data && logData.data[0]) {
+                console.log("logData");
+                console.log(logData);
+
+                console.log("logData.data[0]");
+                console.log(logData.data[0]);
+
+                if (!iVoLVER.util.isUndefined(logData.data[0]) && !iVoLVER.util.isUndefined(logData.data[0][window.sliderDimension]) && !iVoLVER.util.isUndefined(logData.data[logData.data.length - 1]) && !iVoLVER.util.isUndefined(logData.data[logData.data.length - 1][window.sliderDimension])) {
+
+                    let previousItemHash = 0;
+                    let previousItemId = "";
+                    let currentItemHash = -1;
+                    let currentItemId = "";
+                    logData.data.forEach(function (item, index) {
+
+                        let stringToHash = "" + item.symbols + item.expressions + item.types + item.values + item.line + item.file + item.column + item.row + item.array;
+                        if (previousItemHash === 0) {
+                            previousItemHash = getHashCodeForString(stringToHash);
+                            previousItemId = item.widgetsID;
+                        } else {
+                            currentItemHash = getHashCodeForString(stringToHash);
+                            currentItemId = item.widgetsID;
+                            if (previousItemHash === currentItemHash) { // duplicate lines
+                                if (currentItemId !== previousItemId) { // line with different widgets ID causing the duplicate bug.
+                                    // remove line from the file, accounting for the header which is the first line
+                                    linesToRemove.push(index + 1);
+                                }
+                            }
+                            previousItemHash = currentItemHash;
+                            previousItemId = currentItemId;
+                        }
+                    });
+
+                }
+            }
+        }
+    });
+    return removeLinesFromFile(logFileContent, linesToRemove);
+}
+
 function processLogFiles(logFileContent, scopeFileContent, signalFileContent) {
 
     window.minTimeSignalData = Infinity;
