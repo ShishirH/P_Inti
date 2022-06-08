@@ -821,8 +821,8 @@ namespace TestingCodeAnalysis
                     string widgetsIDs = "";
                     string types = "";
 
-
                     Dictionary<ISymbol, ReferenceLocation> allSymbols = new Dictionary<ISymbol, ReferenceLocation>();
+                    Dictionary<ISymbol, Document> symbolDocument = new Dictionary<ISymbol, Document>();
 
                     foreach (Tuple<SyntaxNode, string, ReferenceLocation, ISymbol, Document> tuple in tuples)
                     {
@@ -842,6 +842,7 @@ namespace TestingCodeAnalysis
                         {
 
                             allSymbols.Add(symbol, location);
+                            symbolDocument.Add(symbol, document);
 
                             string symbolName = symbol.ToString();
 
@@ -857,6 +858,12 @@ namespace TestingCodeAnalysis
 
                                 parentStatement = parentStatement.Substring(startIndex + 1, endIndex - 1);
                                 MyWindowControl.printInBrowserConsole(parentStatement);
+                            }
+
+                            if (parentStatement.StartsWith("="))
+                            {
+                                parentStatement = parentStatement.Replace('=', ' ');
+                                parentStatement = parentStatement.Trim();
                             }
 
                             if (symbolName.StartsWith("["))
@@ -966,11 +973,14 @@ namespace TestingCodeAnalysis
 
                             MyWindowControl.printInBrowserConsole("closestControlAncestor.ToString(): " + closestControlAncestor.ToString());
 
+                            String beforeString = "";
+                            MyWindowControl.printInBrowserConsole("`````` onlyParentType " + onlyParentType);
+                            
                             StringBuilder beforeControlSB = new StringBuilder();
                             //beforeControlSB.AppendFormat(logReferenceString, symbolsString, parentStatements, line + 1, fileName, widgetsIDs, key, types);
                             beforeControlSB.AppendFormat(logReferenceString, symbolsString, symbolsString, line + 1, fileName, widgetsIDs, key, types);
-                            String beforeString = beforeControlSB.ToString();
-
+                            beforeString = beforeControlSB.ToString();
+                          
                             StringBuilder insideControlSB = new StringBuilder();
                             if (onlyParentType == SyntaxKind.ElementAccessExpression)
                             {
@@ -1007,6 +1017,7 @@ namespace TestingCodeAnalysis
                         else
                         {
                             MyWindowControl.printInBrowserConsole("\t 555555555555 else types: " + types);
+                            MyWindowControl.printInBrowserConsole("`````` else onlyParentType " + onlyParentType);
 
                             // the while loop found is not on the same line as the symbols
                             StringBuilder useStringBuilder = new StringBuilder();
@@ -1169,6 +1180,7 @@ namespace TestingCodeAnalysis
                 string key = "Expression at " + cleanFileName + "_" + line + "_" + expression + "_" + Utils.generateID();
                 string logReferenceString = " Logger.logReferences(\"{5}\", \"{0}~{1}~{6}~{{0}}~{2}~{3}~{4}\", {1});";
 
+                MyWindowControl.printInBrowserConsole("$^%%% expression " + expression.Kind());
                 if (controlAncestors.Count() > 0)
                 {
 
@@ -1177,10 +1189,15 @@ namespace TestingCodeAnalysis
 
                     // key += closestAncestor.ToString();
 
-                    StringBuilder beforeWhileSB = new StringBuilder();
-                    //beforeWhileSB.AppendFormat(logReferenceString, symbolsString, parentStatements, line + 1, cleanFileName, widgetIDs, key, types);
-                    beforeWhileSB.AppendFormat(logReferenceString, symbolsString, symbolsString, line + 1, cleanFileName, widgetIDs, key, types);
-                    String beforeString = beforeWhileSB.ToString();
+                    MyWindowControl.printInBrowserConsole("$^% expression " + expression.Kind());
+                    String beforeString = "";
+                    if (expression.Kind() != SyntaxKind.DeclarationExpression)
+                    {
+                        StringBuilder beforeWhileSB = new StringBuilder();
+                        //beforeWhileSB.AppendFormat(logReferenceString, symbolsString, parentStatements, line + 1, cleanFileName, widgetIDs, key, types);
+                        beforeWhileSB.AppendFormat(logReferenceString, symbolsString, symbolsString, line + 1, cleanFileName, widgetIDs, key, types);
+                        beforeString = beforeWhileSB.ToString();
+                    }
 
                     StringBuilder insideWhileSB = new StringBuilder();
                     insideWhileSB.AppendFormat(" if ( Logger.getExecutionCount(\"{5}\") != 1 ) {{ " + logReferenceString + " }} else {{ Logger.increaseExecutionCount(\"{5}\"); }}", symbolsString, parentStatements, line + 1, cleanFileName, widgetIDs, key, types);
