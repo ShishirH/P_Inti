@@ -984,6 +984,10 @@ namespace TestingCodeAnalysis
                             String beforeString = "";
                             MyWindowControl.printInBrowserConsole("`````` onlyParentType " + onlyParentType);
 
+
+                            bool areSymbolsInScopeBefore = true;
+                            bool areSymbolsInScopeAfter = true;
+
                             foreach(ISymbol symbol in symbolsWithScope.Keys)
                             {
                                 Dictionary<string, object> scopeDict = symbolsWithScope[symbol];
@@ -992,16 +996,36 @@ namespace TestingCodeAnalysis
 
                                 MyWindowControl.printInBrowserConsole("`````` symbol here is: " + symbol.Name);
                                 MyWindowControl.printInBrowserConsole("`````` declaredLine here is: " + declaredLineFrom);
+                                MyWindowControl.printInBrowserConsole("`````` declaredLineTo here is: " + declaredLineTo);
+                                MyWindowControl.printInBrowserConsole("`````` Line here is: " + line);
 
-                                if (declaredLineFrom < line + 1)
+                                if (declaredLineFrom < (line + 1))
                                 {
                                     symbolsStringWithScope += symbol.Name + ",";
+                                } 
+                                else
+                                {
+                                    areSymbolsInScopeBefore = false;
                                 }
 
                                 if (declaredLineTo >= endOfWhile)
                                 {
                                     symbolsStringWithScopeAfter += symbol.Name + ",";
                                 }
+                                else
+                                {
+                                    areSymbolsInScopeAfter = false;
+                                }
+                            }
+
+                            if (!areSymbolsInScopeBefore)
+                            {
+                                symbolsStringWithScope = "";
+                            }
+
+                            if (!areSymbolsInScopeAfter)
+                            {
+                                symbolsStringWithScopeAfter = "";
                             }
 
                             if (symbolsStringWithScope != "")
@@ -1025,7 +1049,7 @@ namespace TestingCodeAnalysis
                             }
 
 
-                            key = "RAND ancestor at " + fileName + " line " + (line + 1) + "_" + symbolsStringWithScope + "_" + widgetsIDs + Utils.generateID();
+                            //key = "RAND ancestor at " + fileName + " line " + (line + 1) + "_" + symbolsStringWithScope + "_" + widgetsIDs + Utils.generateID();
                             MyWindowControl.printInBrowserConsole("`````` Key is now!!!: " + key);
                             MyWindowControl.printInBrowserConsole("`````` Types !!!: " + types);
 
@@ -1443,7 +1467,7 @@ namespace TestingCodeAnalysis
                         logFileContent = new string[] { "" };
                         scopeFileContent = new string[] { "" };
                         signalFileContent = new string[] { "" };
-                        stringResult = "The following <b>problems</b> arose when trying to compile the program:<br/><br/>";
+                        stringResult = "The   following <b>problems</b> arose when trying to compile the program:<br/><br/>";
                         int count = 1;
 
                         IEnumerable<Diagnostic> failures = result.Diagnostics;

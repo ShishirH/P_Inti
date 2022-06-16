@@ -17,13 +17,23 @@ namespace ConsoleApp1 {
 
         public static Dictionary<string, int> timesCounter = new Dictionary<string, int>();
         public static int getExecutionCount(string key) {
-            if (key != null) {
+            if (key != null && !timesCounter.ContainsKey(key))
+            {
+                timesCounter.Add(key, 0);
+            }
+
+            else if (key != null) {
                 return timesCounter[key];
             }
             return -1;
         }
         public static void increaseExecutionCount(string key) {
-            if (key != null) {
+            if (key != null && !timesCounter.ContainsKey(key))
+            {
+                timesCounter.Add(key, 0);
+            }
+
+            else if (key != null) {
                 timesCounter[key]++;
             }
         }
