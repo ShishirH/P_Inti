@@ -973,7 +973,19 @@ namespace TestingCodeAnalysis
                         MyWindowControl.printInBrowserConsole("`````` Key was: " + key);
 
 
-                        int ancestorLine = closestControlAncestor.GetLocation().GetLineSpan().StartLinePosition.Line;
+                        MyWindowControl.printInBrowserConsole("||||||closestControlAncestor.ToString(): " + closestControlAncestor.ToString());
+                        MyWindowControl.printInBrowserConsole("||||||closestControlAncestor.GetLocation() " + closestControlAncestor.GetLocation().ToString());
+                        MyWindowControl.printInBrowserConsole("||||||closestControlAncestor.GetLocation().GetLineSpan() " + closestControlAncestor.GetLocation().GetLineSpan().ToString()); ;
+                        MyWindowControl.printInBrowserConsole("||||||closestControlAncestor.GetLocation().GetLineSpan().StartLinePosition.Line " + closestControlAncestor.GetLocation().GetLineSpan().StartLinePosition.Line.ToString()); ;
+
+                        //braces not on same line fix
+                        string closestControlAncestorStr = closestControlAncestor.ToString();
+                        int bracesOffset = GetLineNumber(closestControlAncestorStr, "{") - 1;
+
+                        MyWindowControl.printInBrowserConsole("||||||Braces offset: " + bracesOffset); ;
+
+                        int ancestorLine = closestControlAncestor.GetLocation().GetLineSpan().StartLinePosition.Line;// + bracesOffset;
+                        //line += bracesOffset;
                         if (ancestorLine == line)
                         {
 
@@ -1108,6 +1120,7 @@ namespace TestingCodeAnalysis
                         {
                             MyWindowControl.printInBrowserConsole("\t 555555555555 else types: " + types);
                             MyWindowControl.printInBrowserConsole("`````` else onlyParentType " + onlyParentType);
+                            MyWindowControl.printInBrowserConsole("||||||Braces offset: " + bracesOffset); ;
 
                             // the while loop found is not on the same line as the symbols
                             StringBuilder useStringBuilder = new StringBuilder();
@@ -1180,6 +1193,23 @@ namespace TestingCodeAnalysis
 
             return compileModifiedFiles(outputFolder, out logFileContent, out useFileContent, allContents, logFileName, runMode, windowControl, out success, syntaxTrees);
 
+        }
+
+        // In a multi line string text, get the line number of another string lineToFind.
+        private static int GetLineNumber(string text, string lineToFind, StringComparison comparison = StringComparison.CurrentCulture)
+        {
+            int lineNum = 0;
+            using (StringReader reader = new StringReader(text))
+            {
+                string line;
+                while ((line = reader.ReadLine()) != null)
+                {
+                    lineNum++;
+                    if (line.Contains(lineToFind))
+                        return lineNum;
+                }
+            }
+            return -1;
         }
 
         private static void saveScopeFile(List<string> scopeFileLines, string fileName, string outputFolder)
