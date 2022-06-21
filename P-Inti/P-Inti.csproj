@@ -83,6 +83,7 @@
     <Compile Include="IDebuggerInternalEvents.cs" />
     <Compile Include="IMAGEINFO_TYPE.cs" />
     <Compile Include="JsHandler.cs" />
+    <Compile Include="LineNumberProcessAssignmentNode.cs" />
     <Compile Include="LineText.cs" />
     <Compile Include="MyWindow.cs" />
     <Compile Include="MyWindowCommand.cs" />

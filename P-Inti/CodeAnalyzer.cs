@@ -27,6 +27,7 @@ using System.Windows.Media.Animation;
 using CefSharp;
 using Microsoft.VisualStudio.Settings;
 using Microsoft.VisualStudio.Text.Tagging;
+using System.Collections.Specialized;
 
 namespace TestingCodeAnalysis
 {
@@ -826,6 +827,7 @@ namespace TestingCodeAnalysis
                     string symbolsStringWithScope = "";
                     string symbolsStringWithScopeAfter = "";
                     Dictionary<ISymbol, Dictionary<string, object>> symbolsWithScope = new Dictionary<ISymbol, Dictionary<string, object>>();
+                    List<LineNumberProcessAssignmentNode> lineProcessingNodeString = new List<LineNumberProcessAssignmentNode>();
 
                     foreach (Tuple<SyntaxNode, string, ReferenceLocation, ISymbol, Document> tuple in tuples)
                     {
@@ -885,7 +887,11 @@ namespace TestingCodeAnalysis
                                 symbolsPerExpressions.Remove(symbolID);
 
                                 string useString = processAssignmentNode(windowControl, onlyNode, location, symbolID, symbol, document);
-                                docContent[line] = string.Concat(docContent[line], useString);
+
+                                // saving it to a dictionary, which will be accessed and the strings appended to the docContent once the bracesOffset is obtained.
+                                
+                                lineProcessingNodeString.Add(new LineNumberProcessAssignmentNode(line, useString));
+                                //docContent[line] = string.Concat(docContent[line], useString);
                             }
 
                             MyWindowControl.printInBrowserConsole("Node: ");
@@ -982,9 +988,26 @@ namespace TestingCodeAnalysis
                         string closestControlAncestorStr = closestControlAncestor.ToString();
                         int bracesOffset = GetLineNumber(closestControlAncestorStr, "{") - 1;
 
-                        MyWindowControl.printInBrowserConsole("||||||Braces offset: " + bracesOffset); ;
+                        // Add the earlier info from processAssignmentNode
+                        foreach (LineNumberProcessAssignmentNode lineNumberProcessAssignment in lineProcessingNodeString)
+                        {
+                            int lineNumber = lineNumberProcessAssignment.LineNumber;
+                            string value = lineNumberProcessAssignment.ProcessAssignmentNodeString;
 
-                        int ancestorLine = closestControlAncestor.GetLocation().GetLineSpan().StartLinePosition.Line;// + bracesOffset;
+                            int linePosition = lineNumber + bracesOffset;
+                            if (linePosition == endOfWhile)
+                            {
+                                docContent[lineNumber + bracesOffset] = string.Concat(value, docContent[lineNumber + bracesOffset]);
+                            }
+                            else
+                            {
+                                docContent[lineNumber + bracesOffset] = string.Concat(docContent[lineNumber + bracesOffset], value);
+                            }
+                        }
+
+                        MyWindowControl.printInBrowserConsole("||||||Braces offset: " + bracesOffset);
+
+                        int ancestorLine = closestControlAncestor.GetLocation().GetLineSpan().StartLinePosition.Line + bracesOffset;
                         //line += bracesOffset;
                         if (ancestorLine == line)
                         {
@@ -1073,14 +1096,16 @@ namespace TestingCodeAnalysis
                                 beforeControlSB.AppendFormat(logReferenceString, symbolsStringWithScope, symbolsStringWithScope, line + 1, fileName, widgetsIDs, key, types);
                                 MyWindowControl.printInBrowserConsole("`````` logReferenceString !!!: " + logReferenceString);
                                 MyWindowControl.printInBrowserConsole("`````` symbolsStringWithScope !!!: " + symbolsStringWithScope);
-                                MyWindowControl.printInBrowserConsole("`````` line + 1 !!!: " + line + 1);
+                                MyWindowControl.printInBrowserConsole("`````` line + 1 !!!: " + (line + 1));
                                 MyWindowControl.printInBrowserConsole("`````` fileName !!!: " + fileName);
                                 MyWindowControl.printInBrowserConsole("`````` widgetsIDs !!!: " + widgetsIDs);
 
                                 beforeString = beforeControlSB.ToString();
+                                MyWindowControl.printInBrowserConsole("***** beforeString " + beforeString);
                             }
 
                             StringBuilder insideControlSB = new StringBuilder();
+
                             if (onlyParentType == SyntaxKind.ElementAccessExpression)
                             {
                                 MyWindowControl.printInBrowserConsole("\t ssssssssss else types: " + types);
@@ -1098,10 +1123,13 @@ namespace TestingCodeAnalysis
                             //insideControlSB.AppendFormat(" if ( Logger.getExecutionCount(\"{5}\") != 1 ) {{ " + logReferenceString + " }} else {{ Logger.increaseExecutionCount(\"{5}\"); }}", symbolsString, parentStatements, line + 1, fileName, widgetsIDs, key, types);
                             //insideControlSB.AppendFormat(" if ( Logger.getExecutionCount(\"{5}\") != 1 ) {{ " + logReferenceString + " }} else {{ Logger.increaseExecutionCount(\"{5}\"); }}", symbolsString, symbolsString, line + 1, fileName, widgetsIDs, key, types);
 
+                            MyWindowControl.printInBrowserConsole("***** insideControlSB " + insideControlSB.ToString());
+
                             String afterString = insideControlSB.ToString();
 
-                            string tmp = string.Concat(beforeString, docContent[line]);
-                            docContent[line] = string.Concat(tmp, afterString);
+                            string tmp = string.Concat(beforeString, docContent[line + bracesOffset]);
+                            MyWindowControl.printInBrowserConsole("***** tmp " + tmp);
+                            docContent[line + bracesOffset] = string.Concat(tmp, afterString);
 
 
                             // at the end of the loop, we need to log the final value of the expression 
@@ -1112,6 +1140,7 @@ namespace TestingCodeAnalysis
                                 StringBuilder afterControlSB = new StringBuilder();
                                 //afterControlSB.AppendFormat(" if ( Logger.getExecutionCount(\"{5}\") > 1 ) {{ " + logReferenceString + " }}", symbolsString, parentStatements, line + 1, fileName, widgetsIDs, key, types);
                                 afterControlSB.AppendFormat(" if ( Logger.getExecutionCount(\"{5}\") > 1 ) {{ " + logReferenceString + " }}", symbolsStringWithScopeAfter, symbolsStringWithScopeAfter, line + 1, fileName, widgetsIDs, key, types);
+                                MyWindowControl.printInBrowserConsole("***** afterControlSB " + afterControlSB);
                                 docContent[endOfWhile] = docContent[endOfWhile] + afterControlSB.ToString();
                             }
 
@@ -1128,16 +1157,22 @@ namespace TestingCodeAnalysis
                             {
                                 MyWindowControl.printInBrowserConsole("\t ccccccccccc else types: " + types);
 
-                                useStringBuilder.AppendFormat(logReferenceString, symbolsString, symbolsString, line + 1, fileName, widgetsIDs, null, types);
+                                useStringBuilder.AppendFormat(logReferenceString, symbolsString, symbolsString, line + 1 + bracesOffset, fileName, widgetsIDs, null, types);
                             }
                             else
                             {
                                 MyWindowControl.printInBrowserConsole("\t vvvvvvvvv else types: " + types);
 
-                                useStringBuilder.AppendFormat(logReferenceString, symbolsString, parentStatements, line + 1, fileName, widgetsIDs, null, types);
+                                useStringBuilder.AppendFormat(logReferenceString, symbolsString, parentStatements, line + 1 + bracesOffset, fileName, widgetsIDs, null, types);
 
                             }
-                            docContent[line] = string.Concat(useStringBuilder.ToString(), docContent[line]);
+
+                            if (bracesOffset > 0)
+                            {
+                                bracesOffset += 1;
+                            }
+
+                            docContent[line + bracesOffset] = string.Concat(useStringBuilder.ToString(), docContent[line + bracesOffset]);
                         }
                     }
                     else
