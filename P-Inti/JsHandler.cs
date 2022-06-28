@@ -501,6 +501,8 @@ namespace P_Inti
 
                 editorState.TryGetValue("caretPosition", out object caret);
                 int caretPosition = (int)caret;
+                MyWindowControl.printInBrowserConsole("!!!!!!!!! caretPosition is " + caretPosition);
+
 
                 editorState.TryGetValue("fileName", out object file);
                 string fileName = (string)file;
@@ -530,12 +532,12 @@ namespace P_Inti
                         // finding the symbol at the given position in the given file
                         ISymbol symbol = CodeAnalyzer.findSymbolInFile(fileName, caretPosition, allDocuments);
 
-                        MyWindowControl.printInBrowserConsole("()()()()() Symbol is " + symbol.ToString());
-                        MyWindowControl.printInBrowserConsole("()()()()() Symbol name is " + symbol.Name.ToString());
-                        MyWindowControl.printInBrowserConsole("()()()()() Symbol Kind is " + symbol.Kind.ToString());
-                        MyWindowControl.printInBrowserConsole("()()()()() Symbol OriginalDefinition is " + symbol.OriginalDefinition.ToString());
-                        MyWindowControl.printInBrowserConsole("()()()()() Symbol OriginalDefinition is " + symbol.OriginalDefinition.ToString());
-                        MyWindowControl.printInBrowserConsole("()()()()() Symbol GetType is " + symbol.GetType().ToString());
+                        //MyWindowControl.printInBrowserConsole("()()()()() Symbol is " + symbol.ToString());
+                        //MyWindowControl.printInBrowserConsole("()()()()() Symbol name is " + symbol.Name.ToString());
+                        //MyWindowControl.printInBrowserConsole("()()()()() Symbol Kind is " + symbol.Kind.ToString());
+                        //MyWindowControl.printInBrowserConsole("()()()()() Symbol OriginalDefinition is " + symbol.OriginalDefinition.ToString());
+                        //MyWindowControl.printInBrowserConsole("()()()()() Symbol OriginalDefinition is " + symbol.OriginalDefinition.ToString());
+                        //MyWindowControl.printInBrowserConsole("()()()()() Symbol GetType is " + symbol.GetType().ToString());
 
 
                         // Element dropped onto the canvas is a method parameter.
@@ -547,18 +549,34 @@ namespace P_Inti
                             methodName = methodName.Substring(methodName.LastIndexOf(".") + 1, methodName.IndexOf("(") - methodName.LastIndexOf(".") - 1).Trim();
 
                             ClassDeclarationSyntax myClass = allDocuments[fileName].GetSyntaxTreeAsync().Result.GetRoot().DescendantNodes().OfType<ClassDeclarationSyntax>()
-                            .FirstOrDefault(c => c.Identifier.Text == containingClassName);
+                                                                .FirstOrDefault(c => c.Identifier.Text == containingClassName);
 
                             if (myClass != null)
                             {
-                                IEnumerable<InvocationExpressionSyntax> methodInvocations = allDocuments[fileName].GetSyntaxRootAsync().Result.DescendantNodes().OfType<InvocationExpressionSyntax>().Where(m => m.Expression.ToFullString().Trim() == methodName);
+                                IEnumerable<InvocationExpressionSyntax> methodInvocations = allDocuments[fileName].GetSyntaxRootAsync().Result.DescendantNodes().OfType<InvocationExpressionSyntax>()
+                                .Where(m => m.Expression.ToFullString().Trim() == methodName);
 
-                                foreach(InvocationExpressionSyntax methodInvocation in methodInvocations)
+                                foreach (InvocationExpressionSyntax methodInvocation in methodInvocations)
                                 {
                                     MyWindowControl.printInBrowserConsole("123123 methodInvocation is ");
                                     
                                     MyWindowControl.printInBrowserConsole("Method arguments are: " + methodInvocation.ArgumentList.ToFullString());
+                                    MyWindowControl.printInBrowserConsole("Method tree : " + methodInvocation.ArgumentList.Arguments.First().Span.Start);
+
+                                    ISymbol methodArgumentSymbol = CodeAnalyzer.findSymbolInFile(fileName, methodInvocation.ArgumentList.Arguments.First().Span.Start, allDocuments);
+
+                                    if (methodArgumentSymbol != null)
+                                    {
+                                        MyWindowControl.printInBrowserConsole("00000 methodArgumentSymbol is ");
+                                        MyWindowControl.printInBrowserConsole(methodArgumentSymbol.ToString());
+                                        MyWindowControl.printInBrowserConsole(methodArgumentSymbol.Locations.FirstOrDefault().ToString());
+                                        MyWindowControl.printInBrowserConsole(methodArgumentSymbol.ToString());
+                                        MyWindowControl.printInBrowserConsole(methodArgumentSymbol.ToString());
+
+                                    }
+
                                     MyWindowControl.printInBrowserConsole("Method arguments FullSpan is: " + methodInvocation.ArgumentList.FullSpan.ToString());
+                                    //methodInvocation.ArgumentList.Arguments.FirstOrDefault()
                                     
                                     //MyWindowControl.printInBrowserConsole("methodInvocation.Expression.ToFullString() " + methodInvocation.Expression.ToFullString());
                                     //MyWindowControl.printInBrowserConsole("methodInvocation.FullSpan.ToFullString() " + methodInvocation.FullSpan.ToString());
@@ -576,7 +594,7 @@ namespace P_Inti
                                 {
                                     SeparatedSyntaxList<ParameterSyntax> parameters = myMethod.ParameterList.Parameters;
 
-                                    foreach(ParameterSyntax parameter in parameters)
+                                    foreach (ParameterSyntax parameter in parameters)
                                     {
                                         MyWindowControl.printInBrowserConsole("()()()()() Parameter " + parameter.ToFullString());
                                     }
