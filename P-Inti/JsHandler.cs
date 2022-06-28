@@ -492,22 +492,18 @@ namespace P_Inti
 
         public Dictionary<string, object> processDropOnCanvas(object arg)
         {
-            MyWindowControl.printInBrowserConsole("!!!!!!!!! Entered method");
 
             Dictionary<string, object> editorState = null;
             if (windowControl.projectOpen())
             {
-                MyWindowControl.printInBrowserConsole("!!!!!!!!! Project is open");
 
                 editorState = getEditorState(arg);
 
                 editorState.TryGetValue("caretPosition", out object caret);
                 int caretPosition = (int)caret;
-                MyWindowControl.printInBrowserConsole("!!!!!!!!! Caret position is " + caretPosition);
 
                 editorState.TryGetValue("fileName", out object file);
                 string fileName = (string)file;
-                MyWindowControl.printInBrowserConsole("!!!!!!!!! Filename is " + fileName);
 
                 theDispatcher.Invoke(new Action(() => {
 
@@ -533,6 +529,63 @@ namespace P_Inti
 
                         // finding the symbol at the given position in the given file
                         ISymbol symbol = CodeAnalyzer.findSymbolInFile(fileName, caretPosition, allDocuments);
+
+                        MyWindowControl.printInBrowserConsole("()()()()() Symbol is " + symbol.ToString());
+                        MyWindowControl.printInBrowserConsole("()()()()() Symbol name is " + symbol.Name.ToString());
+                        MyWindowControl.printInBrowserConsole("()()()()() Symbol Kind is " + symbol.Kind.ToString());
+                        MyWindowControl.printInBrowserConsole("()()()()() Symbol OriginalDefinition is " + symbol.OriginalDefinition.ToString());
+                        MyWindowControl.printInBrowserConsole("()()()()() Symbol OriginalDefinition is " + symbol.OriginalDefinition.ToString());
+                        MyWindowControl.printInBrowserConsole("()()()()() Symbol GetType is " + symbol.GetType().ToString());
+
+
+                        // Element dropped onto the canvas is a method parameter.
+                        if (symbol.Kind == SymbolKind.Parameter)
+                        {
+                            string containingClassName = symbol.ContainingType != null ? symbol.ContainingType.ToString(): "";
+                            containingClassName = containingClassName.Substring(containingClassName.LastIndexOf(".") + 1).Trim();
+                            string methodName = symbol.ContainingSymbol.ToString();
+                            methodName = methodName.Substring(methodName.LastIndexOf(".") + 1, methodName.IndexOf("(") - methodName.LastIndexOf(".") - 1).Trim();
+
+                            ClassDeclarationSyntax myClass = allDocuments[fileName].GetSyntaxTreeAsync().Result.GetRoot().DescendantNodes().OfType<ClassDeclarationSyntax>()
+                            .FirstOrDefault(c => c.Identifier.Text == containingClassName);
+
+                            if (myClass != null)
+                            {
+                                IEnumerable<InvocationExpressionSyntax> methodInvocations = allDocuments[fileName].GetSyntaxRootAsync().Result.DescendantNodes().OfType<InvocationExpressionSyntax>().Where(m => m.Expression.ToFullString().Trim() == methodName);
+
+                                foreach(InvocationExpressionSyntax methodInvocation in methodInvocations)
+                                {
+                                    MyWindowControl.printInBrowserConsole("123123 methodInvocation is ");
+                                    
+                                    MyWindowControl.printInBrowserConsole("Method arguments are: " + methodInvocation.ArgumentList.ToFullString());
+                                    MyWindowControl.printInBrowserConsole("Method arguments FullSpan is: " + methodInvocation.ArgumentList.FullSpan.ToString());
+                                    
+                                    //MyWindowControl.printInBrowserConsole("methodInvocation.Expression.ToFullString() " + methodInvocation.Expression.ToFullString());
+                                    //MyWindowControl.printInBrowserConsole("methodInvocation.FullSpan.ToFullString() " + methodInvocation.FullSpan.ToString());
+                                    //MyWindowControl.printInBrowserConsole("methodInvocation.Language.ToFullString() " + methodInvocation.Language.ToString());
+                                    //MyWindowControl.printInBrowserConsole("methodInvocation.Parent.ToFullString() " + methodInvocation.Parent.ToFullString());
+                                    //MyWindowControl.printInBrowserConsole("methodInvocation.ArgumentList.ToFullString() " + methodInvocation.ArgumentList.ToFullString());
+
+                                }
+
+                                MethodDeclarationSyntax myMethod = myClass.Members.Where(m => m.Kind() == SyntaxKind.MethodDeclaration)
+                                                    .OfType<MethodDeclarationSyntax>()
+                                                    .FirstOrDefault(m => m.Identifier.Text == methodName);
+
+                                if (myMethod != null)
+                                {
+                                    SeparatedSyntaxList<ParameterSyntax> parameters = myMethod.ParameterList.Parameters;
+
+                                    foreach(ParameterSyntax parameter in parameters)
+                                    {
+                                        MyWindowControl.printInBrowserConsole("()()()()() Parameter " + parameter.ToFullString());
+                                    }
+                                }
+                            }
+
+                            //MyWindowControl.printInBrowserConsole("()()()()() containingClassName is " + containingClassName);
+                            //MyWindowControl.printInBrowserConsole("()()()()() methodName is " + methodName);
+                        }
 
                         bool symbolFound = symbol != null;
 
@@ -674,6 +727,7 @@ namespace P_Inti
                                 i++;
                             }
 
+                            MyWindowControl.printInBrowserConsole("JSHandler getScope");
                             Dictionary<string, object> scopeResults = getScope(symbol, document, windowControl);
                             foreach (KeyValuePair<string, object> kvp in scopeResults)
                             {
