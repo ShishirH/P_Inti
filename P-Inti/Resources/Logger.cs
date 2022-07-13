@@ -43,7 +43,7 @@ namespace ConsoleApp1 {
             dt1 = nanoTime();
             sw.Start();
             logFile = new System.IO.StreamWriter(System.IO.File.Create(fileName + ".log"));
-            logFile.WriteLine("index~symbols~expressions~types~values~line~file~widgetsID~time~column~row~array");
+            logFile.WriteLine("index~symbols~expressions~types~values~line~file~widgetsID~time~column~row~array~memoryAddress");
 
             signalFile = new System.IO.StreamWriter(System.IO.File.Create(fileName + ".signal"));
             signalFile.WriteLine("file~line~widgetsID~time");
@@ -228,7 +228,7 @@ namespace ConsoleApp1 {
         public static bool logReference(String logString, object o) {
             StringBuilder sb = new StringBuilder();
             sb.AppendFormat(logString, o);
-            logFile.WriteLine((logIndex++) + "~" + sb.ToString() + "~" + (nanoTime() - dt1));
+            logFile.WriteLine((logIndex++) + "~" + sb.ToString() + "~" + (nanoTime() - dt1) + "~" + o.GetHashCode());
             //logFile.WriteLine((logIndex++) + "~" + sb.ToString() + "~" + (nanoTime()));
             return true;
         }

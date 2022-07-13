@@ -678,6 +678,11 @@ namespace TestingCodeAnalysis
 
         public static string getSymbolScopeString(string widgetID, ISymbol symbol, Dictionary<string, object> scopeInfo)
         {
+            if (!scopeInfo.ContainsKey("initialValue"))
+            {
+                scopeInfo["initialValue"] = null;
+            }
+
             return $"{symbol}~{scopeInfo["initialValue"]}~{widgetID}~{scopeInfo["declareAtFrom"]}~{scopeInfo["declareAtTo"]}~{scopeInfo["scopeFrom"]}~{scopeInfo["scopeTo"]}~{scopeInfo["declarator"]}~{scopeInfo["filePath"]}";
         }
 
@@ -851,6 +856,11 @@ namespace TestingCodeAnalysis
                             symbolsWithScope.Add(symbol, JsHandler.getScope(symbol, document, windowControl));
 
                             string symbolName = symbol.ToString();
+                            // TODO LOOK HERE
+                            MyWindowControl.printInBrowserConsole("XXXXXX Symbolname !!!: " + symbolName);
+                            MyWindowControl.printInBrowserConsole("XXXXXX SymbolKind !!!: " + symbol.Kind);
+                            MyWindowControl.printInBrowserConsole("XXXXXX SymbolContainingType !!!: " + symbol.ContainingType);
+                            //MyWindowControl.printInBrowserConsole("XXXXXX SymbolEverything !!!: " + symbol.);
 
                             // TODO WHY DO THIS?
                             // ONLY DO IT WHEN PARTICULAR TYPE OF EXPRESSION?? ELEMENTACCESS
@@ -1099,6 +1109,7 @@ namespace TestingCodeAnalysis
                                 MyWindowControl.printInBrowserConsole("`````` line + 1 !!!: " + (line + 1));
                                 MyWindowControl.printInBrowserConsole("`````` fileName !!!: " + fileName);
                                 MyWindowControl.printInBrowserConsole("`````` widgetsIDs !!!: " + widgetsIDs);
+                                MyWindowControl.printInBrowserConsole("XXXXXX Parent statement !!!: " + parentStatements);
 
                                 beforeString = beforeControlSB.ToString();
                                 MyWindowControl.printInBrowserConsole("***** beforeString " + beforeString);
@@ -1141,6 +1152,7 @@ namespace TestingCodeAnalysis
                                 //afterControlSB.AppendFormat(" if ( Logger.getExecutionCount(\"{5}\") > 1 ) {{ " + logReferenceString + " }}", symbolsString, parentStatements, line + 1, fileName, widgetsIDs, key, types);
                                 afterControlSB.AppendFormat(" if ( Logger.getExecutionCount(\"{5}\") > 1 ) {{ " + logReferenceString + " }}", symbolsStringWithScopeAfter, symbolsStringWithScopeAfter, line + 1, fileName, widgetsIDs, key, types);
                                 MyWindowControl.printInBrowserConsole("***** afterControlSB " + afterControlSB);
+                                MyWindowControl.printInBrowserConsole("+++++ Parent statement !!!: " + parentStatements);
                                 docContent[endOfWhile] = docContent[endOfWhile] + afterControlSB.ToString();
                             }
 
@@ -1324,6 +1336,7 @@ namespace TestingCodeAnalysis
                     widgetIDs += windowControl.trackedSymbols.FirstOrDefault(s => s.Value.Name == symbol.Name && s.Value.Kind == symbol.Kind && s.Value.Locations.FirstOrDefault().SourceSpan.Start == symbol.Locations.FirstOrDefault().SourceSpan.Start && s.Value.Locations.FirstOrDefault().SourceSpan.End == symbol.Locations.FirstOrDefault().SourceSpan.End).Key + ",";
                     types += parent.Kind() + ",";
                 }
+                MyWindowControl.printInBrowserConsole("XXXXXX Expression !!!: " + expression.ToString());
 
                 symbolsString += expression.ToString();
                 values += expression;
@@ -1351,6 +1364,7 @@ namespace TestingCodeAnalysis
                         StringBuilder beforeWhileSB = new StringBuilder();
                         //beforeWhileSB.AppendFormat(logReferenceString, symbolsString, parentStatements, line + 1, cleanFileName, widgetIDs, key, types);
                         beforeWhileSB.AppendFormat(logReferenceString, symbolsString, symbolsString, line + 1, cleanFileName, widgetIDs, key, types);
+                        MyWindowControl.printInBrowserConsole("======== Parent statement !!!: " + parentStatements);
                         beforeString = beforeWhileSB.ToString();
                     }
 
@@ -1369,6 +1383,8 @@ namespace TestingCodeAnalysis
                     StringBuilder afterWhileSB = new StringBuilder();
                     //afterWhileSB.AppendFormat(" if ( Logger.getExecutionCount(\"{5}\") > 1 ) {{ " + logReferenceString + " }}", symbolsString, parentStatements, line + 1, cleanFileName, widgetIDs, key, types);
                     afterWhileSB.AppendFormat(" if ( Logger.getExecutionCount(\"{5}\") > 1 ) {{ " + logReferenceString + " }}", symbolsString, symbolsString, line + 1, cleanFileName, widgetIDs, key, types);
+                    MyWindowControl.printInBrowserConsole("))))))) Parent statement !!!: " + parentStatements);
+
                     docContent[endOfWhile] = docContent[endOfWhile] + afterWhileSB.ToString();
 
 
@@ -1379,6 +1395,7 @@ namespace TestingCodeAnalysis
                     StringBuilder sb = new StringBuilder();
                     //sb.AppendFormat(logReferenceString, symbolsString, parentStatements, line + 1, cleanFileName, widgetIDs, key, types);
                     sb.AppendFormat(logReferenceString, symbolsString, symbolsString, line + 1, cleanFileName, widgetIDs, key, types);
+                    MyWindowControl.printInBrowserConsole("(((((( Parent statement !!!: " + parentStatements);
                     docContent[line] = docContent[line] + sb.ToString();
 
                     MyWindowControl.printInBrowserConsole("fileName: " + fileName);

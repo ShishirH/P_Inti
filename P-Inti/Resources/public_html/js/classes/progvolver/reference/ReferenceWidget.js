@@ -408,6 +408,11 @@ class ReferenceWidget {
             console.log("Adding reference object");
             console.log(background.object);
 
+            if (background.object === undefined) {
+                background.minimizeButton.sign = "?";
+                return;
+            }
+
             var rightSc = getScreenCoordinates(background.getPointByOrigin('right', 'center'));
 
             background.object.left = rightSc.x + 25;
@@ -429,8 +434,7 @@ class ReferenceWidget {
 
         addMinimizeButton();
 
-        if (background.object)
-            addReferencedObject();
+        addReferencedObject();
 
         background.removeAll = function () {
             background.children.forEach(function (child) {

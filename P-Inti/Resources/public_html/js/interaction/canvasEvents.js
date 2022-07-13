@@ -1984,6 +1984,10 @@ function bindCanvasDefaultEvents(canvas) {
                                         movable: true
                                     });
 
+                                    if (response.initialValue === undefined) {
+                                        theSymbol = undefined;
+                                    }
+
                                     var referenceWidget = new ReferenceWidget({
                                         fill: '#F02466',
                                         stroke: '#F02466',

@@ -904,7 +904,16 @@ namespace P_Inti
                 ISymbol declarationEnclosingSymbol = document.GetSemanticModelAsync().Result.GetEnclosingSymbol(node.GetLocation().SourceSpan.Start);
                 //ISymbol objectSymbol = CodeAnalyzer.findSymbolInFile(fileName, caretPosition, allDocuments);
 
-                SyntaxNode parent = node.Ancestors().ElementAt(2);
+                SyntaxNode parent;
+                
+                if (symbol.Kind == SymbolKind.Parameter)
+                {
+                    parent = node.Ancestors().ElementAt(1);
+                }
+                else
+                {
+                    parent = node.Ancestors().ElementAt(2);
+                }
 
                 var firstAncestor = node.Ancestors().First();
 
