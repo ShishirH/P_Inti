@@ -221,7 +221,7 @@ namespace ConsoleApp1 {
 
             StringBuilder sb = new StringBuilder();
             sb.AppendFormat(logString, tmpSB.ToString());
-            logFile.WriteLine((logIndex++) + "~" + sb.ToString() + "~" + (nanoTime() - dt1) + "~" + column + "~" + row + "~" + stringForFile);
+            logFile.WriteLine((logIndex++) + "~" + sb.ToString() + "~" + (nanoTime() - dt1) + "~" + column + "~" + row + "~" + stringForFile + "~" + parentExpressions[0].GetHashCode());
 
         }        
 
@@ -252,7 +252,7 @@ namespace ConsoleApp1 {
             tmpSB.AppendFormat(values, parameters.ToArray());
 
             sb.AppendFormat(logString, tmpSB.ToString());
-            logFile.WriteLine((logIndex++) + "~" + sb.ToString() + "~" + (nanoTime() - dt1));
+            logFile.WriteLine((logIndex++) + "~" + sb.ToString() + "~" + (nanoTime() - dt1) + parentExpressions[0].GetHashCode());
 
             return true;
         }
@@ -272,10 +272,13 @@ namespace ConsoleApp1 {
 
             string values = "";
             List<string> parameters = new List<string>();
+            int memoryAddress;
             for (int i = 0; i < parentExpressions.Length; i++) {
                 values += "{" + i + "},";
                 parameters.Add(parentExpressions[i].ToString());
-                
+                //logFile.WriteLine("parentExpressions: " + getArrayAsString((int[]) parentExpressions[i]));
+                //logFile.WriteLine("Memory address: " + parentExpressions[i].GetHashCode());
+                //memoryAddress = parentExpressions[i].GetHashCode()
             }
             values = values.Substring(0, values.Length - 1);
             StringBuilder tmpSB = new StringBuilder();
@@ -283,7 +286,7 @@ namespace ConsoleApp1 {
 
             sb.AppendFormat(logString, tmpSB.ToString());
             //logFile.WriteLine((logIndex++) + "~" + sb.ToString() + "~" + (nanoTime()));
-            logFile.WriteLine((logIndex++) + "~" + sb.ToString() + "~" + (nanoTime() - dt1));
+            logFile.WriteLine((logIndex++) + "~" + sb.ToString() + "~" + (nanoTime() - dt1) + "~" + parentExpressions[0].GetHashCode());
             return true;
         }
 

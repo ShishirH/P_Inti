@@ -860,6 +860,14 @@ namespace TestingCodeAnalysis
                             MyWindowControl.printInBrowserConsole("XXXXXX Symbolname !!!: " + symbolName);
                             MyWindowControl.printInBrowserConsole("XXXXXX SymbolKind !!!: " + symbol.Kind);
                             MyWindowControl.printInBrowserConsole("XXXXXX SymbolContainingType !!!: " + symbol.ContainingType);
+                            MyWindowControl.printInBrowserConsole("XXXXXX Parent statement is: ");
+                            MyWindowControl.printInBrowserConsole(parentStatement);
+
+                            if (symbolName == "int[]")
+                            {
+                                symbolName = parentStatement;
+                            }
+
                             //MyWindowControl.printInBrowserConsole("XXXXXX SymbolEverything !!!: " + symbol.);
 
                             // TODO WHY DO THIS?
