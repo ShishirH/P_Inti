@@ -9513,6 +9513,9 @@ function updateMemoryReferences(referencedObject) {
     console.log("Updating memory references");
     let referenceWidget = referencedObject.referenceWidget;
 
+    console.log("Referenced object is: ");
+    console.log(referencedObject);
+
     if (methodParameters.indexOf(referenceWidget) != -1 && referenceWidget.otherReferencedObjects.length == 0) {
         for (let objectOnCanvas of referencedObjects) {
             if (objectOnCanvas.memoryAddress === referencedObject.memoryAddress) {
@@ -9520,6 +9523,14 @@ function updateMemoryReferences(referencedObject) {
             }
         }
     }
+
+    if (referenceWidget.otherReferencedObjects.length > 0) {
+        referenceWidget.otherReferencedObjects.forEach(function (objectOnCanvas) {
+            // Update other objects with same memory location to have same values
+            objectOnCanvas.setValue(referencedObject.getValue());
+        })
+    }
+
 
     //Draw arrow to the same memory location objects.
     referenceWidget.drawArrowToObjectsAtSameMemory();

@@ -32,6 +32,8 @@ class ReferenceWidget {
         background.referencedObjectId = options.referencedObjectId;
         background.referencedObjectDetails = options.referencedObjectDetails;
         background.otherReferencedObjects = []; // other widgets on canvas that have same address as the referenced object here
+        background.otherReferencedObjectsArrows = [];
+        background.otherReferencedObjectsBlock = [];
 
         background.expandedHeight = background.height;
         background.expandedWidth = background.width;
@@ -594,7 +596,8 @@ class ReferenceWidget {
                 });
 
                 canvas.add(line);
-                //background.arrowLine = line;
+
+                background.otherReferencedObjectsArrows.push(line);
                 //background.children.push(line);
                 //background.childrenOnTop.push(line);
             }
@@ -606,8 +609,8 @@ class ReferenceWidget {
             for (let sameMemoryObject of background.otherReferencedObjects) {
                 console.log("Same memory object: ");
                 console.log(sameMemoryObject);
-                var sc = getScreenCoordinates(background.getPointByOrigin('left', 'center'));
-                var rightSc = getScreenCoordinates(background.getPointByOrigin('right', 'center'));
+                var sc = getScreenCoordinates(background.minimizeButton.getPointByOrigin('center', 'center'));
+                var rightSc = getScreenCoordinates(sameMemoryObject.referenceWidget.minimizeButton.getPointByOrigin('center', 'center'));
 
                 var originParent, originChild;
                 var xPosition, yPosition;
@@ -620,7 +623,8 @@ class ReferenceWidget {
 
 
                 var line = new fabric.Line(points, {
-                    strokeWidth: 3,
+                    strokeWidth: 1,
+                    strokeDashArray: [3, 3],
                     stroke: 'black',
                     fill: 'black',
                     hasControls: false,
@@ -643,12 +647,12 @@ class ReferenceWidget {
                     let lineStartCoords = null;
 
                     if (background.minimizeButton) {
-                        lineEndCoords = sameMemoryObject.referenceWidget.minimizeButton.getPointByOrigin('left', 'center');
+                        lineEndCoords = sameMemoryObject.referenceWidget.minimizeButton.getPointByOrigin('center', 'center');
                         lineEndCoords.x -= 4;
                     } else {
                         lineEndCoords = sameMemoryObject.referenceWidget.getPointByOrigin('right', 'center');
                     }
-                    lineStartCoords = background.referencePointer.getPointByOrigin('center', 'center');
+                    lineStartCoords = background.minimizeButton.getPointByOrigin('center', 'center');
                     lineStartCoords.y -= 1.5;
 
                     line.set('x2', lineEndCoords.x);
@@ -690,10 +694,6 @@ class ReferenceWidget {
                     var point = getPointAlongLine(l, length - 20);
                     var x = point.x;
                     var y = point.y;
-
-                    //ctx.restore();
-                    if (!background.isCompressed)
-                        drawFilledPolygon(translateShape(rotateShape(theConnector.triangle, angle), line.x2 + (line.strokeWidth / 2), line.y2 + (line.strokeWidth / 2)), ctx);
                 };
 
                 background.addChild(line, {

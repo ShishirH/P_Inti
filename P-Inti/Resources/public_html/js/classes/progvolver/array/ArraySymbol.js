@@ -166,16 +166,19 @@ class ArraySymbol {
 
         background.onValuesUpdated = function (dataItem) {
             if (columns == 1) {
-                background.setValue(dataItem.array);
-                console.log("Data item is: ");
-                console.log(dataItem);
-                if (dataItem.memoryAddress) {
-                    // memory address changed
-                    if(!background.memoryAddress != dataItem.memoryAddress) {
-                        console.log("ALERT: MEMORY ADDRESS CHANGED");
-                        console.log("Memory address now is: " + dataItem.memoryAddress);
-                        background.memoryAddress = dataItem.memoryAddress;
-                        background.referenceWidget.otherReferencedObjects = [];
+
+                if (dataItem) {
+                    background.setValue(dataItem.array);
+                    if (dataItem.memoryAddress) {
+                        // memory address changed
+                        if (!background.memoryAddress != dataItem.memoryAddress) {
+                            background.memoryAddress = dataItem.memoryAddress;
+                            background.referenceWidget.otherReferencedObjects = [];
+
+                            background.referenceWidget.otherReferencedObjectsArrows.forEach(function (line) {
+                                canvas.remove(line);
+                            })
+                        }
                     }
                 }
                 updateMemoryReferences(background);
@@ -190,6 +193,8 @@ class ArraySymbol {
                 background.values = background.history.filter(item => item.time <= time);
                 if (background.values.length) {
                     background.onValuesUpdated && background.onValuesUpdated(background.values[background.values.length - 1]);
+                } else {
+                    background.onValuesUpdated && background.onValuesUpdated(null);
                 }
             }
         };
@@ -1364,6 +1369,21 @@ class ArraySymbol {
                 arrayElementsArray[i][0].element = valuesArray[i];
                 background.updateColorDecay(arrayElementsArray[i][0]);
             }
+        }
+
+        background.getValue = function () {
+            let openingArray = "[";
+            let closingArray = "]";
+            let valueString = "";
+
+            for (let i = 0; i < background.arrayElementsArray.length; i++) {
+                valueString += background.arrayElementsArray[i][0].element + ";"
+            }
+
+            // Remove the last ;
+            valueString = valueString.slice(0, -1);
+
+            return openingArray + valueString + closingArray;
         }
 
         background.updateColorDecay = function (arrayElement) {
