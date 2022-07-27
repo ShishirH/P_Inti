@@ -32,6 +32,7 @@ class ArraySymbol {
         background.expandedHeight = 0;
         background.compressed = true;
         background.isMember = options.isMember;
+        background.referenceWidget = null;
 //        background.compressedProperties = {
 //            width: 10,
 //            height: 10,
@@ -164,8 +165,21 @@ class ArraySymbol {
         background.isInitialized = false;
 
         background.onValuesUpdated = function (dataItem) {
-            if (columns == 1)
+            if (columns == 1) {
                 background.setValue(dataItem.array);
+                console.log("Data item is: ");
+                console.log(dataItem);
+                if (dataItem.memoryAddress) {
+                    // memory address changed
+                    if(!background.memoryAddress != dataItem.memoryAddress) {
+                        console.log("ALERT: MEMORY ADDRESS CHANGED");
+                        console.log("Memory address now is: " + dataItem.memoryAddress);
+                        background.memoryAddress = dataItem.memoryAddress;
+                        background.referenceWidget.otherReferencedObjects = [];
+                    }
+                }
+                updateMemoryReferences(background);
+            }
         };
 
         background.setProgramTime = function (time) {

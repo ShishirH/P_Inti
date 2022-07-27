@@ -1984,6 +1984,7 @@ function bindCanvasDefaultEvents(canvas) {
                                         movable: true
                                     });
 
+                                    // method parameter
                                     if (response.initialValue === undefined) {
                                         theSymbol = undefined;
                                     }
@@ -1998,8 +1999,17 @@ function bindCanvasDefaultEvents(canvas) {
                                         kind: response.Kind_String,
                                         type: response.dataType,
                                         name: response.Name,
+                                        referencedObjectId: response.symbolID,
+                                        referencedObjectDetails: response,
                                         isArray: true
                                     }, theSymbol);
+
+                                    // method parameter
+                                    if (response.initialValue === undefined) {
+                                        methodParameters.push(referenceWidget);
+                                    } else {
+                                        referencedObjects.push(theSymbol);
+                                    }
 
                                     allSymbols.push(theSymbol);
 

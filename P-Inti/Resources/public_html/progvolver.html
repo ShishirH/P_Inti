@@ -554,6 +554,7 @@
                             logFileContent = preProcessLogFileForDuplicates(logFileContent);
                             console.log("logFileContent now is: ");
                             console.log(logFileContent);
+                            processMethodParameters(logFileContent);
                             processLogFiles(logFileContent, scopeFileContent, signalFileContent);
                             window.snapshotWidget && window.snapshotWidget.parseMemberValues();
                             waitingDialog.dialog('content', '<div style="text-align: center; margin-top: 20px;"><span align="center" style="font-size: 150%;">' + response.response + '</span></div>');

@@ -277,3 +277,5 @@ var builtInTypes = ["bool", "byte", "sbyte", "char", "decimal", "double", "float
 var colorsArray = ['#FF7F00', '#24A222', '#1776B6', '#E574C3', '#00BED1', '#9564BF'];
 var desaturatedColorsArray = ['#ffbf80', '#72a372', '#6d98b5', '#e6a1d1', '#69c8d1', '#a486bf'];
 var codeControlsOnCanvas = [];
+var methodParameters = [];
+var referencedObjects = [];

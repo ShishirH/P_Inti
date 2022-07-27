@@ -26,6 +26,82 @@ function drawCurveThroughPoints(ctx, points) {
     ctx.restore();
 }
 
+function processMethodParameters(logFileContent) {
+    methodParameters.forEach(function (parameter) {
+        let referencedObjectId = parameter.referencedObjectId;
+        let initialArrayValue = "";
+        // Get the initial value (first array passed to the function)
+        Papa.parse(logFileContent.trim(), {
+            delimiter: "~",
+            header: true,
+            dynamicTyping: true,
+            complete: function (logData) {
+
+                // index~symbols~expressions~types~values~line~file~widgetsID~time~column~row~array~memoryAddress
+                if (logData && logData.data && logData.data[0]) {
+                    console.log("logData");
+                    console.log(logData);
+
+                    console.log("logData.data[0]");
+                    console.log(logData.data[0]);
+
+                    if (!iVoLVER.util.isUndefined(logData.data[0]) && !iVoLVER.util.isUndefined(logData.data[0][window.sliderDimension]) && !iVoLVER.util.isUndefined(logData.data[logData.data.length - 1]) && !iVoLVER.util.isUndefined(logData.data[logData.data.length - 1][window.sliderDimension])) {
+                        methodParameterLogData = logData.data.filter(item => item.widgetsID == referencedObjectId);
+
+                        for (let logLine of methodParameterLogData) {
+                            if (logLine.array) {
+                                initialArrayValue = logLine.array;
+                                break;
+                            }
+                        }
+
+                        console.log("Method parameter log data is: ");
+                        console.log(methodParameterLogData);
+
+                        console.log("Method parameter log array value is: ");
+                        console.log(initialArrayValue);
+
+                        initialArrayValue = initialArrayValue.replace("[", "{")
+                        initialArrayValue = initialArrayValue.replace("]", "}");
+                        initialArrayValue = initialArrayValue.replace(/;/g,", ");
+
+                        let response = parameter.referencedObjectDetails;
+
+                        var theSymbol = new ArraySymbol({
+                            value: '',
+                            containingType: response.ContainingType,
+                            containingSymbol: response.ContainingSymbol,
+                            containingNamespace: response.ContainingNamespace,
+                            kind: response.Kind_String,
+                            type: response.dataType,
+                            name: response.Name,
+                            file: response.fileName,
+                            fileName: response.fileName.split('\\').pop().split('/').pop(),
+                            lineNumber: response.declareAtFrom,
+                            id: response.symbolID,
+                            declareAtFrom: response.declareAtFrom,
+                            declareAtTo: response.declareAtTo,
+                            scopeFrom: response.scopeFrom,
+                            scopeTo: response.scopeTo,
+                            initialValue: initialArrayValue,
+                            isCompressed: true,
+                            isMember: true,
+                            isClass: false,
+                            members: null,
+                            movable: true
+                        });
+
+                        parameter.object = theSymbol;
+                        parameter.minimizeButton.sign = "+";
+                        parameter.reInitializeObject();
+                    }
+                }
+            }
+        });
+
+    })
+}
+
 function getQuadraticBezierXYatT(startPt, controlPt, endPt, T) {
     console.log("Start point: ");
     console.log(startPt);
@@ -9433,6 +9509,27 @@ function preProcessLogFileForDuplicates(logFileContent) {
     return removeLinesFromFile(logFileContent, linesToRemove);
 }
 
+function updateMemoryReferences(referencedObject) {
+    console.log("Updating memory references");
+    let referenceWidget = referencedObject.referenceWidget;
+
+    if (methodParameters.indexOf(referenceWidget) != -1 && referenceWidget.otherReferencedObjects.length == 0) {
+        for (let objectOnCanvas of referencedObjects) {
+            if (objectOnCanvas.memoryAddress === referencedObject.memoryAddress) {
+                referenceWidget.otherReferencedObjects.push(objectOnCanvas);
+            }
+        }
+    }
+
+    //Draw arrow to the same memory location objects.
+    referenceWidget.drawArrowToObjectsAtSameMemory();
+    // Draw transluscent block
+    //referenceWidget.drawTransluscentBlockToObjectAtSameMemory();
+
+    console.log("Other referencedObjects");
+    console.log(referenceWidget.otherReferencedObjects);
+}
+
 function processLogFiles(logFileContent, scopeFileContent, signalFileContent) {
 
     window.minTimeSignalData = Infinity;
@@ -9663,6 +9760,8 @@ function processLogFiles(logFileContent, scopeFileContent, signalFileContent) {
                     ids.forEach(function (id) {
                         var object = progvolver.objects[id];
                         object.setHistory && object.setHistory();
+                        console.log(window.logData.filter(item => item.widgetsID == object.id));
+                        object.setMemoryAddress && object.setMemoryAddress();
                         object.setProgramTime && object.setProgramTime(window.minTime);
                     });
 
