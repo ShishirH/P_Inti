@@ -606,6 +606,12 @@ class ReferenceWidget {
 
         background.drawArrowToObjectsAtSameMemory = function () {
             console.log("drawArrowToObjectsAtSameMemory");
+
+            // Remove existing lines
+            for (let line of background.otherReferencedObjectsArrows) {
+                canvas.remove(line);
+            }
+
             for (let sameMemoryObject of background.otherReferencedObjects) {
                 console.log("Same memory object: ");
                 console.log(sameMemoryObject);
@@ -712,7 +718,7 @@ class ReferenceWidget {
 
                 canvas.add(line);
                 //background.arrowLine = line;
-                //background.children.push(line);
+                background.otherReferencedObjectsArrows.push(line);
                 //background.childrenOnTop.push(line);
             }
 

@@ -11,8 +11,10 @@ function drawCurveThroughPoints(ctx, points) {
     ctx.moveTo((points[0].x), points[0].y);
 
     if (points.length === 3) {
+        console.log("Three points");
         ctx.quadraticCurveTo(points[1].x, points[1].y, points[2].x, points[2].y);
     } else {
+        console.log("More than 3 points");
         for (var i = 0; i < points.length - 1; i++) {
             var x_mid = (points[i].x + points[i + 1].x) / 2;
             var y_mid = (points[i].y + points[i + 1].y) / 2;
@@ -22,7 +24,7 @@ function drawCurveThroughPoints(ctx, points) {
             ctx.quadraticCurveTo(cp_x2, points[i + 1].y, points[i + 1].x, points[i + 1].y);
         }
     }
-    //ctx.stroke();
+    ctx.stroke();
     ctx.restore();
 }
 
@@ -103,12 +105,6 @@ function processMethodParameters(logFileContent) {
 }
 
 function getQuadraticBezierXYatT(startPt, controlPt, endPt, T) {
-    console.log("Start point: ");
-    console.log(startPt);
-    console.log("Control point");
-    console.log(controlPt);
-    console.log("End point");
-    console.log(endPt);
     var x = Math.pow(1 - T, 2) * startPt.x + 2 * (1 - T) * T * controlPt.x + Math.pow(T, 2) * endPt.x;
     var y = Math.pow(1 - T, 2) * startPt.y + 2 * (1 - T) * T * controlPt.y + Math.pow(T, 2) * endPt.y;
     return ({
@@ -134,7 +130,7 @@ function drawCirclesAlongCurve(ctx, points) {
     ctx.restore();
 }
 
-function demoShootingStars(widget1, widget2) {
+function generateShootingStars(widget1, widget2) {
     let ctx = canvas.getContext();
     var shootingStarStart = widget1.getPointByOrigin('right', 'center');
     shootingStarStart.x += 5;
@@ -146,8 +142,20 @@ function demoShootingStars(widget1, widget2) {
     drawCirclesAlongCurve(ctx, points);
 }
 
-function shootingStarsBetweenPoints(widget1, widget2) {
+function parseShootingStarsSource(parentStatement) {
+    let parentString = "";
+    if (parentStatement.includes("=")) {
+        let leftHalf = parentStatement.split("=")[0].trim();
+        let rightHalf = parentStatement.split("=")[1].trim();
 
+        console.log("@# Left half is: " + leftHalf);
+        console.log("@# rightHalf is: " + rightHalf);
+
+        if (namedSymbols[rightHalf]) {
+            console.log("Found " + rightHalf);
+            return rightHalf;
+        }
+    }
 }
 
 function createObjectBackground(baseClass, options, theWidget) {
@@ -9771,7 +9779,6 @@ function processLogFiles(logFileContent, scopeFileContent, signalFileContent) {
                     ids.forEach(function (id) {
                         var object = progvolver.objects[id];
                         object.setHistory && object.setHistory();
-                        console.log(window.logData.filter(item => item.widgetsID == object.id));
                         object.setMemoryAddress && object.setMemoryAddress();
                         object.setProgramTime && object.setProgramTime(window.minTime);
                     });

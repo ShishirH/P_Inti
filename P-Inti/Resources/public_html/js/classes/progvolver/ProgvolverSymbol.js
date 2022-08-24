@@ -248,12 +248,19 @@ class ProgvolverSymbol extends ConnectableWidget {
 
         background.onValuesUpdated = function (dataItem) {
             if (dataItem) {
+                console.log("Data item is:")
                 console.log(dataItem);
 
                 let widgetIDs = dataItem.widgetsID.split(",");
                 let values = ("" + dataItem.values).split(",");
                 let types = ("" + dataItem.types).split(",");
                 let index = widgetIDs.indexOf(background.id);
+
+                let shootingStarsSource = parseShootingStarsSource(dataItem.parentStatement);
+
+                if (shootingStarsSource && shootingStarsSource != background.name) {
+                    generateShootingStars(background, namedSymbols[shootingStarsSource]);
+                }
 
                 if (types[index] == "SimpleAssignmentExpression" || types[index] == "PostDecrementExpression" || types[index] == "PreDecrementExpression" || types[index] == "PostIncrementExpression") {
                     if (background.value != values[index]) {

@@ -279,3 +279,4 @@ var desaturatedColorsArray = ['#ffbf80', '#72a372', '#6d98b5', '#e6a1d1', '#69c8
 var codeControlsOnCanvas = [];
 var methodParameters = [];
 var referencedObjects = [];
+var namedSymbols = {};

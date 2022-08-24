@@ -381,6 +381,23 @@ namespace TestingCodeAnalysis
             StringBuilder assignmentStringBuilder = new StringBuilder();
 
             string parentExpression = parent.ToString().Replace("\"", "\\\"").Replace("{", "{{").Replace("}", "}}");
+            // Line contents
+            int lineNumber = parent.GetLocation().GetLineSpan().StartLinePosition.Line + 1;
+            var activePoint = ((EnvDTE.TextSelection)windowControl.dte.ActiveDocument.Selection).ActivePoint;
+            string lineText = activePoint.CreateEditPoint().GetLines(lineNumber, lineNumber + 1);
+
+            string lineContent = "";
+            if (!parentExpression.StartsWith("["))
+            {
+                lineContent = parentExpression;
+
+            }
+            else
+            {
+                lineContent = parent.Parent.Parent.ToString().Replace("\"", "\\\"").Replace("{", "{{").Replace("}", "}}");
+
+            }
+
 
             /*Dictionary<string, object> scopeInfo = JsHandler.getScope(symbol, document, windowControl);
             scopeInfo.TryGetValue("declareAtFrom", out object declareAtFrom);
@@ -391,7 +408,7 @@ namespace TestingCodeAnalysis
 
             string filePath = document.FilePath.Replace(@"\", "/");
             string expressionsToLog;
-            string logString = " Logger.logAssignment(\"{0}~{1}~{2}~{{0}}~{3}~{4}~{5}\", {6});";
+            string logString = " Logger.logAssignment(\"{0}~{1}~{2}~{{0}}~{3}~{4}~{5}~{7}\", {6});";
 
             // only here when we are logging arrays or matrices
             if (parentType == SyntaxKind.ElementAccessExpression)
@@ -423,7 +440,7 @@ namespace TestingCodeAnalysis
 
                 expressionsToLog = foundNode + "," + result;
 
-                assignmentStringBuilder.AppendFormat(logString, foundNode, parentExpression, parentType, line.Line + 1, filePath, symbolID, expressionsToLog);
+                assignmentStringBuilder.AppendFormat(logString, foundNode, parentExpression, parentType, line.Line + 1, filePath, symbolID, expressionsToLog, lineContent);
 
 
                 //if (is2D) {
@@ -451,7 +468,7 @@ namespace TestingCodeAnalysis
 
                 expressionsToLog = foundNode.ToString();
 
-                assignmentStringBuilder.AppendFormat(logString, foundNode, parentExpression, parentType, line.Line + 1, filePath, symbolID, expressionsToLog);
+                assignmentStringBuilder.AppendFormat(logString, foundNode, parentExpression, parentType, line.Line + 1, filePath, symbolID, expressionsToLog, lineContent);
 
 
 
@@ -834,6 +851,7 @@ namespace TestingCodeAnalysis
                     Dictionary<ISymbol, Dictionary<string, object>> symbolsWithScope = new Dictionary<ISymbol, Dictionary<string, object>>();
                     List<LineNumberProcessAssignmentNode> lineProcessingNodeString = new List<LineNumberProcessAssignmentNode>();
 
+                    string lineContent = "";
                     foreach (Tuple<SyntaxNode, string, ReferenceLocation, ISymbol, Document> tuple in tuples)
                     {
 
@@ -848,6 +866,24 @@ namespace TestingCodeAnalysis
                         // TODO CHECK IF IT DEPENDS ON TYPE
                         string parentStatement = parent.ToString().Replace("\"", "\\\"").Replace("{", "{{").Replace("}", "}}");
 
+                        // Line contents
+                        int lineNumber = parent.GetLocation().GetLineSpan().StartLinePosition.Line + 1;
+                        var activePoint = ((EnvDTE.TextSelection)windowControl.dte.ActiveDocument.Selection).ActivePoint;
+                        string lineText = activePoint.CreateEditPoint().GetLines(lineNumber, lineNumber + 1);
+                        
+                        if (!parentStatement.StartsWith("["))
+                        {
+                            lineContent = parentStatement;
+
+                        }
+                        else
+                        {
+                            lineContent = parent.Parent.Parent.ToString().Replace("\"", "\\\"").Replace("{", "{{").Replace("}", "}}");
+
+                        }
+
+                        MyWindowControl.printInBrowserConsole("%%%%%%% Line contents is !!!: " + lineContent);
+
                         if (!allSymbols.ContainsKey(symbol))
                         {
 
@@ -860,12 +896,19 @@ namespace TestingCodeAnalysis
                             MyWindowControl.printInBrowserConsole("XXXXXX Symbolname !!!: " + symbolName);
                             MyWindowControl.printInBrowserConsole("XXXXXX SymbolKind !!!: " + symbol.Kind);
                             MyWindowControl.printInBrowserConsole("XXXXXX SymbolContainingType !!!: " + symbol.ContainingType);
+                            MyWindowControl.printInBrowserConsole("XXXXXX SymbolContainingSymbol !!!: " + symbol.ContainingSymbol);
                             MyWindowControl.printInBrowserConsole("XXXXXX Parent statement is: ");
                             MyWindowControl.printInBrowserConsole(parentStatement);
+                            MyWindowControl.printInBrowserConsole("XXXXXX Parent kind is: ");
 
                             if (symbolName == "int[]")
                             {
                                 symbolName = parentStatement;
+                            }
+
+                            if (parent.Kind().ToString() == "ArgumentList")
+                            {
+                                parentStatement = symbolName;
                             }
 
                             //MyWindowControl.printInBrowserConsole("XXXXXX SymbolEverything !!!: " + symbol.);
@@ -985,7 +1028,7 @@ namespace TestingCodeAnalysis
                     MyWindowControl.printInBrowserConsole("parentExpressions: ");
                     MyWindowControl.printInBrowserConsole(parentStatements);
 
-                    string logReferenceString = " Logger.logReferences(\"{5}\", \"{0}~{1}~{6}~{{0}}~{2}~{3}~{4}\", {1});";
+                    string logReferenceString = " Logger.logReferences(\"{5}\", \"{0}~{1}~{6}~{{0}}~{2}~{3}~{4}~{7}\", {1});";
 
                     if (closestControlAncestor != null)
                     {
@@ -1111,7 +1154,8 @@ namespace TestingCodeAnalysis
                             {
                                 StringBuilder beforeControlSB = new StringBuilder();
                                 //beforeControlSB.AppendFormat(logReferenceString, symbolsString, parentStatements, line + 1, fileName, widgetsIDs, key, types);
-                                beforeControlSB.AppendFormat(logReferenceString, symbolsStringWithScope, symbolsStringWithScope, line + 1, fileName, widgetsIDs, key, types);
+                                //                     string logReferenceString = " Logger.logReferences(\"{5}\", \"{0}~{1}~{6}~{{0}}~{2}~{3}~{4}\", {1});";
+                                beforeControlSB.AppendFormat(logReferenceString, symbolsStringWithScope, symbolsStringWithScope, line + 1, fileName, widgetsIDs, key, types, lineContent);
                                 MyWindowControl.printInBrowserConsole("`````` logReferenceString !!!: " + logReferenceString);
                                 MyWindowControl.printInBrowserConsole("`````` symbolsStringWithScope !!!: " + symbolsStringWithScope);
                                 MyWindowControl.printInBrowserConsole("`````` line + 1 !!!: " + (line + 1));
@@ -1127,16 +1171,17 @@ namespace TestingCodeAnalysis
 
                             if (onlyParentType == SyntaxKind.ElementAccessExpression)
                             {
+                                // TODO IF PARAMETERKIND, DON'T DO THIS
                                 MyWindowControl.printInBrowserConsole("\t ssssssssss else types: " + types);
 
-                                insideControlSB.AppendFormat(" if ( Logger.getExecutionCount(\"{5}\") != 1 ) {{ " + logReferenceString + " }} else {{ Logger.increaseExecutionCount(\"{5}\"); }}", symbolsString, symbolsString, line + 1, fileName, widgetsIDs, key, types);
+                                insideControlSB.AppendFormat(" if ( Logger.getExecutionCount(\"{5}\") != 1 ) {{ " + logReferenceString + " }} else {{ Logger.increaseExecutionCount(\"{5}\"); }}", symbolsString, symbolsString, line + 1, fileName, widgetsIDs, key, types, lineContent);
 
                             }
                             else
                             {
                                 MyWindowControl.printInBrowserConsole("\t gggggggggg else types: " + types);
 
-                                insideControlSB.AppendFormat(" if ( Logger.getExecutionCount(\"{5}\") != 1 ) {{ " + logReferenceString + " }} else {{ Logger.increaseExecutionCount(\"{5}\"); }}", symbolsString, symbolsString, line + 1, fileName, widgetsIDs, key, types);
+                                insideControlSB.AppendFormat(" if ( Logger.getExecutionCount(\"{5}\") != 1 ) {{ " + logReferenceString + " }} else {{ Logger.increaseExecutionCount(\"{5}\"); }}", symbolsString, symbolsString, line + 1, fileName, widgetsIDs, key, types, lineContent);
 
                             }
                             //insideControlSB.AppendFormat(" if ( Logger.getExecutionCount(\"{5}\") != 1 ) {{ " + logReferenceString + " }} else {{ Logger.increaseExecutionCount(\"{5}\"); }}", symbolsString, parentStatements, line + 1, fileName, widgetsIDs, key, types);
@@ -1158,7 +1203,7 @@ namespace TestingCodeAnalysis
                             {
                                 StringBuilder afterControlSB = new StringBuilder();
                                 //afterControlSB.AppendFormat(" if ( Logger.getExecutionCount(\"{5}\") > 1 ) {{ " + logReferenceString + " }}", symbolsString, parentStatements, line + 1, fileName, widgetsIDs, key, types);
-                                afterControlSB.AppendFormat(" if ( Logger.getExecutionCount(\"{5}\") > 1 ) {{ " + logReferenceString + " }}", symbolsStringWithScopeAfter, symbolsStringWithScopeAfter, line + 1, fileName, widgetsIDs, key, types);
+                                afterControlSB.AppendFormat(" if ( Logger.getExecutionCount(\"{5}\") > 1 ) {{ " + logReferenceString + " }}", symbolsStringWithScopeAfter, symbolsStringWithScopeAfter, line + 1, fileName, widgetsIDs, key, types, lineContent);
                                 MyWindowControl.printInBrowserConsole("***** afterControlSB " + afterControlSB);
                                 MyWindowControl.printInBrowserConsole("+++++ Parent statement !!!: " + parentStatements);
                                 docContent[endOfWhile] = docContent[endOfWhile] + afterControlSB.ToString();
@@ -1177,13 +1222,13 @@ namespace TestingCodeAnalysis
                             {
                                 MyWindowControl.printInBrowserConsole("\t ccccccccccc else types: " + types);
 
-                                useStringBuilder.AppendFormat(logReferenceString, symbolsString, symbolsString, line + 1 + bracesOffset, fileName, widgetsIDs, null, types);
+                                useStringBuilder.AppendFormat(logReferenceString, symbolsString, symbolsString, line + 1 + bracesOffset, fileName, widgetsIDs, null, types, lineContent);
                             }
                             else
                             {
                                 MyWindowControl.printInBrowserConsole("\t vvvvvvvvv else types: " + types);
 
-                                useStringBuilder.AppendFormat(logReferenceString, symbolsString, parentStatements, line + 1 + bracesOffset, fileName, widgetsIDs, null, types);
+                                useStringBuilder.AppendFormat(logReferenceString, symbolsString, parentStatements, line + 1 + bracesOffset, fileName, widgetsIDs, null, types, lineContent);
 
                             }
 
@@ -1206,13 +1251,13 @@ namespace TestingCodeAnalysis
                         {
                             MyWindowControl.printInBrowserConsole("\t 66666666666 if types: " + types);
 
-                            useStringBuilder.AppendFormat(logReferenceString, symbolsString, symbolsString, line + 1, fileName, widgetsIDs, null, types);
+                            useStringBuilder.AppendFormat(logReferenceString, symbolsString, symbolsString, line + 1, fileName, widgetsIDs, null, types, lineContent);
                         }
                         else
                         {
                             MyWindowControl.printInBrowserConsole("\t 7777777777 else types: " + types);
 
-                            useStringBuilder.AppendFormat(logReferenceString, symbolsString, parentStatements, line + 1, fileName, widgetsIDs, null, types);
+                            useStringBuilder.AppendFormat(logReferenceString, symbolsString, parentStatements, line + 1, fileName, widgetsIDs, null, types, lineContent);
                         }
 
                         docContent[line] = string.Concat(docContent[line], useStringBuilder.ToString());
@@ -1233,6 +1278,26 @@ namespace TestingCodeAnalysis
 
             saveScopeFile(scopeFileLines, logFileName, outputFolder);
 
+            // log to file number logger
+            foreach(Document document in allDocuments.Values)
+            {
+                IEnumerable<MethodDeclarationSyntax> methodsList = document.GetSyntaxTreeAsync().Result.GetRoot().DescendantNodes().OfType<MethodDeclarationSyntax>();
+
+                foreach(MethodDeclarationSyntax method in methodsList)
+                {
+                    int startLineNumber = method.GetLocation().GetLineSpan().StartLinePosition.Line;
+                    int endLineNumber = method.GetLocation().GetLineSpan().EndLinePosition.Line;
+
+                    MyWindowControl.printInBrowserConsole("!@!@ Start line number: " + startLineNumber);
+                    MyWindowControl.printInBrowserConsole("!@!@ End line number: " + endLineNumber);
+
+                    for (int lineNum = startLineNumber; lineNum < endLineNumber; lineNum++)
+                    {
+                        allContents[document.FilePath][lineNum] += $" Logger.logLineInfo(@\"{document.FilePath}~{lineNum}\");";
+                    }
+                }
+
+            }
 
             // we need to modify the program files further to be able to log the signals
             foreach (string key in MyWindowControl.signalsPositions.Keys)
@@ -1331,12 +1396,30 @@ namespace TestingCodeAnalysis
 
                 int totalSymbols = symbols.Count();
 
+                string lineContent = "";
+
                 for (int i = 0; i < totalSymbols; i++)
                 {
                     ISymbol symbol = symbols.ElementAt(i);
                     SyntaxNode node = nodes.ElementAt(i);
                     SyntaxNode parent = node.Parent;
                     string parentStatement = parent.ToString().Replace("\"", "\\\"").Replace("{", "{{").Replace("}", "}}");
+
+                    // Line contents
+                    int lineNumber = parent.GetLocation().GetLineSpan().StartLinePosition.Line + 1;
+                    var activePoint = ((EnvDTE.TextSelection)windowControl.dte.ActiveDocument.Selection).ActivePoint;
+                    string lineText = activePoint.CreateEditPoint().GetLines(lineNumber, lineNumber + 1);
+
+                    if (!parentStatement.StartsWith("["))
+                    {
+                        lineContent = parentStatement;
+
+                    }
+                    else
+                    {
+                        lineContent = parent.Parent.Parent.ToString().Replace("\"", "\\\"").Replace("{", "{{").Replace("}", "}}");
+
+                    }
 
                     symbolsString += symbol + ",";
                     values += symbol + ",";
@@ -1354,7 +1437,7 @@ namespace TestingCodeAnalysis
 
                 string cleanFileName = fileName.Replace(@"\", "/");
                 string key = "Expression at " + cleanFileName + "_" + line + "_" + expression + "_" + Utils.generateID();
-                string logReferenceString = " Logger.logReferences(\"{5}\", \"{0}~{1}~{6}~{{0}}~{2}~{3}~{4}\", {1});";
+                string logReferenceString = " Logger.logReferences(\"{5}\", \"{0}~{1}~{6}~{{0}}~{2}~{3}~{4}~{7}\", {1});";
 
                 MyWindowControl.printInBrowserConsole("$^%%% expression " + expression.Kind());
                 if (controlAncestors.Count() > 0)
@@ -1371,13 +1454,13 @@ namespace TestingCodeAnalysis
                     {
                         StringBuilder beforeWhileSB = new StringBuilder();
                         //beforeWhileSB.AppendFormat(logReferenceString, symbolsString, parentStatements, line + 1, cleanFileName, widgetIDs, key, types);
-                        beforeWhileSB.AppendFormat(logReferenceString, symbolsString, symbolsString, line + 1, cleanFileName, widgetIDs, key, types);
+                        beforeWhileSB.AppendFormat(logReferenceString, symbolsString, symbolsString, line + 1, cleanFileName, widgetIDs, key, types, lineContent);
                         MyWindowControl.printInBrowserConsole("======== Parent statement !!!: " + parentStatements);
                         beforeString = beforeWhileSB.ToString();
                     }
 
                     StringBuilder insideWhileSB = new StringBuilder();
-                    insideWhileSB.AppendFormat(" if ( Logger.getExecutionCount(\"{5}\") != 1 ) {{ " + logReferenceString + " }} else {{ Logger.increaseExecutionCount(\"{5}\"); }}", symbolsString, parentStatements, line + 1, cleanFileName, widgetIDs, key, types);
+                    insideWhileSB.AppendFormat(" if ( Logger.getExecutionCount(\"{5}\") != 1 ) {{ " + logReferenceString + " }} else {{ Logger.increaseExecutionCount(\"{5}\"); }}", symbolsString, parentStatements, line + 1, cleanFileName, widgetIDs, key, types, lineContent);
                     String afterString = insideWhileSB.ToString();
 
                     string tmp = string.Concat(beforeString, docContent[line]);
@@ -1390,7 +1473,7 @@ namespace TestingCodeAnalysis
 
                     StringBuilder afterWhileSB = new StringBuilder();
                     //afterWhileSB.AppendFormat(" if ( Logger.getExecutionCount(\"{5}\") > 1 ) {{ " + logReferenceString + " }}", symbolsString, parentStatements, line + 1, cleanFileName, widgetIDs, key, types);
-                    afterWhileSB.AppendFormat(" if ( Logger.getExecutionCount(\"{5}\") > 1 ) {{ " + logReferenceString + " }}", symbolsString, symbolsString, line + 1, cleanFileName, widgetIDs, key, types);
+                    afterWhileSB.AppendFormat(" if ( Logger.getExecutionCount(\"{5}\") > 1 ) {{ " + logReferenceString + " }}", symbolsString, symbolsString, line + 1, cleanFileName, widgetIDs, key, types, lineContent);
                     MyWindowControl.printInBrowserConsole("))))))) Parent statement !!!: " + parentStatements);
 
                     docContent[endOfWhile] = docContent[endOfWhile] + afterWhileSB.ToString();
@@ -1402,7 +1485,7 @@ namespace TestingCodeAnalysis
 
                     StringBuilder sb = new StringBuilder();
                     //sb.AppendFormat(logReferenceString, symbolsString, parentStatements, line + 1, cleanFileName, widgetIDs, key, types);
-                    sb.AppendFormat(logReferenceString, symbolsString, symbolsString, line + 1, cleanFileName, widgetIDs, key, types);
+                    sb.AppendFormat(logReferenceString, symbolsString, symbolsString, line + 1, cleanFileName, widgetIDs, key, types, lineContent);
                     MyWindowControl.printInBrowserConsole("(((((( Parent statement !!!: " + parentStatements);
                     docContent[line] = docContent[line] + sb.ToString();
 
@@ -1512,7 +1595,7 @@ namespace TestingCodeAnalysis
 
                 // TMP
                 //syntaxTrees.Add(CSharpSyntaxTree.ParseText(File.ReadAllText(@"C:\Users\Admin\Documents\GitHub\P_Inti\P-Inti\Resources\Logger.cs")));
-                syntaxTrees.Add(CSharpSyntaxTree.ParseText(File.ReadAllText(@"C:\Dev\P-Inti\P-Inti\Resources\Logger.cs")));
+                syntaxTrees.Add(CSharpSyntaxTree.ParseText(File.ReadAllText(@"E:\Dev\P_Inti\P-Inti\Resources\Logger.cs")));
 
 
                 refs.Add(MetadataReference.CreateFromFile(typeof(object).GetTypeInfo().Assembly.Location));

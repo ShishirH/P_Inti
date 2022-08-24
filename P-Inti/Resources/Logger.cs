@@ -14,6 +14,7 @@ namespace ConsoleApp1 {
         private static Stopwatch sw = new Stopwatch();
         public static System.IO.StreamWriter logFile = null;
         public static System.IO.StreamWriter signalFile = null;
+        public static System.IO.StreamWriter lineInfoFile = null;
 
         public static Dictionary<string, int> timesCounter = new Dictionary<string, int>();
         public static int getExecutionCount(string key) {
@@ -43,10 +44,13 @@ namespace ConsoleApp1 {
             dt1 = nanoTime();
             sw.Start();
             logFile = new System.IO.StreamWriter(System.IO.File.Create(fileName + ".log"));
-            logFile.WriteLine("index~symbols~expressions~types~values~line~file~widgetsID~time~column~row~array~memoryAddress");
+            logFile.WriteLine("index~symbols~expressions~types~values~line~file~widgetsID~parentStatement~time~column~row~array~memoryAddress");
 
             signalFile = new System.IO.StreamWriter(System.IO.File.Create(fileName + ".signal"));
             signalFile.WriteLine("file~line~widgetsID~time");
+
+            lineInfoFile = new System.IO.StreamWriter(System.IO.File.Create(fileName + ".lineInfo"));
+            lineInfoFile.WriteLine("filePath~line~time");
         }
 
 
@@ -238,6 +242,11 @@ namespace ConsoleApp1 {
             signalFile.WriteLine(signalsString + "~" + (nanoTime() - dt1));
         }
 
+        public static void logLineInfo(String lineInfoString)
+        {
+            lineInfoFile.WriteLine(lineInfoString + "~" + (nanoTime() - dt1));
+        }
+
 
         public static bool logReferences(String logString, params object[] parentExpressions) {
             StringBuilder sb = new StringBuilder();
@@ -295,6 +304,8 @@ namespace ConsoleApp1 {
             logFile.Close();
             signalFile.Flush();
             signalFile.Close();
+            lineInfoFile.Flush();
+            lineInfoFile.Close();
         }
 
         private static long nanoTime() {
