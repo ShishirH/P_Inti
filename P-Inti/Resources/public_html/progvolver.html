@@ -1086,23 +1086,23 @@
         //canvas.add(referenceWidget);
         //console.log(referenceWidget);
 
-           var objectMembersArray = [];
-
-           for (let i = 0; i < 20; i++) {
-               var objectMembers = [];
-
-               var progvolverString = new ProgvolverSymbol({
-                   dataType: "double",
-                   fill: '#B3CDE3',
-                   type: "string",
-                   name: "asd a",
-                   value: "Hello",
-                   isMember: true
-               });
-
-               objectMembers.push(progvolverString);
-               objectMembersArray.push(objectMembers);
-           }
+//           var objectMembersArray = [];
+//
+//           for (let i = 0; i < 20; i++) {
+//               var objectMembers = [];
+//
+//               var progvolverString = new ProgvolverSymbol({
+//                   dataType: "double",
+//                   fill: '#B3CDE3',
+//                   type: "string",
+//                   name: "asd a",
+//                   value: "Hello",
+//                   isMember: true
+//               });
+//
+//               objectMembers.push(progvolverString);
+//               objectMembersArray.push(objectMembers);
+//           }
 //
 //
 //            var arrayWidget = new ArraySymbol({
@@ -1388,14 +1388,14 @@
         //
         // canvas.add(anotherComparison);
 
-        // var logicalOperator = new LogicalOperators({
-        //     y: 400,
-        //     x: 400,
-        //     top: 400,
-        //     left: 400
-        // });
-        //
-        // canvas.add(logicalOperator);
+//         var logicalOperator = new LogicalOperators({
+//             y: 400,
+//             x: 400,
+//             top: 100,
+//             left: 100
+//         });
+//        
+//         canvas.add(logicalOperator);
         // //
         // var arithmeticOperator = new ArithmeticOperators({
         //     y: 400,
@@ -1437,6 +1437,65 @@
         //
         // canvas.add(textChange);
         // textChange.expand();
+//        var options = {
+//          height: 40,
+//          width: 100,
+//          left: 100,
+//          top: 100,
+//          y: 100,
+//          x: 100,
+//          fill: 'green'
+//        };
+//        var rect = createObjectBackground(fabric.Rect, options, null);
+//        console.log(rect);
+//          // "add" rectangle onto canvas
+//          canvas.add(rect);
+//        var leftRect = new fabric.Rect({
+//            top: 100, 
+//            left: 100,
+//            height: 20,
+//            width: 20
+//        });
+//        var rightRect = new fabric.Rect({
+//            top: 100, 
+//            left: 100,
+//            height: 20,
+//            width: 20
+//        });
+//        var originParent = {originX: 'left', originY: "center"}
+//        var originChild = {originX: "left", originY: "center"}
+//        rect.addChild(leftRect, {
+//            whenCompressed: {
+//                x: 3, y: 0, 
+//                scaleX: 1, scaleY: 1, opacity: 1,
+//                originParent: originParent,
+//                originChild: originChild
+//            },
+//            whenExpanded: {
+//                x: 3, y: 0, 
+//                scaleX: 1, scaleY: 1, opacity: 1,
+//                originParent: originParent,
+//                originChild: originChild
+//            }
+//        });
+//        canvas.add(leftRect)
+//        originParent = {originX: 'right', originY: "center"}
+//        originChild = {originX: "right", originY: "center"}
+//        rect.addChild(rightRect, {
+//            whenCompressed: {
+//                x: -3, y: 0, 
+//                scaleX: 1, scaleY: 1, opacity: 1,
+//                originParent: originParent,
+//                originChild: originChild
+//            },
+//            whenExpanded: {
+//                x: -3, y: 0, 
+//                scaleX: 1, scaleY: 1, opacity: 1,
+//                originParent: originParent,
+//                originChild: originChild
+//            }
+//        });
+//        canvas.add(rightRect);
     </script>
 </body>
 </html>

@@ -1593,9 +1593,9 @@ namespace TestingCodeAnalysis
                 //    syntaxTrees.Add(CSharpSyntaxTree.ParseText(File.ReadAllText(loggerFilePath)));
                 //}
 
-                // TMP
-                //syntaxTrees.Add(CSharpSyntaxTree.ParseText(File.ReadAllText(@"C:\Users\Admin\Documents\GitHub\P_Inti\P-Inti\Resources\Logger.cs")));
-                syntaxTrees.Add(CSharpSyntaxTree.ParseText(File.ReadAllText(@"E:\Dev\P_Inti\P-Inti\Resources\Logger.cs")));
+                // TMP  C:\Users\Hamid Mansoor\Desktop\P_Inti\P-Inti\bin\x86\Debug\P-Inti.vsix
+
+                syntaxTrees.Add(CSharpSyntaxTree.ParseText(File.ReadAllText(@"C:\P_Inti\P-Inti\Resources\Logger.cs")));
 
 
                 refs.Add(MetadataReference.CreateFromFile(typeof(object).GetTypeInfo().Assembly.Location));

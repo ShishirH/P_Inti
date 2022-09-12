@@ -90,6 +90,8 @@ class ScatterPlot extends ConnectableWidget {
 
 
         this.setUpD3 = function (axis, plottingDiv, data, svg, availableWidth, availableHeight, xCoord) {
+            console.log("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!  INSIDE this.setUpD3 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!")
+            console.log(data );
             let width = availableWidth - margin.left - margin.right,
                 height = availableHeight - margin.top - margin.bottom;
 
@@ -148,13 +150,13 @@ class ScatterPlot extends ConnectableWidget {
                     .domain(background.symbols)
                     .range(d3.schemeCategory10);
 
-                svg.append("line")
-                    .attr("class", "zeroLine")
-                    .attr("x1", xScale(minX))
-                    .attr("x2", xScale(maxX))
-                    .attr("y1", 0)
-                    .attr("y2", 0)
-                    .attr("stroke", 'grey')
+//                svg.append("line")
+//                    .attr("class", "zeroLine")
+//                    .attr("x1", xScale(minX))
+//                    .attr("x2", xScale(maxX))
+//                    .attr("y1", 0)
+//                    .attr("y2", 0)
+//                    .attr("stroke", 'grey')
             }
         }
 
@@ -256,41 +258,7 @@ class ScatterPlot extends ConnectableWidget {
                 .duration(duration)
                 .attr("cy", d => yScale(d.yValue))
                 .attr("opacity", 1);
-
-            // let circlesJoin = svg.selectAll("circle.pepe")
-            //     .data(combinedData);
-            //
-            // circlesJoin.enter()
-            //     .append("circle")
-            //     .classed("pepe", true)
-            //     .attr("opacity", 0.5)
-            //     .attr("cx", d => xScale(d[xCoord]))
-            //     .attr("cy", d => endPoint(d))
-            //     .attr("r", "2")
-            //     .style("fill", d => colorScale(d.symbols))
-            //     .attr("stroke", d => darken(colorScale(d.symbols)))
-            //     .attr("stroke-width", 0.5)
-            //     .transition()
-            //     .duration(duration)
-            //     .attr("cy", d => yScale(d.values))
-            //     .attr("opacity", 1)
-            //
-            //
-            // circlesJoin
-            //     .transition()
-            //     .duration(duration)
-            //     .attr("cx", d => xScale(d[xCoord]))
-            //     .attr("cy", d => yScale(d.values))
-            //     .style("fill", d => colorScale(d.symbolName))
-            //     .attr("stroke", d => darken(colorScale(d.symbolName)))
-            //
-            // circlesJoin.exit()
-            //     .transition()
-            //     .duration(duration)
-            //     .attr("opacity", 0)
-            //     .remove()
         }
-
 
         this.addPlottingArea = function (options) {
 
@@ -679,7 +647,7 @@ class ScatterPlot extends ConnectableWidget {
             var y = 0;
 
             var inputPortY = new ConnectionPort({
-                radius: 15,
+//                radius: 15,
                 fill: background.fill,
                 stroke: darken(background.stroke),
                 strokeWidth: 1,
@@ -690,7 +658,7 @@ class ScatterPlot extends ConnectableWidget {
             });
 
             var inputPortX = new ConnectionPort({
-                radius: 15,
+//                radius: 15,
                 fill: background.fill,
                 stroke: darken(background.stroke),
                 strokeWidth: 1,
