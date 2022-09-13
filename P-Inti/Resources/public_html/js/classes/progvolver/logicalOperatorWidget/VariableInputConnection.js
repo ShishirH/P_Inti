@@ -24,6 +24,7 @@ var VariableInputConnection = iVoLVER.util.createClass(fabric.Rect, {
         this.isOutputPort = options.isOutputPort;
         this.isLeft = options.isLeft;
         this.value = "";
+        this.font = "bold 17px Helvetica";
 
         this.oldRender = this.render;
         this.render = function (ctx) {
@@ -87,14 +88,19 @@ var VariableInputConnection = iVoLVER.util.createClass(fabric.Rect, {
     },
     processConnectionRequest: function (connection) {
         this.inConnection = connection;
+        console.log("Connection is: ");
+        console.log(connection);
         let source = connection.source;
         this.operandValue = Number(source.value);
 
-        if (connection.source.background && connection.source.background.name) {
-            this.value = (connection.source.background.name)
-        } else {
-            this.value = "";
+        if (connection.source.parent.parent.connectedVariableName) {
+            this.value = (connection.source.parent.parent.connectedVariableName)
+        } else if (connection.source.background && connection.source.background.name) {
+            this.value = connection.source.background.name;
         }
+
+        this.set('width', Math.max(getValueWidth(this.font, this), 35));
+        this.parent.modifyWidth(this.width - 35); // 35 is default width
 
         this.set('fill', connection.source.fill);
         this.set('stroke', connection.source.stroke);

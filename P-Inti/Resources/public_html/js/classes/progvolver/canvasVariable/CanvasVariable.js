@@ -46,6 +46,9 @@ class CanvasVariable {
             background.connectionPort.setOperandValue(newValue);
             background.set('width', getValueWidth(newValue, symbolFont) + 10 > 40 ? getValueWidth(newValue, symbolFont) + 10 : 40);
             background.expandedWidth = background.width;
+
+            background.positionObjects();
+            background.positionHtmlObjects();
         }
 
         background.setIndex = function (newIndex) {
@@ -202,7 +205,9 @@ class CanvasVariable {
         }
 
         background.addTextField = function () {
-            let textField = new fabric.IText("Val", {
+            let isObjectSelectable = !background.isColorWidgetOutput;
+
+                let textField = new fabric.IText("Val", {
                 fontFamily: 'Helvetica',
                 fill: '#333',
                 padding: 3,
@@ -211,7 +216,10 @@ class CanvasVariable {
                 borderColor: 'white',
                 textAlign: 'center',
                 editingBorderColor: 'white',
-            });
+                selectable: isObjectSelectable,
+                evented: isObjectSelectable,
+                editable: isObjectSelectable,
+                });
 
             var originParent = {originX: 'center', originY: 'center'};
             var originChild = {originX: 'center', originY: 'center'};
@@ -274,6 +282,8 @@ class CanvasVariable {
                 background.setValue(background.value);
             }
 
+            background.expand();
+            background.compress();
             background.positionObjects();
             background.positionHtmlObjects();
         })

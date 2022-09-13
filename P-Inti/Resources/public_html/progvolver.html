@@ -291,9 +291,12 @@
                     <button class="large" onclick="toggleExtendedTimeline()" style="position: relative; top: -15px; border-radius: 15px; width: 30px; height: 30px; padding: 0px; margin: 0px; "><i id="extendedTimelineButtonIcon" style=" position: relative; top: -2px; font-size: 18px; color: black;" class="fa fa-chevron-down"></i></button>
                 </div>
 
-                <div style=" height:60px; width:80px; border-right: #6f6f6f 1px solid; float:left; ">
+                <div style=" height:60px; width:255px; border-right: #6f6f6f 1px solid; float:left; ">
                     <ul class="menu nonSelection">
-                        <li class=""><a onclick="playSlider()"><i id="playButton" class="icon-play fa-2x" style="padding:10px 10px;"></i></a></li>
+                        <li class="verticalLeftDivider verticalRightDivider verticalRightDivider2"><a onclick="moveTimelinePrevious()"><i id="timelinePrevious" class="fa fa-step-backward fa-2x" style="padding:10px 10px;"></i></a></li>
+                        <li class="verticalLeftDivider verticalRightDivider verticalRightDivider2"><a onclick="playSliderLineData()"><i id="playButton" class="icon-play fa-2x" style="padding:10px 10px;"></i></a></li>
+                        <li class="verticalRightDivider verticalRightDivider2"><a onclick="moveTimelineNext()"><i id="timelineNext" class="fa fa-step-forward fa-2x" style="padding:10px 10px;"></i></a></li>
+                        <li class=""><a onclick="goToLineInFile()"><i id="goToButton" class="fa fa-motorcycle fa-2x" style="padding:5px 5px;"></i></a></li>
                     </ul>
                 </div>
 
@@ -549,13 +552,17 @@
                             var logFileContent = response.logFileContent.join("\n");
                             var scopeFileContent = response.scopeFileContent.join("\n");
                             var signalFileContent = response.signalFileContent.join("\n");
+                            var lineInfoFileContent = response.lineInfoFileContent.join("\n");
+
+                            console.log("lineInfoFileContent is: ");
+                            console.log(lineInfoFileContent);
                             console.log("logFileContent is: ");
                             console.log(logFileContent);
                             logFileContent = preProcessLogFileForDuplicates(logFileContent);
                             console.log("logFileContent now is: ");
                             console.log(logFileContent);
                             processMethodParameters(logFileContent);
-                            processLogFiles(logFileContent, scopeFileContent, signalFileContent);
+                            processLogFiles(logFileContent, scopeFileContent, signalFileContent, lineInfoFileContent);
                             window.snapshotWidget && window.snapshotWidget.parseMemberValues();
                             waitingDialog.dialog('content', '<div style="text-align: center; margin-top: 20px;"><span align="center" style="font-size: 150%;">' + response.response + '</span></div>');
                             if (response.success) {

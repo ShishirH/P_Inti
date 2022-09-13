@@ -113,6 +113,17 @@ class ConnectableWidget {
                     }
                 }
             }
+
+            // // shooting stars decay
+            if (backgroundObject.shootingStarsDict) {
+                for (const [key, value] of Object.entries(backgroundObject.shootingStarsDict)) {
+                    backgroundObject.shootingStarsDict[key].array && backgroundObject.shootingStarsDict[key].array.forEach(function (shootingStar) {
+                        console.log("shooting star decay");
+                        shootingStarsDecay(backgroundObject, namedSymbols[key]);
+                    });
+                }
+            }
+
         };
         return this.background;
     }

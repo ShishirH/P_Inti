@@ -3,6 +3,166 @@ window.sliderDimension = "time";
 progvolver = {
     objects: {}
 };
+function goToLineInFile() {
+    let lineDetails = getLineNumberForCurrentTime(window.presentTime);
+
+    let fileName = lineDetails[0];
+    let lineNumber = lineDetails[1];
+
+    var args = {
+        id: "100",
+        mainColor: "#BDE0EB",
+        startLine: lineNumber,
+        endLine: lineNumber,
+        file: fileName,
+        lineNumber: lineNumber,
+        animate: true,
+        newDispatcher: true,
+        opacity: 0.5
+    };
+    //console.log(args);
+    window.jsHandler.goTo(args);
+}
+function moveTimelineNext() {
+    let currentTime = window.presentTime;
+    let currentIndex = 0;
+
+    var theSlider = $("#theSlider").data("ionRangeSlider");
+
+    if (!currentTime) {
+        // onSliderChange hasn't been called
+        currentTime = window.minTime;
+    }
+
+    console.log("currentTime is: ");
+    console.log(currentTime);
+
+    // get next time
+    currentTime = getNextTimeLineData(currentTime);
+    currentIndex = getNextTimeLineDataIndex(currentTime);
+
+    if (currentIndex == window.lineData.length) {
+        return;
+    }
+
+    console.log("Next time is: ");
+    console.log(currentTime);
+
+    console.log("Current index is: ");
+    console.log(currentIndex);
+    var ids = Object.keys(progvolver.objects);
+    ids.forEach(function (id) {
+        var object = progvolver.objects[id];
+        object.setProgramTime && object.setProgramTime(currentTime);
+    });
+
+    theSlider.update({from: ((currentIndex * 100) / window.lineData.length)});
+
+    sliderMarksElement.append(sliderMarksElements);
+
+    var selectedSymbol = canvas.getActiveObject();
+
+    if (selectedSymbol && selectedSymbol.showSliderMarks) {
+        selectedSymbol.showSliderMarks();
+    }
+
+    window.presentTime = currentTime;
+
+}
+
+function getNextTimeLineData(currentTime) {
+    return window.lineData.filter(item => item.time > currentTime)[0].time;
+}
+
+function getNextTimeLineDataIndex(currentTime) {
+    for(let i = 0; i < window.lineData.length; i++) {
+        if (window.lineData[i].time > currentTime) {
+            return i;
+        }
+    }
+}
+
+function moveTimelinePrevious() {
+    let currentTime = window.presentTime;
+    let currentIndex = 0;
+
+    var theSlider = $("#theSlider").data("ionRangeSlider");
+
+    if (!currentTime) {
+        // onSliderChange hasn't been called
+        currentTime = window.minTime;
+    }
+
+    console.log("currentTime is: ");
+    console.log(currentTime);
+
+    // get next time
+    currentTime = getPreviousTimeLineData(currentTime);
+    currentIndex = getPreviousTimeLineDataIndex(currentTime);
+
+    if (currentIndex == -1) {
+        return;
+    }
+
+    console.log("Previous time is: ");
+    console.log(currentTime);
+
+    console.log("Previous index is: ");
+    console.log(currentIndex);
+    var ids = Object.keys(progvolver.objects);
+    ids.forEach(function (id) {
+        var object = progvolver.objects[id];
+        object.setProgramTime && object.setProgramTime(currentTime);
+    });
+
+    theSlider.update({from: ((currentIndex * 100) / window.lineData.length)});
+
+    sliderMarksElement.append(sliderMarksElements);
+
+    var selectedSymbol = canvas.getActiveObject();
+
+    if (selectedSymbol && selectedSymbol.showSliderMarks) {
+        selectedSymbol.showSliderMarks();
+    }
+
+    window.presentTime = currentTime;
+}
+
+function getPreviousTimeLineData(currentTime) {
+    var filteredObjects =  window.lineData.filter(item => item.time < currentTime);
+
+    if (filteredObjects.length > 0) {
+        return filteredObjects[filteredObjects.length - 1].time;
+    } else {
+        return currentTime;
+    }
+}
+
+function getLineNumberForCurrentTime(currentTime) {
+    console.log("Current time is: ");
+    console.log(currentTime);
+    var filteredObjects =  window.lineData.filter(item => item.time > currentTime);
+    let lineNumberArray = [];
+    if (filteredObjects.length > 0) {
+        let file = filteredObjects[0].filePath;
+        let lineNumber = filteredObjects[0].line;
+
+        lineNumberArray[0] = file;
+        lineNumberArray[1] = lineNumber;
+
+        return lineNumberArray;
+    } else {
+        return ["", -1];
+    }
+}
+
+function getPreviousTimeLineDataIndex(currentTime) {
+    for(let i = 0; i < window.lineData.length; i++) {
+        if (window.lineData[i].time > currentTime) {
+            return i - 1;
+        }
+    }
+}
 
 function drawCurveThroughPoints(ctx, points) {
     ctx.save();
@@ -114,20 +274,76 @@ function getQuadraticBezierXYatT(startPt, controlPt, endPt, T) {
 }
 
 function drawCirclesAlongCurve(ctx, points) {
-    ctx.save();
-    let radius = 6.0;
-    let opacity = 0.3;
+    //ctx.save();
+    let shootingStarsCircles = [];
+    let radius = 12;
+    let opacity = 0.5;
     for (var t = 0; t < 101; t += 5) {
         var point = getQuadraticBezierXYatT(points[0], points[1], points[2], t / 100);
-        ctx.beginPath();
-        ctx.arc(point.x, point.y, radius, 0, Math.PI * 2);
-        ctx.closePath();
-        ctx.fillStyle = rgba(255, 255, 0, opacity);
-        ctx.fill();
-        radius = radius + 0.3;
-        opacity = opacity + 0.015;
+        var shootingStarCircle = new fabric.Circle({
+            radius: radius,
+            top: point.y,
+            left: point.x,
+            fill: rgba(255, 255, 0, opacity),
+            centerX: "center",
+            centerY: "center",
+            opacity: opacity
+        });
+
+        canvas.add(shootingStarCircle);
+        shootingStarsCircles.push(shootingStarCircle);
+
+        // ctx.beginPath();
+        // ctx.arc(point.x, point.y, radius, 0, Math.PI * 2);
+        // ctx.closePath();
+        // ctx.fillStyle = rgba(255, 255, 0, opacity);
+        // ctx.fill();
+        radius = radius - 0.3;
+        //opacity = opacity - 0.015;
     }
-    ctx.restore();
+
+    return shootingStarsCircles;
+    //ctx.restore();
+}
+
+function shootingStarsDecay(widget1, widget2) {
+    let currentTime = window.presentTime;
+    let currentIndex = window.lineData.filter(item => item.time == currentTime)[0].index;
+    let stepsToDecay = 4;
+
+    console.log("Widget 1");
+    console.log(widget1);
+    console.log("widget2");
+    console.log(widget2);
+    console.log("widget1.shootingStarsDict");
+    console.log(widget1.shootingStarsDict);
+    if (widget1.shootingStarsDict[widget2.name]) {
+        console.log("I am here");
+        let shootingStarsCreationTime = widget1.shootingStarsDict[widget2.name].time;
+        if (!shootingStarsCreationTime) {
+            console.log("Returning")
+            return;
+        }
+        let creationIndex = window.lineData.filter(item => item.time == shootingStarsCreationTime)[0].index;
+        console.log("CreationIndex");
+        console.log(creationIndex);
+
+        let indexDifference = Math.abs(currentIndex - creationIndex);
+        console.log("indexDifference");
+        console.log(indexDifference);
+
+        if (indexDifference >= stepsToDecay) {
+            // remove the shooting stars
+            widget1.shootingStarsDict[widget2.name].array.forEach(function (shootingStar) {
+                canvas.remove(shootingStar);
+                //widget1.shootingStarsDict[widget2.name] = {};
+            });
+        } else if (indexDifference > 0 ){
+            widget1.shootingStarsDict[widget2.name].array.forEach(function (shootingStar) {
+                shootingStar.opacity = ((stepsToDecay - indexDifference) / stepsToDecay);
+            });
+        }
+    }
 }
 
 function generateShootingStars(widget1, widget2) {
@@ -135,11 +351,30 @@ function generateShootingStars(widget1, widget2) {
     var shootingStarStart = widget1.getPointByOrigin('right', 'center');
     shootingStarStart.x += 5;
     let shootingStarCenter = {x: shootingStarStart.x + 100, y: shootingStarStart.y + 100};
-    let shootingStarEnd = widget2.getPointByOrigin('right', 'center');
+    let shootingStarEnd = widget2.getPointByOrigin('right', 'top');
 
     var points = [shootingStarStart, shootingStarCenter, shootingStarEnd];
-    drawCurveThroughPoints(ctx, points);
-    drawCirclesAlongCurve(ctx, points);
+    //drawCurveThroughPoints(ctx, points);
+    shootingStarsCircles = drawCirclesAlongCurve(ctx, points);
+
+    console.log("Shooting stars are: ");
+    console.log(shootingStarsCircles);
+    if (widget1.shootingStarsDict) {
+        console.log("shooting star dict exists");
+        console.log(widget1.shootingStarsDict[widget2.name]);
+        if (widget1.shootingStarsDict[widget2.name]) {
+            widget1.shootingStarsDict[widget2.name].array && widget1.shootingStarsDict[widget2.name].array.forEach(function (shootingStar) {
+                console.log("removing existing shooting star");
+                canvas.remove(shootingStar);
+            });
+        }
+    } else {
+        widget1.shootingStarsDict = {};
+        console.log("Creating dict");
+    }
+    widget1.shootingStarsDict[widget2.name] = {"time": window.presentTime, "array": shootingStarsCircles};
+    console.log("widget1.shootingStarsDict");
+    console.log(widget1.shootingStarsDict);
 }
 
 function parseShootingStarsSource(parentStatement) {
@@ -154,6 +389,8 @@ function parseShootingStarsSource(parentStatement) {
         if (namedSymbols[rightHalf]) {
             console.log("Found " + rightHalf);
             return rightHalf;
+        } else if (namedSymbols[leftHalf]) {
+            return leftHalf;
         }
     }
 }
@@ -7044,7 +7281,18 @@ function enterFunctionButtonClicked() {
 //        activateFunctionDrawingMode();
 //    }
 //}
+function getValueWidth(theFont, background) {
+    var ctx = canvas.getContext();
+    ctx.save();
+    ctx.font = theFont;
 
+    var renderableValue = background.value;
+    if (!iVoLVER.util.isUndefined(background.value) && iVoLVER.util.isNumber(background.value)) {
+        renderableValue = background.value.toFixed(2);
+    }
+
+    return ctx.measureText(renderableValue).width;
+}
 
 function drawFilledMarkButtonClicked() {
     if (canvas.isFilledMarkDrawingMode) {
@@ -7138,11 +7386,13 @@ function newConnectionReleasedOnCanvas(connection, coordX, coordY) {
         connection.setDestination(destination, true);
 
     } else if (connection.source.type === "ArrayColorWidgetOutput") {
+        console.log("Connection here is: ")
+        console.log(connection);
         destination = new CanvasVariable({
-            top: 250,
-            left: 250,
-            x: 250,
-            y: 250,
+            top: coordX,
+            left: coordY,
+            x: coordX,
+            y: coordY,
             fill: connection.source.fill,
             stroke: connection.source.stroke,
             parent: connection.source,
@@ -9189,9 +9439,13 @@ function onSliderChanged(data) {
 //
 //
 
+    console.log("Data is: ");
+    console.log(data);
+
     if (window.signalData) {
         var currentTime = changeRange(data.from, data.min, data.max, window.minTime, window.maxTime);
 
+        window.presentTime = currentTime;
         // currentTime -= window.sliderDelta;
         var ids = Object.keys(progvolver.objects);
         ids.forEach(function (id) {
@@ -9204,6 +9458,7 @@ function onSliderChanged(data) {
 
 
         var currentTime = changeRange(data.from, data.min, data.max, window.minTime, window.maxTime);
+        //window.presentTime = currentTime;
 
         // 10% of difference between maxTime and minTime as the width for the Gaussian curve.
         window.colorDecayWidth = (window.maxTime - window.minTime) * 0.1;
@@ -9213,16 +9468,22 @@ function onSliderChanged(data) {
         var ids = Object.keys(progvolver.objects);
         ids.forEach(function (id) {
             var object = progvolver.objects[id];
-            object.setProgramTime && object.setProgramTime(currentTime);
+            object.setProgramTime && object.setProgramTime(window.presentTime);
         });
+
+        console.log("Window rpesent time is: ");
+        console.log(window.presentTime);
+        let lineNumberDetails = getLineNumberForCurrentTime(window.presentTime);
+        console.log("lineNumberDetails");
+        console.log(lineNumberDetails);
 
         const result = window.logData.filter(item => item[window.sliderDimension] <= currentTime);
 
-
+        let lastRecordForExpression = null;
         if (result.length > 0) {
 
-
             let lastRecord = result[result.length - 1];
+            lastRecordForExpression = lastRecord;
             let evaluatedLine = lastRecord.line - 1;
 
 
@@ -9291,6 +9552,12 @@ function onSliderChanged(data) {
 
         }
 
+        let expressions = (lastRecordForExpression != null) ? lastRecordForExpression.expressions : null;
+        window.jsHandler.setCurrentLine({
+            lineNumber: lineNumberDetails[1],
+            filePath: lineNumberDetails[0],
+            expressions: expressions
+        }).then(function (response) {});
 
     }
 
@@ -9356,6 +9623,35 @@ function playSlider() {
     playButton.data('playing', !playing);
 }
 
+function playSliderLineData() {
+
+    var playButton = $("#playButton");
+    playButton.toggleClass('icon-play');
+    playButton.toggleClass('icon-pause');
+
+    var playing = playButton.data('playing');
+    var theSlider = $("#theSlider").data("ionRangeSlider");
+    var interval = 2;
+
+    if (playing) {
+        clearInterval(sliderTimer);
+    } else {
+        sliderTimer = setInterval(function () {
+
+            theSlider.update({from: (theSlider.result.from + 1) % theSlider.result.max});
+
+            sliderMarksElement.append(sliderMarksElements);
+
+            var selectedSymbol = canvas.getActiveObject();
+
+            if (selectedSymbol && selectedSymbol.showSliderMarks) {
+                selectedSymbol.showSliderMarks();
+            }
+
+        }, interval);
+    }
+    playButton.data('playing', !playing);
+}
 
 function reloadPage() {
     window.location.reload(false);
@@ -9549,7 +9845,7 @@ function updateMemoryReferences(referencedObject) {
     console.log(referenceWidget.otherReferencedObjects);
 }
 
-function processLogFiles(logFileContent, scopeFileContent, signalFileContent) {
+function processLogFiles(logFileContent, scopeFileContent, signalFileContent, lineInfoFileContent) {
 
     window.minTimeSignalData = Infinity;
     window.maxTimeSignalData = -Infinity;
@@ -9583,6 +9879,34 @@ function processLogFiles(logFileContent, scopeFileContent, signalFileContent) {
         });
     }
 
+    if (lineInfoFileContent) {
+        Papa.parse(lineInfoFileContent.trim(), {
+            delimiter: "~",
+            header: true,
+            dynamicTyping: true,
+            complete: function (lineData) {
+                if (lineData && lineData.data && lineData.data[0]) {
+                    window.lineData = lineData.data;
+
+                    window.minTimeLineData = lineData.data[0].time;
+                    window.maxTimeLineData = lineData.data[lineData.data.length - 1].time;
+
+                     window.minTime = Math.min(window.minTime, window.minTimeLineData);
+                     window.maxTime = Math.max(window.maxTime, window.maxTimeLineData);
+
+                    // var ids = Object.keys(progvolver.objects);
+                    // ids.forEach(function (id) {
+                    //     var object = progvolver.objects[id];
+                    //     object.setSignalData && object.setSignalData();
+                    //     object.setProgramTime && object.setProgramTime(window.minTime);
+                    // });
+
+                }
+            }
+        });
+    }
+
+
     // we first process the content of the log file
     Papa.parse(logFileContent.trim(), {
         delimiter: "~",
@@ -9614,6 +9938,11 @@ function processLogFiles(logFileContent, scopeFileContent, signalFileContent) {
                     window.minTime = Math.min(window.minTimeLogData, window.minTimeSignalData);
                     window.maxTime = Math.max(window.maxTimeLogData, window.maxTimeSignalData);
 
+                    console.log("Window.minTime was: " + window.minTime);
+                    window.minTime = Math.min(window.minTime, window.minTimeLineData);
+                    window.maxTime = Math.max(window.maxTime, window.maxTimeLineData);
+
+                    console.log("Window.minTime is: " + window.minTime);
 
 //                    let sliderWidth = $("#theSlider").parent().width();
 //                    window.sliderMargin = 50; // pixels before the timeline starts to react to actual data
@@ -9748,6 +10077,8 @@ function processLogFiles(logFileContent, scopeFileContent, signalFileContent) {
                     });
 
 
+                    console.log("Timeoffset");
+                    console.log(logData.data[0].timeOffset);
                     window.firstOffset = moment(logData.data[0].timeOffset).toDate();
                     window.lastOffset = moment(logData.data[logData.data.length - 1].timeOffset).toDate();
                     window.programDuration = moment.duration(window.lastOffset - window.firstOffset).valueOf();

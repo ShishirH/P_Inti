@@ -168,7 +168,7 @@ class ArraySymbol {
             if (columns == 1) {
 
                 if (dataItem) {
-                    background.setValue(dataItem.array);
+                    background.setValue(dataItem.array, dataItem);
                     if (dataItem.memoryAddress) {
                         // memory address changed
                         if (!background.memoryAddress != dataItem.memoryAddress) {
@@ -187,6 +187,7 @@ class ArraySymbol {
 
         background.setProgramTime = function (time) {
             // 'this' here refers to the variable background
+            console.log("Inside program time");
             background.time = time;
             background.currentTime = time;
             if (background.history) {
@@ -197,7 +198,20 @@ class ArraySymbol {
                     background.onValuesUpdated && background.onValuesUpdated(null);
                 }
             }
-        };
+
+            // shooting star decay
+            for (let i = 0; i < rows; i++) {
+                if (arrayElementsArray[i][0].shootingStarsDict) {
+                    for (const [key, value] of Object.entries(arrayElementsArray[i][0].shootingStarsDict)) {
+                        arrayElementsArray[i][0].shootingStarsDict[key].array && arrayElementsArray[i][0].shootingStarsDict[key].array.forEach(function (shootingStar) {
+                            shootingStarsDecay(arrayElementsArray[i][0], namedSymbols[key]);
+                        });
+                    }
+                }
+
+            }
+            ;
+        }
 
         background.registerListener('added', function (options) {
             if (!background.isInitialized) {
@@ -1349,7 +1363,7 @@ class ArraySymbol {
             return arrayWidget;
         }
 
-        background.setValue = function (newValue) {
+        background.setValue = function (newValue, dataItem) {
             // [3;40;60;100000000;0;0;0;0;0]
 
             console.log("New value is: ");
@@ -1362,12 +1376,37 @@ class ArraySymbol {
             for (let i = 0; i < valuesArray.length; i++) {
                 let currentValue = arrayElementsArray[i][0].element;
 
+                // if (arrayElementsArray[i][0].shootingStarsDict) {
+                //     for (const [key, value] of Object.entries(arrayElementsArray[i][0].shootingStarsDict)) {
+                //         arrayElementsArray[i][0].shootingStarsDict[key].array && arrayElementsArray[i][0].shootingStarsDict[key].array.forEach(function (shootingStar) {
+                //             shootingStarsDecay(arrayElementsArray[i][0], namedSymbols[key]);
+                //         });
+                //     }
+                // }
+
                 if (currentValue != valuesArray[i]) {
                     arrayElementsArray[i][0].timeOfChange = background.currentTime;
+
+                    console.log("Data item is: ");
+                    console.log(dataItem);
+                    console.log("Parent staetment");
+                    console.log(dataItem.parentStatement);
+
+                    let shootingStarsSource;
+
+                    shootingStarsSource = parseShootingStarsSource(dataItem.parentStatement);
+                    if (!shootingStarsSource)
+                        shootingStarsSource = parseShootingStarsSource(dataItem.grandParentStatement);
+
+                    if (shootingStarsSource && shootingStarsSource != background.name) {
+                        if (arrayElementsArray[i][0].visible) {
+                            generateShootingStars(arrayElementsArray[i][0], namedSymbols[shootingStarsSource]);
+                        }
+                    }
                 }
 
                 arrayElementsArray[i][0].element = valuesArray[i];
-                background.updateColorDecay(arrayElementsArray[i][0]);
+                //background.updateColorDecay(arrayElementsArray[i][0]);
             }
         }
 

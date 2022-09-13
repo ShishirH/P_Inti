@@ -44,13 +44,13 @@ namespace ConsoleApp1 {
             dt1 = nanoTime();
             sw.Start();
             logFile = new System.IO.StreamWriter(System.IO.File.Create(fileName + ".log"));
-            logFile.WriteLine("index~symbols~expressions~types~values~line~file~widgetsID~parentStatement~time~column~row~array~memoryAddress");
+            logFile.WriteLine("index~symbols~expressions~types~values~line~file~widgetsID~parentStatement~grandParentStatement~time~column~row~array~memoryAddress");
 
             signalFile = new System.IO.StreamWriter(System.IO.File.Create(fileName + ".signal"));
             signalFile.WriteLine("file~line~widgetsID~time");
 
             lineInfoFile = new System.IO.StreamWriter(System.IO.File.Create(fileName + ".lineInfo"));
-            lineInfoFile.WriteLine("filePath~line~time");
+            lineInfoFile.WriteLine("index~filePath~line~time");
         }
 
 

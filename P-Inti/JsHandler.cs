@@ -999,16 +999,17 @@ namespace P_Inti
 
             IWpfTextView textView = Utils.GetWpfView();
 
-            //if (textView != null) TODO ERROR FIX
-            //{
-            //    theDispatcher.Invoke(new Action(() => {
-            //        Dictionary<string, CodeAdornment> codeAdornments = windowControl.codeAdornments;
-            //        SolidColorBrush brush = (SolidColorBrush)(new BrushConverter().ConvertFrom(color));
-            //        brush.Opacity = opacity;
-            //        CodeAdornment codeAdornment = new CodeAdornment(textView, brush);
-            //        codeAdornments.Add(id, codeAdornment);
-            //    }));
-            //}
+            if (textView != null) //TODO ERROR FIX
+            {
+                theDispatcher.Invoke(new Action(() =>
+                {
+                    Dictionary<string, CodeAdornment> codeAdornments = windowControl.codeAdornments;
+                    SolidColorBrush brush = (SolidColorBrush)(new BrushConverter().ConvertFrom(color));
+                    brush.Opacity = opacity;
+                    CodeAdornment codeAdornment = new CodeAdornment(textView, brush);
+                    codeAdornments.Add(id, codeAdornment);
+                }));
+            }
 
             return result;
         }
@@ -1540,6 +1541,37 @@ namespace P_Inti
             CodeAnalyzer.setEvaluatedLine(lineNumber, expressions.Split(','), markers);
         }
 
+        public void setCurrentLine(object arg)
+        {
+            MyWindowControl.printInBrowserConsole("Inside setCurrentLine");
+            IDictionary<string, object> input = (IDictionary<string, object>)arg;
+
+            input.TryGetValue("lineNumber", out object lineNumberString);
+            int lineNumber = (int)lineNumberString;
+
+            input.TryGetValue("filePath", out object filePath);
+            string filePathString = (string)filePath;
+
+            input.TryGetValue("expressions", out object expressions);
+            string expressionsString = (string)expressions;
+
+            MyWindowControl.printInBrowserConsole("Expressions are: " + expressionsString);
+
+            int lineLength = 0;
+            string lineContent = File.ReadAllLines(filePathString)[lineNumber];
+            lineLength = lineContent.Length;
+
+            MyWindowControl.printInBrowserConsole("LineContent " + lineContent);
+            TextMarkerTag[] markers = new TextMarkerTag[lineLength]; // should enclose full line;
+
+            for (int i = 0; i < lineLength; i++)
+            {
+                MyWindowControl.printInBrowserConsole("Line length: " + lineLength);
+                markers[i] = new GeneralHighlight();
+            }
+            CodeAnalyzer.setCurrentLine(lineNumber, filePathString, lineContent, markers);
+        }
+
 
         public Dictionary<string, object> runCodeAnalyzer(object arg)
         {
@@ -1572,11 +1604,21 @@ namespace P_Inti
                 string[] signalFileContent = { };
                 string signalFilePath = outputDir + "\\" + "run" + ".signal";
 
+                string[] lineInfoFileContent = { };
+                string lineInfoFilePath = outputDir + "\\" + "run" + ".lineInfo";
+
                 FileInfo signalFileInfo = new FileInfo(signalFilePath);
 
                 if (signalFileInfo.Exists)
                 {
                     signalFileContent = File.ReadAllLines(outputDir + "\\" + "run" + ".signal");
+                }
+
+                FileInfo lineFileInfo = new FileInfo(lineInfoFilePath);
+
+                if (lineFileInfo.Exists)
+                {
+                    lineInfoFileContent = File.ReadAllLines(outputDir + "\\" + "run" + ".lineInfo");
                 }
 
                 result.Add("trackedSymbolsIDs", trackedSymbolsIDs.ToArray());
@@ -1585,6 +1627,7 @@ namespace P_Inti
                 result.Add("logFileContent", logFileContent);
                 result.Add("scopeFileContent", scopeFileContent);
                 result.Add("signalFileContent", signalFileContent);
+                result.Add("lineInfoFileContent", lineInfoFileContent);
                 result.Add("success", success);
                 result.Add("response", compilationMessage);
             }

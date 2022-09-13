@@ -233,10 +233,6 @@ class ProgvolverSymbol extends ConnectableWidget {
             // drawCurveThroughPoints(ctx, points);
             // drawCirclesAlongCurve(ctx, points);
 
-            if (background.shootingStarTarget) {
-                background.drawShootingStars(ctx);
-            }
-
             var renderableValue = background.value;
             if (!iVoLVER.util.isUndefined(background.value) && iVoLVER.util.isNumber(background.value)) {
                 renderableValue = background.value.toFixed(2);
@@ -248,16 +244,31 @@ class ProgvolverSymbol extends ConnectableWidget {
 
         background.onValuesUpdated = function (dataItem) {
             if (dataItem) {
-                console.log("Data item is:")
-                console.log(dataItem);
 
+                console.log("dataItem");
+                console.log(dataItem);
                 let widgetIDs = dataItem.widgetsID.split(",");
                 let values = ("" + dataItem.values).split(",");
                 let types = ("" + dataItem.types).split(",");
                 let index = widgetIDs.indexOf(background.id);
 
-                let shootingStarsSource = parseShootingStarsSource(dataItem.parentStatement);
+                // // // shooting stars decay
+                // if (background.shootingStarsDict) {
+                //     for (const [key, value] of Object.entries(background.shootingStarsDict)) {
+                //         background.shootingStarsDict[key].array && background.shootingStarsDict[key].array.forEach(function (shootingStar) {
+                //             console.log("shooting star decay");
+                //             shootingStarsDecay(background, namedSymbols[key]);
+                //         });
+                //     }
+                // }
 
+                let shootingStarsSource;
+                shootingStarsSource = parseShootingStarsSource(dataItem.parentStatement);
+
+                if (!shootingStarsSource && dataItem.grandParentStatement)
+                    shootingStarsSource = parseShootingStarsSource(dataItem.grandParentStatement);
+
+                console.log("Shooting star source is: " + shootingStarsSource);
                 if (shootingStarsSource && shootingStarsSource != background.name) {
                     generateShootingStars(background, namedSymbols[shootingStarsSource]);
                 }
@@ -272,7 +283,7 @@ class ProgvolverSymbol extends ConnectableWidget {
                     //background.setLabel(background.fileName + ' (' + background.lineNumber + ')');
                 }
 
-                background.updateColorDecay();
+                //background.updateColorDecay();
             }
 
 //            if (dataItem) {
@@ -807,34 +818,6 @@ class ProgvolverSymbol extends ConnectableWidget {
                 doNotCompressWhenCanvasClicked: true
             })
         }
-
-        background.drawShootingStars = function (ctx) {
-            let curveEndCoords = null;
-            let curveStartCoords = null;
-            let curveMidCoords = null;
-
-            curveStartCoords = background.getPointByOrigin('right', 'center');
-            curveStartCoords.y -= 1.5;
-
-            if (background.shootingStarTarget) {
-                curveEndCoords = background.shootingStarTarget.getPointByOrigin('left', 'center');
-            }
-
-            curveMidCoords = {x: curveStartCoords.x + 100, y: curveStartCoords.y + 100};
-
-            let radius = 6.0;
-            let opacity = 0.3;
-            for (var t = 0; t < 101; t += 5) {
-                var point = getQuadraticBezierXYatT(curveStartCoords, curveMidCoords, curveEndCoords, t / 100);
-                ctx.beginPath();
-                ctx.arc(point.x, point.y, radius, 0, Math.PI * 2);
-                ctx.closePath();
-                ctx.fillStyle = rgba(255, 255, 0, opacity);
-                ctx.fill();
-                radius = radius + 0.3;
-                opacity = opacity + 0.015;
-            }
-        };
 
         console.log("Symbol is: ");
         console.log(background);

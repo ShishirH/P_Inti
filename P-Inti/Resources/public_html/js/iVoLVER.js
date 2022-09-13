@@ -3666,13 +3666,6 @@ var iVoLVER = {
 
         iVoLVER.gui._paletteSections = {};
         // Uncomment for rightpane
-        // iVoLVER.gui.addExtractorsSection();
-        // iVoLVER.gui.addMarksSection();
-        // iVoLVER.gui.addValuesSection();
-        // iVoLVER.gui.addOperatorsSection();
-        // iVoLVER.gui.addCollectionsSection();
-        // iVoLVER.gui.addLocatorsSection();
-        // iVoLVER.gui.addFunctionsSection();
         iVoLVER.gui.addCanvasVariablesSection();
         iVoLVER.gui.addCodeShiftSection();
         iVoLVER.gui.addCodeNoteSection();
