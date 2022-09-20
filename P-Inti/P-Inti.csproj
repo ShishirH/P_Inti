@@ -94,6 +94,7 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="P_IntiPackage.cs" />
     <Compile Include="Resources\Logger.cs" />
+    <Compile Include="ReusableCommand.cs" />
     <Compile Include="SignalGlyphFactory.cs" />
     <Compile Include="SignalGlyphFactoryProvider.cs" />
     <Compile Include="SignalGlyphTag.cs" />
@@ -223,6 +224,7 @@
     <None Include="Resources\public_html\js\graphlib.jscsrc" />
     <None Include="Resources\public_html\log.csv" />
     <Content Include="Resources\CodeControlAddExistingCode.png" />
+    <Content Include="Resources\ReusableCommand.png" />
     <Content Include="snapshot_blob.bin">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
       <IncludeInVSIX>true</IncludeInVSIX>
