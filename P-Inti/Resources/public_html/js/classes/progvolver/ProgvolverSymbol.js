@@ -242,6 +242,7 @@ class ProgvolverSymbol extends ConnectableWidget {
         };
 
 
+        let currentDataItemIndex = -1;
         background.onValuesUpdated = function (dataItem) {
             if (dataItem) {
 
@@ -262,15 +263,17 @@ class ProgvolverSymbol extends ConnectableWidget {
                 //     }
                 // }
 
-                let shootingStarsSource;
-                shootingStarsSource = parseShootingStarsSource(dataItem.parentStatement);
+                if (currentDataItemIndex !== dataItem.index) {
+                    let shootingStarsSource;
+                    shootingStarsSource = parseShootingStarsSource(dataItem.parentStatement);
 
-                if (!shootingStarsSource && dataItem.grandParentStatement)
-                    shootingStarsSource = parseShootingStarsSource(dataItem.grandParentStatement);
+                    if (!shootingStarsSource && dataItem.grandParentStatement)
+                        shootingStarsSource = parseShootingStarsSource(dataItem.grandParentStatement);
 
-                console.log("Shooting star source is: " + shootingStarsSource);
-                if (shootingStarsSource && shootingStarsSource != background.name) {
-                    generateShootingStars(background, namedSymbols[shootingStarsSource]);
+                    console.log("Shooting star source is: " + shootingStarsSource);
+                    if (shootingStarsSource && shootingStarsSource != background.name) {
+                        generateShootingStars(background, namedSymbols[shootingStarsSource]);
+                    }
                 }
 
                 if (types[index] == "SimpleAssignmentExpression" || types[index] == "PostDecrementExpression" || types[index] == "PreDecrementExpression" || types[index] == "PostIncrementExpression") {
@@ -285,6 +288,8 @@ class ProgvolverSymbol extends ConnectableWidget {
 
                 //background.updateColorDecay();
             }
+
+            currentDataItemIndex = dataItem.index;
 
 //            if (dataItem) {
 //                background.setValue(dataItem.value);

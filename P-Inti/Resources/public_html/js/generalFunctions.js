@@ -309,17 +309,20 @@ function drawCirclesAlongCurve(ctx, points) {
 function shootingStarsDecay(widget1, widget2) {
     let currentTime = window.presentTime;
     let currentIndex = window.lineData.filter(item => item.time == currentTime)[0].index;
-    let stepsToDecay = 4;
+    let stepsToDecay = 2;
 
     console.log("Widget 1");
     console.log(widget1);
+    console.log(widget1.name);
     console.log("widget2");
     console.log(widget2);
+    console.log(widget2.name);
     console.log("widget1.shootingStarsDict");
     console.log(widget1.shootingStarsDict);
     if (widget1.shootingStarsDict[widget2.name]) {
         console.log("I am here");
         let shootingStarsCreationTime = widget1.shootingStarsDict[widget2.name].time;
+        console.log("shootingStarsCreationTime" + shootingStarsCreationTime);
         if (!shootingStarsCreationTime) {
             console.log("Returning")
             return;
@@ -328,19 +331,28 @@ function shootingStarsDecay(widget1, widget2) {
         console.log("CreationIndex");
         console.log(creationIndex);
 
-        let indexDifference = Math.abs(currentIndex - creationIndex);
+        if (creationIndex == currentIndex) {
+            console.log("Shooting stars just created. Returning");
+            return;
+        }
+
+        let indexDifference = Math.abs(currentIndex - creationIndex) + 1;
         console.log("indexDifference");
         console.log(indexDifference);
 
-        if (indexDifference >= stepsToDecay) {
+        if ((indexDifference >= stepsToDecay) || indexDifference == 0) {
             // remove the shooting stars
+            console.log("Removing the shooting stars")
             widget1.shootingStarsDict[widget2.name].array.forEach(function (shootingStar) {
                 canvas.remove(shootingStar);
                 //widget1.shootingStarsDict[widget2.name] = {};
             });
-        } else if (indexDifference > 0 ){
+        } else if (indexDifference > 0){
+            // Reducing opacity
+            console.log("Reducing opacity")
             widget1.shootingStarsDict[widget2.name].array.forEach(function (shootingStar) {
                 shootingStar.opacity = ((stepsToDecay - indexDifference) / stepsToDecay);
+                //shootingStar.opacity = Math.max(shootingStar.opacity - 0.5, 0);
             });
         }
     }
@@ -9458,6 +9470,10 @@ function onSliderChanged(data) {
 
 
         var currentTime = changeRange(data.from, data.min, data.max, window.minTime, window.maxTime);
+        if (window.presentTime > currentTime) {
+            console.log("Duplicate call. Returning");
+            return;
+        }
         //window.presentTime = currentTime;
 
         // 10% of difference between maxTime and minTime as the width for the Gaussian curve.
