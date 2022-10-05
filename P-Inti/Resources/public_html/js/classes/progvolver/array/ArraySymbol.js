@@ -374,8 +374,8 @@ class ArraySymbol {
                     }
 
                     let elementHeight = 50
-                    let maxHeight = 130;
-                    if (yPosition + elementHeight > maxHeight - 60) {
+                    let maxHeight = rows * 60 > 180 ? 180 : rows * 60 ;
+                    if (yPosition  > maxHeight ) {
                         opacity = 0;
                         arrayElement.setVisible(false);
                     }
@@ -751,413 +751,415 @@ class ArraySymbol {
         var hiddenTop = 0;
         var lastVisibleRow = 0;
 
+//        
         background.addScrollY = function () {
-            var topArrow = new fabric.Triangle({
-                height: 6,
-                width: 6,
-                fill: darken(background.stroke),
-                hasControls: false,
-                hasBorders: false,
-                angle: 0
-            });
+//            if (rows > 4){
+                var topArrow = new fabric.Triangle({
+                    height: 6,
+                    width: 6,
+                    fill: darken(background.stroke),
+                    hasControls: false,
+                    hasBorders: false,
+                    angle: 0
+                });
 
-            var bottomArrow = new fabric.Triangle({
-                height: 6,
-                width: 6,
-                fill: darken(background.stroke),
-                hasControls: false,
-                hasBorders: false,
-                angle: 90
-            });
+                var bottomArrow = new fabric.Triangle({
+                    height: 6,
+                    width: 6,
+                    fill: darken(background.stroke),
+                    hasControls: false,
+                    hasBorders: false,
+                    angle: 90
+                });
+                var heightScrollY = rows > 4 ? 40 : 195; 
+                var scrollY = new fabric.Rect({
+                    height: heightScrollY,
+                    width: 6,
+                    fill: darken(background.stroke),
+                    hasControls: false,
+                    hasBorders: false
+                });
+                var originParent = {originX: 'right', originY: 'top'};
+                var originChild = {originX: 'right', originY: 'top'};
 
-            var scrollY = new fabric.Rect({
-                height: 40,
-                width: 6,
-                fill: darken(background.stroke),
-                hasControls: false,
-                hasBorders: false,
-            });
-            var originParent = {originX: 'right', originY: 'top'};
-            var originChild = {originX: 'right', originY: 'top'};
+                background.addChild(topArrow, {
+                    whenCompressed: {
+                        x: -2 - background.strokeWidth, y: 2,
+                        scaleX: 0, scaleY: 0, opacity: 0,
+                        originParent: originParent,
+                        originChild: originChild
+                    },
+                    whenExpanded: {
+                        x: -2 - background.strokeWidth, y: 2,
+                        scaleX: 1, scaleY: 1, opacity: 1,
+                        originParent: originParent,
+                        originChild: originChild
+                    }
+                });
 
-            background.addChild(topArrow, {
-                whenCompressed: {
-                    x: -2 - background.strokeWidth, y: 2,
-                    scaleX: 0, scaleY: 0, opacity: 0,
-                    originParent: originParent,
-                    originChild: originChild
-                },
-                whenExpanded: {
-                    x: -2 - background.strokeWidth, y: 2,
-                    scaleX: 1, scaleY: 1, opacity: 1,
-                    originParent: originParent,
-                    originChild: originChild
-                }
-            });
-
-            background.addChild(scrollY, {
-                whenCompressed: {
-                    x: -2 - background.strokeWidth, y: 12,
-                    scaleX: 0, scaleY: 0, opacity: 0,
-                    originParent: originParent,
-                    originChild: originChild
-                },
-                whenExpanded: {
-                    x: -2 - background.strokeWidth, y: 12,
-                    scaleX: 1, scaleY: 1, opacity: 1,
-                    originParent: originParent,
-                    originChild: originChild
-                },
-                movable: {
-                    y: {
-                        min: {
-                            distance: 1, origin: 'top',
-                            reference: {object: topArrow, origin: 'bottom'}
-                        },
-                        max: {
-                            distance: -2, origin: 'bottom',
-                            reference: {object: bottomArrow, origin: 'bottom'}
+                background.addChild(scrollY, {
+                    whenCompressed: {
+                        x: -2 - background.strokeWidth, y: 12,
+                        scaleX: 0, scaleY: 0, opacity: 0,
+                        originParent: originParent,
+                        originChild: originChild
+                    },
+                    whenExpanded: {
+                        x: -2 - background.strokeWidth, y: 12,
+                        scaleX: 1, scaleY: 1, opacity: 1,
+                        originParent: originParent,
+                        originChild: originChild
+                    },
+                    movable: {
+                        y: {
+                            min: {
+                                distance: 1, origin: 'top',
+                                reference: {object: topArrow, origin: 'bottom'}
+                            },
+                            max: {
+                                distance: -2, origin: 'bottom',
+                                reference: {object: bottomArrow, origin: 'bottom'}
+                            }
                         }
                     }
-                }
-            });
+                });
 
-            var originParent = {originX: 'right', originY: 'bottom'};
-            var originChild = {originX: 'right', originY: 'top'};
+                var originParent = {originX: 'right', originY: 'bottom'};
+                var originChild = {originX: 'right', originY: 'top'};
 
-            background.addChild(bottomArrow, {
-                whenCompressed: {
-                    x: -background.strokeWidth * 4.5, y: -12,
-                    scaleX: 0, scaleY: 0, opacity: 0,
-                    angle: 180,
-                    originParent: originParent,
-                    originChild: originChild
-                },
-                whenExpanded: {
-                    x: -background.strokeWidth * 4.5, y: -12,
-                    scaleX: 1, scaleY: 1, opacity: 1,
-                    angle: 180,
-                    originParent: originParent,
-                    originChild: originChild
-                }
-            });
+                background.addChild(bottomArrow, {
+                    whenCompressed: {
+                        x: -background.strokeWidth * 4.5, y: -12,
+                        scaleX: 0, scaleY: 0, opacity: 0,
+                        angle: 180,
+                        originParent: originParent,
+                        originChild: originChild
+                    },
+                    whenExpanded: {
+                        x: -background.strokeWidth * 4.5, y: -12,
+                        scaleX: 1, scaleY: 1, opacity: 1,
+                        angle: 180,
+                        originParent: originParent,
+                        originChild: originChild
+                    }
+                });
 
-            scrollY.registerListener('moving', function () {
-                // Divide the y axis into ticks for the array. -20 is for the left and the right arrows.
-                console.log("ScrollY moving!");
-                let ticks;
+                scrollY.registerListener('moving', function () {
+                    // Divide the y axis into ticks for the array. -20 is for the left and the right arrows.
+                    console.log("ScrollY moving!");
+                    let ticks;
 
-                if (columns > 1) {
-                    ticks = (background.height - scrollY.height) / rows;
-                } else {
-                    ticks = (background.height - scrollY.height) / arrayElementsArray.length;
-                }
+                    if (columns > 1) {
+                        ticks = (background.height - scrollY.height) / rows;
+                    } else {
+                        ticks = (background.height - scrollY.height) / arrayElementsArray.length;
+                    }
 
-                console.log("Number of ticks are: " + ticks);
+                    console.log("Number of ticks are: " + ticks);
 
-                let currentY = background.expandedOptions[scrollY.id].y;
-                console.log("CurrentY is: " + currentY);
-                background.compressedOptions[scrollY.id].y = currentY;
+                    let currentY = background.expandedOptions[scrollY.id].y;
+                    console.log("CurrentY is: " + currentY);
+                    background.compressedOptions[scrollY.id].y = currentY;
 
-                let hiddenNumber = (currentY / ticks);
-                hiddenNumber = Math.floor(hiddenNumber);
+                    let hiddenNumber = (currentY / ticks);
+                    hiddenNumber = Math.floor(hiddenNumber);
 
-                if (hiddenNumber == hiddenTop)
-                    return;
-                else
+                    if (hiddenNumber == hiddenTop)
+                        return;
+                    else
+                        hiddenTop = hiddenNumber;
+
+                    console.log("Hidden number is: " + hiddenNumber);
+
+                    var areElementsOnTop = false;
+                    var areElementsOnBottom = false;
+                    var updatedFirstVisible = false;
+                    var updatedLastVisible = false;
+                    let indentation;
+                    for (let i = 1; i <= rows; i++) {
+                        for (let j = 0; j < columns; j++) {
+                            var topHidden = false;
+                            var bottomHidden = false;
+
+                            console.log("First visible is now: " + background.firstVisibleRow);
+                            indentation = (i - hiddenNumber - 1); // CHANGE FOR ORIENTATION
+
+                            let newYPosition = parseFloat((indentation * 40) + 30);
+                            let elementHeight = arrayElementsArray[i - 1][j].height;
+                            console.log("YPosition: " + newYPosition + " and index: " + (i - 1) + ", " + (j));
+
+                            if (hiddenNumber >= i || newYPosition < 30) {
+                                newYPosition = 30;
+                                topHidden = true;
+                                areElementsOnTop = true;
+                            }
+
+                            if (newYPosition + elementHeight > (background.height - 30)) {
+                                newYPosition = background.height - 30;
+                                bottomHidden = true;
+                                areElementsOnBottom = true;
+                            }
+
+                            background.expandedOptions[arrayElementsArray[i - 1][j].id].y = newYPosition;
+                            background.compressedOptions[arrayElementsArray[i - 1][j].id].y = newYPosition;
+
+                            if (topHidden) {
+                                //arrayElementsArray[i - 1].opacity = 0;
+                                background.expandedOptions[arrayElementsArray[i - 1][j].id].opacity = 0;
+                                background.compressedOptions[arrayElementsArray[i - 1][j].id].opacity = 0;
+                                topHidden = hiddenNumber;
+                                console.log("Hidden top is now: " + topHidden);
+                                // Move it to the top
+                                console.log("Array index: " + (i - 1) + ", " + (j) + " going to hide top");
+                                arrayElementsArray[i - 1][j].setVisible(false);
+                            } else if (bottomHidden) {
+                                console.log("Hiding to the bottom");
+                                background.expandedOptions[arrayElementsArray[i - 1][j].id].opacity = 0;
+                                background.compressedOptions[arrayElementsArray[i - 1][j].id].opacity = 0;
+                                arrayElementsArray[i - 1][j].setVisible(false);
+
+                                console.log("Array index: " + (i - 1) + ", " + (j) + " going to hide bottom");
+                            } else { // Visible
+                                if (!updatedFirstVisible) {
+                                    updatedFirstVisible = true;
+                                    background.firstVisibleRow = i;
+                                }
+
+                                let maxWidth = background.width - 80;
+                                if (background.expandedOptions[arrayElementsArray[i - 1][j].id].x > maxWidth)
+                                    continue;
+                                arrayElementsArray[i - 1][j].setVisible(true);
+
+                                arrayElementsArray[i - 1][j].opacity = 1;
+                                console.log("Array index: " + (i - 1) + ", " + (j) + " is visible");
+                                background.expandedOptions[arrayElementsArray[i - 1][j].id].opacity = 1;
+                                background.compressedOptions[arrayElementsArray[i - 1][j].id].opacity = 1;
+                                background.lastVisible = i;
+                            }
+                        }
+                    }
+                    background.positionObjects();
+
+                    console.log("Y is now: " + background.expandedOptions[scrollY.id].x);
+                });
+
+                topArrow.on('mouseup', function () {
+                    var areElementsOnTop = false;
+                    var areElementsOnBottom = false;
+                    var updatedFirstVisible = false;
+                    var updatedLastVisible = false;
+
+                    if (hiddenTop == 0)
+                        return;
+
+                    var hiddenNumber = hiddenTop - 1;
                     hiddenTop = hiddenNumber;
 
-                console.log("Hidden number is: " + hiddenNumber);
+                    let indentation;
+                    for (let i = 1; i <= rows; i++) {
+                        for (let j = 0; j < columns; j++) {
+                            var topHidden = false;
+                            var bottomHidden = false;
 
-                var areElementsOnTop = false;
-                var areElementsOnBottom = false;
-                var updatedFirstVisible = false;
-                var updatedLastVisible = false;
-                let indentation;
-                for (let i = 1; i <= rows; i++) {
-                    for (let j = 0; j < columns; j++) {
-                        var topHidden = false;
-                        var bottomHidden = false;
+                            console.log("First visible is now: " + background.firstVisibleRow);
+                            indentation = (i - hiddenNumber - 1); // CHANGE FOR ORIENTATION
 
-                        console.log("First visible is now: " + background.firstVisibleRow);
-                        indentation = (i - hiddenNumber - 1); // CHANGE FOR ORIENTATION
+                            let newYPosition = parseFloat((indentation * 40) + 30);
+                            let elementHeight = arrayElementsArray[i - 1][j].height;
+                            console.log("YPosition: " + newYPosition + " and index: " + (i - 1) + ", " + (j));
 
-                        let newYPosition = parseFloat((indentation * 50) + 30);
-                        let elementHeight = arrayElementsArray[i - 1][j].height;
-                        console.log("YPosition: " + newYPosition + " and index: " + (i - 1) + ", " + (j));
-
-                        if (hiddenNumber >= i || newYPosition < 30) {
-                            newYPosition = 30;
-                            topHidden = true;
-                            areElementsOnTop = true;
-                        }
-
-                        if (newYPosition + elementHeight > (background.height - 30)) {
-                            newYPosition = background.height - 30;
-                            bottomHidden = true;
-                            areElementsOnBottom = true;
-                        }
-
-                        background.expandedOptions[arrayElementsArray[i - 1][j].id].y = newYPosition;
-                        background.compressedOptions[arrayElementsArray[i - 1][j].id].y = newYPosition;
-
-                        if (topHidden) {
-                            //arrayElementsArray[i - 1].opacity = 0;
-                            background.expandedOptions[arrayElementsArray[i - 1][j].id].opacity = 0;
-                            background.compressedOptions[arrayElementsArray[i - 1][j].id].opacity = 0;
-                            topHidden = hiddenNumber;
-                            console.log("Hidden top is now: " + topHidden);
-                            // Move it to the top
-                            console.log("Array index: " + (i - 1) + ", " + (j) + " going to hide top");
-                            arrayElementsArray[i - 1][j].setVisible(false);
-                        } else if (bottomHidden) {
-                            console.log("Hiding to the bottom");
-                            background.expandedOptions[arrayElementsArray[i - 1][j].id].opacity = 0;
-                            background.compressedOptions[arrayElementsArray[i - 1][j].id].opacity = 0;
-                            arrayElementsArray[i - 1][j].setVisible(false);
-
-                            console.log("Array index: " + (i - 1) + ", " + (j) + " going to hide bottom");
-                        } else { // Visible
-                            if (!updatedFirstVisible) {
-                                updatedFirstVisible = true;
-                                background.firstVisibleRow = i;
+                            if (hiddenNumber >= i || newYPosition < 30) {
+                                newYPosition = 30;
+                                topHidden = true;
+                                areElementsOnTop = true;
                             }
 
-                            let maxWidth = background.width - 80;
-                            if (background.expandedOptions[arrayElementsArray[i - 1][j].id].x > maxWidth)
-                                continue;
-                            arrayElementsArray[i - 1][j].setVisible(true);
-
-                            arrayElementsArray[i - 1][j].opacity = 1;
-                            console.log("Array index: " + (i - 1) + ", " + (j) + " is visible");
-                            background.expandedOptions[arrayElementsArray[i - 1][j].id].opacity = 1;
-                            background.compressedOptions[arrayElementsArray[i - 1][j].id].opacity = 1;
-                            background.lastVisible = i;
-                        }
-                    }
-                }
-                background.positionObjects();
-
-                console.log("Y is now: " + background.expandedOptions[scrollY.id].x);
-            });
-
-            topArrow.on('mouseup', function () {
-                var areElementsOnTop = false;
-                var areElementsOnBottom = false;
-                var updatedFirstVisible = false;
-                var updatedLastVisible = false;
-
-                if (hiddenTop == 0)
-                    return;
-
-                var hiddenNumber = hiddenTop - 1;
-                hiddenTop = hiddenNumber;
-
-                let indentation;
-                for (let i = 1; i <= rows; i++) {
-                    for (let j = 0; j < columns; j++) {
-                        var topHidden = false;
-                        var bottomHidden = false;
-
-                        console.log("First visible is now: " + background.firstVisibleRow);
-                        indentation = (i - hiddenNumber - 1); // CHANGE FOR ORIENTATION
-
-                        let newYPosition = parseFloat((indentation * 50) + 30);
-                        let elementHeight = arrayElementsArray[i - 1][j].height;
-                        console.log("YPosition: " + newYPosition + " and index: " + (i - 1) + ", " + (j));
-
-                        if (hiddenNumber >= i || newYPosition < 30) {
-                            newYPosition = 30;
-                            topHidden = true;
-                            areElementsOnTop = true;
-                        }
-
-                        if (newYPosition + elementHeight > (background.height - 30)) {
-                            newYPosition = background.height - 30;
-                            bottomHidden = true;
-                            areElementsOnBottom = true;
-                        }
-
-                        background.expandedOptions[arrayElementsArray[i - 1][j].id].y = newYPosition;
-                        background.compressedOptions[arrayElementsArray[i - 1][j].id].y = newYPosition;
-
-                        if (topHidden) {
-                            //arrayElementsArray[i - 1].opacity = 0;
-                            background.expandedOptions[arrayElementsArray[i - 1][j].id].opacity = 0;
-                            background.compressedOptions[arrayElementsArray[i - 1][j].id].opacity = 0;
-                            topHidden = hiddenNumber;
-                            console.log("Hidden top is now: " + topHidden);
-                            // Move it to the top
-                            console.log("Array index: " + (i - 1) + ", " + (j) + " going to hide top");
-                            arrayElementsArray[i - 1][j].setVisible(false);
-                        } else if (bottomHidden) {
-                            console.log("Hiding to the bottom");
-                            background.expandedOptions[arrayElementsArray[i - 1][j].id].opacity = 0;
-                            background.compressedOptions[arrayElementsArray[i - 1][j].id].opacity = 0;
-                            arrayElementsArray[i - 1][j].setVisible(false);
-
-                            console.log("Array index: " + (i - 1) + ", " + (j) + " going to hide bottom");
-                        } else { // Visible
-                            if (!updatedFirstVisible) {
-                                updatedFirstVisible = true;
-                                background.firstVisibleRow = i;
+                            if (newYPosition + elementHeight > (background.height - 30)) {
+                                newYPosition = background.height - 30;
+                                bottomHidden = true;
+                                areElementsOnBottom = true;
                             }
 
-                            let maxWidth = background.width - 80;
-                            if (background.expandedOptions[arrayElementsArray[i - 1][j].id].x > maxWidth)
-                                continue;
-                            arrayElementsArray[i - 1][j].setVisible(true);
+                            background.expandedOptions[arrayElementsArray[i - 1][j].id].y = newYPosition;
+                            background.compressedOptions[arrayElementsArray[i - 1][j].id].y = newYPosition;
 
-                            arrayElementsArray[i - 1][j].opacity = 1;
-                            console.log("Array index: " + (i - 1) + ", " + (j) + " is visible");
-                            background.expandedOptions[arrayElementsArray[i - 1][j].id].opacity = 1;
-                            background.compressedOptions[arrayElementsArray[i - 1][j].id].opacity = 1;
-                            background.lastVisible = i;
+                            if (topHidden) {
+                                //arrayElementsArray[i - 1].opacity = 0;
+                                background.expandedOptions[arrayElementsArray[i - 1][j].id].opacity = 0;
+                                background.compressedOptions[arrayElementsArray[i - 1][j].id].opacity = 0;
+                                topHidden = hiddenNumber;
+                                console.log("Hidden top is now: " + topHidden);
+                                // Move it to the top
+                                console.log("Array index: " + (i - 1) + ", " + (j) + " going to hide top");
+                                arrayElementsArray[i - 1][j].setVisible(false);
+                            } else if (bottomHidden) {
+                                console.log("Hiding to the bottom");
+                                background.expandedOptions[arrayElementsArray[i - 1][j].id].opacity = 0;
+                                background.compressedOptions[arrayElementsArray[i - 1][j].id].opacity = 0;
+                                arrayElementsArray[i - 1][j].setVisible(false);
+
+                                console.log("Array index: " + (i - 1) + ", " + (j) + " going to hide bottom");
+                            } else { // Visible
+                                if (!updatedFirstVisible) {
+                                    updatedFirstVisible = true;
+                                    background.firstVisibleRow = i;
+                                }
+
+                                let maxWidth = background.width - 80;
+                                if (background.expandedOptions[arrayElementsArray[i - 1][j].id].x > maxWidth)
+                                    continue;
+                                arrayElementsArray[i - 1][j].setVisible(true);
+
+                                arrayElementsArray[i - 1][j].opacity = 1;
+                                console.log("Array index: " + (i - 1) + ", " + (j) + " is visible");
+                                background.expandedOptions[arrayElementsArray[i - 1][j].id].opacity = 1;
+                                background.compressedOptions[arrayElementsArray[i - 1][j].id].opacity = 1;
+                                background.lastVisible = i;
+                            }
                         }
                     }
-                }
-                background.positionObjects();
-//                if (areElementsOnTop) {
-//                    background.expandedOptions[background.leftBuffer.id].opacity = 1;
-//                    background.compressedOptions[background.leftBuffer.id].opacity = 1;
-//                } else {
-//                    background.expandedOptions[background.leftBuffer.id].opacity = 0;
-//                    background.compressedOptions[background.leftBuffer.id].opacity = 0;
-//
-//                }
+                    background.positionObjects();
+    //                if (areElementsOnTop) {
+    //                    background.expandedOptions[background.leftBuffer.id].opacity = 1;
+    //                    background.compressedOptions[background.leftBuffer.id].opacity = 1;
+    //                } else {
+    //                    background.expandedOptions[background.leftBuffer.id].opacity = 0;
+    //                    background.compressedOptions[background.leftBuffer.id].opacity = 0;
+    //
+    //                }
 
-                if (areElementsOnBottom) {
-                    background.expandedOptions[background.rightBuffer.id].opacity = 1;
-                    background.compressedOptions[background.rightBuffer.id].opacity = 1;
-                } else {
-                    background.expandedOptions[background.rightBuffer.id].opacity = 0;
-                    background.compressedOptions[background.rightBuffer.id].opacity = 0;
-                }
-                console.log("Y is now: " + background.expandedOptions[scrollY.id].x);
-            });
+                    if (areElementsOnBottom) {
+                        background.expandedOptions[background.rightBuffer.id].opacity = 1;
+                        background.compressedOptions[background.rightBuffer.id].opacity = 1;
+                    } else {
+                        background.expandedOptions[background.rightBuffer.id].opacity = 0;
+                        background.compressedOptions[background.rightBuffer.id].opacity = 0;
+                    }
+                    console.log("Y is now: " + background.expandedOptions[scrollY.id].x);
+                });
 
-            bottomArrow.on('mouseup', function () {
-                var areElementsOnTop = false;
-                var areElementsOnBottom = false;
-                var updatedFirstVisible = false;
-                var updatedLastVisible = false;
+                bottomArrow.on('mouseup', function () {
+                    var areElementsOnTop = false;
+                    var areElementsOnBottom = false;
+                    var updatedFirstVisible = false;
+                    var updatedLastVisible = false;
 
-                if (hiddenTop >= rows)
-                    return;
+                    if (hiddenTop >= rows)
+                        return;
 
-                var hiddenNumber = hiddenTop + 1;
-                hiddenTop = hiddenNumber;
+                    var hiddenNumber = hiddenTop + 1;
+                    hiddenTop = hiddenNumber;
 
-                let indentation;
-                for (let i = 1; i <= rows; i++) {
-                    for (let j = 0; j < columns; j++) {
-                        var topHidden = false;
-                        var bottomHidden = false;
+                    let indentation;
+                    for (let i = 1; i <= rows; i++) {
+                        for (let j = 0; j < columns; j++) {
+                            var topHidden = false;
+                            var bottomHidden = false;
 
-                        console.log("First visible is now: " + background.firstVisibleRow);
-                        indentation = (i - hiddenNumber - 1); // CHANGE FOR ORIENTATION
+                            console.log("First visible is now: " + background.firstVisibleRow);
+                            indentation = (i - hiddenNumber - 1); // CHANGE FOR ORIENTATION
 
-                        let newYPosition = parseFloat((indentation * 50) + 30);
-                        let elementHeight = arrayElementsArray[i - 1][j].height;
-                        console.log("YPosition: " + newYPosition + " and index: " + (i - 1) + ", " + (j));
+                            let newYPosition = parseFloat((indentation * 40) + 30);
+                            let elementHeight = arrayElementsArray[i - 1][j].height;
+                            console.log("YPosition: " + newYPosition + " and index: " + (i - 1) + ", " + (j));
 
-                        if (hiddenNumber >= i || newYPosition < 30) {
-                            newYPosition = 30;
-                            topHidden = true;
-                            areElementsOnTop = true;
-                        }
-
-                        if (newYPosition + elementHeight > (background.height - 30)) {
-                            newYPosition = background.height - 30;
-                            bottomHidden = true;
-                            areElementsOnBottom = true;
-                        }
-
-                        background.expandedOptions[arrayElementsArray[i - 1][j].id].y = newYPosition;
-                        background.compressedOptions[arrayElementsArray[i - 1][j].id].y = newYPosition;
-
-                        if (topHidden) {
-                            //arrayElementsArray[i - 1].opacity = 0;
-                            background.expandedOptions[arrayElementsArray[i - 1][j].id].opacity = 0;
-                            background.compressedOptions[arrayElementsArray[i - 1][j].id].opacity = 0;
-                            topHidden = hiddenNumber;
-                            console.log("Hidden top is now: " + topHidden);
-                            // Move it to the top
-                            console.log("Array index: " + (i - 1) + ", " + (j) + " going to hide top");
-                            arrayElementsArray[i - 1][j].setVisible(false);
-                        } else if (bottomHidden) {
-                            console.log("Hiding to the bottom");
-                            background.expandedOptions[arrayElementsArray[i - 1][j].id].opacity = 0;
-                            background.compressedOptions[arrayElementsArray[i - 1][j].id].opacity = 0;
-                            arrayElementsArray[i - 1][j].setVisible(false);
-
-                            console.log("Array index: " + (i - 1) + ", " + (j) + " going to hide bottom");
-                        } else { // Visible
-                            if (!updatedFirstVisible) {
-                                updatedFirstVisible = true;
-                                background.firstVisibleRow = i;
+                            if (hiddenNumber >= i || newYPosition < 30) {
+                                newYPosition = 30;
+                                topHidden = true;
+                                areElementsOnTop = true;
                             }
 
-                            let maxWidth = background.width - 80;
-                            if (background.expandedOptions[arrayElementsArray[i - 1][j].id].x > maxWidth)
-                                continue;
-                            arrayElementsArray[i - 1][j].setVisible(true);
+                            if (newYPosition + elementHeight > (background.height - 30)) {
+                                newYPosition = background.height - 30;
+                                bottomHidden = true;
+                                areElementsOnBottom = true;
+                            }
 
-                            arrayElementsArray[i - 1][j].opacity = 1;
-                            console.log("Array index: " + (i - 1) + ", " + (j) + " is visible");
-                            background.expandedOptions[arrayElementsArray[i - 1][j].id].opacity = 1;
-                            background.compressedOptions[arrayElementsArray[i - 1][j].id].opacity = 1;
-                            lastVisibleRow = i;
+                            background.expandedOptions[arrayElementsArray[i - 1][j].id].y = newYPosition;
+                            background.compressedOptions[arrayElementsArray[i - 1][j].id].y = newYPosition;
+
+                            if (topHidden) {
+                                //arrayElementsArray[i - 1].opacity = 0;
+                                background.expandedOptions[arrayElementsArray[i - 1][j].id].opacity = 0;
+                                background.compressedOptions[arrayElementsArray[i - 1][j].id].opacity = 0;
+                                topHidden = hiddenNumber;
+                                console.log("Hidden top is now: " + topHidden);
+                                // Move it to the top
+                                console.log("Array index: " + (i - 1) + ", " + (j) + " going to hide top");
+                                arrayElementsArray[i - 1][j].setVisible(false);
+                            } else if (bottomHidden) {
+                                console.log("Hiding to the bottom");
+                                background.expandedOptions[arrayElementsArray[i - 1][j].id].opacity = 0;
+                                background.compressedOptions[arrayElementsArray[i - 1][j].id].opacity = 0;
+                                arrayElementsArray[i - 1][j].setVisible(false);
+
+                                console.log("Array index: " + (i - 1) + ", " + (j) + " going to hide bottom");
+                            } else { // Visible
+                                if (!updatedFirstVisible) {
+                                    updatedFirstVisible = true;
+                                    background.firstVisibleRow = i;
+                                }
+
+                                let maxWidth = background.width - 80;
+                                if (background.expandedOptions[arrayElementsArray[i - 1][j].id].x > maxWidth)
+                                    continue;
+                                arrayElementsArray[i - 1][j].setVisible(true);
+
+                                arrayElementsArray[i - 1][j].opacity = 1;
+                                console.log("Array index: " + (i - 1) + ", " + (j) + " is visible");
+                                background.expandedOptions[arrayElementsArray[i - 1][j].id].opacity = 1;
+                                background.compressedOptions[arrayElementsArray[i - 1][j].id].opacity = 1;
+                                lastVisibleRow = i;
+                            }
                         }
                     }
+                    background.positionObjects();
+    //                if (areElementsOnTop) {
+    //                    background.expandedOptions[background.leftBuffer.id].opacity = 1;
+    //                    background.compressedOptions[background.leftBuffer.id].opacity = 1;
+    //                } else {
+    //                    background.expandedOptions[background.leftBuffer.id].opacity = 0;
+    //                    background.compressedOptions[background.leftBuffer.id].opacity = 0;
+    //
+    //                }
+
+                    if (areElementsOnBottom) {
+                        background.expandedOptions[background.rightBuffer.id].opacity = 1;
+                        background.compressedOptions[background.rightBuffer.id].opacity = 1;
+                    } else {
+                        background.expandedOptions[background.rightBuffer.id].opacity = 0;
+                        background.compressedOptions[background.rightBuffer.id].opacity = 0;
+                    }
+                    console.log("Y is now: " + background.expandedOptions[scrollY.id].y);
+                });
+
+                if (columns > 1) {
+                    canvas.add(scrollY);
+                    canvas.add(topArrow);
+                    canvas.add(bottomArrow);
                 }
-                background.positionObjects();
-//                if (areElementsOnTop) {
-//                    background.expandedOptions[background.leftBuffer.id].opacity = 1;
-//                    background.compressedOptions[background.leftBuffer.id].opacity = 1;
-//                } else {
-//                    background.expandedOptions[background.leftBuffer.id].opacity = 0;
-//                    background.compressedOptions[background.leftBuffer.id].opacity = 0;
-//
-//                }
 
-                if (areElementsOnBottom) {
-                    background.expandedOptions[background.rightBuffer.id].opacity = 1;
-                    background.compressedOptions[background.rightBuffer.id].opacity = 1;
-                } else {
-                    background.expandedOptions[background.rightBuffer.id].opacity = 0;
-                    background.compressedOptions[background.rightBuffer.id].opacity = 0;
+                background.scrollY = scrollY;
+                background.topArrow = topArrow;
+                background.bottomArrow = bottomArrow;
+
+                background.children.push(background.scrollY);
+                background.children.push(background.topArrow);
+                background.children.push(background.bottomArrow);
+
+                scrollY.processConnectionRequest = function (connection) {
+                    return {
+                        connectionAccepted: true,
+                        message: 'The object refused to accept the connection!',
+                        processedValue: null
+                    };
                 }
-                console.log("Y is now: " + background.expandedOptions[scrollY.id].y);
-            });
 
-            if (columns > 1) {
-                canvas.add(scrollY);
-                canvas.add(topArrow);
-                canvas.add(bottomArrow);
-            }
-
-            background.scrollY = scrollY;
-            background.topArrow = topArrow;
-            background.bottomArrow = bottomArrow;
-
-            background.children.push(background.scrollY);
-            background.children.push(background.topArrow);
-            background.children.push(background.bottomArrow);
-
-            scrollY.processConnectionRequest = function (connection) {
-                return {
-                    connectionAccepted: true,
-                    message: 'The object refused to accept the connection!',
-                    processedValue: null
-                };
-            }
-
-            scrollY.acceptConnection = function (connection, processedValue) {
-                console.log("Connection accepted!")
-            }
+                scrollY.acceptConnection = function (connection, processedValue) {
+                    console.log("Connection accepted!")
+                }
+//            }
         }
-
         background.topHidden = 0;
         background.lastVisible = 0;
         background.firstVisibleRow = 1;
@@ -1501,7 +1503,6 @@ class ArraySymbol {
                     let rowNumbers = innerContents.split(',').map(function (item) {
                         return item.trim();
                     });
-
                     rows = rowNumbers.length;
                     columns = 1;
                     defaultValue.push(rowNumbers);
@@ -1510,41 +1511,54 @@ class ArraySymbol {
                     let arrayElementStartIndex = 0;
                     let rowIndex = 0;
                     let elementString = innerContents;
-
                     while (elementString.substring(arrayElementStartIndex).indexOf('{') !== -1) {
                         elementString = innerContents.substring(arrayElementStartIndex);
                         let braceStartIndex = elementString.indexOf('{');
                         let braceEndIndex = elementString.indexOf('}');
-
                         let arrayRowNumbers = elementString.substring(braceStartIndex + 1, braceEndIndex).split(',').map(function (item) {
                             return item.trim();
                         });
-
                         // Only 2D arrays supported for now
                         defaultValue.push(arrayRowNumbers);
                         rowIndex++;
                         arrayElementStartIndex = braceEndIndex + 1 + innerContents.substring(braceEndIndex + 1).indexOf(',') + 1;
                     }
-
                     rows = defaultValue.length;
                     columns = defaultValue[0].length;
                 }
             } else if (initialValue.substring(indexOfOpeningBrace + 1, indexOfClosingBrace).indexOf(',') !== -1) {
                 // 2D array with no initialization -> new int[3, 4]
                 let index = initialValue.indexOf(',');
+                let firstOpener = initialValue.indexOf('{');
+                let firstCloser = initialValue.lastIndexOf('}');
+                let innerContents = initialValue.substring(firstOpener + 1, firstCloser).trim();
+                innerContents = innerContents.replace(/ /g, '');
+                console.log("Inner contents of 2D array are: " + innerContents);
+                let individualRows = innerContents.split("},");
+                for (let i = 0; i < individualRows.length; i++){
+                    
+                    let innerContentsRow = individualRows[i].replace(/{/g, "").replace(/}/g, "").trim();
+                    console.log("innerContentsRow");
+                    console.log(innerContentsRow);
+                    let rowNumbers = innerContentsRow.split(',').map(function (item) {
+                        return item.trim();
+                    });
+                    defaultValue.push(rowNumbers);
+                    console.log(rowNumbers);
+                }
+                
                 rows = parseInt(initialValue.substring(indexOfOpeningBrace + 1, index));
                 columns = parseInt(initialValue.substring(index + 1, indexOfClosingBrace));
             } else {
                 rows = parseInt(initialValue.substring(indexOfOpeningBrace + 1, indexOfClosingBrace));
                 columns = 1;
-            }
-
+                
+            } 
             console.log("Rows are: " + rows);
             console.log(columns);
             console.log(defaultValue);
-            return [rows, columns, defaultValue]
+            return [rows, columns, defaultValue];
         }
-
         return background;
     }
 
