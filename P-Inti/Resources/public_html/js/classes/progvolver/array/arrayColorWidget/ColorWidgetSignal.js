@@ -57,6 +57,13 @@ var ColorWidgetSignal = iVoLVER.util.createClass(fabric.Circle, {
 
     inValueUpdated: function (options) {
         var inConnection = this.inConnection;
+        console.log("Inconnection is;:")
+        console.log(inConnection);
+        console.log("Value has been really updated");
+        console.log("Value is: " + inConnection.value)
+        this.parent.colorWidgetOutput.value = inConnection.value;
+
+        console.log("Updated value to: " + this.value)
         this.resetFill();
         this.oldIndex = parseInt(inConnection.value);
         this.updateFill();

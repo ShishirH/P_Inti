@@ -540,6 +540,13 @@
             iconClass: 'fa-cogs',
             onClick: function () {
                 if (window.jsHandler) {
+                    var lineInfoFileContent;
+                    // console.log("addIndexToLineLogFile");
+                    // window.jsHandler.addIndexToLineLogFile(null).then(function (response) {
+                    //     console.log(response);
+                    //     lineInfoFileContent = response.lineInfoFileContent;
+                    // });
+
                     if (window.jsHandler.runCodeAnalyzer) {
                         var waitingDialog = new jWait('Running Program');
                         window.jsHandler.runCodeAnalyzer(null).then(function (response) {
@@ -549,10 +556,18 @@
                             window.trackedSignalIDs = response.trackedSignalIDs;
                             console.log("Signal IDs:");
                             console.log(response.trackedSignalIDs);
+
+                            // add index to lineLogData
+
                             var logFileContent = response.logFileContent.join("\n");
                             var scopeFileContent = response.scopeFileContent.join("\n");
                             var signalFileContent = response.signalFileContent.join("\n");
-                            var lineInfoFileContent = response.lineInfoFileContent.join("\n");
+                            var lineInfoFileContentArray = response.lineInfoFileContent;
+
+                            for (let i = 1; i < lineInfoFileContentArray.length; i++) {
+                                lineInfoFileContentArray[i] = i + "~" + lineInfoFileContentArray[i];
+                            }
+                            lineInfoFileContent = lineInfoFileContentArray.join("\n");
 
                             console.log("lineInfoFileContent is: ");
                             console.log(lineInfoFileContent);
@@ -1093,23 +1108,23 @@
         //canvas.add(referenceWidget);
         //console.log(referenceWidget);
 
-           var objectMembersArray = [];
-
-           for (let i = 0; i < 20; i++) {
-               var objectMembers = [];
-
-               var progvolverString = new ProgvolverSymbol({
-                   dataType: "double",
-                   fill: '#B3CDE3',
-                   type: "string",
-                   name: "asd a",
-                   value: "Hello",
-                   isMember: true
-               });
-
-               objectMembers.push(progvolverString);
-               objectMembersArray.push(objectMembers);
-           }
+           // var objectMembersArray = [];
+           //
+           // for (let i = 0; i < 20; i++) {
+           //     var objectMembers = [];
+           //
+           //     var progvolverString = new ProgvolverSymbol({
+           //         dataType: "double",
+           //         fill: '#B3CDE3',
+           //         type: "string",
+           //         name: "asd a",
+           //         value: "Hello",
+           //         isMember: true
+           //     });
+           //
+           //     objectMembers.push(progvolverString);
+           //     objectMembersArray.push(objectMembers);
+           // }
 //
 //
 //            var arrayWidget = new ArraySymbol({

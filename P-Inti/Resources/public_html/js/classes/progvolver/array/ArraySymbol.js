@@ -168,6 +168,30 @@ class ArraySymbol {
             if (columns == 1) {
 
                 if (dataItem) {
+                    console.log("Data item is: ");
+                    console.log(dataItem);
+                    console.log("Parent staetment");
+                    console.log(dataItem.parentStatement);
+
+                    let shootingStarsSourceAndIndex;
+
+                    shootingStarsSourceAndIndex = parseShootingStarsSourceForArray(dataItem.parentStatement, background);
+
+                    if (!shootingStarsSourceAndIndex)
+                        shootingStarsSourceAndIndex = parseShootingStarsSourceForArray(dataItem.grandParentStatement, background);
+
+                    if (shootingStarsSourceAndIndex) {
+                        console.log("shootingStarsSourceAndIndex");
+                        console.log(shootingStarsSourceAndIndex);
+                        let shootingStarsSource = shootingStarsSourceAndIndex[0];
+                        let shootingStarsIndex = shootingStarsSourceAndIndex[1];
+
+                        if (shootingStarsSource && shootingStarsSource != background.name) {
+                            if (arrayElementsArray[shootingStarsIndex][0].visible) {
+                                generateShootingStars(arrayElementsArray[shootingStarsIndex][0], namedSymbols[shootingStarsSource]);
+                            }
+                        }
+                    }
                     background.setValue(dataItem.array, dataItem);
                     if (dataItem.memoryAddress) {
                         // memory address changed
@@ -1386,23 +1410,6 @@ class ArraySymbol {
 
                 if (currentValue != valuesArray[i]) {
                     arrayElementsArray[i][0].timeOfChange = background.currentTime;
-
-                    console.log("Data item is: ");
-                    console.log(dataItem);
-                    console.log("Parent staetment");
-                    console.log(dataItem.parentStatement);
-
-                    let shootingStarsSource;
-
-                    shootingStarsSource = parseShootingStarsSource(dataItem.parentStatement);
-                    if (!shootingStarsSource)
-                        shootingStarsSource = parseShootingStarsSource(dataItem.grandParentStatement);
-
-                    if (shootingStarsSource && shootingStarsSource != background.name) {
-                        if (arrayElementsArray[i][0].visible) {
-                            generateShootingStars(arrayElementsArray[i][0], namedSymbols[shootingStarsSource]);
-                        }
-                    }
                 }
 
                 arrayElementsArray[i][0].element = valuesArray[i];
@@ -1545,8 +1552,7 @@ class ArraySymbol {
                     columns = 1;
                     defaultValue.push(rowNumbers);
                 } else {
-                    // { {1, 2}, {3, 4},  {5, 6} } -> 2D array
-                    let arrayElementStartIndex = 0;
+                     let arrayElementStartIndex = 0;
                     let rowIndex = 0;
                     let elementString = innerContents;
 

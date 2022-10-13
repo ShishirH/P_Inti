@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using System.Text;
 using System.Globalization;
 using System.Diagnostics;
+using System.Reflection;
+using Newtonsoft.Json.Linq;
 
 namespace ConsoleApp1 {
 
@@ -15,6 +17,7 @@ namespace ConsoleApp1 {
         public static System.IO.StreamWriter logFile = null;
         public static System.IO.StreamWriter signalFile = null;
         public static System.IO.StreamWriter lineInfoFile = null;
+        public static System.IO.StreamWriter initializationFile = null;
 
         public static Dictionary<string, int> timesCounter = new Dictionary<string, int>();
         public static int getExecutionCount(string key) {
@@ -51,6 +54,9 @@ namespace ConsoleApp1 {
 
             lineInfoFile = new System.IO.StreamWriter(System.IO.File.Create(fileName + ".lineInfo"));
             lineInfoFile.WriteLine("index~filePath~line~time");
+
+            initializationFile = new System.IO.StreamWriter(System.IO.File.Create(fileName + ".init"));
+            initializationFile.WriteLine("filePath~symbol~value");
         }
 
 
@@ -153,7 +159,31 @@ namespace ConsoleApp1 {
             return o is Array && ((Array)o).Rank == 1;
         }
 
+        public static bool isCustomClass(object o)
+        {
+            string result = "";
+            result = o.GetType() + " ~   " + o.GetType().Assembly.GetName().Name;
+            if (o.GetType().Assembly.GetName().Name != "mscorlib")
+            {
+                // user-defined!
+                result = result + " ~   " + (o.GetType().Assembly.GetName().Name != "mscorlib");
+            }
+            return o.GetType().Assembly.GetName().Name != "mscorlib";
+        }
 
+        public static JObject getFieldsForClass(object o)
+        {
+            // FIX RECURSIVE LOGIC
+            JObject fieldsObject = new JObject();
+            foreach (FieldInfo field in o.GetType().GetFields())
+            {
+                string fieldName = field.Name;
+                string fieldValue = (field.GetValue(o) == null) ? "null" : field.GetValue(o).ToString();
+                fieldsObject.Add(fieldName, fieldValue);
+            }
+
+            return fieldsObject;
+        }
         // for any assignment
         public static void logAssignment(String logString, params object[] parentExpressions) {
 
@@ -165,8 +195,15 @@ namespace ConsoleApp1 {
             object parameter = parentExpressions[0];
             bool isMatrix = is2DArray(parameter);
             bool isArray = is1DArray(parameter);
+            bool isClass = isCustomClass(parameter);
 
-            if ((isMatrix || isArray) && parentExpressions.Length == 3) {
+            if (isClass) {
+                // DO THE SAME FOR PROPERTIES
+                JObject fieldValues = new JObject();
+                stringForFile = getFieldsForClass(parameter).ToString();
+                parameters.Add(stringForFile);
+
+            } else if ((isMatrix || isArray) && parentExpressions.Length == 3) {
 
                 values += "{0}";
 
@@ -208,6 +245,8 @@ namespace ConsoleApp1 {
                     } else {
                         stringForFile = parentExpression.ToString();
                     }
+
+                    // Add condition for complex object
                     
                     parameters.Add(stringForFile);
 
@@ -225,6 +264,7 @@ namespace ConsoleApp1 {
 
             StringBuilder sb = new StringBuilder();
             sb.AppendFormat(logString, tmpSB.ToString());
+            //logFile.WriteLine("$$$$$$$$$$$$$$$\t" + isClass);
             logFile.WriteLine((logIndex++) + "~" + sb.ToString() + "~" + (nanoTime() - dt1) + "~" + column + "~" + row + "~" + stringForFile + "~" + parentExpressions[0].GetHashCode());
 
         }        
@@ -237,6 +277,19 @@ namespace ConsoleApp1 {
             return true;
         }
 
+        public static bool logInitialization(String logString, object o)
+        {
+            string initializationValue = "";
+            // Only do this for custom classes?
+            if (isCustomClass(o))
+            {
+                initializationValue = getFieldsForClass(o).ToString();
+            }
+
+            initializationFile.WriteLine(logString + "~" + initializationValue);
+            //logFile.WriteLine((logIndex++) + "~" + sb.ToString() + "~" + (nanoTime()));
+            return true;
+        }
 
         public static void logSignal(String signalsString) {
             signalFile.WriteLine(signalsString + "~" + (nanoTime() - dt1));
@@ -306,6 +359,8 @@ namespace ConsoleApp1 {
             signalFile.Close();
             lineInfoFile.Flush();
             lineInfoFile.Close();
+            initializationFile.Flush();
+            initializationFile.Close();
         }
 
         private static long nanoTime() {

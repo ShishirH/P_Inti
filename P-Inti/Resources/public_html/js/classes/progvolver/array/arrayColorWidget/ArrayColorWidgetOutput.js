@@ -19,6 +19,10 @@ var ArrayColorWidgetOutput = iVoLVER.util.createClass(fabric.Circle, {
 
     processConnectionRequest: function (connection) {
         var source = connection.source;
+        this.inConnection = connection;
+        console.log("Color widget output");
+        console.log(this);
+        console.log(connection);
         var connectionAccepted = (source.isCircle && (source.getInConnections().length + source.getOutConnections().length) === 1) || (source.isTriangle && (source.getInConnections().length >= 2));
         var message = '';
         if (!connectionAccepted) {
@@ -35,6 +39,19 @@ var ArrayColorWidgetOutput = iVoLVER.util.createClass(fabric.Circle, {
             message: message
         };
     },
+
+    inValueUpdated: function (options) {
+        console.log("Value changed here");
+        console.log("Value is: " + this.value)
+
+        for (let outConnection in this.outConnections) {
+            if (outConnection.target)
+                outConnection.target.value = this.value;
+        }
+
+        console.log("Updated value to: " + this.value)
+    },
+
 
 });
 iVoLVER.util.extends(ArrayColorWidgetOutput.prototype, iVoLVER.model.Connectable);

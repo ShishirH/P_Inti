@@ -52,7 +52,7 @@ class CanvasVariable {
         }
 
         background.setIndex = function (newIndex) {
-            background.nameObject.text = "" + newIndex;
+            background.nameObject.text = "";
         }
 
         background.oldRender = background.render;

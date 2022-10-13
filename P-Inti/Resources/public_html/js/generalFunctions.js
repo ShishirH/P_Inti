@@ -38,10 +38,10 @@ function moveTimelineNext() {
     console.log(currentTime);
 
     // get next time
-    currentTime = getNextTimeLineData(currentTime);
     currentIndex = getNextTimeLineDataIndex(currentTime);
+    currentTime = getNextTimeLineData(currentTime);
 
-    if (currentIndex == window.lineData.length) {
+    if (currentIndex == window.lineData.length || currentIndex == -1) {
         return;
     }
 
@@ -50,14 +50,21 @@ function moveTimelineNext() {
 
     console.log("Current index is: ");
     console.log(currentIndex);
+
+    window.presentTime = currentTime;
+
+    console.log("Updating the slider");
+    console.log("Slider percentage: " + (currentIndex * 100) / window.lineData.length);
+    theSlider.update({from: ((currentIndex * 100) / window.lineData.length)});
+
     var ids = Object.keys(progvolver.objects);
     ids.forEach(function (id) {
         var object = progvolver.objects[id];
         object.setProgramTime && object.setProgramTime(currentTime);
     });
 
-    theSlider.update({from: ((currentIndex * 100) / window.lineData.length)});
 
+    console.log("Appending marks")
     sliderMarksElement.append(sliderMarksElements);
 
     var selectedSymbol = canvas.getActiveObject();
@@ -65,20 +72,26 @@ function moveTimelineNext() {
     if (selectedSymbol && selectedSymbol.showSliderMarks) {
         selectedSymbol.showSliderMarks();
     }
-
-    window.presentTime = currentTime;
-
 }
 
 function getNextTimeLineData(currentTime) {
-    return window.lineData.filter(item => item.time > currentTime)[0].time;
+    var dataItems = window.lineData.filter(item => item.time > currentTime);
+
+    if (dataItems.length > 0) {
+        return dataItems[0].time;
+    } else {
+        return -1;
+    }
+
 }
 
 function getNextTimeLineDataIndex(currentTime) {
-    for(let i = 0; i < window.lineData.length; i++) {
-        if (window.lineData[i].time > currentTime) {
-            return i;
-        }
+    var dataItems = window.lineData.filter(item => item.time > currentTime);
+
+    if (dataItems.length > 0) {
+        return dataItems[0].index;
+    } else {
+        return -1;
     }
 }
 
@@ -141,11 +154,11 @@ function getPreviousTimeLineData(currentTime) {
 function getLineNumberForCurrentTime(currentTime) {
     console.log("Current time is: ");
     console.log(currentTime);
-    var filteredObjects =  window.lineData.filter(item => item.time > currentTime);
+    var filteredObjects =  window.lineData.filter(item => item.time <= currentTime);
     let lineNumberArray = [];
     if (filteredObjects.length > 0) {
-        let file = filteredObjects[0].filePath;
-        let lineNumber = filteredObjects[0].line;
+        let file = filteredObjects[filteredObjects.length - 1].filePath;
+        let lineNumber = filteredObjects[filteredObjects.length - 1].line;
 
         lineNumberArray[0] = file;
         lineNumberArray[1] = lineNumber;
@@ -273,13 +286,18 @@ function getQuadraticBezierXYatT(startPt, controlPt, endPt, T) {
     });
 }
 
-function drawCirclesAlongCurve(ctx, points) {
+function getPositionAlongTheLine(x1, y1, x2, y2, percentage) {
+    return {x : x1 * (1.0 - percentage) + x2 * percentage, y : y1 * (1.0 - percentage) + y2 * percentage};
+}
+
+function drawCirclesAlongLine(ctx, points) {
     //ctx.save();
     let shootingStarsCircles = [];
     let radius = 12;
     let opacity = 0.5;
-    for (var t = 0; t < 101; t += 5) {
-        var point = getQuadraticBezierXYatT(points[0], points[1], points[2], t / 100);
+    var numberOfPoints = 20;
+    for (var i = 0; i < numberOfPoints; i++) {
+        var point = getPositionAlongTheLine(points[0].x, points[0].y, points[2].x, points[2].y, i / 20)
         var shootingStarCircle = new fabric.Circle({
             radius: radius,
             top: point.y,
@@ -306,10 +324,45 @@ function drawCirclesAlongCurve(ctx, points) {
     //ctx.restore();
 }
 
+function drawCirclesAlongCurve(ctx, points) {
+    //ctx.save();
+    let shootingStarsCircles = [];
+    let radius = 12;
+    let opacity = 0.5;
+    for (var t = 0; t < 101; t += 5) {
+        var point = getQuadraticBezierXYatT(points[0], points[1], points[2], t / 100);
+        var shootingStarCircle = new fabric.Circle({
+            radius: radius,
+            top: point.y,
+            left: point.x,
+            fill: rgba(255, 255, 0, opacity),
+            centerX: "center",
+            centerY: "center",
+            opacity: opacity,
+            eventable: false,
+            selectable: false
+        });
+
+        canvas.add(shootingStarCircle);
+        shootingStarsCircles.push(shootingStarCircle);
+
+        // ctx.beginPath();
+        // ctx.arc(point.x, point.y, radius, 0, Math.PI * 2);
+        // ctx.closePath();
+        // ctx.fillStyle = rgba(255, 255, 0, opacity);
+        // ctx.fill();
+        radius = radius - 0.3;
+        //opacity = opacity - 0.015;
+    }
+
+    return shootingStarsCircles;
+    //ctx.restore();
+}
+
 function shootingStarsDecay(widget1, widget2) {
     let currentTime = window.presentTime;
     let currentIndex = window.lineData.filter(item => item.time == currentTime)[0].index;
-    let stepsToDecay = 2;
+    let stepsToDecay = 3;
 
     console.log("Widget 1");
     console.log(widget1);
@@ -319,6 +372,10 @@ function shootingStarsDecay(widget1, widget2) {
     console.log(widget2.name);
     console.log("widget1.shootingStarsDict");
     console.log(widget1.shootingStarsDict);
+
+    if (!widget1.name && widget1.array) { // isArrayElement
+        widget1 = widget1.array;
+    }
     if (widget1.shootingStarsDict[widget2.name]) {
         console.log("I am here");
         let shootingStarsCreationTime = widget1.shootingStarsDict[widget2.name].time;
@@ -360,14 +417,23 @@ function shootingStarsDecay(widget1, widget2) {
 
 function generateShootingStars(widget1, widget2) {
     let ctx = canvas.getContext();
-    var shootingStarStart = widget1.getPointByOrigin('right', 'center');
+    var shootingStarEnd = widget1.getPointByOrigin('center', 'center');
+    let shootingStarStart = widget2.getPointByOrigin('center', 'center');
     shootingStarStart.x += 5;
-    let shootingStarCenter = {x: shootingStarStart.x + 100, y: shootingStarStart.y + 100};
-    let shootingStarEnd = widget2.getPointByOrigin('right', 'top');
+    let shootingStarCenter = {x: (shootingStarStart.x + shootingStarEnd.x) / 2,
+        y: (shootingStarStart.y + shootingStarEnd.y) / 2};
 
     var points = [shootingStarStart, shootingStarCenter, shootingStarEnd];
     //drawCurveThroughPoints(ctx, points);
     shootingStarsCircles = drawCirclesAlongCurve(ctx, points);
+
+    if (!widget1.name && widget1.array) { // array element
+        widget1 = widget1.array;
+    }
+
+    if (!widget2.name && widget2.array) { // array element
+        widget2 = widget2.array;
+    }
 
     console.log("Shooting stars are: ");
     console.log(shootingStarsCircles);
@@ -389,20 +455,76 @@ function generateShootingStars(widget1, widget2) {
     console.log(widget1.shootingStarsDict);
 }
 
-function parseShootingStarsSource(parentStatement) {
-    let parentString = "";
+function parseShootingStarsSource(parentStatement, widget) {
     if (parentStatement.includes("=")) {
         let leftHalf = parentStatement.split("=")[0].trim();
         let rightHalf = parentStatement.split("=")[1].trim();
 
+        let leftHalfIndex = null;
+        let rightHalfIndex = null;
         console.log("@# Left half is: " + leftHalf);
-        console.log("@# rightHalf is: " + rightHalf);
+        if (leftHalf.includes("[")) {
+            leftHalfIndex = leftHalf.substring(leftHalf.indexOf("[") + 1, leftHalf.indexOf("]"));
+            console.log("leftHalfIndex is now: " + leftHalfIndex)
+        }
 
-        if (namedSymbols[rightHalf]) {
-            console.log("Found " + rightHalf);
-            return rightHalf;
-        } else if (namedSymbols[leftHalf]) {
-            return leftHalf;
+        console.log("@# Right half is: " + rightHalf);
+        if (rightHalf.includes("[")) {
+            rightHalfIndex = rightHalf.substring(rightHalf.indexOf("[") + 1, rightHalf.indexOf("]"));
+            console.log("rightHalfIndex is now: " + rightHalfIndex)
+        }
+
+        if (rightHalf == widget.name) {
+            console.log("Found " + leftHalf);
+            if (leftHalfIndex) { // change to an array element
+                let index = namedSymbols[leftHalfIndex].value;
+                let arrayName = leftHalf.substring(0, leftHalf.indexOf("["));
+
+                console.log("Index is: " + index);
+                console.log("Array name is: " + arrayName);
+
+                if (namedSymbols[arrayName]){
+                    return namedSymbols[arrayName].arrayElementsArray[index][0];
+                }
+            }
+            if (namedSymbols[leftHalf]) {
+                return namedSymbols[leftHalf];
+            }
+        }
+    }
+}
+
+function parseShootingStarsSourceForArray(parentStatement, widget) {
+    if (parentStatement && parentStatement.includes("=")) {
+        let leftHalf = parentStatement.split("=")[0].trim();
+        let rightHalf = parentStatement.split("=")[1].trim();
+
+        let leftHalfIndex = null;
+        let rightHalfIndex = null;
+        console.log("@# Left half is: " + leftHalf);
+        if (leftHalf.includes("[")) {
+            leftHalfIndex = leftHalf.substring(leftHalf.indexOf("[") + 1, leftHalf.indexOf("]"));
+            console.log("leftHalfIndex is now: " + leftHalfIndex)
+        }
+
+        console.log("@# Right half is: " + rightHalf);
+        if (rightHalf.includes("[")) {
+            rightHalfIndex = rightHalf.substring(rightHalf.indexOf("[") + 1, rightHalf.indexOf("]")).trim();
+            console.log("rightHalfIndex is now: " + rightHalfIndex)
+        }
+
+        console.log(namedSymbols);
+        console.log("namedSymbols");
+
+        console.log(namedSymbols[rightHalfIndex]);
+        console.log("namedSymbols[rightHalfIndex]");
+
+        if (rightHalf.includes(widget.name)) {
+            console.log("Found " + leftHalf);
+            console.log("Index of change: " + rightHalfIndex)
+            if (namedSymbols[leftHalf]) {
+                return [leftHalf, namedSymbols[rightHalfIndex].value];
+            }
         }
     }
 }
@@ -7408,8 +7530,8 @@ function newConnectionReleasedOnCanvas(connection, coordX, coordY) {
             fill: connection.source.fill,
             stroke: connection.source.stroke,
             parent: connection.source,
-            index: connection.source.index,
-            name: "" + connection.source.index,
+            index: "",
+            name: "",
             isColorWidgetOutput: true,
             type: "",
             value: connection.source.value
@@ -9470,10 +9592,10 @@ function onSliderChanged(data) {
 
 
         var currentTime = changeRange(data.from, data.min, data.max, window.minTime, window.maxTime);
-        if (window.presentTime > currentTime) {
-            console.log("Duplicate call. Returning");
-            return;
-        }
+        // if (window.presentTime && (window.presentTime > currentTime)) {
+        //     console.log("Duplicate call. Returning");
+        //     return;
+        // }
         //window.presentTime = currentTime;
 
         // 10% of difference between maxTime and minTime as the width for the Gaussian curve.
@@ -9569,11 +9691,15 @@ function onSliderChanged(data) {
         }
 
         let expressions = (lastRecordForExpression != null) ? lastRecordForExpression.expressions : null;
-        window.jsHandler.setCurrentLine({
-            lineNumber: lineNumberDetails[1],
-            filePath: lineNumberDetails[0],
-            expressions: expressions
-        }).then(function (response) {});
+
+        if (lineNumberDetails[0] && lineNumberDetails[0].length > 1) {
+            window.jsHandler.setCurrentLine({
+                lineNumber: lineNumberDetails[1] - 1,
+                filePath: lineNumberDetails[0],
+                expressions: expressions
+            }).then(function (response) {
+            });
+        }
 
     }
 

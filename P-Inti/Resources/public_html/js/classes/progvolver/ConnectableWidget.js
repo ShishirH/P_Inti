@@ -61,12 +61,13 @@ class ConnectableWidget {
                 this.oldValues = this.values;
                 this.values = this.history.filter(item => item[window.sliderDimension] <= time);
 
-                if (this.oldValues && (this.oldValues.length == this.values.length)) {
-                    console.log("Duplicate call. Returning");
-                    return;
-                }
+                // if (this.oldValues && (this.oldValues.length == this.values.length)) {
+                //     console.log("Duplicate call. Returning");
+                //     return;
+                // }
 
                 if (this.values.length) {
+                    console.log("Mapped to time: " + this.values[this.values.length - 1].time)
                     this.onValuesUpdated && this.onValuesUpdated(this.values[this.values.length - 1]);
                     /*console.log(this.history);
                      console.log(this.values);*/

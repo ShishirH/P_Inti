@@ -48,7 +48,7 @@ namespace P_Inti
         private Dispatcher theDispatcher = null;
         public static string[] accessModifiers = { "public", "private", "protected", "internal" };
         public static string[] builtInTypes = { "bool", "byte", "sbyte", "char", "decimal", "double", "float", "int", "uint", "nint", "nuint", "long", "ulong", "short", "ushort", "string" };
-
+        public static Dictionary<string, string> initializationValues = new Dictionary<string, string>();
 
         public static string codeControlFilePath;
         public JsHandler(MyWindowControl windowControl, Dispatcher dispatcher)
@@ -747,12 +747,15 @@ namespace P_Inti
 
                             MyWindowControl.printInBrowserConsole("JSHandler getScope");
                             Dictionary<string, object> scopeResults = getScope(symbol, document, windowControl);
+                            int declarationLineNumber = (int)scopeResults["declareAtTo"] - 1;
+                            string filePath = (string)scopeResults["filePath"];
+
                             foreach (KeyValuePair<string, object> kvp in scopeResults)
                             {
                                 editorState.Add(kvp.Key, kvp.Value);
                             }
 
-
+                            initializationValues.Add(filePath + "~" + declarationLineNumber, symbol.Name);
                         }
 
 
@@ -849,8 +852,8 @@ namespace P_Inti
                                         memberWriter.WritePropertyName("access_modifier");
                                         memberWriter.WriteValue(accessModifier);
 
-                                        // If type is not primitive, call the function recursively again
-                                        if (!Array.Exists(builtInTypes, x => x == type))
+                                        // If type is not primitive, call the function recursively again while avoiding infinite recursions
+                                        if (!Array.Exists(builtInTypes, x => x == type) && type != className)
                                         {
                                             MyWindowControl.printInBrowserConsole("\n\n\n!!! Getting members for class: " + type);
                                             memberWriter.WritePropertyName("object");
@@ -975,7 +978,6 @@ namespace P_Inti
             return results;
 
         }
-
 
         public Dictionary<string, object> onObjectCreated(object arg)
         {
@@ -1573,6 +1575,7 @@ namespace P_Inti
         }
 
 
+        string outputDirectory = "";
         public Dictionary<string, object> runCodeAnalyzer(object arg)
         {
 
@@ -1583,12 +1586,15 @@ namespace P_Inti
                 string solutionPath = windowControl.dte.Solution.FullName;
                 string solutionDir = System.IO.Path.GetDirectoryName(solutionPath);
                 string progvolverDir = solutionDir + "/progvolver";
+                outputDirectory = progvolverDir + "/";
 
                 if (!Directory.Exists(progvolverDir))
                 {
                     Directory.CreateDirectory(progvolverDir);
                 }
-                var outputDir = progvolverDir + "/" + Utils.generateID();
+
+                string utilsId = Utils.generateID();
+                var outputDir = progvolverDir + "/" + utilsId;
 
                 List<string> fileNames = windowControl.fileNames;
                 List<int> positions = windowControl.positions;
@@ -1630,6 +1636,7 @@ namespace P_Inti
                 result.Add("lineInfoFileContent", lineInfoFileContent);
                 result.Add("success", success);
                 result.Add("response", compilationMessage);
+                result.Add("utilsId", utilsId);
             }
             return result;
         }
@@ -2167,6 +2174,40 @@ namespace P_Inti
                     fs.Close();
                 }
             }
+
+            return result;
+        }
+
+        public Dictionary<string, object> addIndexToLineLogFile(object arg)
+        {
+            MyWindowControl.printInBrowserConsole("Adding index to lineLog");
+
+            Dictionary<string, object> result = new Dictionary<string, object>();
+
+            IDictionary<string, object> input = (IDictionary<string, object>)arg;
+            input.TryGetValue("utilsId", out object utilsId);
+
+            string UtilsIdStr = (string)utilsId;
+
+            MyWindowControl.printInBrowserConsole("UtilsIdStr" + UtilsIdStr);
+
+            string lineInfoFilePath = outputDirectory + utilsId + "\\" + "run" + ".lineInfo";
+            string[] lineInfoLog = File.ReadAllLines(lineInfoFilePath);
+
+            string lineInfoLogContents = "";
+            string lineHeader = lineInfoLog[0];
+            int index = 0;
+            for(int i = 1; i < lineInfoLog.Length; i++)
+            {
+                lineInfoLog[i] = index + "~" + lineInfoLog[i];
+                lineInfoLogContents += "\n" + lineInfoLog[i];
+                index++;
+            }
+
+            string fileContents = lineHeader + lineInfoLogContents;
+
+            File.WriteAllText(lineInfoFilePath, fileContents);
+            result.Add("lineInfoFileContent", fileContents);
 
             return result;
         }

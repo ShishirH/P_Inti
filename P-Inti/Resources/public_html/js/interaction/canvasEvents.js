@@ -1948,6 +1948,7 @@ function bindCanvasDefaultEvents(canvas) {
                                 var allInfo = "";
                                 var keys = Object.keys(response);
 
+                                console.log("response");
                                 console.log(response);
 
                                 if (response.dataType.includes("[") && response.dataType.includes("]")) {

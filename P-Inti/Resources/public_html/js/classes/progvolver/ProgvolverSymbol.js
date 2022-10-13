@@ -264,15 +264,17 @@ class ProgvolverSymbol extends ConnectableWidget {
                 // }
 
                 if (currentDataItemIndex !== dataItem.index) {
+                    console.log("Variable is: " + background.name)
                     let shootingStarsSource;
-                    shootingStarsSource = parseShootingStarsSource(dataItem.parentStatement);
+                    shootingStarsSource = parseShootingStarsSource(dataItem.parentStatement, background);
 
                     if (!shootingStarsSource && dataItem.grandParentStatement)
-                        shootingStarsSource = parseShootingStarsSource(dataItem.grandParentStatement);
+                        shootingStarsSource = parseShootingStarsSource(dataItem.grandParentStatement, background);
 
                     console.log("Shooting star source is: " + shootingStarsSource);
                     if (shootingStarsSource && shootingStarsSource != background.name) {
-                        generateShootingStars(background, namedSymbols[shootingStarsSource]);
+                        console.log("Generating shooting stars");
+                        generateShootingStars(background, shootingStarsSource);
                     }
                 }
 
@@ -831,10 +833,7 @@ class ProgvolverSymbol extends ConnectableWidget {
         if (!this.doNotRegisterObject)
             registerProgvolverObject(this);
 
-        console.log("Adding to persistent entry")
         PERSISTENT_CANVAS_ENTRIES.push(background);
-        console.log("Persistent entry is now");
-        console.log(PERSISTENT_CANVAS_ENTRIES);
         return background;
     }
 

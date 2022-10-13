@@ -93,11 +93,16 @@ var VariableInputConnection = iVoLVER.util.createClass(fabric.Rect, {
         let source = connection.source;
         this.operandValue = Number(source.value);
 
-        if (connection.source.parent.parent.connectedVariableName) {
-            this.value = (connection.source.parent.parent.connectedVariableName)
-        } else if (connection.source.background && connection.source.background.name) {
-            this.value = connection.source.background.name;
+        if (connection.value) {
+            this.value = connection.value;
+        } else {
+            this.value = connection.source.value;
         }
+        // if (connection.source.parent.parent.connectedVariableName) {
+        //     this.value = (connection.source.parent.parent.connectedVariableName)
+        // } else if (connection.source.background && connection.source.background.name) {
+        //     this.value = connection.source.background.name;
+        // }
 
         this.set('width', Math.max(getValueWidth(this.font, this), 35));
         this.parent.modifyWidth(this.width - 35); // 35 is default width
@@ -124,6 +129,7 @@ var VariableInputConnection = iVoLVER.util.createClass(fabric.Rect, {
 
     acceptConnection: function (connection, processedValue) {
         console.log("Calling this");
+        console.log(this.inConnection);
         this.parent.outputPort && this.parent.outputPort.updateOutput && this.parent.outputPort.updateOutput();
     },
 
@@ -132,7 +138,11 @@ var VariableInputConnection = iVoLVER.util.createClass(fabric.Rect, {
     inValueUpdated: function (options) {
         var inConnection = this.inConnection;
 
+        console.log("Value has been updated");
+        console.log("Inconnection is: ");
+        console.log(inConnection);
         this.operandValue = Number(inConnection.source.value);
+        this.value = Number(inConnection.source.value);
     }
 });
 iVoLVER.util.extends(VariableInputConnection.prototype, iVoLVER.model.Connectable);
