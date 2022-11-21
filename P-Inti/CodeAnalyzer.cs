@@ -1345,7 +1345,7 @@ namespace TestingCodeAnalysis
                 string logInitializationString = "Logger.logInitialization(@\"" + filePath + "~" + 
                      JsHandler.initializationValues[key] + "~\"," + JsHandler.initializationValues[key] + ");";
                 
-                allContents[filePath][lineNumber] = string.Concat(allContents[filePath][lineNumber], logInitializationString);
+                //allContents[filePath][lineNumber] = string.Concat(allContents[filePath][lineNumber], logInitializationString);
             }
             // we need to modify the program files further to be able to log the signals
             foreach (string key in MyWindowControl.signalsPositions.Keys)

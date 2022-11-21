@@ -74,6 +74,9 @@ class ConnectableWidget {
                 }
             }
 
+            console.log("Code was executed")
+            console.log(this.values);
+
 
             if (backgroundObject.movementInteractionEvent) {
                 if (backgroundObject.movementInteractionEvent.timeOfMovement != -1) {

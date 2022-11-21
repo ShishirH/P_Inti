@@ -243,6 +243,10 @@
             <li class=""><a onclick="zoomIn()"><i class="icon-zoom-in "></i></a></li>
             <li class="verticalLeftDivider verticalRightDivider verticalRightDivider2"><a onclick="zoomOut()"><i class="icon-zoom-out "></i></a></li>
 
+            <!-- DRAGGING & PANNING MODES -->
+            <li id="panningModeButton" onmousedown='modeButtonClicked(this);' draggable="false" class="mode"><a><i class="fa fa-hand-paper-o fa-2x"> </i> </a></li>
+            <li class="verticalLeftDivider mode" id="disconnectingModeButton" onmousedown='modeButtonClicked(this);' draggable="false"><a><i class="fa fa-unlink fa-2x"> </i> </a></li>
+            <li class="verticalLeftDivider verticalRightDivider verticalRightDivider2 mode" id="squaredSelectionButton" onmousedown='modeButtonClicked(this);' draggable="false"><a><i class="fa fa-object-group fa-2x"> </i> </a></li>
 
             <!-- OPERATIONS ON OBJECTS -->
             <!--            <li class="mode verticalLeftDivider" onmousedown='duplicateObject();' draggable="false"><a><i class="fa fa-clone fa-flip-horizontal  clicMenu"> </i> </a></li>
@@ -531,64 +535,12 @@
 
 
 
-
-
-
         iVoLVER.gui.add.button({
             sectionID: iVoLVER.gui.toolbar, // variable storing the id of the top toolbar
             tooltip: 'Run',
             iconClass: 'fa-cogs',
             onClick: function () {
-                if (window.jsHandler) {
-                    var lineInfoFileContent;
-                    // console.log("addIndexToLineLogFile");
-                    // window.jsHandler.addIndexToLineLogFile(null).then(function (response) {
-                    //     console.log(response);
-                    //     lineInfoFileContent = response.lineInfoFileContent;
-                    // });
-
-                    if (window.jsHandler.runCodeAnalyzer) {
-                        var waitingDialog = new jWait('Running Program');
-                        window.jsHandler.runCodeAnalyzer(null).then(function (response) {
-
-                            window.trackedSymbolsIDs = response.trackedSymbolsIDs;
-                            window.trackedExpressionsIDs = response.trackedExpressionsIDs;
-                            window.trackedSignalIDs = response.trackedSignalIDs;
-                            console.log("Signal IDs:");
-                            console.log(response.trackedSignalIDs);
-
-                            // add index to lineLogData
-
-                            var logFileContent = response.logFileContent.join("\n");
-                            var scopeFileContent = response.scopeFileContent.join("\n");
-                            var signalFileContent = response.signalFileContent.join("\n");
-                            var lineInfoFileContentArray = response.lineInfoFileContent;
-
-                            for (let i = 1; i < lineInfoFileContentArray.length; i++) {
-                                lineInfoFileContentArray[i] = i + "~" + lineInfoFileContentArray[i];
-                            }
-                            lineInfoFileContent = lineInfoFileContentArray.join("\n");
-
-                            console.log("lineInfoFileContent is: ");
-                            console.log(lineInfoFileContent);
-                            console.log("logFileContent is: ");
-                            console.log(logFileContent);
-                            logFileContent = preProcessLogFileForDuplicates(logFileContent);
-                            console.log("logFileContent now is: ");
-                            console.log(logFileContent);
-                            processMethodParameters(logFileContent);
-                            processLogFiles(logFileContent, scopeFileContent, signalFileContent, lineInfoFileContent);
-                            window.snapshotWidget && window.snapshotWidget.parseMemberValues();
-                            waitingDialog.dialog('content', '<div style="text-align: center; margin-top: 20px;"><span align="center" style="font-size: 150%;">' + response.response + '</span></div>');
-                            if (response.success) {
-                                setTimeout(function () {
-                                    waitingDialog.dialog('hide');
-                                }, 2000);
-                            }
-
-                        });
-                    }
-                }
+                clickRunCodeButton();
             }
         });
 //            iVoLVER.gui.add.button({
@@ -1376,9 +1328,12 @@
        // canvas.add(canvasVariable);
 
         // var codeControls = new CodeControls({
-        //     x: 600,
-        //     y: 600
+        //     x: 250,
+        //     y: 250
         // });
+        //
+        // canvas.add(codeControls);
+
         //
         // var arrayControls = new CodeControls({
         //     x: 250,

@@ -12,12 +12,12 @@ namespace P_Inti
     /// <summary>
     /// Command handler
     /// </summary>
-    internal sealed class CodeControlAddExistingCode
+    internal sealed class AddToCodeShift
     {
         /// <summary>
         /// Command ID.
         /// </summary>
-        public const int CommandId = 256;
+        public const int CommandId = 4129;
 
         /// <summary>
         /// Command menu group (command set GUID).
@@ -30,12 +30,12 @@ namespace P_Inti
         private readonly AsyncPackage package;
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="CodeControlAddExistingCode"/> class.
+        /// Initializes a new instance of the <see cref="AddToCodeShift"/> class.
         /// Adds our command handlers for menu (commands must exist in the command table file)
         /// </summary>
         /// <param name="package">Owner package, not null.</param>
         /// <param name="commandService">Command service to add command to, not null.</param>
-        private CodeControlAddExistingCode(AsyncPackage package, OleMenuCommandService commandService)
+        private AddToCodeShift(AsyncPackage package, OleMenuCommandService commandService)
         {
             this.package = package ?? throw new ArgumentNullException(nameof(package));
             commandService = commandService ?? throw new ArgumentNullException(nameof(commandService));
@@ -48,7 +48,7 @@ namespace P_Inti
         /// <summary>
         /// Gets the instance of the command.
         /// </summary>
-        public static CodeControlAddExistingCode Instance
+        public static AddToCodeShift Instance
         {
             get;
             private set;
@@ -71,12 +71,12 @@ namespace P_Inti
         /// <param name="package">Owner package, not null.</param>
         public static async Task InitializeAsync(AsyncPackage package)
         {
-            // Switch to the main thread - the call to AddCommand in CodeControlAddExistingCode's constructor requires
+            // Switch to the main thread - the call to AddCommand in AddToCodeShift's constructor requires
             // the UI thread.
             await ThreadHelper.JoinableTaskFactory.SwitchToMainThreadAsync(package.DisposalToken);
 
             OleMenuCommandService commandService = await package.GetServiceAsync(typeof(IMenuCommandService)) as OleMenuCommandService;
-            Instance = new CodeControlAddExistingCode(package, commandService);
+            Instance = new AddToCodeShift(package, commandService);
         }
 
         /// <summary>
@@ -89,24 +89,17 @@ namespace P_Inti
         private void Execute(object sender, EventArgs e)
         {
             ThreadHelper.ThrowIfNotOnUIThread();
+            string message = string.Format(CultureInfo.CurrentCulture, "Inside {0}.MenuItemCallback()", this.GetType().FullName);
+            string title = "AddToCodeShift";
 
-            CodeControlEditorAdornment.wereLinesUpdated = false;
-            System.IServiceProvider serviceProvider = package as System.IServiceProvider;
-            EnvDTE.DTE dte = (EnvDTE.DTE)serviceProvider.GetService(typeof(EnvDTE.DTE));
-            EnvDTE.TextSelection ts = dte.ActiveWindow.Selection as EnvDTE.TextSelection;
-
-            string codeControlText = CodeControls.AddExistingCodeToCodeControl(ts.Text);
-
-            MyWindowControl.printInBrowserConsole("CodeControlText is: ");
-            MyWindowControl.printInBrowserConsole(codeControlText);
-
-            ts.Text = codeControlText;
-
-            MyWindowControl.printInBrowserConsole("ts.Text is: ");
-            MyWindowControl.printInBrowserConsole(ts.Text);
-
-            CodeControlEditorAdornment.wereLinesUpdated = true;
-            //CodeControlEditorAdornment.CreateEditorVisuals(null);
+            // Show a message box to prove we were here
+            VsShellUtilities.ShowMessageBox(
+                this.package,
+                message,
+                title,
+                OLEMSGICON.OLEMSGICON_INFO,
+                OLEMSGBUTTON.OLEMSGBUTTON_OK,
+                OLEMSGDEFBUTTON.OLEMSGDEFBUTTON_FIRST);
         }
     }
 }

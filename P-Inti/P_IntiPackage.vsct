@@ -56,6 +56,13 @@
           <ButtonText>Invoke CodeControlAddExistingCode</ButtonText>
         </Strings>
       </Button>
+      <Button guid="guidP_IntiPackageCmdSet1" id="cmdidAddToCodeShift" priority="0x0100" type="Button">
+        <Parent guid="guidP_IntiPackageCmdSet1" id="MyMenuGroup" />
+        <Icon guid="guidImages2" id="bmpPic1" />
+        <Strings>
+          <ButtonText>Invoke AddToCodeShift</ButtonText>
+        </Strings>
+      </Button>
     </Buttons>
 
     <!--The bitmaps section is used to define the bitmaps that are used for the commands.-->
@@ -67,6 +74,7 @@
             must be the actual index (1-based) of the bitmap inside the bitmap strip. -->
       <Bitmap guid="guidImages" href="Resources\MyWindowCommand.png" usedList="bmpPic1, bmpPic2, bmpPicSearch, bmpPicX, bmpPicArrows, bmpPicStrikethrough" />
       <Bitmap guid="guidImages1" href="Resources\CodeControlAddExistingCode.png" usedList="bmpPic1, bmpPic2, bmpPicSearch, bmpPicX, bmpPicArrows, bmpPicStrikethrough" />
+      <Bitmap guid="guidImages2" href="Resources\AddToCodeShift.png" usedList="bmpPic1, bmpPic2, bmpPicSearch, bmpPicX, bmpPicArrows, bmpPicStrikethrough" />
     </Bitmaps>
     <Groups>
       <Group guid="guidP_IntiPackageCmdSet1" id="MyMenuGroup" priority="0x0600">
@@ -96,9 +104,19 @@
     <GuidSymbol value="{426c1930-c84a-4b53-8f37-d2dd9e325f1f}" name="guidP_IntiPackageCmdSet1">
       <IDSymbol value="4128" name="MyMenuGroup" />
       <IDSymbol value="256" name="cmdidCodeControlAddExistingCode" />
+      <IDSymbol value="4129" name="cmdidAddToCodeShift" />
     </GuidSymbol>
   
     <GuidSymbol value="{1c05d5f8-ba6f-4fef-9b0f-c1aa31da4647}" name="guidImages1">
+      <IDSymbol name="bmpPic1" value="1" />
+      <IDSymbol name="bmpPic2" value="2" />
+      <IDSymbol name="bmpPicSearch" value="3" />
+      <IDSymbol name="bmpPicX" value="4" />
+      <IDSymbol name="bmpPicArrows" value="5" />
+      <IDSymbol name="bmpPicStrikethrough" value="6" />
+    </GuidSymbol>
+  
+    <GuidSymbol value="{e9170966-bda5-42ee-94c6-842a2f1a52e6}" name="guidImages2">
       <IDSymbol name="bmpPic1" value="1" />
       <IDSymbol name="bmpPic2" value="2" />
       <IDSymbol name="bmpPicSearch" value="3" />

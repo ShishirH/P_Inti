@@ -199,9 +199,9 @@ namespace ConsoleApp1 {
 
             if (isClass) {
                 // DO THE SAME FOR PROPERTIES
-                JObject fieldValues = new JObject();
-                stringForFile = getFieldsForClass(parameter).ToString();
-                parameters.Add(stringForFile);
+                //JObject fieldValues = new JObject();
+                //stringForFile = getFieldsForClass(parameter).ToString();
+                //parameters.Add(stringForFile);
 
             } else if ((isMatrix || isArray) && parentExpressions.Length == 3) {
 

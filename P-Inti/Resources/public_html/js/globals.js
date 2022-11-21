@@ -280,3 +280,6 @@ var codeControlsOnCanvas = [];
 var methodParameters = [];
 var referencedObjects = [];
 var namedSymbols = {};
+var variablesOnCanvas = [];
+var codeVariantAssociatedVariables = {};
+

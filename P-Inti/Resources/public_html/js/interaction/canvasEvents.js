@@ -2141,6 +2141,7 @@ function bindCanvasDefaultEvents(canvas) {
                                     allSymbols.push(theSymbol);
                                     namedSymbols[theSymbol.name] = theSymbol;
                                     canvas.add(theSymbol);
+                                    theSymbol.isOnCanvas = true;
                                 }
 
 

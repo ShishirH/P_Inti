@@ -15,6 +15,7 @@ class CodeControlCheckBox {
         var background = createObjectBackground(fabric.Rect, options);
         background.visibility = false;
         background.value = options.value;
+        background.parent = options.parent;
 
         background.oldRender = background.render;
 
@@ -30,7 +31,7 @@ class CodeControlCheckBox {
         }
 
         background.registerListener('mouseup', function () {
-            CodeControls.updateSelectedCodeControl(background);
+            CodeControls.updateSelectedCodeControl(background.parent);
         })
         return background;
     }

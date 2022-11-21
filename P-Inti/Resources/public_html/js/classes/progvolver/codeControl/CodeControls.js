@@ -15,14 +15,22 @@ class CodeControls {
         background.childrenOnTop = [];
 
         background.codeBranches = [];
-        background.codeBranchesMap = {};
+        background.codeBranchesMap = options.codeBranchesMap || {};
         background.selectedBranch = null;
         background.isOnCanvas = false;
+        background.name = options.name || "";
+        background.index = options.index;
         background.saturatedColor = background.fill;
         background.unsaturatedColor = desaturatedColorsArray[options.index];
+        background.kind = "CodeControls";
 
         background.addName = function () {
-            let labelObject = new fabric.IText("CONTROL_NAME", {
+            let labelObjectText = "CONTROL_NAME";
+            if (background.name != "") {
+                labelObjectText = background.name;
+            }
+
+            let labelObject = new fabric.IText(labelObjectText, {
                 fontFamily: 'Trebuchet MS',
                 fill: '#333',
                 fontSize: 16,
@@ -37,6 +45,7 @@ class CodeControls {
             var originChild = {originX: 'left', originY: 'top'};
 
             labelObject.on('editing:exited', function () {
+                console.log("Updated name is: " + name);
                 if (window.jsHandler && window.jsHandler.updateCodeControlName) {
                     window.jsHandler.updateCodeControlName({
                         id: background.id,
@@ -61,6 +70,7 @@ class CodeControls {
                 movable: false
             });
 
+            background.labelObject = labelObject;
             background.childrenOnTop.push(labelObject);
         }
 
@@ -71,7 +81,8 @@ class CodeControls {
                 hasControls: false,
                 hasBorders: false,
                 stroke: darken(background.stroke),
-                fill: darken(background.fill)
+                fill: darken(background.fill),
+                parent: background
             });
 
             var originParent = {originX: 'right', originY: 'top'};
@@ -105,6 +116,7 @@ class CodeControls {
             var originParent = {originX: 'center', originY: 'top'};
             var originChild = {originX: 'center', originY: 'top'};
 
+            console.log("Calling this function");
             let yPosition = CodeControlBranch.getYPositionForIndex(background.codeBranches.length);
             background.addChild(controlAddition, {
                 whenCompressed: {
@@ -171,16 +183,46 @@ class CodeControls {
 
             if (window.jsHandler && window.jsHandler.initializeCodeControl) {
                 window.jsHandler.initializeCodeControl({
+                    name: background.name,
                     id: background.id,
                     saturatedColor: background.saturatedColor,
                     unsaturatedColor: background.unsaturatedColor
                 });
             }
 
+            codeControlsOnCanvas.push(background);
+            CodeControls.updateSelectedCodeControl(background);
+
             console.log("Code controls is: ");
             console.log(background);
             background.positionObjects();
         });
+
+        background.toJson = function () {
+            let json = {};
+            let codeVariantsArray = [];
+
+            for (let i = 0; i < background.codeBranches.length; i++) {
+                let codeVariant = background.codeBranches[i];
+                console.log(codeVariant);
+                codeVariantsArray.push(codeVariant.toJson());
+                console.log(codeVariantsArray);
+            }
+
+            console.log("background.codeBranches");
+            console.log(codeVariantsArray);
+            json['codeVariantsArray'] = codeVariantsArray;
+            json['name'] = background.labelObject.text;
+            json['x'] = background.left;
+            json['y'] = background.top;
+            json['index'] = background.index;
+            json['id'] = background.id;
+            json['kind'] = "CodeControls";
+
+            console.log("Json is:");
+            console.log(json);
+            return JSON.stringify(json);
+        }
 
         // background.registerListener('mouseup', function (event) {
         //     CodeControls.updateSelectedCodeControl(background);
@@ -191,11 +233,8 @@ class CodeControls {
         background.noScaleCache = false;
 
         // Add this to the list of code controls, and make this code control active.
-        codeControlsOnCanvas.push(background);
-
-        CodeControls.updateSelectedCodeControl(background);
-
         this.progvolverType = "Code Controls";
+        PERSISTENT_CANVAS_ENTRIES.push(background);
         registerProgvolverObject(this);
 
         return background;
@@ -231,5 +270,39 @@ class CodeControls {
         }
 
         //window.selectedCodeControl.set('stroke', 'rgba(130, 130, 130, 1)');
+    }
+
+    static fromJson(json) {
+        console.log("Codecontrol being created");
+        console.log("codeVariantsArray");
+        console.log(json['codeVariantsArray']);
+
+
+        let labelObjectName = json['name'] || "CONTROL_TEXT";
+        let obj = new CodeControls({
+            name: labelObjectName,
+            x: json['x'], y: json['y'],
+            index: json['index'],
+            id: json['id'],
+        });
+
+        canvas.add(obj);
+
+        for (let i = 0; i < json['codeVariantsArray'].length; i++) {
+            let codeVariant = JSON.parse(json['codeVariantsArray'][i]);
+
+            console.log("BranchName");
+            console.log(codeVariant['branchName']);
+            console.log("BranchID");
+            console.log(codeVariant['id']);
+
+            let codeControlBranch = new CodeControlBranch({
+                parent: obj,
+                displayName: codeVariant['branchName'],
+                id: codeVariant['id']
+            });
+
+            obj.controlAddition.createCodeControl(null, codeControlBranch);
+        }
     }
 }

@@ -6,6 +6,7 @@ using Microsoft.VisualStudio.Text.Editor;
 using Microsoft.VisualStudio.Text.Formatting;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Windows.Controls;
 using System.Windows.Media;
 
@@ -24,12 +25,13 @@ namespace P_Inti
         /// <summary>
         /// Text view where the adornment is created.
         /// </summary>
-        private static IWpfTextView view;
+        public static IWpfTextView view;
 
         private static bool isInsideCodeControl = false;
-        private static string currentCodeControl = "";
+        private static string currentCodeControlId = "";
         private static string currentCodeControlBranch = "";
         private static CodeControlInfo currentCodeControlInfo = null;
+        public static bool wereLinesUpdated = false;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="CodeControlEditorAdornment"/> class.
@@ -59,11 +61,17 @@ namespace P_Inti
         /// <param name="e">The event arguments.</param>
         public void OnLayoutChanged(object sender, TextViewLayoutChangedEventArgs e)
         {
-            foreach (ITextViewLine line in e.NewOrReformattedLines)
+            if (MyWindowControl.CodeControlInfos.Count == 0 || CodeControlEditorAdornment.wereLinesUpdated == false)
             {
-                MyWindowControl.printInBrowserConsole("Line is: " + line.ToString());
-                CodeControlEditorAdornment.CreateEditorVisuals(line);
+                return;
             }
+
+            MyWindowControl.printInBrowserConsole("!!Number of lines: " + e.NewOrReformattedLines.Count);
+            //ITextViewLine linesInFile = 
+            CodeControlEditorAdornment.CreateEditorVisuals(null);
+            //foreach (ITextViewLine line in e.NewOrReformattedLines)
+            //{
+            //}
         }
 
         /// <summary>
@@ -72,84 +80,182 @@ namespace P_Inti
         /// <param name="line">Line to add the adornments</param>
         public static void CreateEditorVisuals(ITextViewLine line)
         {
+            MyWindowControl.printInBrowserConsole("9898 Creating adornments: ");
             if (MyWindowControl.CodeControlInfos.Count == 0)
             {
                 return;
             }
-            
+
             IWpfTextViewLineCollection textViewLines = CodeControlEditorAdornment.view.TextViewLines;
-            Color color;
+            ITextViewLine activeDocumentContents = textViewLines[0];
+            string documentContentsStr = activeDocumentContents.Snapshot.GetText();
+            List<int> beginIndexArray = new List<int>();
+            List<int> endIndexArray = new List<int>();
+            List<string> codeShiftArray = new List<string>();
 
-            foreach (ITextViewLine lineOfCode in textViewLines)
+            for(int index = documentContentsStr.IndexOf("//BEGIN"); index > -1; index = documentContentsStr.IndexOf("//BEGIN", index + 1))
             {
-                if (lineOfCode.Snapshot.GetText().StartsWith("//BEGIN"))
+                int newLineIndex = documentContentsStr.IndexOf("\n", index + 1);
+                string beginSubstring = documentContentsStr.Substring(index, newLineIndex - index);
+                string[] codeControlVariantPair = beginSubstring.Split(' ')[1].Trim().Split(':');
+                string codeShiftName = codeControlVariantPair[0];
+
+                codeShiftArray.Add(codeShiftName);
+                beginIndexArray.Add(index);
+            }
+
+            for (int index = documentContentsStr.IndexOf("//END"); index > -1; index = documentContentsStr.IndexOf("//END", index + 1))
+            {
+                int newLineIndex = documentContentsStr.IndexOf("\n", index + 1);
+                endIndexArray.Add(newLineIndex);
+            }
+
+            Color color;
+            for (int i = 0; i < beginIndexArray.Count; i++)
+            {
+                int start = beginIndexArray[i];
+                int end = endIndexArray[i];
+                string codeShiftName = codeShiftArray[i];
+
+                foreach (KeyValuePair<string, CodeControlInfo> codeControlInfoPair in MyWindowControl.CodeControlInfos)
                 {
-                    isInsideCodeControl = true;
-
-                    MyWindowControl.printInBrowserConsole("Line is: " + lineOfCode.Snapshot.GetText());
-                    string codeControlName = lineOfCode.Snapshot.GetText().Split(' ')[1].Trim().Split(':')[0];
-
-                    foreach(KeyValuePair<string, CodeControlInfo> codeControlInfoPair in MyWindowControl.CodeControlInfos)
+                    CodeControlInfo codeControl = codeControlInfoPair.Value;
+                    if (codeShiftName == codeControl.Name)
                     {
-                        CodeControlInfo codeControl = codeControlInfoPair.Value;
-                        if (codeControlName == codeControl.Name)
-                        {
-                            currentCodeControl = codeControl.Id;
-                            currentCodeControlInfo = codeControl;
-                        }
+                        currentCodeControlId = codeControl.Id;
+                        currentCodeControlInfo = codeControl;
+                        break;
                     }
                 }
-                else if (lineOfCode.Snapshot.GetText().StartsWith("//END"))
+
+                if (currentCodeControlInfo == MyWindowControl.CurrentCodeControl)
                 {
-                    isInsideCodeControl = false;
-                    currentCodeControl = "";
+                    color = currentCodeControlInfo.SaturatedColor;
                 }
                 else
                 {
-                    if (isInsideCodeControl == true)
+                    color = currentCodeControlInfo.UnsaturatedColor;
+                }
+
+                for (int index = start; index < end; index++)
+                {
+                    SnapshotSpan span = new SnapshotSpan(view.TextSnapshot, Span.FromBounds(index, index + 1));
+
+                    if (view.TextSnapshot[index].ToString().Trim().Length == 0 &&
+                        view.TextSnapshot[index + 1].ToString().Trim().Length == 0)
                     {
-                        if (currentCodeControlInfo == MyWindowControl.CurrentCodeControl)
+                        continue;
+                    }
+                    SolidColorBrush brush = new SolidColorBrush(color);
+                    brush.Freeze();
+
+                    SolidColorBrush penBrush = new SolidColorBrush(color);
+                    penBrush.Freeze();
+                    Pen pen = new Pen(penBrush, 0.5);
+                    pen.Freeze();
+                    Geometry geometry = textViewLines.GetMarkerGeometry(span);
+                    if (geometry != null)
+                    {
+                        var drawing = new GeometryDrawing(brush, pen, geometry);
+                        drawing.Freeze();
+
+                        var drawingImage = new DrawingImage(drawing);
+                        drawingImage.Freeze();
+
+                        var image = new Image
                         {
-                            color = currentCodeControlInfo.SaturatedColor;
-                        }
-                        else
-                        {
-                            color = currentCodeControlInfo.UnsaturatedColor;
+                            Source = drawingImage,
+                        };
 
-                            SolidColorBrush brush = new SolidColorBrush(color);
-                            brush.Freeze();
+                        // Align the image with the top of the bounds of the text geometry
+                        Canvas.SetLeft(image, geometry.Bounds.Left);
+                        Canvas.SetTop(image, geometry.Bounds.Top);
 
-                            SolidColorBrush penBrush = new SolidColorBrush(color);
-                            penBrush.Freeze();
-                            Pen pen = new Pen(penBrush, 0.5);
-                            pen.Freeze();
-
-                            Geometry geometry = textViewLines.GetMarkerGeometry(lineOfCode.Extent);
-                            if (geometry != null)
-                            {
-                                var drawing = new GeometryDrawing(brush, pen, geometry);
-                                drawing.Freeze();
-
-                                var drawingImage = new DrawingImage(drawing);
-                                drawingImage.Freeze();
-
-                                var image = new Image
-                                {
-                                    Source = drawingImage,
-                                };
-
-                                // Align the image with the top of the bounds of the text geometry
-                                Canvas.SetLeft(image, geometry.Bounds.Left);
-                                Canvas.SetTop(image, geometry.Bounds.Top);
-
-                                CodeControlEditorAdornment.layer.AddAdornment(AdornmentPositioningBehavior.TextRelative, lineOfCode.Extent, null, image, null);
-                            }
-
-                        }
+                        layer.AddAdornment(AdornmentPositioningBehavior.TextRelative, span, null, image, null);
 
                     }
                 }
             }
+
+            //foreach (ITextViewLine lineOfCode in textViewLines)
+            //{
+            //    MyWindowControl.printInBrowserConsole("9898 Line is: ");
+            //    MyWindowControl.printInBrowserConsole(lineOfCode.Snapshot.GetText());
+            //    if (lineOfCode.Snapshot.GetText().StartsWith("//BEGIN"))
+            //    {
+            //        isInsideCodeControl = true;
+
+            //        MyWindowControl.printInBrowserConsole("##Line might be: ");
+            //        MyWindowControl.printInBrowserConsole(lineOfCode.Snapshot.GetText());
+
+            //        string[] codeControlVariantPair = lineOfCode.Snapshot.GetText().Split(' ')[1].Trim().Split(':');
+            //        string codeControlName = codeControlVariantPair[0];
+            //        string variantName = codeControlVariantPair[1];
+
+            //        MyWindowControl.printInBrowserConsole("##codeControlName " + codeControlName);
+            //        MyWindowControl.printInBrowserConsole("##variantName " + variantName);
+
+            //        foreach (KeyValuePair<string, CodeControlInfo> codeControlInfoPair in MyWindowControl.CodeControlInfos)
+            //        {
+            //            CodeControlInfo codeControl = codeControlInfoPair.Value;
+            //            if (codeControlName == codeControl.Name)
+            //            {
+            //                currentCodeControlId = codeControl.Id;
+            //                currentCodeControlInfo = codeControl;
+            //            }
+            //        }
+            //    }
+            //    else if (lineOfCode.Snapshot.GetText().StartsWith("//END"))
+            //    {
+            //        isInsideCodeControl = false;
+            //        currentCodeControlId = "";
+            //    }
+            //    else
+            //    {
+            //        if (isInsideCodeControl == true)
+            //        {
+            //            if (currentCodeControlInfo == MyWindowControl.CurrentCodeControl)
+            //            {
+            //                color = currentCodeControlInfo.SaturatedColor;
+            //            }
+            //            else
+            //            {
+            //                color = currentCodeControlInfo.UnsaturatedColor;
+
+            //                SolidColorBrush brush = new SolidColorBrush(color);
+            //                brush.Freeze();
+
+            //                SolidColorBrush penBrush = new SolidColorBrush(color);
+            //                penBrush.Freeze();
+            //                Pen pen = new Pen(penBrush, 0.5);
+            //                pen.Freeze();
+
+            //                Geometry geometry = textViewLines.GetMarkerGeometry(lineOfCode.Extent);
+            //                if (geometry != null)
+            //                {
+            //                    var drawing = new GeometryDrawing(brush, pen, geometry);
+            //                    drawing.Freeze();
+
+            //                    var drawingImage = new DrawingImage(drawing);
+            //                    drawingImage.Freeze();
+
+            //                    var image = new Image
+            //                    {
+            //                        Source = drawingImage,
+            //                    };
+
+            //                    Align the image with the top of the bounds of the text geometry
+            //                    Canvas.SetLeft(image, geometry.Bounds.Left);
+            //                    Canvas.SetTop(image, geometry.Bounds.Top);
+
+            //                    CodeControlEditorAdornment.layer.AddAdornment(AdornmentPositioningBehavior.TextRelative, lineOfCode.Extent, null, image, null);
+            //                }
+
+            //            }
+
+            //        }
+            //    }
+            //}
         }
 
             //foreach (KeyValuePair<string, CodeControlInfo> codeControlInfoPair in MyWindowControl.CodeControlInfos)

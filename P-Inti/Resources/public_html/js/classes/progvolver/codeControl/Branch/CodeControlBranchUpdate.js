@@ -27,8 +27,9 @@ class CodeControlBranchUpdate {
                 if (window.jsHandler && window.jsHandler.updateControlBranch) {
                     console.log("Updating control branch")
                     window.jsHandler.updateControlBranch({
-                        branchName: background.parent.branchName,
-                        id: background.parent.id
+                        variantName: background.parent.branchName,
+                        variantId: background.parent.id,
+                        codeShiftId: background.parent.parent.id
                     });
                 }
             }

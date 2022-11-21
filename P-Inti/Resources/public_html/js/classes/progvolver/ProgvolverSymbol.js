@@ -29,8 +29,8 @@ class ProgvolverSymbol extends ConnectableWidget {
         options.rx = options.rx || 5;
         options.ry = options.ry || 5;
         options.label = options.label || options.fileName && options.lineNumber ? options.fileName + ' (' + options.lineNumber + ')' : options.fileName || '';
-        options.fill = symbolKinds[options.kind];
-        options.stroke = options.stroke || darken(symbolKinds[options.kind]);
+        options.fill = options.fill || symbolKinds[options.kind];
+        options.stroke = options.stroke || darken(options.fill);
         options.strokeWidth = options.strokeWidth || 2;
         options.nonResizable = true;
         options.hasControls = false;
@@ -791,7 +791,16 @@ class ProgvolverSymbol extends ConnectableWidget {
         };
 
         background.addAll = function () {
-            background.expand();
+            canvas.add(background);
+            canvas.add(background.nameObject);
+        }
+
+        background.removeAll = function () {
+            background.childrenOnTop.forEach(function (child) {
+                canvas.remove(child);
+            });
+
+            canvas.remove(background);
         }
 
         background.toJson = function () {
@@ -834,6 +843,12 @@ class ProgvolverSymbol extends ConnectableWidget {
             registerProgvolverObject(this);
 
         PERSISTENT_CANVAS_ENTRIES.push(background);
+
+        if (!window.source) {
+            window.source = background;
+        } else {
+            window.target = background;
+        }
         return background;
     }
 

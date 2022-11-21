@@ -3,6 +3,60 @@ window.sliderDimension = "time";
 progvolver = {
     objects: {}
 };
+
+function clickRunCodeButton() {
+    if (window.jsHandler) {
+        var lineInfoFileContent;
+        // console.log("addIndexToLineLogFile");
+        // window.jsHandler.addIndexToLineLogFile(null).then(function (response) {
+        //     console.log(response);
+        //     lineInfoFileContent = response.lineInfoFileContent;
+        // });
+
+        if (window.jsHandler.runCodeAnalyzer) {
+            var waitingDialog = new jWait('Running Program');
+            window.jsHandler.runCodeAnalyzer(null).then(function (response) {
+
+                window.trackedSymbolsIDs = response.trackedSymbolsIDs;
+                window.trackedExpressionsIDs = response.trackedExpressionsIDs;
+                window.trackedSignalIDs = response.trackedSignalIDs;
+                console.log("Signal IDs:");
+                console.log(response.trackedSignalIDs);
+
+                // add index to lineLogData
+
+                var logFileContent = response.logFileContent.join("\n");
+                var scopeFileContent = response.scopeFileContent.join("\n");
+                var signalFileContent = response.signalFileContent.join("\n");
+                var lineInfoFileContentArray = response.lineInfoFileContent;
+
+                for (let i = 1; i < lineInfoFileContentArray.length; i++) {
+                    lineInfoFileContentArray[i] = i + "~" + lineInfoFileContentArray[i];
+                }
+                lineInfoFileContent = lineInfoFileContentArray.join("\n");
+
+                console.log("lineInfoFileContent is: ");
+                console.log(lineInfoFileContent);
+                console.log("logFileContent is: ");
+                console.log(logFileContent);
+                logFileContent = preProcessLogFileForDuplicates(logFileContent);
+                console.log("logFileContent now is: ");
+                console.log(logFileContent);
+                processMethodParameters(logFileContent);
+                processLogFiles(logFileContent, scopeFileContent, signalFileContent, lineInfoFileContent);
+                window.snapshotWidget && window.snapshotWidget.parseMemberValues();
+                waitingDialog.dialog('content', '<div style="text-align: center; margin-top: 20px;"><span align="center" style="font-size: 150%;">' + response.response + '</span></div>');
+                if (response.success) {
+                    setTimeout(function () {
+                        waitingDialog.dialog('hide');
+                    }, 2000);
+                }
+
+            });
+        }
+    }
+}
+
 function goToLineInFile() {
     let lineDetails = getLineNumberForCurrentTime(window.presentTime);
 
@@ -23,6 +77,85 @@ function goToLineInFile() {
     //console.log(args);
     window.jsHandler.goTo(args);
 }
+
+function getAssociatedVariablesForCodeVariants(variantCombinationString)
+{
+    let variableNamesStr = "";
+    let declaredLinesStr = "";
+    let typesStr = "";
+    let scopeLinesStr = "";
+    let fileNameStr = "";
+    let variableIdsStr = "";
+
+    variablesOnCanvas = [];
+    let variablesNamesArray = [];
+    let variablesValuesArray = [];
+    for (const [key, value] of Object.entries(namedSymbols)) {
+        let variable = value;
+
+        if (variableNamesStr === "") {
+            variableNamesStr += variable.name;
+            declaredLinesStr += variable.declareAtTo;
+            typesStr += variable.type;
+            scopeLinesStr += variable.scopeTo;
+            fileNameStr += variable.file;
+            variableIdsStr += variable.id;
+        } else {
+            variableNamesStr += "_" + variable.name;
+            declaredLinesStr += "_" + variable.declareAtTo;
+            typesStr += "_" + variable.type;
+            scopeLinesStr += "_" + variable.scopeTo;
+            fileNameStr += "_" + variable.file;
+            variableIdsStr += "!" + variable.id;
+        }
+    }
+
+    if (window.jsHandler) {
+        window.jsHandler.searchVariableAcrossVariants({
+            variableNamesStr: variableNamesStr,
+            declaredLinesStr: declaredLinesStr,
+            typesStr: typesStr,
+            scopeLinesStr: scopeLinesStr,
+            fileNameStr: fileNameStr,
+            variableIdsStr: variableIdsStr
+        }).then(function (response) {
+            console.log("Response was: ");
+            console.log(response);
+
+            variablesNamesArray = response.foundVariableNames.split("_");
+            variablesValuesArray = response.foundVariableValues.split("_");
+
+            // Set values for another code variant combination
+            for (let i = 0; i < variablesNamesArray.length; i++) {
+                let variable = namedSymbols[variablesNamesArray[i]];
+                variablesOnCanvas.push(variable);
+                variable.value = variablesValuesArray[i];
+
+                if (!variable.isOnCanvas) {
+                    variable.isOnCanvas = true;
+                    variable.addAll();
+                    progvolver.objects[variable.id] = variable;
+                }
+            }
+
+            // Remove all other variables not in the code variant combination
+            for (const [key, value] of Object.entries(namedSymbols)) {
+                if (variablesOnCanvas.indexOf(value) == -1) {
+                    if (value.isOnCanvas) {
+                        value.removeAll();
+                        value.isOnCanvas = false;
+
+                        delete progvolver.objects[value.id];
+
+                    }
+                }
+            }
+
+        });
+    }
+
+}
+
 function moveTimelineNext() {
     let currentTime = window.presentTime;
     let currentIndex = 0;
@@ -288,6 +421,101 @@ function getQuadraticBezierXYatT(startPt, controlPt, endPt, T) {
 
 function getPositionAlongTheLine(x1, y1, x2, y2, percentage) {
     return {x : x1 * (1.0 - percentage) + x2 * percentage, y : y1 * (1.0 - percentage) + y2 * percentage};
+}
+
+function scale (old_input, old_output, new_input) {
+    if (old_input == 0)
+        return 0;
+    return (old_output/old_input) * new_input;
+}
+
+function scaleCoordinates(coordsArray, percentage) {
+    let scaledCoords = [];
+
+    for (let coord of coordsArray) {
+        let xCoord = percentage * coord[0];
+        let yCoord = scale(coord[0], coord[1], xCoord);
+
+        scaledCoords.push([xCoord, yCoord]);
+    }
+
+    return scaledCoords;
+}
+
+function chevronShootingStars(source, target) {
+    var theConnector = source;
+
+    let chevron = [
+        [3, 0],
+        [-4, 6],
+        [-10, 6],
+        [-2, 0],
+        [-10, -6],
+        [-4, -6]
+    ];
+
+    if (!source.beforeShootingStarRender) {
+        source.beforeShootingStarRender = source.render;
+    }
+
+    source.render = function(ctx) {
+        ctx.save();
+        source.beforeShootingStarRender(ctx);
+        ctx.fillStyle = ctx.strokeStyle;
+
+        let sourceCoords = source.getPointByOrigin('center', 'center');
+        let targetCoords = target.getPointByOrigin('center', 'center');
+        let initialScale = 0.35;
+        let initialOpacity = 0.20;
+
+        var x1 = sourceCoords.x;
+        var y1 = sourceCoords.y;
+        var x2 = targetCoords.x;
+        var y2 = targetCoords.y;
+
+
+        var deltaX = x2 - x1;
+        var deltaY = y2 - y1;
+
+        var angle = Math.atan(deltaY / deltaX);
+        if (theConnector.x1 > theConnector.x2) {
+            angle += fabric.util.degreesToRadians(180);
+        }
+
+        var p1 = {x: x1, y: y1};
+        var p2 = {x: x2, y: y2};
+        var line = {p1: p1, p2: p2};
+        var length = computeLength(line);
+        var step = 8;
+        var cummulatedDistance;
+
+        cummulatedDistance = step;
+        let arrowColor = rgb(220, 220, 0);
+
+        while (true) {
+            var point = getPointAlongLine(line, cummulatedDistance);
+            var x = point.x;
+            var y = point.y;
+
+            ctx.lineWidth = 2;
+
+            ctx.strokeStyle = arrowColor;
+            ctx.fillStyle = arrowColor;
+            ctx.globalAlpha = initialOpacity;
+            drawFilledChevron(translateShape(rotateShape(scaleCoordinates(chevron, initialScale), angle), x, y), ctx);
+
+            initialScale += 0.08;
+            initialOpacity += 0.05;
+            step += 2;
+            
+            cummulatedDistance += step;
+            if (cummulatedDistance >= length) {
+                break;
+            }
+        }
+        ctx.restore();
+    }
+
 }
 
 function drawCirclesAlongLine(ctx, points) {
@@ -2532,8 +2760,15 @@ function objToString(obj) {
 
 function saveCanvasState() {
     console.log("persistent entries");
-    console.log(PERSISTENT_CANVAS_ENTRIES[0]);
-    var text = (PERSISTENT_CANVAS_ENTRIES[0].toJson());
+    console.log(PERSISTENT_CANVAS_ENTRIES);
+    let persistentJsonArray = [];
+
+    for (let entry in PERSISTENT_CANVAS_ENTRIES) {
+        persistentJsonArray.push(PERSISTENT_CANVAS_ENTRIES[entry].toJson());
+    }
+    var text = JSON.stringify(persistentJsonArray);
+    console.log("Text is: ");
+    console.log(text);
     var filename = "canvasContent";
     var blob = new Blob([text], {type: "text/plain;charset=utf-8"});
     window.jsHandler.saveCanvasFile({content: text})
@@ -2554,18 +2789,23 @@ function handleCanvasLoad(files) {
 }
 
 function onCanvasLoadComplete(canvasString) {
-    console.log("Canvas string is: ");
-    console.log(canvasString);
-    const obj = JSON.parse(canvasString);
+    const jsonArray = JSON.parse(canvasString);
 
-    console.log("Kind is: ");
-    let kind = obj['kind'];
-    console.log(kind);
+    for (let i = 0; i < jsonArray.length; i++) {
+        let obj = JSON.parse(jsonArray[i]);
+        console.log("Obj is: ");
+        console.log(obj);
+        console.log("Kind is: ");
+        let kind = obj['kind'];
+        console.log(kind);
 
-    if (kind === 'ProgvolverSymbol') {
-        ProgvolverSymbol.fromJson(obj);
-    } else if (kind === 'ReferenceWidget') {
-        ReferenceWidget.fromJson(obj);
+        if (kind === 'ProgvolverSymbol') {
+            ProgvolverSymbol.fromJson(obj);
+        } else if (kind === 'ReferenceWidget') {
+            ReferenceWidget.fromJson(obj);
+        } else if (kind === 'CodeControls') {
+            CodeControls.fromJson(obj);
+        }
     }
 }
 
@@ -4927,6 +5167,18 @@ function drawFilledPolygon(shape, ctx) {
     ctx.restore();
 }
 
+function drawFilledChevron(shape, ctx) {
+    ctx.save();
+    ctx.beginPath();
+    ctx.moveTo(shape[0][0], shape[0][1]);
+    for (var p in shape)
+        if (p > 0)
+            ctx.lineTo(shape[p][0], shape[p][1]);
+    ctx.lineTo(shape[0][0], shape[0][1]);
+    ctx.fill();
+    ctx.closePath();
+    ctx.restore();
+}
 
 // Functions to draw paths as marks
 
@@ -9604,7 +9856,10 @@ function onSliderChanged(data) {
 
 
         var ids = Object.keys(progvolver.objects);
+        console.log("ids: ");
+        console.log(ids);
         ids.forEach(function (id) {
+            console.log("id: " + id);
             var object = progvolver.objects[id];
             object.setProgramTime && object.setProgramTime(window.presentTime);
         });
@@ -9993,6 +10248,8 @@ function processLogFiles(logFileContent, scopeFileContent, signalFileContent, li
     window.maxTimeSignalData = -Infinity;
     window.minTimeLogData = Infinity;
     window.maxTimeLogData = -Infinity;
+    window.minTime = Infinity;
+    window.maxTime = -Infinity;
 
     if (signalFileContent) {
         Papa.parse(signalFileContent.trim(), {
@@ -10274,10 +10531,22 @@ function processLogFiles(logFileContent, scopeFileContent, signalFileContent, li
                     });
 
                     // parse signal file contents
+
+                    // set timeline to the start position
+                    var theSlider = $("#theSlider").data("ionRangeSlider");
+                    theSlider.update({from: 0});
+                    window.presentTime = window.minTime;
+
+                    // determine new variable values for code variant combination and remove any variables if they do not exist
+                    //getAssociatedVariablesForCodeVariants();
+                    console.log("Window minTime: " + window.minTime);
+                    console.log("Window maxTime: " + window.maxTime);
                 }
             }
         }
     });
+
+
 }
 
 

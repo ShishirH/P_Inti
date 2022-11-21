@@ -13,13 +13,14 @@ namespace P_Inti
         private string name;
         private Color saturatedColor;
         private Color unsaturatedColor;
-        private string currrentActiveBranchName;
-        private string currentActiveBranchId;
+        private string currrentActiveBranchName = "";
+        private string currentActiveBranchId = "";
         private Dictionary<string, CodeControlBranchInfo> codeControlBranches = new Dictionary<string, CodeControlBranchInfo>();
 
         public CodeControlInfo(string id, Color saturatedColor, Color unsaturatedColor, string currrentActiveBranchName, string currentActiveBranchId, Dictionary<string, CodeControlBranchInfo> codeControlBranches)
         {
             Id = id;
+            Name = id;
             SaturatedColor = saturatedColor;
             UnsaturatedColor = unsaturatedColor;
             CurrrentActiveBranchName = currrentActiveBranchName;
@@ -30,6 +31,7 @@ namespace P_Inti
         public CodeControlInfo(string id, Color saturatedColor, Color unsaturatedColor, string currrentActiveBranchName, string currentActiveBranchId)
         {
             Id = id;
+            Name = id;
             SaturatedColor = saturatedColor;
             UnsaturatedColor = unsaturatedColor;
             CurrrentActiveBranchName = currrentActiveBranchName;

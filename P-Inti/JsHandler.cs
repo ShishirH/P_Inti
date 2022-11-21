@@ -490,6 +490,179 @@ namespace P_Inti
             MyWindowControl.printInBrowserConsole("\n\n\n");
         }
 
+        public Dictionary<string, object> searchVariableAcrossVariants(object arg)
+        {
+            Dictionary<string, object> response = new Dictionary<string, object>();
+
+            // Get a list of variable names, types, declared line and scope to, and file declared, all separated by _
+
+            if (arg != null)
+            {
+                windowControl.positions.Clear();
+                windowControl.trackedSymbolsIDs.Clear();
+                windowControl.fileNames.Clear();
+
+                IDictionary<string, object> input = (IDictionary<string, object>)arg;
+                string variableNamesStr = (string)input["variableNamesStr"];
+                string typesStr = (string)input["typesStr"];
+                string declaredLinesStr = (string)input["declaredLinesStr"];
+                string scopeLinesStr = (string)input["scopeLinesStr"];
+                string fileNameStr = (string)input["fileNameStr"];
+                string variableIdsStr = (string)input["variableIdsStr"];
+
+                MyWindowControl.printInBrowserConsole("!@!@ variableNamesStr: " + variableNamesStr);
+                MyWindowControl.printInBrowserConsole("!@!@ typesStr: " + typesStr);
+                MyWindowControl.printInBrowserConsole("!@!@ declaredLinesStr: " + declaredLinesStr);
+                MyWindowControl.printInBrowserConsole("!@!@ scopeLinesStr: " + scopeLinesStr);
+                MyWindowControl.printInBrowserConsole("!@!@ fileNameStr: " + fileNameStr);
+                MyWindowControl.printInBrowserConsole("Bommarillu variableIdsStr: " + variableIdsStr);
+
+                string[] variableNamesArray = variableNamesStr.Split('_');
+                string[] typesArray = typesStr.Split('_');
+                string[] declaredLinesArray = declaredLinesStr.Split('_');
+                string[] scopeLinesArray = scopeLinesStr.Split('_');
+                string[] fileNameArray = fileNameStr.Split('_');
+                string[] variableIdsArray = variableIdsStr.Split('!');
+
+                MyWindowControl.printInBrowserConsole("\n\n!@!@ variableNamesArray: " + string.Join(",", variableNamesArray));
+                MyWindowControl.printInBrowserConsole("!@!@ typesArray: " + string.Join(",", typesArray));
+                MyWindowControl.printInBrowserConsole("!@!@ declaredLinesArray: " + string.Join(",", declaredLinesArray));
+                MyWindowControl.printInBrowserConsole("!@!@ scopeLinesArray: " + string.Join(",", scopeLinesArray));
+                MyWindowControl.printInBrowserConsole("!@!@ fileNameArray: " + string.Join(",", fileNameArray));
+                MyWindowControl.printInBrowserConsole("Bommarillu variableIdsArray: " + string.Join(",", variableIdsArray));
+
+                string foundVariableNames = "";
+                string foundVariableValues = "";
+
+                windowControl.assembledSolution = CodeAnalyzer.assembleSearchableSolution(windowControl);
+
+                Dictionary<string, Document> allDocuments = new Dictionary<string, Document>();
+                Dictionary<string, string[]> allContents = new Dictionary<string, string[]>();
+                Dictionary<string, SemanticModel> semanticModels = new Dictionary<string, SemanticModel>();
+                CodeAnalyzer.getSourceDocuments(windowControl.assembledSolution, out allDocuments, out allContents, out semanticModels);
+
+                foreach (Document document in allDocuments.Values)
+                {
+                    IEnumerable<VariableDeclarationSyntax> variablesList = document.GetSyntaxTreeAsync().Result.GetRoot().DescendantNodes().OfType<VariableDeclarationSyntax>();
+
+                    foreach (VariableDeclarationSyntax variable in variablesList)
+                    {
+                        string type = variable.Type.ToString();
+                        string declarationText = variable.GetReference().GetSyntax().ToFullString().Trim();
+                        var sourceSpan = variable.GetLocation().SourceSpan;
+
+                        MyWindowControl.printInBrowserConsole("Bommarillu type: " + type);
+                        MyWindowControl.printInBrowserConsole("Bommarillu declarationText: " + declarationText);
+                        MyWindowControl.printInBrowserConsole("Bommarillu sourceSpanStart: " + sourceSpan.Start);
+                        MyWindowControl.printInBrowserConsole("Bommarillu sourceSpanEnd: " + sourceSpan.End);
+                        MyWindowControl.printInBrowserConsole("Bommarillu sourceSpanLength: " + sourceSpan.Length);
+
+
+                        // int numberOfMonths = 25;
+                        // TODO Refine logic for multiple statements in the same line case.
+                        string[] variableValueArray = declarationText.Split('=');
+
+                        if (variableValueArray.Length == 1)
+                        {
+                            continue;
+                        }
+
+                        string[] variableTypeArray = variableValueArray[0].Split(' ');
+                        string variableValue = variableValueArray[1];
+                        string variableType = variableTypeArray[0];
+                        string variableName = variableTypeArray[1];
+
+                        int caretPosition = sourceSpan.Start + variableType.Length + 1 + variableName.Length;
+                        MyWindowControl.printInBrowserConsole("Bommarillu sourceSpanWithType: " + (sourceSpan.Start + variableType.Length));
+                        MyWindowControl.printInBrowserConsole("Bommarillu sourceSpanWithTypeName: " + (sourceSpan.Start + variableType.Length + 1 + variableName.Length));
+
+                        MyWindowControl.printInBrowserConsole("!@!@ variableName: " + variableName);
+                        MyWindowControl.printInBrowserConsole("!@!@ variableType: " + variableType);
+                        MyWindowControl.printInBrowserConsole("!@!@ variablevalue: " + variableValue);
+                        MyWindowControl.printInBrowserConsole("!@!@ document.FilePath: " + document.FilePath);
+
+                        int foundIndex = Array.IndexOf(variableNamesArray, variableName);
+                        //MyWindowControl.printInBrowserConsole("!@!@ foundIndex: " + foundIndex);
+
+                        if (foundIndex  != -1)
+                        {
+                            // Variable with same name was found even in new variant code. Determine if same variable by checking type and scope
+                            string dataType = typesArray[foundIndex];
+                            string declaredLine = declaredLinesArray[foundIndex];
+                            string scopedLine = scopeLinesArray[foundIndex];
+                            string fileName = fileNameArray[foundIndex];
+                            string variableId = variableIdsArray[foundIndex];
+
+                            fileName = fileName.Replace("/", "\\");
+
+                            MyWindowControl.printInBrowserConsole("!@!@ dataType: " + dataType);
+                            MyWindowControl.printInBrowserConsole("!@!@ declaredLine: " + declaredLine);
+                            MyWindowControl.printInBrowserConsole("!@!@ scopedLine: " + scopedLine);
+                            MyWindowControl.printInBrowserConsole("!@!@ fileName: " + fileName);
+                            MyWindowControl.printInBrowserConsole("!@!@ document.FilePath: " + document.FilePath);
+
+
+                            if (document.FilePath.Equals(fileName) || document.Name.Equals(fileName))
+                            {
+                                // Declared in same file. Proceed for other validations
+
+                                if (dataType.Equals(variableType))
+                                {
+                                    SyntaxNode node = variable.GetReference().GetSyntax();
+
+                                    int declareAtFrom = node.GetLocation().GetLineSpan().StartLinePosition.Line + 1;
+                                    int declareAtTo = node.GetLocation().GetLineSpan().EndLinePosition.Line + 1;
+
+                                    SyntaxNode parent = node.Ancestors().ElementAt(2);
+                                    int scopeFrom = parent.GetLocation().GetLineSpan().StartLinePosition.Line + 1;
+                                    int scopeTo = parent.GetLocation().GetLineSpan().EndLinePosition.Line + 1;
+
+                                    MyWindowControl.printInBrowserConsole("!@!@ declareAtFrom: " + declareAtFrom);
+                                    MyWindowControl.printInBrowserConsole("!@!@ declareAtTo: " + declareAtTo);
+                                    MyWindowControl.printInBrowserConsole("!@!@ scopeFrom: " + scopeFrom);
+                                    MyWindowControl.printInBrowserConsole("!@!@ scopeTo: " + scopeTo);
+
+                                    // TODO Confirm validations
+                                    if (Int32.Parse(declaredLine) <= scopeTo) // TODO SCOPE FROM
+                                    {
+                                        MyWindowControl.printInBrowserConsole("!@!@ VARIABLE FOUND: " + variableName);
+                                        if (foundVariableNames == "")
+                                        {
+                                            foundVariableNames = variableName;
+                                            foundVariableValues = variableValue;
+                                        }
+                                        else
+                                        {
+                                            foundVariableNames += "_" + variableName;
+                                            foundVariableValues += "_" + variableValue;
+                                        }
+                                        windowControl.positions.Add(caretPosition);
+                                        windowControl.trackedSymbolsIDs.Add(variableId);
+                                        windowControl.fileNames.Add(fileName);
+                                        MyWindowControl.printInBrowserConsole("Bommarillu variableName: " + variableName);
+                                        MyWindowControl.printInBrowserConsole("Bommarillu caretPosition: " + caretPosition);
+                                        MyWindowControl.printInBrowserConsole("Bommarillu variableId: " + variableId);
+
+                                    }
+                                }
+
+                            }
+                        }
+
+                        //int startLineNumber = variable.GetLocation().GetLineSpan().StartLinePosition.Line + 1;
+                        //int endLineNumber = variable.GetLocation().GetLineSpan().EndLinePosition.Line;
+
+                    }
+
+                }
+
+                response.Add("foundVariableNames", foundVariableNames);
+                response.Add("foundVariableValues", foundVariableValues);
+            }
+
+            return response;
+        }
+
         public Dictionary<string, object> processDropOnCanvas(object arg)
         {
 
@@ -648,6 +821,7 @@ namespace P_Inti
 
                             string symbolID = Utils.generateID();
 
+                            MyWindowControl.printInBrowserConsole("Bommarillu symbol: " + symbol.Name + "caretPosition: " + caretPosition);
                             windowControl.positions.Add(caretPosition);
                             windowControl.fileNames.Add(fileName);
                             windowControl.trackedSymbolsIDs.Add(symbolID);
@@ -755,6 +929,7 @@ namespace P_Inti
                                 editorState.Add(kvp.Key, kvp.Value);
                             }
 
+                            // TODO Add validation for keys
                             initializationValues.Add(filePath + "~" + declarationLineNumber, symbol.Name);
                         }
 
@@ -1009,7 +1184,11 @@ namespace P_Inti
                     SolidColorBrush brush = (SolidColorBrush)(new BrushConverter().ConvertFrom(color));
                     brush.Opacity = opacity;
                     CodeAdornment codeAdornment = new CodeAdornment(textView, brush);
-                    codeAdornments.Add(id, codeAdornment);
+
+                    if (!codeAdornments.ContainsKey(id))
+                    {
+                        codeAdornments.Add(id, codeAdornment);
+                    }
                 }));
             }
 
@@ -1427,11 +1606,17 @@ namespace P_Inti
                 MyWindowControl.trackedSignalIDs.Clear();
                 windowControl.trackedExpressions.Clear();
 
+                initializationValues.Clear();
                 arrayLine.lineNumbersArray.Clear();
                 SignalGlyphTagger.updateTags();
                 windowControl.trackedExpressionsIDs.Clear();
                 windowControl.codeAdornments.Clear();
                 CodeAnalyzer.setEvaluatedLine(-1, null, null);
+
+                MyWindowControl.CodeControlInfos.Clear();
+                MyWindowControl.CurrentBranch = "";
+                MyWindowControl.CurrentBranchID = "";
+                MyWindowControl.CurrentCodeControl = null;
             }));
             return result;
         }
@@ -1587,6 +1772,43 @@ namespace P_Inti
                 string solutionDir = System.IO.Path.GetDirectoryName(solutionPath);
                 string progvolverDir = solutionDir + "/progvolver";
                 outputDirectory = progvolverDir + "/";
+                string outputDir = "";
+
+                // If code shifts exist, change the output dir to a folder named by combining branch names
+                if (MyWindowControl.CodeControlInfos.Count != 0)
+                {
+                    string combinedBranchIdStr = "";
+
+                    foreach (CodeControlInfo codeControlInfo in MyWindowControl.CodeControlInfos.Values)
+                    {
+                        MyWindowControl.printInBrowserConsole("Iterating over: " + codeControlInfo.Name);
+                        MyWindowControl.printInBrowserConsole("Current active branch " + codeControlInfo.CurrrentActiveBranchName);
+                        MyWindowControl.printInBrowserConsole("Current active branch id" + codeControlInfo.CurrentActiveBranchId);
+                        if (codeControlInfo.CurrentActiveBranchId != "")
+                        {
+                            combinedBranchIdStr += codeControlInfo.CurrentActiveBranchId;
+                        }
+                    }
+
+                    if (combinedBranchIdStr != "")
+                    {
+                        // Get a hash of the combinedBranchIdStr. This is to prevent too long file names creating errors
+                        string hashOfCombinedBranchId = combinedBranchIdStr.GetHashCode().ToString();
+
+                        solutionDir.Replace("\"", string.Empty);
+                        string rootDir = solutionDir + @"\" + "codeShifts";
+                        rootDir = rootDir + @"\" + "logs";
+                        string codeControlDir = rootDir + @"\" + hashOfCombinedBranchId;
+
+                        MyWindowControl.printInBrowserConsole("OutputDir for compilation: " + codeControlDir);
+                        if (!Directory.Exists(codeControlDir))
+                        {
+                            Directory.CreateDirectory(codeControlDir);
+                        }
+
+                        outputDir = codeControlDir;
+                    }
+                }
 
                 if (!Directory.Exists(progvolverDir))
                 {
@@ -1594,7 +1816,12 @@ namespace P_Inti
                 }
 
                 string utilsId = Utils.generateID();
-                var outputDir = progvolverDir + "/" + utilsId;
+
+                // Hasn't been set with the codecontroldir value as no code shifts exist on the canvas
+                if (outputDir == "")
+                {
+                    outputDir = progvolverDir + "/" + utilsId;
+                }
 
                 List<string> fileNames = windowControl.fileNames;
                 List<int> positions = windowControl.positions;
@@ -1637,6 +1864,7 @@ namespace P_Inti
                 result.Add("success", success);
                 result.Add("response", compilationMessage);
                 result.Add("utilsId", utilsId);
+                result.Add("outputDir", outputDirectory);
             }
             return result;
         }
@@ -1900,73 +2128,45 @@ namespace P_Inti
         public Dictionary<string, object> createCodeControlBranch(object arg)
         {
             Dictionary<string, object> result = new Dictionary<string, object>();
-            string idStr;
-            string branchIdStr;
+            string idStr = "";
+            string branchIdStr = "";
+            string branchNameStr = "";
 
             if (arg != null)
             {
                 IDictionary<string, object> input = (IDictionary<string, object>)arg;
                 input.TryGetValue("id", out object id);
                 input.TryGetValue("branchId", out object branchId);
+                input.TryGetValue("branchName", out object branchName);
 
                 idStr = (string)id;
                 branchIdStr = (string)branchId;
+                branchNameStr = (string)branchName;
 
-                MyWindowControl.printInBrowserConsole(codeControlFilePath);
+            }
+            if (windowControl.projectOpen())
+            {
+                string solutionDir = System.IO.Path.GetDirectoryName(windowControl.dte.Solution.FullName);
+
+                solutionDir = "\"" + solutionDir + "\"";
 
                 // Initialize or Reinitialize JSON file
-                CodeControls.InitializeJsonFile(idStr, branchIdStr, codeControlFilePath);
+                //CodeControls.InitializeGitRepo(solutionDir);
+
+                string id = Utils.generateID();
+                MyWindowControl.CurrentBranchID = branchIdStr;
+                MyWindowControl.CurrentBranch = branchNameStr;
+                MyWindowControl.CurrentCodeControl.CurrrentActiveBranchName = branchNameStr;
+                MyWindowControl.CurrentCodeControl.CurrentActiveBranchId = branchIdStr;
+
+                MyWindowControl.printInBrowserConsole("Current active code shift: " + MyWindowControl.CurrentCodeControl.Name);
+                MyWindowControl.printInBrowserConsole("Current active code variant: " + MyWindowControl.CurrentCodeControl.CurrrentActiveBranchName);
+                result.Add("id", id);
+                result.Add("branchName", branchNameStr);
+
+                // Initialize  JSON file
+                CodeControls.InitializeJsonFile(idStr, branchIdStr, solutionDir);
             }
-            //if (windowControl.projectOpen())
-            //{
-            //    string solutionDir = System.IO.Path.GetDirectoryName(windowControl.dte.Solution.FullName);
-            //    MyWindowControl.printInBrowserConsole(solutionDir);
-
-            //    solutionDir = "\"" + solutionDir + "\"";
-
-            //    // Initialize or Reinitialize JSON file
-            //    CodeControls.InitializeGitRepo(solutionDir);
-
-            //    int numberOfBranches = CodeControls.GetNumberOfBranches(solutionDir);
-            //    MyWindowControl.printInBrowserConsole("Number of Branches: " + numberOfBranches);
-
-            //    string id = Utils.generateID();
-            //    string branchName = "";
-            //    if (numberOfBranches != -1)
-            //    {
-            //        if (numberOfBranches == 0)
-            //        {
-            //            // No branches yet, commit everything on master
-            //            branchName = "master";
-            //            MyWindowControl.CurrentBranchID = id;
-            //            MyWindowControl.CurrentBranch = branchName;
-            //            MyWindowControl.GitBranchID.Add(branchName, id);
-
-            //            CodeControls.ParseGitDiff(solutionDir, branchName, id);
-            //            CodeControls.AddGitChanges(solutionDir);
-            //            CodeControls.CommitGitChanges(solutionDir);
-            //        }
-            //        else
-            //        {
-            //            // Earlier commits already made. Commit changes to present branch and then checkout to new branch
-            //            CodeControls.ParseGitDiff(solutionDir, MyWindowControl.CurrentBranch, MyWindowControl.CurrentBranchID);
-            //            CodeControls.AddGitChanges(solutionDir);
-            //            CodeControls.CommitGitChanges(solutionDir);
-
-            //            branchName = id;
-            //            MyWindowControl.CurrentBranchID = id;
-            //            MyWindowControl.CurrentBranch = branchName;
-            //            MyWindowControl.GitBranchID.Add(branchName, id);
-
-            //            // branchName = id; TODO WHY???
-            //            CodeControls.CreateAndCheckoutGitBranch(solutionDir, id);
-            //            CodeControls.CommitGitChanges(solutionDir);
-            //        }
-            //    }
-
-            //    result.Add("id", id);
-            //    result.Add("branchName", branchName);
-            //}
             return result;
         }
 
@@ -1981,9 +2181,13 @@ namespace P_Inti
             if (arg != null)
             {
                 IDictionary<string, object> input = (IDictionary<string, object>)arg;
-                input.TryGetValue("branchName", out object branchName);
-                string branch = (string)branchName;
-                CodeControls.CheckoutToBranch(solutionDir, branch);
+                input.TryGetValue("variantName", out object variantName);
+                input.TryGetValue("variantId", out object variantId);
+                input.TryGetValue("codeShiftId", out object codeShiftId);
+                string variantNameStr = (string)variantName;
+                string variantIdStr = (string)variantId;
+                string codeShiftIdStr = (string)codeShiftId;
+                CodeControls.CheckoutToBranch(solutionDir, variantIdStr, variantNameStr, codeShiftIdStr);
             }
 
             return result;
@@ -1997,18 +2201,26 @@ namespace P_Inti
             string solutionDir = System.IO.Path.GetDirectoryName(windowControl.dte.Solution.FullName);
             solutionDir = "\"" + solutionDir + "\"";
 
+            // Save current edited file
+            IWpfTextViewLineCollection textViewLines = CodeControlEditorAdornment.view.TextViewLines;
+            ITextViewLine activeDocumentContents = textViewLines[0];
+            string documentContentsStr = activeDocumentContents.Snapshot.GetText();
+
+            File.WriteAllText(@"C:\Users\shish\source\repos\ConsoleApp1\ConsoleApp1\Program.cs", documentContentsStr);
+            
             if (arg != null)
             {
                 IDictionary<string, object> input = (IDictionary<string, object>)arg;
-                input.TryGetValue("branchName", out object branchName);
-                input.TryGetValue("id", out object id);
+                input.TryGetValue("variantName", out object variantName);
+                input.TryGetValue("variantId", out object variantId);
+                input.TryGetValue("codeShiftId", out object codeShiftid);
 
-                string branch = (string)branchName;
-                string idStr = (string)id;
+                string variantNameStr = (string)variantName;
+                string idStr = (string)variantId;
+                string codeShiftIdStr = (string)codeShiftid;
 
-                CodeControls.ParseGitDiff(solutionDir, branch, idStr);
-                CodeControls.AddGitChanges(solutionDir);
-                CodeControls.CommitGitChanges(solutionDir);
+                MyWindowControl.printInBrowserConsole("Branch id string before json is: " + idStr);
+                CodeControls.UpdateJson(variantNameStr, idStr, codeShiftIdStr, solutionDir);
             }
             return result;
         }
@@ -2064,25 +2276,39 @@ namespace P_Inti
             {
                 IDictionary<string, object> input = (IDictionary<string, object>)arg;
                 input.TryGetValue("id", out object id);
+                input.TryGetValue("name", out object name);
                 input.TryGetValue("saturatedColor", out object saturatedColorObj);
                 input.TryGetValue("unsaturatedColor", out object unsaturatedColorObj);
 
                 string idStr = (string)id;
+                string nameStr = (string)name;
                 string saturatedColorStr = (string)saturatedColorObj;
                 string unsaturatedColorStr = (string)unsaturatedColorObj;
 
-                System.Drawing.Color saturatedColor = System.Drawing.ColorTranslator.FromHtml(saturatedColorStr);
-                System.Drawing.Color unsaturatedColor = System.Drawing.ColorTranslator.FromHtml(unsaturatedColorStr);
+                MyWindowControl.printInBrowserConsole("Length of keydict: " + MyWindowControl.CodeControlInfos.Count);
+                if (!MyWindowControl.CodeControlInfos.ContainsKey(idStr))
+                {
+                    System.Drawing.Color saturatedColor = System.Drawing.ColorTranslator.FromHtml(saturatedColorStr);
+                    System.Drawing.Color unsaturatedColor = System.Drawing.ColorTranslator.FromHtml(unsaturatedColorStr);
 
-                MyWindowControl.printInBrowserConsole("idStr: " + idStr);
-                MyWindowControl.printInBrowserConsole("saturatedColorStr: " + saturatedColorStr);
-                MyWindowControl.printInBrowserConsole("unsaturatedColorStr: " + unsaturatedColorStr);
+                    MyWindowControl.printInBrowserConsole("idStr: " + idStr);
+                    MyWindowControl.printInBrowserConsole("nameStr: " + nameStr);
+                    MyWindowControl.printInBrowserConsole("saturatedColorStr: " + saturatedColorStr);
+                    MyWindowControl.printInBrowserConsole("unsaturatedColorStr: " + unsaturatedColorStr);
 
-                CodeControlInfo codeControlInfo = new CodeControlInfo(idStr, Color.FromArgb(saturatedColor.A, saturatedColor.R, saturatedColor.G, saturatedColor.B), 
-                    Color.FromArgb(unsaturatedColor.A, unsaturatedColor.R, unsaturatedColor.G, unsaturatedColor.B), null, null);
+                    CodeControlInfo codeControlInfo = new CodeControlInfo(idStr, Color.FromArgb(saturatedColor.A, saturatedColor.R, saturatedColor.G, saturatedColor.B),
+                        Color.FromArgb(unsaturatedColor.A, unsaturatedColor.R, unsaturatedColor.G, unsaturatedColor.B), null, null);
 
-                MyWindowControl.CodeControlInfos.Add(idStr, codeControlInfo);
-                MyWindowControl.CurrentCodeControl = codeControlInfo;
+                    if (nameStr != "")
+                    {
+                        codeControlInfo.Name = nameStr;
+                    }
+
+                    MyWindowControl.CodeControlInfos.Add(idStr, codeControlInfo);
+                    MyWindowControl.CurrentCodeControl = codeControlInfo;
+                }
+                MyWindowControl.printInBrowserConsole("Length of keydict now: " + MyWindowControl.CodeControlInfos.Count);
+                MyWindowControl.printInBrowserConsole("CurrentCodeControl now: " + MyWindowControl.CurrentCodeControl.Name);
             }
             return result;
         }
@@ -2099,18 +2325,26 @@ namespace P_Inti
 
                 string idStr = (string)id;
                 string nameStr = (string)name;
+                string oldName = MyWindowControl.CodeControlInfos[idStr].Name;
 
-                MyWindowControl.printInBrowserConsole("Name of code control");
-                MyWindowControl.printInBrowserConsole("idStr: " + nameStr);
+                MyWindowControl.printInBrowserConsole("New Name of code control");
+                MyWindowControl.printInBrowserConsole("Name: " + nameStr);
+                MyWindowControl.printInBrowserConsole("ID: " + idStr);
+                MyWindowControl.printInBrowserConsole("Old name: " + MyWindowControl.CodeControlInfos[idStr].Name);
                 MyWindowControl.CodeControlInfos[idStr].Name = nameStr;
 
-                //if (MyWindowControl.controlEditorAdornment != null)
-                //{
-                //    MyWindowControl.currentDispatcher.Invoke(new Action(() =>
-                //    {
-                //        CodeControlEditorAdornment.CreateEditorVisuals(null);
-                //    }));
-                //}
+                // Update all comments to reflect new name
+                ITextBuffer textBuffer = CodeControlEditorAdornment.view.TextBuffer;
+                string documentContentsStr = CodeControlEditorAdornment.view.TextViewLines[0].Snapshot.GetText();
+
+                for (int index = documentContentsStr.IndexOf(oldName); index > -1; index = documentContentsStr.IndexOf(oldName, index + 1))
+                {
+                    SnapshotSpan span = new SnapshotSpan(CodeControlEditorAdornment.view.TextSnapshot, Span.FromBounds(index, index + oldName.Length));
+                    MyWindowControl.currentDispatcher.Invoke(new Action(() =>
+                    {
+                        textBuffer.Replace(span, nameStr);
+                    }));
+                }
             }
             return result;
         }
@@ -2119,7 +2353,7 @@ namespace P_Inti
         {
             Dictionary<string, object> result = new Dictionary<string, object>();
 
-            if (arg != null)
+            if (arg != null && MyWindowControl.CodeControlInfos.Count > 0)
             {
                 IDictionary<string, object> input = (IDictionary<string, object>)arg;
                 input.TryGetValue("id", out object id);
@@ -2128,7 +2362,15 @@ namespace P_Inti
 
                 MyWindowControl.printInBrowserConsole("Updating code control");
                 MyWindowControl.printInBrowserConsole("idStr: " + idStr);
+
+                foreach(string key in MyWindowControl.CodeControlInfos.Keys)
+                {
+                    MyWindowControl.printInBrowserConsole("Key is: " + key);
+                }
+
+                MyWindowControl.printInBrowserConsole("!!Current active code shift: " + MyWindowControl.CurrentCodeControl.Name);
                 MyWindowControl.CurrentCodeControl = MyWindowControl.CodeControlInfos[idStr];
+                MyWindowControl.printInBrowserConsole("@@Current active code shift: " + MyWindowControl.CurrentCodeControl.Name);
 
                 if (MyWindowControl.controlEditorAdornment != null)
                 {
