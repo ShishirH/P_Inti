@@ -3,7 +3,7 @@ class AffectWidget {
         var symbolFont = '12px Helvetica';
 
         options.height = 44;
-        options.width = 220;
+        options.width = 140;
         options.rx = options.rx || 0;
         options.ry = options.ry || 0;
         options.fill = WHEN_WIDGET_FILL;
@@ -36,11 +36,11 @@ class AffectWidget {
             ctx.font = symbolFont;
             background.oldRender(ctx);
             var center = background.getPointByOrigin('right', 'top');
-            ctx.fillText("var name: ", center.x - 60, center.y + 20);
+            //ctx.fillText("var name: ", center.x - 60, center.y + 20);
 
             if (background.signalReceiver) {
                 var renderableValue = background.signalReceiver.signalsReceived;
-                ctx.fillText(renderableValue, center.x - 40, center.y + 40);
+                //ctx.fillText(renderableValue, center.x - 40, center.y + 40);
             }
             ctx.restore();
         };
