@@ -111,9 +111,6 @@ function clickRunCodeButton() {
     }
 
     var theSlider = $("#theSlider").data("ionRangeSlider");
-    console.log("Done loading files");
-    console.log("Prior slider percentage: " + priorSliderFromPercentage);
-    console.log("Current slider percentage: " + theSlider.result.from_percent);
     if (priorSliderFromPercentage > 0) {
         console.log("Log files loaded")
         while(theSlider.result.from_percent < priorSliderFromPercentage) {

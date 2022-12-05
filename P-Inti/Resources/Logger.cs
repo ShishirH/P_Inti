@@ -173,12 +173,21 @@ namespace ConsoleApp1 {
 
         public static JObject getFieldsForClass(object o)
         {
-            // FIX RECURSIVE LOGIC
             JObject fieldsObject = new JObject();
             foreach (FieldInfo field in o.GetType().GetFields())
             {
                 string fieldName = field.Name;
                 string fieldValue = (field.GetValue(o) == null) ? "null" : field.GetValue(o).ToString();
+
+                if (fieldValue.IndexOf(".") != -1)
+                {
+                    int index = fieldValue.IndexOf(".");
+                    if (Char.IsLetter(fieldValue[index + 1]))
+                    {
+                        // Object member is also an object. Call it recursively
+                        fieldValue = getFieldsForClass(field.GetValue(o)).ToString();
+                    }
+                }
                 fieldsObject.Add(fieldName, fieldValue);
             }
 

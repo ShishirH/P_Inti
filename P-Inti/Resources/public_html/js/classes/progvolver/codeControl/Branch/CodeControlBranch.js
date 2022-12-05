@@ -165,6 +165,7 @@ class CodeControlBranch {
 
         background.registerListener('mouseup', function (event) {
             console.log("Mouse up of code control branch")
+            CodeControls.updateSelectedCodeControl(background.parent);
             if (window.jsHandler && window.jsHandler.goToControlBranch) {
                 window.jsHandler.goToControlBranch({
                     variantName: background.branchName,

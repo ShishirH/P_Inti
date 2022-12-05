@@ -195,6 +195,7 @@ namespace P_Inti
             }
 
             // TODO Very error prone code requiring multiple layers of validations.
+            CodeControlEditorAdornment.wereLinesUpdated = false;
             CodeControlJsonResponse codeControlJsonResponse;
             BranchInfo branchInfo = null;
             using (StreamReader r = new StreamReader(path))
@@ -250,6 +251,7 @@ namespace P_Inti
             MyWindowControl.CurrentCodeControl.CurrrentActiveBranchName = variantNameStr;
             MyWindowControl.CurrentCodeControl.CurrentActiveBranchId = variantIdStr;
 
+            CodeControlEditorAdornment.wereLinesUpdated = true;
         }
 
         public static void DeleteBranch(string solutionDir, object branch)

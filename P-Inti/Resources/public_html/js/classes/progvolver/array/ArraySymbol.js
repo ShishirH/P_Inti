@@ -174,25 +174,26 @@ class ArraySymbol {
                     console.log("Parent staetment");
                     console.log(dataItem.parentStatement);
 
-                    let shootingStarsSourceAndIndex;
+                    // let shootingStarsSourceAndIndex;
+                    //
+                    // shootingStarsSourceAndIndex = parseShootingStarsSourceForArray(dataItem.parentStatement, background);
+                    //
+                    // if (!shootingStarsSourceAndIndex)
+                    //     shootingStarsSourceAndIndex = parseShootingStarsSourceForArray(dataItem.grandParentStatement, background);
+                    //
+                    // if (shootingStarsSourceAndIndex) {
+                    //     console.log("shootingStarsSourceAndIndex");
+                    //     console.log(shootingStarsSourceAndIndex);
+                    //     let shootingStarsSource = shootingStarsSourceAndIndex[0];
+                    //     let shootingStarsIndex = shootingStarsSourceAndIndex[1];
+                    //
+                    //     if (shootingStarsSource && shootingStarsSource != background.name) {
+                    //         if (arrayElementsArray[shootingStarsIndex][0].visible) {
+                    //             generateShootingStars(arrayElementsArray[shootingStarsIndex][0], namedSymbols[shootingStarsSource]);
+                    //         }
+                    //     }
+                    // }
 
-                    shootingStarsSourceAndIndex = parseShootingStarsSourceForArray(dataItem.parentStatement, background);
-
-                    if (!shootingStarsSourceAndIndex)
-                        shootingStarsSourceAndIndex = parseShootingStarsSourceForArray(dataItem.grandParentStatement, background);
-
-                    if (shootingStarsSourceAndIndex) {
-                        console.log("shootingStarsSourceAndIndex");
-                        console.log(shootingStarsSourceAndIndex);
-                        let shootingStarsSource = shootingStarsSourceAndIndex[0];
-                        let shootingStarsIndex = shootingStarsSourceAndIndex[1];
-
-                        if (shootingStarsSource && shootingStarsSource != background.name) {
-                            if (arrayElementsArray[shootingStarsIndex][0].visible) {
-                                generateShootingStars(arrayElementsArray[shootingStarsIndex][0], namedSymbols[shootingStarsSource]);
-                            }
-                        }
-                    }
                     background.setValue(dataItem.array, dataItem);
                     if (dataItem.memoryAddress) {
                         // memory address changed
@@ -225,17 +226,16 @@ class ArraySymbol {
             }
 
             // shooting star decay
-            for (let i = 0; i < rows; i++) {
-                if (arrayElementsArray[i][0].shootingStarsDict) {
-                    for (const [key, value] of Object.entries(arrayElementsArray[i][0].shootingStarsDict)) {
-                        arrayElementsArray[i][0].shootingStarsDict[key].array && arrayElementsArray[i][0].shootingStarsDict[key].array.forEach(function (shootingStar) {
-                            shootingStarsDecay(arrayElementsArray[i][0], namedSymbols[key]);
-                        });
-                    }
-                }
-
-            }
-            ;
+            // for (let i = 0; i < rows; i++) {
+            //     if (arrayElementsArray[i][0].shootingStarsDict) {
+            //         for (const [key, value] of Object.entries(arrayElementsArray[i][0].shootingStarsDict)) {
+            //             arrayElementsArray[i][0].shootingStarsDict[key].array && arrayElementsArray[i][0].shootingStarsDict[key].array.forEach(function (shootingStar) {
+            //                 shootingStarsDecay(arrayElementsArray[i][0], namedSymbols[key]);
+            //             });
+            //         }
+            //     }
+            //
+            // }
         }
 
         background.registerListener('added', function (options) {

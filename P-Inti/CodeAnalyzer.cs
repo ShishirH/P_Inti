@@ -1292,6 +1292,19 @@ namespace TestingCodeAnalysis
 
                         docContent[line] = string.Concat(docContent[line], useStringBuilder.ToString());
                         docContent[line] = string.Concat(useStringBuilder.ToString(), docContent[line]);
+
+                        // Add the earlier info from processAssignmentNode
+                        int bracesOffset = 0;
+                        foreach (LineNumberProcessAssignmentNode lineNumberProcessAssignment in lineProcessingNodeString)
+                        {
+                            int lineNumber = lineNumberProcessAssignment.LineNumber;
+                            string value = lineNumberProcessAssignment.ProcessAssignmentNodeString;
+
+                            int linePosition = lineNumber + bracesOffset;
+                            MyWindowControl.printInBrowserConsole("SSS Adding lineNumberProcessAssignment : \n" + value + "\n to " + linePosition);
+                            docContent[lineNumber + bracesOffset] = string.Concat(docContent[lineNumber + bracesOffset], value);
+                            docContent[lineNumber + bracesOffset] = string.Concat(value, docContent[lineNumber + bracesOffset]);                      
+                        }
                     }
 
 

@@ -41,12 +41,14 @@ class CodeControls {
                 hoverCursor: "pointer"
             });
 
-            var originParent = {originX: 'left', originY: 'top'};
-            var originChild = {originX: 'left', originY: 'top'};
+            var originParent = {originX: 'center', originY: 'top'};
+            var originChild = {originX: 'center', originY: 'top'};
 
             labelObject.on('added', function () {
                 //console.log("Label object has been added");
-                //labelObject.enterEditing().selectAll();
+
+                if (labelObjectText == "CONTROL_NAME")
+                    labelObject.enterEditing().selectAll();
             });
 
             labelObject.on('editing:exited', function () {
@@ -231,12 +233,12 @@ class CodeControls {
             return JSON.stringify(json);
         }
 
-        // background.registerListener('mouseup', function (event) {
-        //     CodeControls.updateSelectedCodeControl(background);
-        // })
+        background.registerListener('mouseup', function (event) {
+            CodeControls.updateSelectedCodeControl(background);
+        })
 
         background.addName();
-        background.addSelectButton();
+        //background.addSelectButton();
         background.noScaleCache = false;
 
         // Add this to the list of code controls, and make this code control active.
@@ -306,7 +308,8 @@ class CodeControls {
             let codeControlBranch = new CodeControlBranch({
                 parent: obj,
                 displayName: codeVariant['branchName'],
-                id: codeVariant['id']
+                id: codeVariant['id'],
+                stroke: darken(obj.fill)
             });
 
             obj.controlAddition.createCodeControl(null, codeControlBranch);

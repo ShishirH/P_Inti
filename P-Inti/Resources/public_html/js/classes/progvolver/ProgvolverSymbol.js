@@ -263,20 +263,20 @@ class ProgvolverSymbol extends ConnectableWidget {
                 //     }
                 // }
 
-                if (currentDataItemIndex !== dataItem.index) {
-                    console.log("Variable is: " + background.name)
-                    let shootingStarsSource;
-                    shootingStarsSource = parseShootingStarsSource(dataItem.parentStatement, background);
-
-                    if (!shootingStarsSource && dataItem.grandParentStatement)
-                        shootingStarsSource = parseShootingStarsSource(dataItem.grandParentStatement, background);
-
-                    console.log("Shooting star source is: " + shootingStarsSource);
-                    if (shootingStarsSource && shootingStarsSource != background.name) {
-                        console.log("Generating shooting stars");
-                        generateShootingStars(background, shootingStarsSource);
-                    }
-                }
+                // if (currentDataItemIndex !== dataItem.index) {
+                //     console.log("Variable is: " + background.name)
+                //     let shootingStarsSource;
+                //     shootingStarsSource = parseShootingStarsSource(dataItem.parentStatement, background);
+                //
+                //     if (!shootingStarsSource && dataItem.grandParentStatement)
+                //         shootingStarsSource = parseShootingStarsSource(dataItem.grandParentStatement, background);
+                //
+                //     console.log("Shooting star source is: " + shootingStarsSource);
+                //     if (shootingStarsSource && shootingStarsSource != background.name) {
+                //         console.log("Generating shooting stars");
+                //         generateShootingStars(background, shootingStarsSource);
+                //     }
+                // }
 
                 if (types[index] == "SimpleAssignmentExpression" || types[index] == "PostDecrementExpression" || types[index] == "PreDecrementExpression" || types[index] == "PostIncrementExpression") {
                     if (background.value != values[index]) {

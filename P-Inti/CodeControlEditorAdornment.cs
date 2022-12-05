@@ -117,15 +117,22 @@ namespace P_Inti
                 int end = endIndexArray[i];
                 string codeShiftName = codeShiftArray[i];
 
+                CodeControlInfo codeControl = null;
                 foreach (KeyValuePair<string, CodeControlInfo> codeControlInfoPair in MyWindowControl.CodeControlInfos)
                 {
-                    CodeControlInfo codeControl = codeControlInfoPair.Value;
+                    codeControl = codeControlInfoPair.Value;
                     if (codeShiftName == codeControl.Name)
                     {
                         currentCodeControlId = codeControl.Id;
                         currentCodeControlInfo = codeControl;
                         break;
                     }
+                    codeControl = null;
+                }
+
+                if ((currentCodeControlInfo == null || codeControl == null) || currentCodeControlInfo != codeControl)
+                {
+                    continue;
                 }
 
                 if (currentCodeControlInfo == MyWindowControl.CurrentCodeControl)
