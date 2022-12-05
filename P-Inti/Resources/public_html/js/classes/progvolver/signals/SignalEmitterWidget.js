@@ -49,9 +49,9 @@ var SignalEmitterWidget = iVoLVER.util.createClass(fabric.Triangle, {
             }
         };
 
-        this.emitSignal = function () {            
+        this.emitSignal = function (value) {
             this.outConnections.forEach(function (outConnection) {
-                outConnection.target.signalEmitted();
+                outConnection.target.signalEmitted(value);
             })
         };
 

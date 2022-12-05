@@ -52,6 +52,7 @@ namespace P_Inti
             await ProgvolverEditorContextualMenu.InitializeAsync(this);
             await CodeControlAddExistingCode.InitializeAsync(this);
             await AddToCodeShift.InitializeAsync(this);
+            await CodeControlAddExistingCodeContextMenu.InitializeAsync(this);
         }
 
         #endregion

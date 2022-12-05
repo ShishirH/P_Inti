@@ -199,9 +199,10 @@ namespace ConsoleApp1 {
 
             if (isClass) {
                 // DO THE SAME FOR PROPERTIES
-                //JObject fieldValues = new JObject();
-                //stringForFile = getFieldsForClass(parameter).ToString();
+                JObject fieldValues = new JObject();
+                stringForFile = getFieldsForClass(parameter).ToString();
                 //parameters.Add(stringForFile);
+                parameters.Add(stringForFile + "ASDASD");
 
             } else if ((isMatrix || isArray) && parentExpressions.Length == 3) {
 
@@ -283,7 +284,7 @@ namespace ConsoleApp1 {
             // Only do this for custom classes?
             if (isCustomClass(o))
             {
-                initializationValue = getFieldsForClass(o).ToString();
+                //initializationValue = getFieldsForClass(o).ToString();
             }
 
             initializationFile.WriteLine(logString + "~" + initializationValue);
@@ -307,14 +308,30 @@ namespace ConsoleApp1 {
             List<string> parameters = new List<string>();
             for (int i = 0; i < parentExpressions.Length; i++) {
                 values += "{" + i + "},";
-                parameters.Add(parentExpressions[i].ToString());
+
+                if (parentExpressions[i] == null)
+                {
+                    parameters.Add("null");
+                }
+                else
+                {
+                    parameters.Add(parentExpressions[i].ToString());
+
+                }
             }
             values = values.Substring(0, values.Length - 1);
             StringBuilder tmpSB = new StringBuilder();
             tmpSB.AppendFormat(values, parameters.ToArray());
 
             sb.AppendFormat(logString, tmpSB.ToString());
-            logFile.WriteLine((logIndex++) + "~" + sb.ToString() + "~" + (nanoTime() - dt1) + parentExpressions[0].GetHashCode());
+
+            int hashCode = -1;
+
+            if (parentExpressions[0] != null)
+            {
+                hashCode = parentExpressions[0].GetHashCode();
+            }
+            logFile.WriteLine((logIndex++) + "~" + sb.ToString() + "~" + (nanoTime() - dt1) + hashCode);
 
             return true;
         }
@@ -323,6 +340,8 @@ namespace ConsoleApp1 {
 
         public static bool logReferences(string id, String logString, params object[] parentExpressions) {
 
+            // parentExpressions[i] = "root.next"
+            //root.next = null
             if (id != null) {
                 if (!timesCounter.ContainsKey(id)) {
                     timesCounter.Add(id, 0);
@@ -337,7 +356,15 @@ namespace ConsoleApp1 {
             int memoryAddress;
             for (int i = 0; i < parentExpressions.Length; i++) {
                 values += "{" + i + "},";
-                parameters.Add(parentExpressions[i].ToString());
+                if (parentExpressions[i] == null)
+                {
+                    parameters.Add("null");
+                } 
+                else
+                {
+                    parameters.Add(parentExpressions[i].ToString());
+
+                }
                 //logFile.WriteLine("parentExpressions: " + getArrayAsString((int[]) parentExpressions[i]));
                 //logFile.WriteLine("Memory address: " + parentExpressions[i].GetHashCode());
                 //memoryAddress = parentExpressions[i].GetHashCode()
@@ -347,8 +374,15 @@ namespace ConsoleApp1 {
             tmpSB.AppendFormat(values, parameters.ToArray());
 
             sb.AppendFormat(logString, tmpSB.ToString());
+            int hashCode = -1;
+
+            if (parentExpressions[0] != null)
+            {
+                hashCode = parentExpressions[0].GetHashCode();
+            }
+
             //logFile.WriteLine((logIndex++) + "~" + sb.ToString() + "~" + (nanoTime()));
-            logFile.WriteLine((logIndex++) + "~" + sb.ToString() + "~" + (nanoTime() - dt1) + "~" + parentExpressions[0].GetHashCode());
+            logFile.WriteLine((logIndex++) + "~" + sb.ToString() + "~" + (nanoTime() - dt1) + "~" + hashCode);
             return true;
         }
 

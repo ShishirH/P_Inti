@@ -19,7 +19,12 @@ var CanvasVariableConnectionPort = iVoLVER.util.createClass(fabric.Circle, {
         var message = '';
 
         this.inConnection = source;
-        this.parent.setValue(source.value);
+
+        if (source.value) {
+            this.parent.setValue(source.value);
+        } else {
+            this.parent.setValue("" + source.numberOfSignalsEmitted);
+        }
         return {
             connectionAccepted: connectionAccepted,
             message: message
@@ -33,7 +38,7 @@ var CanvasVariableConnectionPort = iVoLVER.util.createClass(fabric.Circle, {
     },
 
     signalEmitted: function (value) {
-        this.parent.setValue(this.value);
+        this.parent.setValue("" + value);
         this.value += 1;
     },
 

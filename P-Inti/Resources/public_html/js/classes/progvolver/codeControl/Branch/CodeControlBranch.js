@@ -16,6 +16,9 @@ class CodeControlBranch {
         background.isOnCanvas = false;
         background.parent = options.parent;
 
+        background.lockMovementX = true;
+        background.lockMovementY = true;
+
         background.addName = function () {
             let labelObject = new fabric.IText(background.displayName, {
                 fontFamily: 'Trebuchet MS',
@@ -166,8 +169,9 @@ class CodeControlBranch {
                 window.jsHandler.goToControlBranch({
                     variantName: background.branchName,
                     variantId: background.id,
-                    codeShiftId: background.parent.id
+                    codeShiftId: background.parent.id,
                 });
+
                 console.log("went to branch: " + background.branchName);
 
                 background.parent.updateSelectedBranch(background);

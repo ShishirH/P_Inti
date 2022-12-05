@@ -509,6 +509,8 @@ namespace P_Inti
                 string scopeLinesStr = (string)input["scopeLinesStr"];
                 string fileNameStr = (string)input["fileNameStr"];
                 string variableIdsStr = (string)input["variableIdsStr"];
+                string hashCodeOfCombinedBranchesStr = (string)input["hashCodeOfCombinedBranches"];
+
 
                 MyWindowControl.printInBrowserConsole("!@!@ variableNamesStr: " + variableNamesStr);
                 MyWindowControl.printInBrowserConsole("!@!@ typesStr: " + typesStr);
@@ -582,7 +584,7 @@ namespace P_Inti
                         MyWindowControl.printInBrowserConsole("!@!@ document.FilePath: " + document.FilePath);
 
                         int foundIndex = Array.IndexOf(variableNamesArray, variableName);
-                        //MyWindowControl.printInBrowserConsole("!@!@ foundIndex: " + foundIndex);
+                        MyWindowControl.printInBrowserConsole("!@!@ foundIndex: " + foundIndex);
 
                         if (foundIndex  != -1)
                         {
@@ -658,6 +660,54 @@ namespace P_Inti
 
                 response.Add("foundVariableNames", foundVariableNames);
                 response.Add("foundVariableValues", foundVariableValues);
+
+                // Check if result has already been compiled. If so, return log file data
+                string solutionPath = windowControl.dte.Solution.FullName;
+                string solutionDir = System.IO.Path.GetDirectoryName(solutionPath);
+                solutionDir.Replace("\"", string.Empty);
+                string rootDir = solutionDir + @"\" + "codeShifts";
+                rootDir = rootDir + @"\" + "logs";
+                string codeControlDir = rootDir + @"\" + hashCodeOfCombinedBranchesStr;
+
+                MyWindowControl.printInBrowserConsole("codeControlDir is: " + codeControlDir);
+                if (Directory.Exists(codeControlDir))
+                {
+                    string logFilePath = codeControlDir + "\\" + "run" + ".log";
+                    string scopeFilePath = codeControlDir + "\\" + "run" + ".log";
+                    string signalFilePath = codeControlDir + "\\" + "run" + ".signal";
+                    string lineInfoFilePath = codeControlDir + "\\" + "run" + ".lineInfo";
+
+                    string[] logFileContent = { };
+                    string[] scopeFileContent = { };
+                    string[] signalFileContent = { };
+                    string[] lineInfoFileContent = { };
+
+                    FileInfo signalFileInfo = new FileInfo(signalFilePath);
+
+                    if (signalFileInfo.Exists)
+                    {
+                        signalFileContent = File.ReadAllLines(signalFilePath);
+                    }
+
+                    FileInfo lineFileInfo = new FileInfo(lineInfoFilePath);
+
+                    if (lineFileInfo.Exists)
+                    {
+                        lineInfoFileContent = File.ReadAllLines(lineInfoFilePath);
+                        logFileContent = File.ReadAllLines(logFilePath);
+                        scopeFileContent = File.ReadAllLines(scopeFilePath);
+
+                    }
+
+                    response.Add("logFileContent", logFileContent);
+                    response.Add("scopeFileContent", scopeFileContent);
+                    response.Add("signalFileContent", signalFileContent);
+                    response.Add("lineInfoFileContent", lineInfoFileContent);
+                }
+                response.Add("trackedSymbolsIDs", windowControl.trackedSymbolsIDs.ToArray());
+                response.Add("trackedExpressionsIDs", windowControl.trackedSymbolsIDs.ToArray());
+                response.Add("trackedSignalIDs", MyWindowControl.trackedSignalIDs.ToArray());
+
             }
 
             return response;
@@ -1773,27 +1823,20 @@ namespace P_Inti
                 string progvolverDir = solutionDir + "/progvolver";
                 outputDirectory = progvolverDir + "/";
                 string outputDir = "";
+                string hashOfCombinedBranchId = "";
 
-                // If code shifts exist, change the output dir to a folder named by combining branch names
-                if (MyWindowControl.CodeControlInfos.Count != 0)
+                if (arg != null)
                 {
-                    string combinedBranchIdStr = "";
+                    IDictionary<string, object> input = (IDictionary<string, object>)arg;
 
-                    foreach (CodeControlInfo codeControlInfo in MyWindowControl.CodeControlInfos.Values)
-                    {
-                        MyWindowControl.printInBrowserConsole("Iterating over: " + codeControlInfo.Name);
-                        MyWindowControl.printInBrowserConsole("Current active branch " + codeControlInfo.CurrrentActiveBranchName);
-                        MyWindowControl.printInBrowserConsole("Current active branch id" + codeControlInfo.CurrentActiveBranchId);
-                        if (codeControlInfo.CurrentActiveBranchId != "")
-                        {
-                            combinedBranchIdStr += codeControlInfo.CurrentActiveBranchId;
-                        }
-                    }
+                    input.TryGetValue("outputDir", out object outputDirObj);
+                    hashOfCombinedBranchId = (string)outputDirObj;
+                    MyWindowControl.printInBrowserConsole("HashOfCombinedBranches: " + hashOfCombinedBranchId);
+                }
 
-                    if (combinedBranchIdStr != "")
-                    {
-                        // Get a hash of the combinedBranchIdStr. This is to prevent too long file names creating errors
-                        string hashOfCombinedBranchId = combinedBranchIdStr.GetHashCode().ToString();
+                // If code shifts exist, change the output dir to a folder named by combining branch names, passed from JS
+                if (hashOfCombinedBranchId != "")
+                {
 
                         solutionDir.Replace("\"", string.Empty);
                         string rootDir = solutionDir + @"\" + "codeShifts";
@@ -1807,7 +1850,7 @@ namespace P_Inti
                         }
 
                         outputDir = codeControlDir;
-                    }
+                    
                 }
 
                 if (!Directory.Exists(progvolverDir))
@@ -2176,14 +2219,13 @@ namespace P_Inti
 
             string solutionDir = System.IO.Path.GetDirectoryName(windowControl.dte.Solution.FullName);
 
-            solutionDir = "\"" + solutionDir + "\"";
-
             if (arg != null)
             {
                 IDictionary<string, object> input = (IDictionary<string, object>)arg;
                 input.TryGetValue("variantName", out object variantName);
                 input.TryGetValue("variantId", out object variantId);
                 input.TryGetValue("codeShiftId", out object codeShiftId);
+
                 string variantNameStr = (string)variantName;
                 string variantIdStr = (string)variantId;
                 string codeShiftIdStr = (string)codeShiftId;

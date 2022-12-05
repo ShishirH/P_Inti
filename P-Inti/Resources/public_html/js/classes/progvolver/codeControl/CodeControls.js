@@ -44,6 +44,11 @@ class CodeControls {
             var originParent = {originX: 'left', originY: 'top'};
             var originChild = {originX: 'left', originY: 'top'};
 
+            labelObject.on('added', function () {
+                //console.log("Label object has been added");
+                //labelObject.enterEditing().selectAll();
+            });
+
             labelObject.on('editing:exited', function () {
                 console.log("Updated name is: " + name);
                 if (window.jsHandler && window.jsHandler.updateCodeControlName) {
@@ -192,6 +197,8 @@ class CodeControls {
 
             codeControlsOnCanvas.push(background);
             CodeControls.updateSelectedCodeControl(background);
+
+            window.codeControl = background;
 
             console.log("Code controls is: ");
             console.log(background);

@@ -25,6 +25,7 @@ class ArraySymbol {
 //            height: 10
 //        }
         var background = createObjectBackground(fabric.Rect, options, null);
+        background.kind = "ArraySymbol";
 
         console.log("Background is: " + background);
         console.log(background)
@@ -479,6 +480,54 @@ class ArraySymbol {
             background.positionObjects();
         }
 
+        background.setValueForCurlyBrace = function(initialValue) {
+            let indexOfOpeningBrace = initialValue.indexOf('[');
+            let indexOfClosingBrace = initialValue.indexOf(']');
+
+            console.log("Initial value: " + initialValue.substring(indexOfOpeningBrace + 1, indexOfClosingBrace));
+            let rowNumbers;
+            // No [] present in initialValue. Declaration is of the form int[] array = {1, 2, 3, 4, 5}, or { {1, 2}, {3, 4},  {5, 6} } OR
+            // There are braces, but it doesn't contain the size. For instance int[] arr = new int[] {1, 2, 3, 4, 5}
+            if ((indexOfClosingBrace === -1 && indexOfOpeningBrace === -1) ||
+                (indexOfClosingBrace === indexOfOpeningBrace + 1)) {
+                let firstOpener = initialValue.indexOf('{');
+                let firstCloser = initialValue.lastIndexOf('}');
+
+                let innerContents = initialValue.substring(firstOpener + 1, firstCloser).trim();
+                console.log("Inner contents are: " + innerContents);
+                if (innerContents.indexOf('{') === -1) {
+                    // 1, 2, 3, 4, 5 -> 1D array
+                    rowNumbers = innerContents.split(',').map(function (item) {
+                        return item.trim();
+                    });
+
+                    for (let i = 0; i < rows; i++) {
+                        background.arrayElementsArray[i][0].element = rowNumbers[i];
+                    }
+                // } else {
+                //     let arrayElementStartIndex = 0;
+                //     let rowIndex = 0;
+                //     let elementString = innerContents;
+                //
+                //     while (elementString.substring(arrayElementStartIndex).indexOf('{') !== -1) {
+                //         elementString = innerContents.substring(arrayElementStartIndex);
+                //         let braceStartIndex = elementString.indexOf('{');
+                //         let braceEndIndex = elementString.indexOf('}');
+                //
+                //         let arrayRowNumbers = elementString.substring(braceStartIndex + 1, braceEndIndex).split(',').map(function (item) {
+                //             return item.trim();
+                //         });
+                //
+                //         // Only 2D arrays supported for now
+                //         defaultValue.push(arrayRowNumbers);
+                //         rowIndex++;
+                //         arrayElementStartIndex = braceEndIndex + 1 + innerContents.substring(braceEndIndex + 1).indexOf(',') + 1;
+                //     }
+
+                }
+
+            }
+        }
         background.addLabelObject = function () {
             var labelObject = new fabric.Text(background.label, {
                 fontFamily: 'Arial',
@@ -1531,7 +1580,7 @@ class ArraySymbol {
             let indexOfClosingBrace = initialValue.indexOf(']');
             let rows, columns, defaultValue = [];
 
-            LOG && console.log("Initial value: " + initialValue.substring(indexOfOpeningBrace + 1, indexOfClosingBrace));
+            console.log("Initial value: " + initialValue.substring(indexOfOpeningBrace + 1, indexOfClosingBrace));
 
             // No [] present in initialValue. Declaration is of the form int[] array = {1, 2, 3, 4, 5}, or { {1, 2}, {3, 4},  {5, 6} } OR
             // There are braces, but it doesn't contain the size. For instance int[] arr = new int[] {1, 2, 3, 4, 5}
@@ -1548,11 +1597,13 @@ class ArraySymbol {
                         return item.trim();
                     });
 
+                    console.log("Row numbers is: ");
+                    console.log(rowNumbers);
                     rows = rowNumbers.length;
                     columns = 1;
                     defaultValue.push(rowNumbers);
                 } else {
-                     let arrayElementStartIndex = 0;
+                    let arrayElementStartIndex = 0;
                     let rowIndex = 0;
                     let elementString = innerContents;
 

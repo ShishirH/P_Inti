@@ -4,7 +4,94 @@ progvolver = {
     objects: {}
 };
 
+function getHashOfString(str) {
+    var hash = 0,
+        i, chr;
+    if (str.length === 0) return hash;
+    for (i = 0; i < str.length; i++) {
+        chr = str.charCodeAt(i);
+        hash = ((hash << 5) - hash) + chr;
+        hash |= 0; // Convert to 32bit integer
+    }
+    return hash.toString();
+}
+
+function setBottomButtonsVisibility() {
+    let timeLinePrevious = document.getElementById("timelinePrevious");
+    console.log(timeLinePrevious);
+    if (!hasCodeBeenCompiled) {
+        document.getElementById("timelinePreviousContainer").classList.add('bottomRowButtonsDisabled');
+        document.getElementById("playButtonContainer").classList.add('bottomRowButtonsDisabled');
+        document.getElementById("timelineNextContainer").classList.add('bottomRowButtonsDisabled');
+        document.getElementById("theSliderContainer").classList.add('bottomRowButtonsDisabled');
+    } else {
+        document.getElementById("timelinePreviousContainer").classList.remove('bottomRowButtonsDisabled');
+        document.getElementById("playButtonContainer").classList.remove('bottomRowButtonsDisabled');
+        document.getElementById("timelineNextContainer").classList.remove('bottomRowButtonsDisabled');
+        document.getElementById("theSliderContainer").classList.remove('bottomRowButtonsDisabled');
+    }
+}
+
+function getCombinedHashOfVariants() {
+    let appendedActiveBranches = "";
+    for (let i = 0; i < codeControlsOnCanvas.length; i++) {
+        let codeControl = codeControlsOnCanvas[i];
+        let activeBranch = codeControl.selectedBranch;
+        appendedActiveBranches += activeBranch;
+    }
+
+    if (appendedActiveBranches != "") {
+        return getHashOfString(appendedActiveBranches);
+    } else {
+        return "";
+    }
+}
+
+function loadLogFiles(response, lineInfoFileContent, waitingDialog) {
+    window.trackedSymbolsIDs = response.trackedSymbolsIDs;
+    window.trackedExpressionsIDs = response.trackedExpressionsIDs;
+    window.trackedSignalIDs = response.trackedSignalIDs;
+
+    // add index to lineLogData
+
+    var logFileContent = response.logFileContent.join("\n");
+    var scopeFileContent = response.scopeFileContent.join("\n");
+    var signalFileContent = response.signalFileContent.join("\n");
+    var lineInfoFileContentArray = response.lineInfoFileContent;
+
+    for (let i = 1; i < lineInfoFileContentArray.length; i++) {
+        lineInfoFileContentArray[i] = i + "~" + lineInfoFileContentArray[i];
+    }
+    lineInfoFileContent = lineInfoFileContentArray.join("\n");
+
+    logFileContent = preProcessLogFileForDuplicates(logFileContent);
+    processMethodParameters(logFileContent);
+    processLogFiles(logFileContent, scopeFileContent, signalFileContent, lineInfoFileContent);
+    window.snapshotWidget && window.snapshotWidget.parseMemberValues();
+
+    if (waitingDialog) {
+        waitingDialog.dialog('content', '<div style="text-align: center; margin-top: 20px;"><span align="center" style="font-size: 150%;">' + response.response + '</span></div>');
+        if (response.success) {
+            setTimeout(function () {
+                waitingDialog.dialog('hide');
+            }, 2000);
+        }
+    }
+}
+
 function clickRunCodeButton() {
+
+    hasCodeBeenCompiled = true;
+    setBottomButtonsVisibility();
+
+    let outputDir = "";
+
+    let combinedHash = getCombinedHashOfVariants();
+    if (combinedHash != "") {
+        outputDir = combinedHash;
+        codeControlsCompiledHashCodes.push(outputDir);
+    }
+
     if (window.jsHandler) {
         var lineInfoFileContent;
         // console.log("addIndexToLineLogFile");
@@ -15,44 +102,23 @@ function clickRunCodeButton() {
 
         if (window.jsHandler.runCodeAnalyzer) {
             var waitingDialog = new jWait('Running Program');
-            window.jsHandler.runCodeAnalyzer(null).then(function (response) {
-
-                window.trackedSymbolsIDs = response.trackedSymbolsIDs;
-                window.trackedExpressionsIDs = response.trackedExpressionsIDs;
-                window.trackedSignalIDs = response.trackedSignalIDs;
-                console.log("Signal IDs:");
-                console.log(response.trackedSignalIDs);
-
-                // add index to lineLogData
-
-                var logFileContent = response.logFileContent.join("\n");
-                var scopeFileContent = response.scopeFileContent.join("\n");
-                var signalFileContent = response.signalFileContent.join("\n");
-                var lineInfoFileContentArray = response.lineInfoFileContent;
-
-                for (let i = 1; i < lineInfoFileContentArray.length; i++) {
-                    lineInfoFileContentArray[i] = i + "~" + lineInfoFileContentArray[i];
-                }
-                lineInfoFileContent = lineInfoFileContentArray.join("\n");
-
-                console.log("lineInfoFileContent is: ");
-                console.log(lineInfoFileContent);
-                console.log("logFileContent is: ");
-                console.log(logFileContent);
-                logFileContent = preProcessLogFileForDuplicates(logFileContent);
-                console.log("logFileContent now is: ");
-                console.log(logFileContent);
-                processMethodParameters(logFileContent);
-                processLogFiles(logFileContent, scopeFileContent, signalFileContent, lineInfoFileContent);
-                window.snapshotWidget && window.snapshotWidget.parseMemberValues();
-                waitingDialog.dialog('content', '<div style="text-align: center; margin-top: 20px;"><span align="center" style="font-size: 150%;">' + response.response + '</span></div>');
-                if (response.success) {
-                    setTimeout(function () {
-                        waitingDialog.dialog('hide');
-                    }, 2000);
-                }
-
+            window.jsHandler.runCodeAnalyzer({
+                outputDir: outputDir
+            }).then(function (response) {
+                loadLogFiles(response, lineInfoFileContent, waitingDialog);
             });
+        }
+    }
+
+    var theSlider = $("#theSlider").data("ionRangeSlider");
+    console.log("Done loading files");
+    console.log("Prior slider percentage: " + priorSliderFromPercentage);
+    console.log("Current slider percentage: " + theSlider.result.from_percent);
+    if (priorSliderFromPercentage > 0) {
+        console.log("Log files loaded")
+        while(theSlider.result.from_percent < priorSliderFromPercentage) {
+            console.log(theSlider.result.from_percent)
+            moveTimelineNext();
         }
     }
 }
@@ -77,6 +143,8 @@ function goToLineInFile() {
     //console.log(args);
     window.jsHandler.goTo(args);
 }
+
+let priorSliderFromPercentage = -1;
 
 function getAssociatedVariablesForCodeVariants(variantCombinationString)
 {
@@ -117,7 +185,8 @@ function getAssociatedVariablesForCodeVariants(variantCombinationString)
             typesStr: typesStr,
             scopeLinesStr: scopeLinesStr,
             fileNameStr: fileNameStr,
-            variableIdsStr: variableIdsStr
+            variableIdsStr: variableIdsStr,
+            hashCodeOfCombinedBranches: getCombinedHashOfVariants()
         }).then(function (response) {
             console.log("Response was: ");
             console.log(response);
@@ -125,11 +194,22 @@ function getAssociatedVariablesForCodeVariants(variantCombinationString)
             variablesNamesArray = response.foundVariableNames.split("_");
             variablesValuesArray = response.foundVariableValues.split("_");
 
+            console.log("variablesNamesArray");
+            console.log(variablesNamesArray);
+
+            console.log("variablesValuesArray");
+            console.log(variablesValuesArray);
+
             // Set values for another code variant combination
             for (let i = 0; i < variablesNamesArray.length; i++) {
                 let variable = namedSymbols[variablesNamesArray[i]];
                 variablesOnCanvas.push(variable);
-                variable.value = variablesValuesArray[i];
+
+                if (variable.kind == "ArraySymbol") {
+                    variable.setValueForCurlyBrace(variablesValuesArray[i].trim());
+                } else {
+                    variable.value = variablesValuesArray[i];
+                }
 
                 if (!variable.isOnCanvas) {
                     variable.isOnCanvas = true;
@@ -149,6 +229,24 @@ function getAssociatedVariablesForCodeVariants(variantCombinationString)
 
                     }
                 }
+            }
+
+            let lineInfoContent = "";
+
+            var theSlider = $("#theSlider").data("ionRangeSlider");
+            priorSliderFromPercentage = theSlider.result.from_percent;
+            if (response.logFileContent) {
+                loadLogFiles(response, lineInfoContent, null);
+
+                console.log("Log files loaded")
+                console.log("Prior slider percentage: " + priorSliderFromPercentage);
+                console.log("Current slider percentage: " + theSlider.result.from_percent);
+                while(theSlider.result.from_percent < priorSliderFromPercentage) {
+                    moveTimelineNext();
+                }
+            } else {
+                hasCodeBeenCompiled = false;
+                setBottomButtonsVisibility();
             }
 
         });

@@ -62,6 +62,7 @@
     <Compile Include="CodeAdornmentTextViewCreationListener.cs" />
     <Compile Include="CodeAnalyzer.cs" />
     <Compile Include="CodeControlAddExistingCode.cs" />
+    <Compile Include="CodeControlAddExistingCodeContextMenu.cs" />
     <Compile Include="CodeControlBranchInfo.cs" />
     <Compile Include="CodeControlEditorAdornment.cs" />
     <Compile Include="CodeControlEditorAdornmentTextViewCreationListener.cs" />
@@ -225,6 +226,7 @@
     <None Include="Resources\public_html\log.csv" />
     <Content Include="Resources\AddToCodeShift.png" />
     <Content Include="Resources\CodeControlAddExistingCode.png" />
+    <Content Include="Resources\CodeControlAddExistingCodeContextMenu.png" />
     <Content Include="snapshot_blob.bin">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
       <IncludeInVSIX>true</IncludeInVSIX>

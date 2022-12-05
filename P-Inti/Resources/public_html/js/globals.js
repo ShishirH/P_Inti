@@ -282,4 +282,6 @@ var referencedObjects = [];
 var namedSymbols = {};
 var variablesOnCanvas = [];
 var codeVariantAssociatedVariables = {};
+var codeControlsCompiledHashCodes = [];
+var hasCodeBeenCompiled = false;
 
