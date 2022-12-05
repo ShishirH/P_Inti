@@ -56,7 +56,15 @@
           <ButtonText>Add code to selected code multiverse</ButtonText>
         </Strings>
       </Button>
-      <!--<Button guid="guidP_IntiPackageCmdSet1" id="cmdidAddToCodeShift" priority="0x0100" type="Button">
+		<Button guid="guidP_IntiPackageCmdSet1" id="cmdidAddSignalToLineExecution" priority="0x0100" type="Button">
+			<Parent guid="guidP_IntiPackageCmdSet1" id="MyMenuGroup" />
+			<Icon guid="guidImages1" id="bmpPic1" />
+			<Strings>
+				<ButtonText>Add signal for existing line</ButtonText>
+			</Strings>
+		</Button>
+
+		<!--<Button guid="guidP_IntiPackageCmdSet1" id="cmdidAddToCodeShift" priority="0x0100" type="Button">
         <Parent guid="guidP_IntiPackageCmdSet1" id="MyMenuGroup" />
         <Icon guid="guidImages2" id="bmpPic1" />
         <Strings>
@@ -115,7 +123,7 @@
     <GuidSymbol value="{426c1930-c84a-4b53-8f37-d2dd9e325f1f}" name="guidP_IntiPackageCmdSet1">
       <IDSymbol value="4128" name="MyMenuGroup" />
       <IDSymbol value="256" name="cmdidCodeControlAddExistingCode" />
-      <IDSymbol value="4129" name="cmdidAddToCodeShift" />
+      <IDSymbol value="4129" name="cmdidAddSignalToLineExecution" />
       <IDSymbol value="4130" name="cmdidCodeControlAddExistingCodeContextMenu" />
     </GuidSymbol>
   

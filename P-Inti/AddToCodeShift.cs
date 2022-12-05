@@ -1,10 +1,11 @@
-﻿using Microsoft.VisualStudio.Shell;
-using Microsoft.VisualStudio.Shell.Interop;
-using System;
+﻿using System;
 using System.ComponentModel.Design;
 using System.Globalization;
 using System.Threading;
 using System.Threading.Tasks;
+using CefSharp;
+using Microsoft.VisualStudio.Shell;
+using Microsoft.VisualStudio.Shell.Interop;
 using Task = System.Threading.Tasks.Task;
 
 namespace P_Inti
@@ -89,17 +90,33 @@ namespace P_Inti
         private void Execute(object sender, EventArgs e)
         {
             ThreadHelper.ThrowIfNotOnUIThread();
-            string message = string.Format(CultureInfo.CurrentCulture, "Inside {0}.MenuItemCallback()", this.GetType().FullName);
-            string title = "AddToCodeShift";
+            System.IServiceProvider serviceProvider = package as System.IServiceProvider;
 
-            // Show a message box to prove we were here
-            VsShellUtilities.ShowMessageBox(
-                this.package,
-                message,
-                title,
-                OLEMSGICON.OLEMSGICON_INFO,
-                OLEMSGBUTTON.OLEMSGBUTTON_OK,
-                OLEMSGDEFBUTTON.OLEMSGDEFBUTTON_FIRST);
+            EnvDTE.DTE dte = (EnvDTE.DTE)serviceProvider.GetService(typeof(EnvDTE.DTE));
+            EnvDTE.TextSelection ts = dte.ActiveWindow.Selection as EnvDTE.TextSelection;
+
+            if (ts == null)
+                return;
+
+            // New addition. Create new signal entry
+            if (!arrayLine.lineNumbersArray.Contains(ts.CurrentLine - 1))
+            {
+                arrayLine.lineNumbersArray.Add(ts.CurrentLine - 1);
+
+                string signalID = Utils.generateID();
+                MyWindowControl.trackedSignalIDs.Add(signalID);
+                MyWindowControl.signalsPositions.Add(signalID, Tuple.Create(@"C:\Users\shish\source\repos\ConsoleApp1\ConsoleApp1\Program.cs", ts.CurrentLine - 1));
+
+                var activePoint = ((EnvDTE.TextSelection)dte.ActiveDocument.Selection).ActivePoint;
+                string lineText = activePoint.CreateEditPoint().GetLines(activePoint.Line, activePoint.Line + 1);
+
+                var activeDocumentName = dte.ActiveDocument.FullName;
+
+                Object[] showArgs = { signalID + "@" + (ts.CurrentLine - 1).ToString() + "@" + lineText + "@" + activeDocumentName };
+                MyWindowControl.bs.EvaluateScriptAsync("addSignalToCanvas", showArgs);
+
+            }
+            SignalGlyphTagger.updateTags();
         }
     }
 }

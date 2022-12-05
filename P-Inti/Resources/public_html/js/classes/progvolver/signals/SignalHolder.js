@@ -186,6 +186,10 @@ class SignalHolder {
 
         addLineContent();
 
+        background.setProgramTime = function (time) {
+            background.signal.setProgramTime(time);
+        };
+
         background.on('scaling', function () {
 //            background.set('height', background.cacheHeight);
 //            background.set('width', background.cacheWidth);
