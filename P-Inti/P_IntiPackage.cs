@@ -27,6 +27,7 @@ namespace P_Inti
     [Guid(P_IntiPackage.PackageGuidString)]
     [ProvideMenuResource("Menus.ctmenu", 1)]
     [ProvideToolWindow(typeof(MyWindow))]
+    [ProvideToolWindow(typeof(ToolWindow1))]
     public sealed class P_IntiPackage : AsyncPackage
     {
         /// <summary>
@@ -52,6 +53,7 @@ namespace P_Inti
             await ProgvolverEditorContextualMenu.InitializeAsync(this);
             await CodeControlAddExistingCode.InitializeAsync(this);
             await ReusableCommand.InitializeAsync(this);
+            await ToolWindow1Command.InitializeAsync(this);
         }
 
         #endregion

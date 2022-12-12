@@ -217,7 +217,7 @@
     <!--<body oncontextmenu="return false;" onresize="adjustCanvasDimensions(canvas);">-->
     <body onresize="adjustCanvasDimensions();">
 
-
+        <div style="display: none; " id="tempCompiledDirectory"></div>
         <!-- HORIZONTAL MENU -->
         <ul id="theMenu" class="menu nonSelection">
 
@@ -530,7 +530,7 @@
 
 
 
-
+        
         iVoLVER.gui.add.button({
             sectionID: iVoLVER.gui.toolbar, // variable storing the id of the top toolbar
             tooltip: 'Run',
@@ -540,7 +540,6 @@
                     if (window.jsHandler.runCodeAnalyzer) {
                         var waitingDialog = new jWait('Running Program');
                         window.jsHandler.runCodeAnalyzer(null).then(function (response) {
-
                             window.trackedSymbolsIDs = response.trackedSymbolsIDs;
                             window.trackedExpressionsIDs = response.trackedExpressionsIDs;
                             window.trackedSignalIDs = response.trackedSignalIDs;
@@ -558,6 +557,7 @@
                             processLogFiles(logFileContent, scopeFileContent, signalFileContent);
                             window.snapshotWidget && window.snapshotWidget.parseMemberValues();
                             waitingDialog.dialog('content', '<div style="text-align: center; margin-top: 20px;"><span align="center" style="font-size: 150%;">' + response.response + '</span></div>');
+                            $("#tempCompiledDirectory").text(response.outputDir);
                             if (response.success) {
                                 setTimeout(function () {
                                     waitingDialog.dialog('hide');
@@ -566,6 +566,21 @@
 
                         });
                     }
+                }
+            }
+        });
+        
+        
+        iVoLVER.gui.add.button({
+            sectionID: iVoLVER.gui.toolbar, // variable storing the id of the top toolbar
+            tooltip: 'Unbox',
+            iconClass: 'fa-square-o unboxButton',
+            onClick: function () {
+                if (window.jsHandler) {
+                    window.jsHandler.startCodeUnboxer($("#tempCompiledDirectory").text()).then(function (response) {
+                        console.log("HERE IS THE COMPILED DIRECTORY!!!!!!");
+                        console.log($("#tempCompiledDirectory").text());
+                    });  ;
                 }
             }
         });

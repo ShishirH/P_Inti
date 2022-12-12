@@ -107,49 +107,27 @@
         public MyWindowControl()
         {
             this.InitializeComponent();
-
             //theBrowser.Address = Environment.CurrentDirectory + "/Resources/public_html/progvolver.html";
             theBrowser.Address = "http://localhost:8383/Resources/progvolver.html";
             //theBrowser.Address = "http://www.google.com";
             jsHandler = new JsHandler(this, currentDispatcher);
             theBrowser.JavascriptObjectRepository.Register("jsHandler", jsHandler, true);
-
             // TMP
             theBrowser.IsBrowserInitializedChanged += ChromeBrowser_IsBrowserInitializedChanged;
-
-
             bs = theBrowser;
-
             dte = Package.GetGlobalService(typeof(SDTE)) as DTE;
-
-            //CodeControlInfo codeControlInfo1 = new CodeControlInfo(0, 2, Colors.Azure, Colors.Brown);
-            //CodeControlInfo codeControlInfo2 = new CodeControlInfo(4, 7, Colors.Salmon, Colors.Brown);
-
-            //codeControlInfos.Add("1", codeControlInfo1);
-            //codeControlInfos.Add("2", codeControlInfo2);
-
             IVsSolution vv = Package.GetGlobalService(typeof(SVsSolution)) as IVsSolution;
             uint cookie;
-            //vv.AdviseSolutionEvents(this, out cookie);
-
-
-
             events = dte.Events;
-
             solutionEvents = ((Events2)dte.Events).SolutionEvents;
-
             solutionEvents.Opened += SolutionOpened;
-
             // debugging support and events
             debugger = dte.Debugger;
             debuggerEvents = dte.Events.DebuggerEvents;
-
             debuggerEvents.OnEnterRunMode += OnEnterRunModeHandler;
-
-
             debuggerEvents.OnEnterBreakMode += new _dispDebuggerEvents_OnEnterBreakModeEventHandler(OnEnterBreakModeHandler);
             debuggerEvents.OnEnterDesignMode += OnEnterDesignMode;
-
+            closeCodeUnboxer(null);
         }
 
         private void ChromeBrowser_IsBrowserInitializedChanged(object sender, DependencyPropertyChangedEventArgs e)
@@ -157,6 +135,35 @@
             theBrowser.ShowDevTools();
         }
 
+        public static void openCodeUnboxer(object directory)
+        {
+            IVsUIShell vsUIShell = (IVsUIShell)Package.GetGlobalService(typeof(SVsUIShell));
+            Guid guid = typeof(ToolWindow1).GUID;
+            IVsWindowFrame windowFrame;
+            int result = vsUIShell.FindToolWindow((uint)__VSFINDTOOLWIN.FTW_fFindFirst, ref guid, out windowFrame);   // Find MyToolWindow
+
+            if (result != VSConstants.S_OK)
+                result = vsUIShell.FindToolWindow((uint)__VSFINDTOOLWIN.FTW_fForceCreate, ref guid, out windowFrame); // Crate MyToolWindow if not found
+
+            if (result == VSConstants.S_OK)
+            {                                                                 // Show MyToolWindow
+                ErrorHandler.ThrowOnFailure(windowFrame.Show());
+                //ToolWindow1Control.readFiles(directory.ToString());
+            }
+        }
+        public static void closeCodeUnboxer(object directory)
+        {
+            IVsUIShell vsUIShell = (IVsUIShell)Package.GetGlobalService(typeof(SVsUIShell));
+            Guid guid = typeof(ToolWindow1).GUID;
+            IVsWindowFrame windowFrame;
+            int result = vsUIShell.FindToolWindow((uint)__VSFINDTOOLWIN.FTW_fFindFirst, ref guid, out windowFrame);   // Find MyToolWindow
+
+            if (result != VSConstants.S_OK)
+                result = vsUIShell.FindToolWindow((uint)__VSFINDTOOLWIN.FTW_fForceCreate, ref guid, out windowFrame); // Crate MyToolWindow if not found
+
+            if (result == VSConstants.S_OK)                                                                           // Show MyToolWindow
+                ErrorHandler.ThrowOnFailure(windowFrame.Hide());
+        }
 
         private void OnEnterRunModeHandler(dbgEventReason Reason)
         {

@@ -90,6 +90,7 @@
     <Compile Include="MyWindowControl.xaml.cs">
       <DependentUpon>MyWindowControl.xaml</DependentUpon>
     </Compile>
+    <Compile Include="PeriodicTimer.cs" />
     <Compile Include="ProgvolverEditorContextualMenu.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="P_IntiPackage.cs" />
@@ -100,6 +101,11 @@
     <Compile Include="SignalGlyphTag.cs" />
     <Compile Include="SignalGlyphTaggerProvider.cs" />
     <Compile Include="Taggers.cs" />
+    <Compile Include="ToolWindow1.cs" />
+    <Compile Include="ToolWindow1Command.cs" />
+    <Compile Include="ToolWindow1Control.xaml.cs">
+      <DependentUpon>ToolWindow1Control.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Utils.cs" />
   </ItemGroup>
   <ItemGroup>
@@ -225,6 +231,7 @@
     <None Include="Resources\public_html\log.csv" />
     <Content Include="Resources\CodeControlAddExistingCode.png" />
     <Content Include="Resources\ReusableCommand.png" />
+    <Content Include="Resources\ToolWindow1Command.png" />
     <Content Include="snapshot_blob.bin">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
       <IncludeInVSIX>true</IncludeInVSIX>
@@ -299,6 +306,10 @@
   </ItemGroup>
   <ItemGroup>
     <Page Include="MyWindowControl.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="ToolWindow1Control.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

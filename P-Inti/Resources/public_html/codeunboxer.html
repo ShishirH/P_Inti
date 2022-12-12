@@ -1,0 +1,226 @@
+﻿﻿<!DOCTYPE html>
+<html style="overflow-x: no-display; overflow-y: hidden;">
+    <head>
+        <title>Code Unboxer</title>
+        <style>
+            .vis-item.true  { background-color: #90EE90FF; border-color: #006400FF; opacity: 0.75; }
+            .vis-item.false      { background-color: #FFC0CBFF; border-color: #8B0000FF; opacity: 0.75; }
+            .vis-item.assignment { background-color: #ffe428ff;  border-color: #af9100FF; opacity: 0.75; }
+            .vis-item.reference { background-color: #ADD8E6FF; border-color: #0000FFFF; opacity: 0.75; }
+        </style>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+        <meta name="apple-mobile-web-app-capable" content="yes" />
+        <meta name="apple-mobile-web-app-status-bar-style" content="black" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+        <script type="text/javascript">
+            if (window.CefSharp) {
+                CefSharp.BindObjectAsync("jsHandler", "jsHandler");
+            }
+        </script>
+        <link rel="stylesheet" type="text/css" href="./css/monserratFont.css">
+        <link rel="stylesheet" type="text/css" href="./css/main.css" />
+        <link rel="stylesheet" type="text/css" href="./css/kickstart.css" media="all" />
+        <link rel="stylesheet" type="text/css" href="./style.css" media="all" />
+        <link rel="stylesheet" type="text/css" href="./css/locators.css" />
+        <link rel="stylesheet" type="text/css" href="./css/operators.css" />
+        <link rel="stylesheet" type="text/css" href="./css/functions.css" />
+        <link rel="stylesheet" type="text/css" href="./css/collections.css" />
+        <link rel="stylesheet" type="text/css" href="./css/values.css" />
+        <link rel="stylesheet" type="text/css" href="./css/marks.css" />
+        <link rel="stylesheet" type="text/css" href="./css/generators.css" />
+        <link rel="stylesheet" type="text/css" href="./css/rangeGenerator.css" />
+        <link rel="stylesheet" type="text/css" href="./css/collectiveOperators.css" />
+        <link rel="stylesheet" type="text/css" href="./css/customDataTypes.css" />
+        <link rel="stylesheet" type="text/css" href="./css/fonts/fontawesome/css/font-awesome.css" media="all" />
+        <link rel="stylesheet" type="text/css" href="./css/fonts/font-awesome-4.4.0/css/font-awesome.css" media="all" />
+        <link rel="stylesheet" type="text/css" href="./css/alertify.core.css" />
+        <link rel="stylesheet" type="text/css" href="./css/alertify.default.css" />
+        <link rel="stylesheet" type="text/css" href="./css/tooltipster.bundle.css" />
+        <link rel="stylesheet" type="text/css" href="./css/tooltipster-sideTip-borderless.min.css" />
+        <link rel="stylesheet" type="text/css" href="./css/tooltipster-sideTip-punk.min.css" />
+        <link rel="stylesheet" type="text/css" href="./css/workshop.css" />
+        <link rel="stylesheet" type="text/css" href="./css/jquery.dialog.css" />
+        <link rel="stylesheet" type="text/css" href="./css/ion.rangeSlider.min.css" />
+        <link rel="stylesheet" type="text/css" href="./css/drawingCanvas.css" />
+        <link rel="stylesheet" type="text/css" href="./js/contextMenu/jquery.contextMenu.min.css" />
+        <script type="text/javascript" src="./js/jquery-1.10.2.js"></script>
+        <script type="text/javascript" src="./js/jquery.ajaxfileupload.js"></script>
+        <script type="text/javascript" src="./js/jquery-ui-1.10.4.min.js"></script>
+        <script type="text/javascript" src="./js/jquery.path.js"></script>
+        <script type="text/javascript" src="./js/kickstart.js"></script>
+        <script type="text/javascript" src="./js/fabric.js"></script>
+        <script type="text/javascript" src="./js/graphlib.min.js"></script>
+        <script type="text/javascript" src="./js/undomanager.js"></script>
+        <script type="text/javascript" src="./js/iVoLVER.js"></script>
+        <script type="text/javascript" src="./js/moment.js"></script>
+        <script type="text/javascript" src="./js/alertify.js"></script>
+        <script type="text/javascript" src="./js/tooltipster.core.min.js"></script>
+        <script type="text/javascript" src="./js/tooltipster.bundle.min.js"></script>
+        <script type="text/javascript" src="./js/jquery.ui.touch-punch.min.js"></script>
+        <script type="text/javascript" src="./js/generalFunctions.js"></script>
+        <script type="text/javascript" src="./js/globals.js"></script>
+        <script type="text/javascript" src="./js/classes/Project.js"></script>
+        <script type="text/javascript" src="./js/interaction/objectsEvents.js"></script>
+        <script type="text/javascript" src="./js/interaction/widgetsEvents.js"></script>
+        <script type="text/javascript" src="./js/hammer.min.js"></script>
+        <script type="text/javascript" src="./js/javascript.util.js"></script>
+        <script type="text/javascript" src="./js/jsts.js"></script>
+        <script type="text/javascript" src="./js/simplify.js"></script>
+        <script type="text/javascript" src="./js/classes/Connector.js"></script>
+        <script type="text/javascript" src="./js/classes/iconPaths.js"></script>
+        <script type="text/javascript" src="./js/colors.js"></script>
+        <script type="text/javascript" src="./js/jsGradient.js"></script>
+        <script type="text/javascript" src="./js/FileSaver.min.js"></script>
+        <script type="text/javascript" src="./js/math.min.js"></script>
+        <script type="text/javascript" src="./js/colormix-1.0.0.min.js"></script>
+        <script type="text/javascript" src="./js/h5utils.js"></script>
+        <script type="text/javascript" src="./js/jquery.xdomainajax.js"></script>
+        <script type="text/javascript" src="./js/jquery.resize.js"></script>
+        <script type="text/javascript" src="./js/jquery.drag.resize.js"></script>
+        <script type="text/javascript" src="./js/toPathTransformations.js"></script>
+        <script type="text/javascript" src="./js/path-data-polyfill.js"></script>
+        <script type="text/javascript" src="./js/clipper_unminified.js"></script>
+        <script type="text/javascript" src="./js/workshop.js"></script>
+        <script type="text/javascript" src="./js/jszip.min.js"></script>
+        <script type="text/javascript" src="./js/pathseg.js"></script>
+        <script type="text/javascript" src="./js/jquery.dialog.js"></script>
+        <script type="text/javascript" src="./js/ion.rangeSlider.min.js"></script>
+        <script type="text/javascript" src="./js/papaparse.min.js"></script>
+        <script src="http://netbeast.github.io/colorsys/browser.js"></script>
+        <script type="text/javascript" src="./js/contextMenu/jquery.contextMenu.js"></script>
+        <script type="text/javascript" src="./js/contextMenu/jquery.ui.position.min.js"></script>
+        <script type="text/javascript" src="./js/progvolver.js"></script>
+        <script type="text/javascript" src="./js/classes/types/Value.js"></script>
+        <script type="text/javascript" src="./js/classes/VisualProperty.js"></script>
+        <script type="text/javascript" src="./js/classes/types/VisualValue.js"></script>
+        <script type="text/javascript" src="./js/classes/types/ShapeData.js"></script>
+        <script type="text/javascript" src="./js/classes/types/ColorData.js"></script>
+        <script type="text/javascript" src="./js/classes/types/StringData.js"></script>
+        <script type="text/javascript" src="./js/classes/types/NumericData.js"></script>
+        <script type="text/javascript" src="./js/classes/marks/Mark.js"></script>
+        <script type="text/javascript" src="./js/classes/marks/RectangularMark.js"></script>
+        <script type="text/javascript" src="./js/classes/progvolver/ConnectionPort.js"></script>
+        <script type="text/javascript" src="./js/classes/progvolver/ConnectableWidget.js"></script>
+        <script type="text/javascript" src="./js/classes/progvolver/CodeNote.js"></script>
+        <script type="text/javascript" src="./js/classes/progvolver/WhenSignal.js"></script>
+        <script type="text/javascript" src="js/classes/progvolver/reference/ReferenceWidget.js"></script>
+        <script type="text/javascript" src="js/classes/progvolver/reference/ReferencePointer.js"></script>
+        <script type="text/javascript" src="./js/classes/progvolver/ProgvolverSymbol.js"></script>
+        <script type="text/javascript" src="./js/classes/progvolver/ProgvolverExpression.js"></script>
+        <script type="text/javascript" src="./js/classes/progvolver/Plotter.js"></script>
+        <script type="text/javascript" src="js/classes/progvolver/array/ArraySymbol.js"></script>
+        <script type="text/javascript" src="js/classes/progvolver/array/MovementControls.js"></script>
+        <script type="text/javascript" src="js/classes/progvolver/array/ArrayElementSymbol.js"></script>
+        <script type="text/javascript" src="js/classes/progvolver/signals/SignalEmitterWidget.js"></script>
+        <script type="text/javascript" src="js/classes/progvolver/signals/SignalHolder.js"></script>
+        <script type="text/javascript" src="js/classes/progvolver/objectWidget/ObjectWidget.js"></script>
+        <script type="text/javascript" src="js/classes/progvolver/signals/SignalReceiverWidget.js"></script>
+        <script type="text/javascript" src="./js/classes/progvolver/AffectWidget.js"></script>
+        <script type="text/javascript" src="./js/classes/progvolver/WhenWidget.js"></script>
+        <script type="text/javascript" src="js/classes/progvolver/array/ArrayElementObject.js"></script>
+        <script type="text/javascript" src="./js/classes/progvolver/MinimizeButton.js"></script>
+        <script type="text/javascript" src="js/classes/progvolver/objectWidget/ObjectMemberSelection.js"></script>
+        <script type="text/javascript" src="js/classes/progvolver/objectWidget/ObjectSelectionPane.js"></script>
+        <script type="text/javascript" src="js/classes/progvolver/objectWidget/ObjectSelectionCheckBox.js"></script>
+        <script type="text/javascript" src="js/classes/progvolver/snapshotWidget/SnapshotWidget.js"></script>
+        <script type="text/javascript" src="js/classes/progvolver/snapshotWidget/Snapshot.js"></script>
+        <script type="text/javascript" src="js/classes/progvolver/signals/SignalReceiverSnapshot.js"></script>
+        <script type="text/javascript" src="js/classes/progvolver/array/arrayColorWidget/ColorPickerWidget.js"></script>
+        <script type="text/javascript" src="js/classes/progvolver/array/arrayColorWidget/ColorPickerSignalHolder.js"></script>
+        <script type="text/javascript" src="js/classes/progvolver/array/arrayColorWidget/ArrayColorWidget.js"></script>
+        <script type="text/javascript" src="js/classes/progvolver/array/arrayColorWidget/ArrayColorWidgetAddition.js"></script>
+        <script type="text/javascript" src="js/classes/progvolver/array/arrayColorWidget/ColorWidgetSignal.js"></script>
+        <script type="text/javascript" src="js/classes/progvolver/array/arrayColorWidget/ArrayColorWidgetOutput.js"></script>
+        <script type="text/javascript" src="./js/classes/progvolver/NumberHolder.js"></script>
+        <script type="text/javascript" src="./js/classes/progvolver/NumberFormatter.js"></script>
+        <script type="text/javascript" src="./js/classes/progvolver/Dropdown.js"></script>
+        <script type="text/javascript" src="./js/classes/progvolver/TextRectangle.js"></script>
+        <script type="text/javascript" src="js/classes/progvolver/canvasVariable/CanvasVariable.js"></script>
+        <script type="text/javascript" src="js/classes/progvolver/canvasVariable/CanvasVariableConnectionPort.js"></script>
+        <script type="text/javascript" src="js/classes/progvolver/codeControl/CodeControls.js"></script>
+        <script type="text/javascript" src="js/classes/progvolver/codeControl/CodeControlCheckBox.js"></script>
+        <script type="text/javascript" src="js/classes/progvolver/codeControl/CodeControlAddition.js"></script>
+        <script type="text/javascript" src="js/classes/progvolver/codeControl/Branch/CodeControlBranch.js"></script>
+        <script type="text/javascript" src="js/classes/progvolver/codeControl/Branch/CodeControlBranchUpdate.js"></script>
+        <script type="text/javascript" src="js/classes/progvolver/codeControl/Branch/CodeControlBranchDelete.js"></script>
+        <script type="text/javascript" src="js/interaction/Undo_Redo_Events/MovingEvent.js"></script>
+        <script type="text/javascript" src="js/interaction/Undo_Redo_Events/CreationEvent.js"></script>
+        <script type="text/javascript" src="js/interaction/interactionEvents/MovementInteractionEvent.js"></script>
+        <script type="text/javascript" src="js/interaction/interactionEvents/DisappearanceInteractionEvent.js"></script>
+        <script type="text/javascript" src="js/classes/progvolver/logicalOperatorWidget/ComparisonOperators.js"></script>
+        <script type="text/javascript" src="js/classes/progvolver/logicalOperatorWidget/LogicalOperators.js"></script>
+        <script type="text/javascript" src="js/classes/progvolver/logicalOperatorWidget/ArithmeticOperators.js"></script>
+        <script type="text/javascript" src="js/classes/progvolver/logicalOperatorWidget/VariableInputConnection.js"></script>
+        <script type="text/javascript" src="js/classes/progvolver/logicalOperatorWidget/VariableOutputConnection.js"></script>
+        <script type="text/javascript" src="js/classes/progvolver/logicalOperatorWidget/LogicalInputConnection.js"></script>
+        <script type="text/javascript" src="js/classes/progvolver/logicalOperatorWidget/LogicalOutputConnection.js"></script>
+        <script type="text/javascript" src="js/classes/progvolver/logicalOperatorWidget/ResultWidget.js"></script>
+        <script type="text/javascript" src="js/classes/progvolver/logicalOperatorWidget/TextChange.js"></script>
+        <script type="text/javascript" src="js/classes/progvolver/Plots/LollipopPlot.js"></script>
+        <script type="text/javascript" src="js/classes/progvolver/Plots/Scatterplot.js"></script>
+        <link rel="stylesheet" type="text/css" href="./js/spectrum.min.css"/>
+        <script src="./js/spectrum.min.js"></script>
+        <script src="./js/d3.v6.js"></script>
+        <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.24.0/moment.min.js"></script>
+        <script type="text/javascript" src="https://visjs.github.io/vis-timeline/standalone/umd/vis-timeline-graph2d.min.js"></script>
+        <link href="https://visjs.github.io/vis-timeline/styles/vis-timeline-graph2d.min.css" rel="stylesheet" type="text/css" />
+    </head>
+    <body style="width: 100%; height: 100%">
+        <div id="unpackedCode" style="width: 100%; height: 100%">
+            
+        </div>
+        <script type="text/javascript">    
+
+            if (window.jsHandler) {
+                if (window.jsHandler.runCodeUnboxer) {
+                    window.jsHandler.runCodeUnboxer(null).then(function (response) {
+                        console.log(response);
+                        var fileContent = "";
+                        var i;
+                        for (i = 0; i < response.length; i++){
+                            fileContent += response[i] + "\n";
+                        }
+                        Papa.parse(fileContent, {
+                            delimiter: "~",
+                            header: true,
+                            dynamicTyping: true,
+                            complete: function (logData) {
+                                console.log(logData);
+//                                $("#unpackedCode").text(logData);
+                                for (i = 0; i < logData['data'].length; i++){
+                                    if (logData['data'][i]['lineContent']){
+                                        $("#unpackedCode").append(  '<div style= "width: 100%; height: 30px;"> <div style="width: 10%; float: left">' + logData['data'][i]['line'] + '</div> <div style="width: 90%; float: right"><pre> ' + logData['data'][i]['lineContent'] + ' </pre> </div></div>' );
+                                    }
+                                }
+                                window.jsHandler.getLineInfo(null).then(function (response) {
+                                    console.log("here is the linfo: ");
+                                    console.log(response);
+                                    var fileContent = "";
+                                    var i;
+                                    for (i = 0; i < response.length; i++){
+                                        fileContent += response[i] + "\n";
+                                    }
+                                    Papa.parse(fileContent, {
+                                        delimiter: "~",
+                                        header: true,
+                                        dynamicTyping: true,
+                                        complete: function (logData) {
+                                            console.log("here is the newly parsed data: ");
+                                            console.log(logData);
+                                        }
+                                    });
+                                });
+                            }
+                        });
+                    });
+                } 
+            }
+
+
+        </script>
+    </body>
+</html>
+
+
+

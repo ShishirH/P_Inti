@@ -1293,7 +1293,14 @@ namespace TestingCodeAnalysis
 
                     for (int lineNum = startLineNumber; lineNum < endLineNumber; lineNum++)
                     {
-                        allContents[document.FilePath][lineNum] += $" Logger.logLineInfo(@\"{document.FilePath}~{lineNum}\");";
+                        string lineContent = allContents[document.FilePath][lineNum];
+                        //lineContent =  lineContent.Replace("\"", "\\\"");
+                        //lineContent = "int[,] array2Da = new int[7, 2] { { 1, 2 }, { 3, 4 }, { 5, 6 }, { 7, 8 }, { 7, 8 }, { 7, 8 }, { 7, 8 } };";
+                        if (lineContent.Contains("logReferences") || lineContent.Contains("logAssignment")) {
+                            lineContent = lineContent.Split(';').Last();
+                        }
+ 
+                        allContents[document.FilePath][lineNum] += $" Logger.logLineInfo(@\"{document.FilePath}~{lineNum}~{lineContent}\");";
                     }
                 }
 

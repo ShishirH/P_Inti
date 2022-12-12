@@ -50,7 +50,7 @@ namespace ConsoleApp1 {
             signalFile.WriteLine("file~line~widgetsID~time");
 
             lineInfoFile = new System.IO.StreamWriter(System.IO.File.Create(fileName + ".lineInfo"));
-            lineInfoFile.WriteLine("filePath~line~time");
+            lineInfoFile.WriteLine("filePath~line~lineContent~time");
         }
 
 
