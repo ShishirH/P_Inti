@@ -62,12 +62,14 @@
         <link rel="stylesheet" type="text/css" href="./js/contextMenu/jquery.contextMenu.min.css" />
 
 
+        <link rel="stylesheet" type="text/css" href="./bootstrap-5.2.3-dist/css/bootstrap.min.css" />
+
+
         <script type="text/javascript" src="./js/jquery-1.10.2.js"></script>
         <script type="text/javascript" src="./js/jquery.ajaxfileupload.js"></script>
         <script type="text/javascript" src="./js/jquery-ui-1.10.4.min.js"></script>
         <script type="text/javascript" src="./js/jquery.path.js"></script>
         <script type="text/javascript" src="./js/kickstart.js"></script>
-        <script type="text/javascript" src="./js/drawingCanvas.js"></script>
 
         <!--        <script type="text/javascript" src="./js/fabric4.4.0.js"></script>-->
         <script type="text/javascript" src="./js/fabric.js"></script>
@@ -119,6 +121,8 @@
 
         <script type="text/javascript" src="./js/contextMenu/jquery.contextMenu.js"></script>
         <script type="text/javascript" src="./js/contextMenu/jquery.ui.position.min.js"></script>
+
+<!--        <script type="text/javascript" src="./bootstrap-5.2.3-dist/js/bootstrap.bundle.min.js"></script>-->
 
         <script type="text/javascript" src="./js/progvolver.js"></script>
         <script type="text/javascript" src="./js/classes/types/Value.js"></script>
@@ -1418,6 +1422,17 @@
         //
         // canvas.add(textChange);
         // textChange.expand();
+
+
+        // var canvasVariableSection = iVoLVER.gui.add.iconGroup({
+        //     title: iVoLVER.gui.progvolverSectionTitles.canvasVariable
+        // });
+        //
+        // iVoLVER.gui.add.codeMultiverse({
+        //     sectionID: canvasVariableSection,
+        // });
+
+        iVoLVER.gui.addLogicalOperatorsSection();
     </script>
 </body>
 </html>

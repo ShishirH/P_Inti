@@ -2325,6 +2325,7 @@ function showWebPage(url) {
 
 //    var handle = $('<div class="resize">Drag</div>', {style: 'cursor:move;'}); // TODO: This is the handle that allows the user to resize the div and, in consequence, the iFrame
 
+
 //    var defaultURL = 'http://www.bbc.co.uk/news';
 //    var defaultURL = 'pepe.html';
 //    var defaultURL = '5_28_115_1_5_40_188.html';

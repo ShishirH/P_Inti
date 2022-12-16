@@ -40,18 +40,20 @@ class SignalHolder {
         var addSignal = function () {
             var signal = background.signal;
             var originParent = {originX: 'right', originY: 'center'};
-            var originChild = {originX: 'left', originY: 'center'};
+            var originChild = {originX: 'center', originY: 'center'};
 
 
             background.addChild(signal, {
                 whenCompressed: {
-                    x: 4, y: 0,
+                    x: 10, y: 0,
                     scaleX: 1, scaleY: 1, opacity: 1,
+                    angle: 90,
                     originParent: originParent,
                     originChild: originChild
                 },
                 whenExpanded: {
-                    x: 4, y: 0,
+                    x: 10, y: 0,
+                    angle: 90,
                     originParent: originParent,
                     originChild: originChild
                 },

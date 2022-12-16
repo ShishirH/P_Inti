@@ -746,6 +746,30 @@ namespace TestingCodeAnalysis
             }
 
             List<string> scopeFileLines = new List<string>();
+            Dictionary<string, Dictionary<string, string>> lineContentsOfDocuments = new Dictionary<string, Dictionary<string, string>>();
+
+            foreach (Document document in allDocuments.Values)
+            {
+                IEnumerable<MethodDeclarationSyntax> methodsList = document.GetSyntaxTreeAsync().Result.GetRoot().DescendantNodes().OfType<MethodDeclarationSyntax>();
+
+                Dictionary<string, string> documentContents = new Dictionary<string, string>();
+                foreach (MethodDeclarationSyntax method in methodsList)
+                {
+                    int startLineNumber = method.GetLocation().GetLineSpan().StartLinePosition.Line + 1;
+                    int endLineNumber = method.GetLocation().GetLineSpan().EndLinePosition.Line;
+
+                    MyWindowControl.printInBrowserConsole("!@!@ Start line number: " + startLineNumber);
+                    MyWindowControl.printInBrowserConsole("!@!@ End line number: " + endLineNumber);
+
+                    for (int lineNum = startLineNumber; lineNum < endLineNumber; lineNum++)
+                    {
+                        // check if allContents[document.FilePath][lineNum] is empty or a comment
+                        string lineContent = allContents[document.FilePath][lineNum];
+                        documentContents.Add(lineNum.ToString(), lineContent);
+                    }
+                    lineContentsOfDocuments.Add(document.FilePath, documentContents);
+                }
+            }
 
             int i = 0;
             foreach (string fileName in fileNames)
@@ -1323,31 +1347,16 @@ namespace TestingCodeAnalysis
             saveScopeFile(scopeFileLines, logFileName, outputFolder);
 
             // log to file number logger
-            foreach(Document document in allDocuments.Values)
+            foreach(string documentFilePath in lineContentsOfDocuments.Keys)
             {
-                IEnumerable<MethodDeclarationSyntax> methodsList = document.GetSyntaxTreeAsync().Result.GetRoot().DescendantNodes().OfType<MethodDeclarationSyntax>();
-
-                foreach(MethodDeclarationSyntax method in methodsList)
+                Dictionary<string, string> lineContents = lineContentsOfDocuments[documentFilePath];
+                foreach(string lineNumber in lineContents.Keys)
                 {
-                    int startLineNumber = method.GetLocation().GetLineSpan().StartLinePosition.Line + 1;
-                    int endLineNumber = method.GetLocation().GetLineSpan().EndLinePosition.Line;
-
-                    MyWindowControl.printInBrowserConsole("!@!@ Start line number: " + startLineNumber);
-                    MyWindowControl.printInBrowserConsole("!@!@ End line number: " + endLineNumber);
-
-                    for (int lineNum = startLineNumber; lineNum < endLineNumber; lineNum++)
-                    {
-                        // check if allContents[document.FilePath][lineNum] is empty or a comment
-
-                        if (allContents[document.FilePath][lineNum].Trim().Length != 0 && !allContents[document.FilePath][lineNum].Trim().StartsWith("//"))
-                        {
-                            // append to the start of the line
-                            allContents[document.FilePath][lineNum] = $" Logger.logLineInfo(@\"{document.FilePath}~{lineNum + 1}\");" + allContents[document.FilePath][lineNum];
-                        }
-                    }
+                    string line = lineContents[lineNumber];
+                    allContents[documentFilePath][Int32.Parse(lineNumber)] += $" Logger.logLineInfo(@\"{documentFilePath}~{lineNumber}~{line}\");";
                 }
-
             }
+
 
             // log initializations
             foreach(string key in JsHandler.initializationValues.Keys)
