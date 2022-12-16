@@ -411,6 +411,13 @@ function addSignalToCanvas(object) {
     canvas.add(signalHolder);
 }
 
+function highlightLine (object) {
+    
+    console.log(object);
+    $(".lineInfo").css("border", "none");
+    $(".lineInfo_" + object).css("border", "2 px solid red");
+//    $(".lineInfo_" + object).hide();
+}
 function registerProgvolverObject(object) {
     progvolver.objects[object.id] = object;
 }

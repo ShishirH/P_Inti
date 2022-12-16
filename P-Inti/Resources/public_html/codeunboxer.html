@@ -190,7 +190,7 @@
 //                                $("#unpackedCode").text(logData);
                                 for (i = 0; i < logData['data'].length; i++){
                                     if (logData['data'][i]['lineContent']){
-                                        $("#unpackedCode").append(  '<div style= "width: 100%; height: 30px;"> <div style="width: 10%; float: left">' + logData['data'][i]['line'] + '</div> <div style="width: 90%; float: right"><pre> ' + logData['data'][i]['lineContent'] + ' </pre> </div></div>' );
+                                        $("#unpackedCode").append(  '<div style= "width: 100%; height: 30px;" class="lineInfo lineInfo_' + logData['data'][i]['line'] + '"></div> <div style="width: 100%; float: right" class="lineInfo_' + logData['data'][i]['line'] + '"><pre> ' +  logData['data'][i]['line'] + '  :  ' + logData['data'][i]['lineContent'] + ' </pre> </div></div>' );
                                     }
                                 }
                                 window.jsHandler.getLineInfo(null).then(function (response) {

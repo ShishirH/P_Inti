@@ -732,7 +732,30 @@ namespace TestingCodeAnalysis
             }
 
             List<string> scopeFileLines = new List<string>();
+            Dictionary<string, Dictionary<string, string>> lineContentsOfDocuments = new Dictionary<string, Dictionary<string, string>>();
 
+            foreach (Document document in allDocuments.Values)
+            {
+                IEnumerable<MethodDeclarationSyntax> methodsList = document.GetSyntaxTreeAsync().Result.GetRoot().DescendantNodes().OfType<MethodDeclarationSyntax>();
+
+                Dictionary<string, string> documentContents = new Dictionary<string, string>();
+                foreach (MethodDeclarationSyntax method in methodsList)
+                {
+                    int startLineNumber = method.GetLocation().GetLineSpan().StartLinePosition.Line + 1;
+                    int endLineNumber = method.GetLocation().GetLineSpan().EndLinePosition.Line;
+
+                    MyWindowControl.printInBrowserConsole("!@!@ Start line number: " + startLineNumber);
+                    MyWindowControl.printInBrowserConsole("!@!@ End line number: " + endLineNumber);
+
+                    for (int lineNum = startLineNumber; lineNum < endLineNumber; lineNum++)
+                    {
+                        // check if allContents[document.FilePath][lineNum] is empty or a comment
+                        string lineContent = allContents[document.FilePath][lineNum];
+                        documentContents.Add(lineNum.ToString(), lineContent);
+                    }
+                    lineContentsOfDocuments.Add(document.FilePath, documentContents);
+                }
+            }
             int i = 0;
             foreach (string fileName in fileNames)
             {
@@ -745,12 +768,14 @@ namespace TestingCodeAnalysis
                     ISymbol symbolFound = SymbolFinder.FindSymbolAtPositionAsync(theDocument, position).Result;
                     if (symbolFound != null)
                     {
+                        MyWindowControl.printInBrowserConsole("(((((symbolFound: " + symbolFound.Name);
+                        MyWindowControl.printInBrowserConsole("(((((symbolFound: " + symbolFound.GetType().Name);
                         symbols.Add(symbolID, symbolFound);
                         registerdReferencesTo(symbolFound, symbolID, solution, allContents, theDocument, windowControl);
 
                         // scope of symbols dragged onto the canvas
-                        Dictionary<string, object> scopeInfo = JsHandler.getScope(symbolFound, theDocument, windowControl);
-                        scopeFileLines.Add(getSymbolScopeString(symbolID, symbolFound, scopeInfo));
+                        //Dictionary<string, object> scopeInfo = JsHandler.getScope(symbolFound, theDocument, windowControl);
+                        //scopeFileLines.Add(getSymbolScopeString(symbolID, symbolFound, scopeInfo));
                     }
                 }
                 i++;
@@ -772,11 +797,11 @@ namespace TestingCodeAnalysis
                 Document theDocument = allDocuments[theFile];
                 Tuple<List<ISymbol>, List<SyntaxNode>> tuple = symbolsPerExpressions[expressionId];
                 List<ISymbol> theExpressionSymbols = tuple.Item1;
-                foreach (ISymbol theExpressionSymbol in theExpressionSymbols)
-                {
-                    Dictionary<string, object> scopeInfo = JsHandler.getScope(theExpressionSymbol, theDocument, windowControl);
-                    scopeFileLines.Add(getSymbolScopeString("", theExpressionSymbol, scopeInfo));
-                }
+                //foreach (ISymbol theExpressionSymbol in theExpressionSymbols)
+                //{
+                //    Dictionary<string, object> scopeInfo = JsHandler.getScope(theExpressionSymbol, theDocument, windowControl);
+                //    scopeFileLines.Add(getSymbolScopeString("", theExpressionSymbol, scopeInfo));
+                //}
             }
 
 
@@ -1279,31 +1304,14 @@ namespace TestingCodeAnalysis
             saveScopeFile(scopeFileLines, logFileName, outputFolder);
 
             // log to file number logger
-            foreach(Document document in allDocuments.Values)
+            foreach (string documentFilePath in lineContentsOfDocuments.Keys)
             {
-                IEnumerable<MethodDeclarationSyntax> methodsList = document.GetSyntaxTreeAsync().Result.GetRoot().DescendantNodes().OfType<MethodDeclarationSyntax>();
-
-                foreach(MethodDeclarationSyntax method in methodsList)
+                Dictionary<string, string> lineContents = lineContentsOfDocuments[documentFilePath];
+                foreach (string lineNumber in lineContents.Keys)
                 {
-                    int startLineNumber = method.GetLocation().GetLineSpan().StartLinePosition.Line;
-                    int endLineNumber = method.GetLocation().GetLineSpan().EndLinePosition.Line;
-
-                    MyWindowControl.printInBrowserConsole("!@!@ Start line number: " + startLineNumber);
-                    MyWindowControl.printInBrowserConsole("!@!@ End line number: " + endLineNumber);
-
-                    for (int lineNum = startLineNumber; lineNum < endLineNumber; lineNum++)
-                    {
-                        string lineContent = allContents[document.FilePath][lineNum];
-                        //lineContent =  lineContent.Replace("\"", "\\\"");
-                        //lineContent = "int[,] array2Da = new int[7, 2] { { 1, 2 }, { 3, 4 }, { 5, 6 }, { 7, 8 }, { 7, 8 }, { 7, 8 }, { 7, 8 } };";
-                        if (lineContent.Contains("logReferences") || lineContent.Contains("logAssignment")) {
-                            lineContent = lineContent.Split(';').Last();
-                        }
- 
-                        allContents[document.FilePath][lineNum] += $" Logger.logLineInfo(@\"{document.FilePath}~{lineNum}~{lineContent}\");";
-                    }
+                    string line = lineContents[lineNumber];
+                    allContents[documentFilePath][Int32.Parse(lineNumber)] += $" Logger.logLineInfo(@\"{documentFilePath}~{lineNumber}~{line}\");";
                 }
-
             }
 
             // we need to modify the program files further to be able to log the signals
@@ -1321,6 +1329,8 @@ namespace TestingCodeAnalysis
             return compileModifiedFiles(outputFolder, out logFileContent, out useFileContent, allContents, logFileName, runMode, windowControl, out success, syntaxTrees);
 
         }
+
+
 
         // In a multi line string text, get the line number of another string lineToFind.
         private static int GetLineNumber(string text, string lineToFind, StringComparison comparison = StringComparison.CurrentCulture)

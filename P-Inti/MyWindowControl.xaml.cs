@@ -50,6 +50,7 @@
         public readonly static string debugLineEnd = "~**********";
 
         public readonly DTE dte = null;
+        public static  DTE dteNew = null;
         private Events events;
         public readonly Debugger debugger = null;
         public readonly DebuggerEvents debuggerEvents = null;
@@ -116,6 +117,7 @@
             theBrowser.IsBrowserInitializedChanged += ChromeBrowser_IsBrowserInitializedChanged;
             bs = theBrowser;
             dte = Package.GetGlobalService(typeof(SDTE)) as DTE;
+            dteNew = dte;
             IVsSolution vv = Package.GetGlobalService(typeof(SVsSolution)) as IVsSolution;
             uint cookie;
             events = dte.Events;
