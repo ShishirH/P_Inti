@@ -10,6 +10,8 @@ class CodeControlBranchUpdate {
         const background = createObjectBackground(fabric.Circle, options, this);
         background.childrenOnTop = [];
         background.parent = options.parent;
+        background.lockMovementX = true;
+        background.lockMovementY = true;
 
         background.oldRender = background.render;
         background.render = function (ctx) {
@@ -27,8 +29,9 @@ class CodeControlBranchUpdate {
                 if (window.jsHandler && window.jsHandler.updateControlBranch) {
                     console.log("Updating control branch")
                     window.jsHandler.updateControlBranch({
-                        branchName: background.parent.branchName,
-                        id: background.parent.id
+                        variantName: background.parent.branchName,
+                        variantId: background.parent.id,
+                        codeShiftId: background.parent.parent.id
                     });
                 }
             }

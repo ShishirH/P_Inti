@@ -54,6 +54,8 @@ namespace P_Inti
             await CodeControlAddExistingCode.InitializeAsync(this);
             await ReusableCommand.InitializeAsync(this);
             await ToolWindow1Command.InitializeAsync(this);
+            await AddToCodeShift.InitializeAsync(this);
+            await CodeControlAddExistingCodeContextMenu.InitializeAsync(this);
         }
 
         #endregion

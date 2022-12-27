@@ -21,6 +21,7 @@ var ArrayElementSymbol = iVoLVER.util.createClass(fabric.Rect, {
         this.numberOfColumns = options.numberOfColumns;
         this.timeOfChange = null;
         this.fontColor = 'rgba(65, 65, 65, 1)';
+        this.name = this.id;
         this.initConnectable();
 
         this.oldRender = this.render;

@@ -12,10 +12,15 @@ class CodeControlBranch {
         background.childrenOnTop = [];
         background.id = options.id;
         background.branchName = options.branchName;
+        background.displayName = options.displayName || "";
         background.isOnCanvas = false;
+        background.parent = options.parent;
+
+        background.lockMovementX = true;
+        background.lockMovementY = true;
 
         background.addName = function () {
-            let labelObject = new fabric.IText("", {
+            let labelObject = new fabric.IText(background.displayName, {
                 fontFamily: 'Trebuchet MS',
                 fill: '#333',
                 fontSize: 14,
@@ -119,37 +124,65 @@ class CodeControlBranch {
             if (!background.isOnCanvas) {
                 background.isOnCanvas = true;
                 addChildrenToCanvas(background);
-                background.labelObject.enterEditing().selectAll();
+
+                if (background.displayName == "") {
+                    background.labelObject.enterEditing().selectAll();
+                } else {
+                    if (window.jsHandler) {
+                        if (window.jsHandler.createCodeControlBranch) {
+                            window.jsHandler.createCodeControlBranch({
+                                id: background.parent.id,
+                                branchId: background.id,
+                                branchName: background.displayName
+                            }).then(function (response) {
+
+                            });
+                        }
+                    }
+                    background.branchName = background.displayName;
+                }
+
+                background.labelObject.on("editing:exited", function (e) {
+                    //console.log('updated text:',e.target.text);
+                    console.log("text:editing:exited");
+                    if (window.jsHandler) {
+                        if (window.jsHandler.createCodeControlBranch) {
+                            window.jsHandler.createCodeControlBranch({
+                                id: background.parent.id,
+                                branchId: background.id,
+                                branchName: background.labelObject.text
+                            }).then(function (response) {
+
+                            });
+                        }
+                    }
+                    background.branchName = background.labelObject.text;
+                });
+
             }
+            background.positionObjects();
         });
 
         background.registerListener('mouseup', function (event) {
-            if (window.selectedCodeControl === background.parent) {
-                if (window.jsHandler && window.jsHandler.goToControlBranch) {
-                    window.jsHandler.goToControlBranch({branchName: background.branchName});
-                    console.log("went to branch: " + background.branchName);
+            console.log("Mouse up of code control branch")
+            CodeControls.updateSelectedCodeControl(background.parent);
+            if (window.jsHandler && window.jsHandler.goToControlBranch) {
+                window.jsHandler.goToControlBranch({
+                    variantName: background.branchName,
+                    variantId: background.id,
+                    codeShiftId: background.parent.id,
+                });
 
-                    background.parent.updateSelectedBranch(background);
-                }
-            } else {
-                if (window.jsHandler && window.jsHandler.goToControlBranch) {
-                    // First, go to the selected branch in the active code control again.
-                    window.jsHandler.goToControlBranch({branchName: window.selectedCodeControl.selectedBranch});
-                    background.parent.updateSelectedBranch(background);
+                console.log("went to branch: " + background.branchName);
 
-                    // Then, merge the two branches together
-                    if (window.jsHandler.mergeBranches) {
-                        window.jsHandler.mergeBranches({
-                            branchOne: window.selectedCodeControl.selectedBranch,
-                            branchTwo: background.branchName
-                        });
-                    }
-                }
+                background.parent.updateSelectedBranch(background);
+                getAssociatedVariablesForCodeVariants();
 
             }
         });
 
         background.removeFromCanvas = function () {
+            console.log("Removing variant from the canvas")
             let index = background.parent.codeBranches.indexOf(background);
 
             if (index > -1) {
@@ -171,6 +204,16 @@ class CodeControlBranch {
                 background.parent.positionObjects();
                 removeWidgetFromCanvas(background);
             }
+        }
+
+        background.toJson = function () {
+            let json = {};
+
+            //json['codeBranches'] = background.codeBranches.toJson();
+            json['branchName'] = background.branchName;
+            json['id'] = background.id;
+            json['kind'] = "CodeVariant";
+            return JSON.stringify(json);
         }
 
         this.progvolverType = "Code Control Branch";

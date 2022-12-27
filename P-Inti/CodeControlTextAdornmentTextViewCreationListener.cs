@@ -37,7 +37,7 @@ namespace P_Inti
         public void TextViewCreated(IWpfTextView textView)
         {
             // The adornment will listen to any event that changes the layout (text changes, scrolling, etc)
-            new CodeControlTextAdornment(textView);
+            //new CodeControlTextAdornment(textView);
         }
 
         #endregion

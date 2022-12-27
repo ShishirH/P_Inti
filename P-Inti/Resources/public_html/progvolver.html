@@ -32,6 +32,7 @@
                 CefSharp.BindObjectAsync("jsHandler", "jsHandler");
             }
         </script>
+        <link rel="stylesheet" type="text/css" href="./bootstrap-5.2.3-dist/css/bootstrap.min.css" />
 
         <link rel="stylesheet" type="text/css" href="./css/monserratFont.css">
         <link rel="stylesheet" type="text/css" href="./css/main.css" />
@@ -62,12 +63,13 @@
         <link rel="stylesheet" type="text/css" href="./js/contextMenu/jquery.contextMenu.min.css" />
 
 
+
+
         <script type="text/javascript" src="./js/jquery-1.10.2.js"></script>
         <script type="text/javascript" src="./js/jquery.ajaxfileupload.js"></script>
         <script type="text/javascript" src="./js/jquery-ui-1.10.4.min.js"></script>
         <script type="text/javascript" src="./js/jquery.path.js"></script>
         <script type="text/javascript" src="./js/kickstart.js"></script>
-        <script type="text/javascript" src="./js/drawingCanvas.js"></script>
 
         <!--        <script type="text/javascript" src="./js/fabric4.4.0.js"></script>-->
         <script type="text/javascript" src="./js/fabric.js"></script>
@@ -119,6 +121,8 @@
 
         <script type="text/javascript" src="./js/contextMenu/jquery.contextMenu.js"></script>
         <script type="text/javascript" src="./js/contextMenu/jquery.ui.position.min.js"></script>
+
+<!--        <script type="text/javascript" src="./bootstrap-5.2.3-dist/js/bootstrap.bundle.min.js"></script>-->
 
         <script type="text/javascript" src="./js/progvolver.js"></script>
         <script type="text/javascript" src="./js/classes/types/Value.js"></script>
@@ -243,6 +247,10 @@
             <li class=""><a onclick="zoomIn()"><i class="icon-zoom-in "></i></a></li>
             <li class="verticalLeftDivider verticalRightDivider verticalRightDivider2"><a onclick="zoomOut()"><i class="icon-zoom-out "></i></a></li>
 
+            <!-- DRAGGING & PANNING MODES -->
+            <li id="panningModeButton" onmousedown='modeButtonClicked(this);' draggable="false" class="mode"><a><i class="fa fa-hand-paper-o fa-2x"> </i> </a></li>
+            <li class="verticalLeftDivider mode" id="disconnectingModeButton" onmousedown='modeButtonClicked(this);' draggable="false"><a><i class="fa fa-unlink fa-2x"> </i> </a></li>
+            <li class="verticalLeftDivider verticalRightDivider verticalRightDivider2 mode" id="squaredSelectionButton" onmousedown='modeButtonClicked(this);' draggable="false"><a><i class="fa fa-object-group fa-2x"> </i> </a></li>
 
             <!-- OPERATIONS ON OBJECTS -->
             <!--            <li class="mode verticalLeftDivider" onmousedown='duplicateObject();' draggable="false"><a><i class="fa fa-clone fa-flip-horizontal  clicMenu"> </i> </a></li>
@@ -291,13 +299,17 @@
                     <button class="large" onclick="toggleExtendedTimeline()" style="position: relative; top: -15px; border-radius: 15px; width: 30px; height: 30px; padding: 0px; margin: 0px; "><i id="extendedTimelineButtonIcon" style=" position: relative; top: -2px; font-size: 18px; color: black;" class="fa fa-chevron-down"></i></button>
                 </div>
 
-                <div style=" height:60px; width:80px; border-right: #6f6f6f 1px solid; float:left; ">
+                <div style=" height:60px; width:248px; border-right: #6f6f6f 1px solid; float:left; ">
                     <ul class="menu nonSelection">
-                        <li class=""><a onclick="playSlider()"><i id="playButton" class="icon-play fa-2x" style="padding:10px 10px;"></i></a></li>
+                        <li id="runCodeAnalyzerContainer" class="verticalRightDivider verticalRightDivider2"><a onclick="clickRunCodeButton()"><i id="runCodeAnalyzer" class="fa fa-cogs fa-2x" style="padding:10px 10px;"></i></a></li>
+                        <li id="timelinePreviousContainer" class="verticalLeftDivider verticalRightDivider verticalRightDivider2"><a onclick="moveTimelinePrevious()"><i id="timelinePrevious" class="fa fa-step-backward fa-2x" style="padding:10px 10px;"></i></a></li>
+                        <li id="playButtonContainer" class="verticalLeftDivider verticalRightDivider verticalRightDivider2"><a onclick="playSliderLineData()"><i id="playButton" class="icon-play fa-2x" style="padding:10px 10px;"></i></a></li>
+                        <li id="timelineNextContainer" class=""><a onclick="moveTimelineNext()"><i id="timelineNext" class="fa fa-step-forward fa-2x" style="padding:10px 10px;"></i></a></li>
+<!--                        <li class=""><a onclick="goToLineInFile()"><i id="goToButton" class="fa fa-motorcycle fa-2x" style="padding:5px 5px;"></i></a></li>-->
                     </ul>
                 </div>
 
-                <div style=" width:auto; height:60px; overflow:hidden;">
+                <div id="theSliderContainer" style=" width:auto; height:60px; overflow:hidden;">
                     <input style="width: available;" type="text" id="theSlider" name="theSlider" value="" />
                 </div>
 
@@ -584,6 +596,14 @@
                 }
             }
         });
+        // iVoLVER.gui.add.button({
+        //     sectionID: iVoLVER.gui.toolbar, // variable storing the id of the top toolbar
+        //     tooltip: 'Run',
+        //     iconClass: 'fa-cogs',
+        //     onClick: function () {
+        //         clickRunCodeButton();
+        //     }
+        // });
 //            iVoLVER.gui.add.button({
 //                sectionID: iVoLVER.gui.toolbar, // variable storing the id of the top toolbar
 //                tooltip: 'Wait',
@@ -1068,6 +1088,9 @@
         };
         // Create a Timeline
         var timeline = new vis.Timeline(container);
+
+        setBottomButtonsVisibility();
+
        // var whenWidget = new WhenWidget({
        //     fill: '#F02466',
        //     stroke: '#F02466',
@@ -1101,23 +1124,23 @@
         //canvas.add(referenceWidget);
         //console.log(referenceWidget);
 
-//           var objectMembersArray = [];
-//
-//           for (let i = 0; i < 20; i++) {
-//               var objectMembers = [];
-//
-//               var progvolverString = new ProgvolverSymbol({
-//                   dataType: "double",
-//                   fill: '#B3CDE3',
-//                   type: "string",
-//                   name: "asd a",
-//                   value: "Hello",
-//                   isMember: true
-//               });
-//
-//               objectMembers.push(progvolverString);
-//               objectMembersArray.push(objectMembers);
-//           }
+           // var objectMembersArray = [];
+           //
+           // for (let i = 0; i < 20; i++) {
+           //     var objectMembers = [];
+           //
+           //     var progvolverString = new ProgvolverSymbol({
+           //         dataType: "double",
+           //         fill: '#B3CDE3',
+           //         type: "string",
+           //         name: "asd a",
+           //         value: "Hello",
+           //         isMember: true
+           //     });
+           //
+           //     objectMembers.push(progvolverString);
+           //     objectMembersArray.push(objectMembers);
+           // }
 //
 //
 //            var arrayWidget = new ArraySymbol({
@@ -1369,9 +1392,12 @@
        // canvas.add(canvasVariable);
 
         // var codeControls = new CodeControls({
-        //     x: 600,
-        //     y: 600
+        //     x: 250,
+        //     y: 250
         // });
+        //
+        // canvas.add(codeControls);
+
         //
         // var arrayControls = new CodeControls({
         //     x: 250,
@@ -1452,65 +1478,13 @@
         //
         // canvas.add(textChange);
         // textChange.expand();
-//        var options = {
-//          height: 40,
-//          width: 100,
-//          left: 100,
-//          top: 100,
-//          y: 100,
-//          x: 100,
-//          fill: 'green'
-//        };
-//        var rect = createObjectBackground(fabric.Rect, options, null);
-//        console.log(rect);
-//          // "add" rectangle onto canvas
-//          canvas.add(rect);
-//        var leftRect = new fabric.Rect({
-//            top: 100, 
-//            left: 100,
-//            height: 20,
-//            width: 20
-//        });
-//        var rightRect = new fabric.Rect({
-//            top: 100, 
-//            left: 100,
-//            height: 20,
-//            width: 20
-//        });
-//        var originParent = {originX: 'left', originY: "center"}
-//        var originChild = {originX: "left", originY: "center"}
-//        rect.addChild(leftRect, {
-//            whenCompressed: {
-//                x: 3, y: 0, 
-//                scaleX: 1, scaleY: 1, opacity: 1,
-//                originParent: originParent,
-//                originChild: originChild
-//            },
-//            whenExpanded: {
-//                x: 3, y: 0, 
-//                scaleX: 1, scaleY: 1, opacity: 1,
-//                originParent: originParent,
-//                originChild: originChild
-//            }
-//        });
-//        canvas.add(leftRect)
-//        originParent = {originX: 'right', originY: "center"}
-//        originChild = {originX: "right", originY: "center"}
-//        rect.addChild(rightRect, {
-//            whenCompressed: {
-//                x: -3, y: 0, 
-//                scaleX: 1, scaleY: 1, opacity: 1,
-//                originParent: originParent,
-//                originChild: originChild
-//            },
-//            whenExpanded: {
-//                x: -3, y: 0, 
-//                scaleX: 1, scaleY: 1, opacity: 1,
-//                originParent: originParent,
-//                originChild: originChild
-//            }
-//        });
-//        canvas.add(rightRect);
+
+
+        // var canvasVariableSection = iVoLVER.gui.add.iconGroup({
+        //     title: iVoLVER.gui.progvolverSectionTitles.canvasVariable
+        // });
+        //
+
     </script>
 </body>
 </html>

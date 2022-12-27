@@ -10,6 +10,8 @@ class CodeControlBranchDelete {
         const background = createObjectBackground(fabric.Circle, options, this);
         background.childrenOnTop = [];
         background.parent = options.parent;
+        background.lockMovementX = true;
+        background.lockMovementY = true;
 
         background.oldRender = background.render;
         background.render = function (ctx) {

@@ -18,7 +18,7 @@ namespace P_Inti
         /// <summary>
         /// Command ID.
         /// </summary>
-        public const int CommandId = 4129;
+        public const int CommandId = 41229;
 
         /// <summary>
         /// Command menu group (command set GUID).
@@ -99,11 +99,6 @@ namespace P_Inti
             if (ts == null)
                 return;
 
-            string message = dte.ActiveWindow.Document.FullName + System.Environment.NewLine +
-          "Line " + ts.CurrentLine + System.Environment.NewLine + " updated!";
-
-            string title = "ProgVolver";
-
             // New addition. Create new signal entry
             if (!arrayLine.lineNumbersArray.Contains(ts.CurrentLine - 1))
             {
@@ -111,7 +106,7 @@ namespace P_Inti
 
                 string signalID = Utils.generateID();
                 MyWindowControl.trackedSignalIDs.Add(signalID);
-                MyWindowControl.signalsPositions.Add(signalID, Tuple.Create(@"C:\Dev\Demo\Demo\Program.cs", ts.CurrentLine - 1));
+                MyWindowControl.signalsPositions.Add(signalID, Tuple.Create(@"C:\Users\shish\source\repos\ConsoleApp1\ConsoleApp1\Program.cs", ts.CurrentLine - 1));
 
                 var activePoint = ((EnvDTE.TextSelection)dte.ActiveDocument.Selection).ActivePoint;
                 string lineText = activePoint.CreateEditPoint().GetLines(activePoint.Line, activePoint.Line + 1);

@@ -118,24 +118,24 @@ class AffectWidget {
 
 
             var selectDropdown = $('<select/>')
-                    .css({
-                        position: "absolute",
-                        outline: 'none',
-                        'box-shadow': 'none',
-                        'font': 'Helvetica',
-                        'border-radius': '0px',
-                        'font-size': '17px',
-                        'color': 'rgba(65, 65, 65, 1)',
-                        border: background.stroke + ' 1px solid',
-                        resize: 'both',
-                        'background-color': lighten(background.fill, 10)
-                    })
-                    .focus(function () {
-                        canvas.setActiveObject(background);
-                        background.fire('selected');
-                    })
-                    .appendTo("body")
-                    .addClass('scalable');
+                .css({
+                    position: "absolute",
+                    outline: 'none',
+                    'box-shadow': 'none',
+                    'font': 'Helvetica',
+                    'border-radius': '0px',
+                    'font-size': '17px',
+                    'color': 'rgba(65, 65, 65, 1)',
+                    border: background.stroke + ' 1px solid',
+                    resize: 'both',
+                    'background-color': lighten(background.fill, 10)
+                })
+                .focus(function () {
+                    canvas.setActiveObject(background);
+                    background.fire('selected');
+                })
+                .appendTo("body")
+                .addClass('scalable');
 
             $(events).each(function () {
                 selectDropdown.append($("<option>").attr('value', this.val).text(this.text));
@@ -200,7 +200,7 @@ class AffectWidget {
             background.positionObjects();
         });
 
-        this.progvolverType = "CodeNote";
+        this.progvolverType = "AffectWidget";
         registerProgvolverObject(this);
 
         return this.background;

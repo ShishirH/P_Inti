@@ -25,6 +25,7 @@ class ArraySymbol {
 //            height: 10
 //        }
         var background = createObjectBackground(fabric.Rect, options, null);
+        background.kind = "ArraySymbol";
 
         console.log("Background is: " + background);
         console.log(background)
@@ -168,7 +169,32 @@ class ArraySymbol {
             if (columns == 1) {
 
                 if (dataItem) {
-                    background.setValue(dataItem.array);
+                    console.log("Data item is: ");
+                    console.log(dataItem);
+                    console.log("Parent staetment");
+                    console.log(dataItem.parentStatement);
+
+                    // let shootingStarsSourceAndIndex;
+                    //
+                    // shootingStarsSourceAndIndex = parseShootingStarsSourceForArray(dataItem.parentStatement, background);
+                    //
+                    // if (!shootingStarsSourceAndIndex)
+                    //     shootingStarsSourceAndIndex = parseShootingStarsSourceForArray(dataItem.grandParentStatement, background);
+                    //
+                    // if (shootingStarsSourceAndIndex) {
+                    //     console.log("shootingStarsSourceAndIndex");
+                    //     console.log(shootingStarsSourceAndIndex);
+                    //     let shootingStarsSource = shootingStarsSourceAndIndex[0];
+                    //     let shootingStarsIndex = shootingStarsSourceAndIndex[1];
+                    //
+                    //     if (shootingStarsSource && shootingStarsSource != background.name) {
+                    //         if (arrayElementsArray[shootingStarsIndex][0].visible) {
+                    //             generateShootingStars(arrayElementsArray[shootingStarsIndex][0], namedSymbols[shootingStarsSource]);
+                    //         }
+                    //     }
+                    // }
+
+                    background.setValue(dataItem.array, dataItem);
                     if (dataItem.memoryAddress) {
                         // memory address changed
                         if (!background.memoryAddress != dataItem.memoryAddress) {
@@ -187,6 +213,7 @@ class ArraySymbol {
 
         background.setProgramTime = function (time) {
             // 'this' here refers to the variable background
+            console.log("Inside program time");
             background.time = time;
             background.currentTime = time;
             if (background.history) {
@@ -197,7 +224,19 @@ class ArraySymbol {
                     background.onValuesUpdated && background.onValuesUpdated(null);
                 }
             }
-        };
+
+            // shooting star decay
+            // for (let i = 0; i < rows; i++) {
+            //     if (arrayElementsArray[i][0].shootingStarsDict) {
+            //         for (const [key, value] of Object.entries(arrayElementsArray[i][0].shootingStarsDict)) {
+            //             arrayElementsArray[i][0].shootingStarsDict[key].array && arrayElementsArray[i][0].shootingStarsDict[key].array.forEach(function (shootingStar) {
+            //                 shootingStarsDecay(arrayElementsArray[i][0], namedSymbols[key]);
+            //             });
+            //         }
+            //     }
+            //
+            // }
+        }
 
         background.registerListener('added', function (options) {
             if (!background.isInitialized) {
@@ -441,6 +480,54 @@ class ArraySymbol {
             background.positionObjects();
         }
 
+        background.setValueForCurlyBrace = function(initialValue) {
+            let indexOfOpeningBrace = initialValue.indexOf('[');
+            let indexOfClosingBrace = initialValue.indexOf(']');
+
+            console.log("Initial value: " + initialValue.substring(indexOfOpeningBrace + 1, indexOfClosingBrace));
+            let rowNumbers;
+            // No [] present in initialValue. Declaration is of the form int[] array = {1, 2, 3, 4, 5}, or { {1, 2}, {3, 4},  {5, 6} } OR
+            // There are braces, but it doesn't contain the size. For instance int[] arr = new int[] {1, 2, 3, 4, 5}
+            if ((indexOfClosingBrace === -1 && indexOfOpeningBrace === -1) ||
+                (indexOfClosingBrace === indexOfOpeningBrace + 1)) {
+                let firstOpener = initialValue.indexOf('{');
+                let firstCloser = initialValue.lastIndexOf('}');
+
+                let innerContents = initialValue.substring(firstOpener + 1, firstCloser).trim();
+                console.log("Inner contents are: " + innerContents);
+                if (innerContents.indexOf('{') === -1) {
+                    // 1, 2, 3, 4, 5 -> 1D array
+                    rowNumbers = innerContents.split(',').map(function (item) {
+                        return item.trim();
+                    });
+
+                    for (let i = 0; i < rows; i++) {
+                        background.arrayElementsArray[i][0].element = rowNumbers[i];
+                    }
+                // } else {
+                //     let arrayElementStartIndex = 0;
+                //     let rowIndex = 0;
+                //     let elementString = innerContents;
+                //
+                //     while (elementString.substring(arrayElementStartIndex).indexOf('{') !== -1) {
+                //         elementString = innerContents.substring(arrayElementStartIndex);
+                //         let braceStartIndex = elementString.indexOf('{');
+                //         let braceEndIndex = elementString.indexOf('}');
+                //
+                //         let arrayRowNumbers = elementString.substring(braceStartIndex + 1, braceEndIndex).split(',').map(function (item) {
+                //             return item.trim();
+                //         });
+                //
+                //         // Only 2D arrays supported for now
+                //         defaultValue.push(arrayRowNumbers);
+                //         rowIndex++;
+                //         arrayElementStartIndex = braceEndIndex + 1 + innerContents.substring(braceEndIndex + 1).indexOf(',') + 1;
+                //     }
+
+                }
+
+            }
+        }
         background.addLabelObject = function () {
             var labelObject = new fabric.Text(background.label, {
                 fontFamily: 'Arial',
@@ -1286,7 +1373,7 @@ class ArraySymbol {
             return arrayWidget;
         }
 
-        background.setValue = function (newValue) {
+        background.setValue = function (newValue, dataItem) {
             // [3;40;60;100000000;0;0;0;0;0]
 
             console.log("New value is: ");
@@ -1299,12 +1386,20 @@ class ArraySymbol {
             for (let i = 0; i < valuesArray.length; i++) {
                 let currentValue = arrayElementsArray[i][0].element;
 
+                // if (arrayElementsArray[i][0].shootingStarsDict) {
+                //     for (const [key, value] of Object.entries(arrayElementsArray[i][0].shootingStarsDict)) {
+                //         arrayElementsArray[i][0].shootingStarsDict[key].array && arrayElementsArray[i][0].shootingStarsDict[key].array.forEach(function (shootingStar) {
+                //             shootingStarsDecay(arrayElementsArray[i][0], namedSymbols[key]);
+                //         });
+                //     }
+                // }
+
                 if (currentValue != valuesArray[i]) {
                     arrayElementsArray[i][0].timeOfChange = background.currentTime;
                 }
 
                 arrayElementsArray[i][0].element = valuesArray[i];
-                background.updateColorDecay(arrayElementsArray[i][0]);
+                //background.updateColorDecay(arrayElementsArray[i][0]);
             }
         }
 
@@ -1422,7 +1517,7 @@ class ArraySymbol {
             let indexOfClosingBrace = initialValue.indexOf(']');
             let rows, columns, defaultValue = [];
 
-            LOG && console.log("Initial value: " + initialValue.substring(indexOfOpeningBrace + 1, indexOfClosingBrace));
+            console.log("Initial value: " + initialValue.substring(indexOfOpeningBrace + 1, indexOfClosingBrace));
 
             // No [] present in initialValue. Declaration is of the form int[] array = {1, 2, 3, 4, 5}, or { {1, 2}, {3, 4},  {5, 6} } OR
             // There are braces, but it doesn't contain the size. For instance int[] arr = new int[] {1, 2, 3, 4, 5}
@@ -1442,7 +1537,6 @@ class ArraySymbol {
                     columns = 1;
                     defaultValue.push(rowNumbers);
                 } else {
-                    // { {1, 2}, {3, 4},  {5, 6} } -> 2D array
                     let arrayElementStartIndex = 0;
                     let rowIndex = 0;
                     let elementString = innerContents;

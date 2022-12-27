@@ -1,6 +1,6 @@
 class ResultWidget {
     constructor(options) {
-        var symbolFont = '17px Helvetica';
+        var symbolFont = 'bold 17px Helvetica';
 
         options.height = 44;
         options.width = 110;
@@ -18,7 +18,7 @@ class ResultWidget {
 
         this.background = background;
         background.noScaleCache = false;
-        background.trueText = "true";
+        background.trueText = "True";
         background.falseText = "False";
 
         this.value = options.value || '';
@@ -30,13 +30,13 @@ class ResultWidget {
             ctx.save();
             ctx.font = symbolFont;
             ctx.fillStyle = 'rgba(65, 65, 65, ' + background.opacity + ')';
-            ctx.textAlign = "left";
+            ctx.textAlign = "center";
             ctx.textBaseline = "middle";
-            var center = background.getPointByOrigin('left', 'center');
+            var center = background.getPointByOrigin('center', 'center');
 
             if (background.value) {
                 var renderableValue = background.value;
-                ctx.fillText(renderableValue, center.x + 22, center.y);
+                ctx.fillText(renderableValue, center.x, center.y);
             }
             ctx.restore();
         };
@@ -132,10 +132,14 @@ class ResultWidget {
 
             if (value) {
                 this.value = background.trueText;
-                this.set('fill', 'LimeGreen')
+                this.set('width', getValueWidth(background.trueText, symbolFont));
+                this.set('fill', '#32CD32')
+                this.set('stroke', darken(background.fill));
             } else {
                 this.value = background.falseText;
-                this.set('fill', 'Tomato');
+                this.set('width', getValueWidth(background.falseText, symbolFont));
+                this.set('fill', '#FF6347');
+                this.set('stroke', darken(background.fill));
             }
         }
         this.progvolverType = "ResultWidget";

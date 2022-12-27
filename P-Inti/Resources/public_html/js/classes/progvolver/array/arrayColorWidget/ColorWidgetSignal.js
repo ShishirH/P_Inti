@@ -19,6 +19,7 @@ var ColorWidgetSignal = iVoLVER.util.createClass(fabric.Circle, {
         this.oldIndex = -1;
         this.colorSet = false;
         this.position = options.position;
+        this.connectedVariableName = null;
     },
     processConnectionRequest: function (connection) {
         var connectionAccepted = true;
@@ -31,14 +32,38 @@ var ColorWidgetSignal = iVoLVER.util.createClass(fabric.Circle, {
         };
     },
     acceptConnection: function (connection) {
+        console.log("Connection is: ");
+        console.log(connection);
         this.oldIndex = parseInt(connection.value);
+        this.connectedVariableName = connection.source.background.name;
         console.log("Old index is now: " + this.oldIndex)
+        console.log("Connected variable is now: " + this.connectedVariableName)
         // Perform validation checks (2D, negative values, accept only int)
+
+        let selectedElement = this.array.arrayElementsArray[this.oldIndex][0];
+
+        this.parent.colorWidgetOutput.index = this.oldIndex;
+        this.parent.colorWidgetOutput.value = selectedElement.value;
+
+        console.log(this);
+        console.log("color widget output");
+        console.log(this.parent.colorWidgetOutput);
+        this.parent.colorWidgetOutput.connectedVariableName = this.array.name + "[" + this.connectedVariableName + "]";
+
+        this.parent.colorWidgetOutput.setIndex && this.parent.colorWidgetOutput.setIndex(this.oldIndex);
+        this.parent.colorWidgetOutput.setValue && this.parent.colorWidgetOutput.setValue(selectedElement.value);
         this.updateFill();
     },
 
     inValueUpdated: function (options) {
         var inConnection = this.inConnection;
+        console.log("Inconnection is;:")
+        console.log(inConnection);
+        console.log("Value has been really updated");
+        console.log("Value is: " + inConnection.value)
+        this.parent.colorWidgetOutput.value = inConnection.value;
+
+        console.log("Updated value to: " + this.value)
         this.resetFill();
         this.oldIndex = parseInt(inConnection.value);
         this.updateFill();
@@ -119,6 +144,7 @@ var ColorWidgetSignal = iVoLVER.util.createClass(fabric.Circle, {
             outputNumberHolder.index = index;
             outputNumberHolder.originalValue = value;
             outputNumberHolder.value = value;
+            outputNumberHolder.connectedVariableName = this.connectedVariableName;
 
             outputNumberHolder.setIndex && outputNumberHolder.setIndex(index);
             outputNumberHolder.setValue && outputNumberHolder.setValue(value);

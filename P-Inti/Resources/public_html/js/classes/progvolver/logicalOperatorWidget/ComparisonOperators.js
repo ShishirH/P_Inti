@@ -175,17 +175,30 @@ class ComparisonOperators {
                 /*console.log(background.getScaledWidth());
                  console.log(background.getScaledHeight());*/
                 background.setCoords();
-                var sc = getScreenCoordinates(background.getPointByOrigin('right', 'top'));
+                var sc = getScreenCoordinates(background.getPointByOrigin('center', 'top'));
+                var leftSc = getScreenCoordinates(background.getPointByOrigin('left', 'center'));
                 var offset = $('#canvasContainer').offset();
                 var zoom = canvas.getZoom();
                 var borderWidth = parseFloat(selectDropdown.css('borderWidth'));
                 var newLeft = sc.x + (offset.left + background.strokeWidth / 2 - borderWidth) * zoom;
                 var newTop = sc.y + (background.strokeWidth / 2) * zoom;
+                let leftPositionPointer = 0;
+
+                if (background.width == 140) {
+                  //default width`
+                  leftPositionPointer = -26;
+                } else if (background.width > 140 && background.width < 180) {
+                    leftPositionPointer = -14;
+                } else if (background.width > 180 && background.width < 220) {
+                    leftPositionPointer = -26;
+                } else if (background.width > 220) {
+                    leftPositionPointer = -56;
+                }
 
                 selectDropdown.css({
                     'transform-origin': 'top left',
                     transform: 'scale(' + canvas.getZoom() + ', ' + canvas.getZoom() + ')',
-                    left: newLeft + (-97 * canvas.getZoom()) + 'px',
+                    left: newLeft + (leftPositionPointer * canvas.getZoom()) + 'px',
                     top: newTop + (6 * canvas.getZoom()) + 'px',
                     width: 50 + 'px',
                     height: 30 + 'px',
@@ -196,6 +209,15 @@ class ComparisonOperators {
             background.addHtmlChild(selectDropdown, positionDropdown);
             background.positionHtmlObjects();
         };
+
+        background.modifyWidth = function (newWidthDifference) {
+            let leftWidth = background.inputPortLeft.width;
+            let rightWidth = background.inputPortRight.width;
+
+            background.set('width', leftWidth + rightWidth + 70);
+            background.positionObjects();
+            background.positionHtmlObjects();
+        }
 
         background.setUpdatedValue = function (value, isLeft) {
             console.log("isLeft : ");

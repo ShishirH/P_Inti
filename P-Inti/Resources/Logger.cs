@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using System.Text;
 using System.Globalization;
 using System.Diagnostics;
+using System.Reflection;
+using Newtonsoft.Json.Linq;
 
 namespace ConsoleApp1 {
 
@@ -15,6 +17,7 @@ namespace ConsoleApp1 {
         public static System.IO.StreamWriter logFile = null;
         public static System.IO.StreamWriter signalFile = null;
         public static System.IO.StreamWriter lineInfoFile = null;
+        public static System.IO.StreamWriter initializationFile = null;
 
         public static Dictionary<string, int> timesCounter = new Dictionary<string, int>();
         public static int getExecutionCount(string key) {
@@ -44,13 +47,16 @@ namespace ConsoleApp1 {
             dt1 = nanoTime();
             sw.Start();
             logFile = new System.IO.StreamWriter(System.IO.File.Create(fileName + ".log"));
-            logFile.WriteLine("index~symbols~expressions~types~values~line~file~widgetsID~parentStatement~time~column~row~array~memoryAddress");
+            logFile.WriteLine("index~symbols~expressions~types~values~line~file~widgetsID~parentStatement~grandParentStatement~time~column~row~array~memoryAddress");
 
             signalFile = new System.IO.StreamWriter(System.IO.File.Create(fileName + ".signal"));
             signalFile.WriteLine("file~line~widgetsID~time");
 
             lineInfoFile = new System.IO.StreamWriter(System.IO.File.Create(fileName + ".lineInfo"));
             lineInfoFile.WriteLine("filePath~line~lineContent~time");
+
+            initializationFile = new System.IO.StreamWriter(System.IO.File.Create(fileName + ".init"));
+            initializationFile.WriteLine("filePath~symbol~value");
         }
 
 
@@ -153,7 +159,40 @@ namespace ConsoleApp1 {
             return o is Array && ((Array)o).Rank == 1;
         }
 
+        public static bool isCustomClass(object o)
+        {
+            string result = "";
+            result = o.GetType() + " ~   " + o.GetType().Assembly.GetName().Name;
+            if (o.GetType().Assembly.GetName().Name != "mscorlib")
+            {
+                // user-defined!
+                result = result + " ~   " + (o.GetType().Assembly.GetName().Name != "mscorlib");
+            }
+            return o.GetType().Assembly.GetName().Name != "mscorlib";
+        }
 
+        public static JObject getFieldsForClass(object o)
+        {
+            JObject fieldsObject = new JObject();
+            foreach (FieldInfo field in o.GetType().GetFields())
+            {
+                string fieldName = field.Name;
+                string fieldValue = (field.GetValue(o) == null) ? "null" : field.GetValue(o).ToString();
+
+                if (fieldValue.IndexOf(".") != -1)
+                {
+                    int index = fieldValue.IndexOf(".");
+                    if (Char.IsLetter(fieldValue[index + 1]))
+                    {
+                        // Object member is also an object. Call it recursively
+                        fieldValue = getFieldsForClass(field.GetValue(o)).ToString();
+                    }
+                }
+                fieldsObject.Add(fieldName, fieldValue);
+            }
+
+            return fieldsObject;
+        }
         // for any assignment
         public static void logAssignment(String logString, params object[] parentExpressions) {
 
@@ -165,8 +204,16 @@ namespace ConsoleApp1 {
             object parameter = parentExpressions[0];
             bool isMatrix = is2DArray(parameter);
             bool isArray = is1DArray(parameter);
+            bool isClass = isCustomClass(parameter);
 
-            if ((isMatrix || isArray) && parentExpressions.Length == 3) {
+            if (isClass) {
+                // DO THE SAME FOR PROPERTIES
+                JObject fieldValues = new JObject();
+                stringForFile = getFieldsForClass(parameter).ToString();
+                //parameters.Add(stringForFile);
+                parameters.Add(stringForFile + "ASDASD");
+
+            } else if ((isMatrix || isArray) && parentExpressions.Length == 3) {
 
                 values += "{0}";
 
@@ -208,6 +255,8 @@ namespace ConsoleApp1 {
                     } else {
                         stringForFile = parentExpression.ToString();
                     }
+
+                    // Add condition for complex object
                     
                     parameters.Add(stringForFile);
 
@@ -225,6 +274,7 @@ namespace ConsoleApp1 {
 
             StringBuilder sb = new StringBuilder();
             sb.AppendFormat(logString, tmpSB.ToString());
+            //logFile.WriteLine("$$$$$$$$$$$$$$$\t" + isClass);
             logFile.WriteLine((logIndex++) + "~" + sb.ToString() + "~" + (nanoTime() - dt1) + "~" + column + "~" + row + "~" + stringForFile + "~" + parentExpressions[0].GetHashCode());
 
         }        
@@ -237,6 +287,19 @@ namespace ConsoleApp1 {
             return true;
         }
 
+        public static bool logInitialization(String logString, object o)
+        {
+            string initializationValue = "";
+            // Only do this for custom classes?
+            if (isCustomClass(o))
+            {
+                //initializationValue = getFieldsForClass(o).ToString();
+            }
+
+            initializationFile.WriteLine(logString + "~" + initializationValue);
+            //logFile.WriteLine((logIndex++) + "~" + sb.ToString() + "~" + (nanoTime()));
+            return true;
+        }
 
         public static void logSignal(String signalsString) {
             signalFile.WriteLine(signalsString + "~" + (nanoTime() - dt1));
@@ -254,14 +317,30 @@ namespace ConsoleApp1 {
             List<string> parameters = new List<string>();
             for (int i = 0; i < parentExpressions.Length; i++) {
                 values += "{" + i + "},";
-                parameters.Add(parentExpressions[i].ToString());
+
+                if (parentExpressions[i] == null)
+                {
+                    parameters.Add("null");
+                }
+                else
+                {
+                    parameters.Add(parentExpressions[i].ToString());
+
+                }
             }
             values = values.Substring(0, values.Length - 1);
             StringBuilder tmpSB = new StringBuilder();
             tmpSB.AppendFormat(values, parameters.ToArray());
 
             sb.AppendFormat(logString, tmpSB.ToString());
-            logFile.WriteLine((logIndex++) + "~" + sb.ToString() + "~" + (nanoTime() - dt1) + parentExpressions[0].GetHashCode());
+
+            int hashCode = -1;
+
+            if (parentExpressions[0] != null)
+            {
+                hashCode = parentExpressions[0].GetHashCode();
+            }
+            logFile.WriteLine((logIndex++) + "~" + sb.ToString() + "~" + (nanoTime() - dt1) + hashCode);
 
             return true;
         }
@@ -270,6 +349,8 @@ namespace ConsoleApp1 {
 
         public static bool logReferences(string id, String logString, params object[] parentExpressions) {
 
+            // parentExpressions[i] = "root.next"
+            //root.next = null
             if (id != null) {
                 if (!timesCounter.ContainsKey(id)) {
                     timesCounter.Add(id, 0);
@@ -284,7 +365,15 @@ namespace ConsoleApp1 {
             int memoryAddress;
             for (int i = 0; i < parentExpressions.Length; i++) {
                 values += "{" + i + "},";
-                parameters.Add(parentExpressions[i].ToString());
+                if (parentExpressions[i] == null)
+                {
+                    parameters.Add("null");
+                } 
+                else
+                {
+                    parameters.Add(parentExpressions[i].ToString());
+
+                }
                 //logFile.WriteLine("parentExpressions: " + getArrayAsString((int[]) parentExpressions[i]));
                 //logFile.WriteLine("Memory address: " + parentExpressions[i].GetHashCode());
                 //memoryAddress = parentExpressions[i].GetHashCode()
@@ -294,8 +383,15 @@ namespace ConsoleApp1 {
             tmpSB.AppendFormat(values, parameters.ToArray());
 
             sb.AppendFormat(logString, tmpSB.ToString());
+            int hashCode = -1;
+
+            if (parentExpressions[0] != null)
+            {
+                hashCode = parentExpressions[0].GetHashCode();
+            }
+
             //logFile.WriteLine((logIndex++) + "~" + sb.ToString() + "~" + (nanoTime()));
-            logFile.WriteLine((logIndex++) + "~" + sb.ToString() + "~" + (nanoTime() - dt1) + "~" + parentExpressions[0].GetHashCode());
+            logFile.WriteLine((logIndex++) + "~" + sb.ToString() + "~" + (nanoTime() - dt1) + "~" + hashCode);
             return true;
         }
 
@@ -306,6 +402,8 @@ namespace ConsoleApp1 {
             signalFile.Close();
             lineInfoFile.Flush();
             lineInfoFile.Close();
+            initializationFile.Flush();
+            initializationFile.Close();
         }
 
         private static long nanoTime() {

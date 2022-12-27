@@ -38,6 +38,7 @@ namespace P_Inti
         public void TextViewCreated(IWpfTextView textView)
         {
             // The adornment will listen to any event that changes the layout (text changes, scrolling, etc)
+            MyWindowControl.printInBrowserConsole("CodeControlEditor created");
             MyWindowControl.controlEditorAdornment = new CodeControlEditorAdornment(textView);
         }
 

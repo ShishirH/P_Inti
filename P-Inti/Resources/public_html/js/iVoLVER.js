@@ -1654,7 +1654,8 @@ var iVoLVER = {
             codeNote: 'Code Note',
             plots: 'Plots',
             signals: 'Signals',
-            logicalOperators: 'Logical Operators'
+            logicalOperators: 'Logical Operators',
+            multiverse: 'Code Multiverse'
         },
         getSectionByTitle: function (title) {
             var sections = iVoLVER.gui._paletteSections;
@@ -1841,6 +1842,80 @@ var iVoLVER = {
                 }
             });
 
+        },
+        addcodeMultiverseSection: function () {
+            var parameters = iVoLVER.gui.add.iconGroup({
+                title: iVoLVER.gui.progvolverSectionTitles.multiverse
+            });
+
+            var sectionID = parameters;
+            var elementID = ('section_element_' + iVoLVER.util.generateID());
+            var liStyle = iVoLVER.util.isUndefined(parameters.liStyle) || iVoLVER.util.isNull(parameters.liStyle) ? "margin-top: 2px; margin-right: 1%; margin-left: 1%; min-width: 22%; max-width: 22%; width: 22%; margin-bottom: 2px;" : parameters.liStyle;
+            var aStyle = iVoLVER.util.isUndefined(parameters.aStyle) || iVoLVER.util.isNull(parameters.aStyle) ? 'text-align: center;' : parameters.aStyle;
+            var iStyle = iVoLVER.util.isUndefined(parameters.iStyle) || iVoLVER.util.isNull(parameters.iStyle) ? 'text-align: center; font-size: 25px;' : parameters.iStyle;
+
+            liStyle += " float: left;";
+
+            var datatypesList = $("#" + sectionID);
+
+            let divContainer = $('<div class="container" </div>');
+
+            let divName = $('<div class="row" style="width: fit-content">' +
+                '<div class="col" style="width: 40%"><input type="text" value = "Name" size="10"> </input></div>' +
+                '<div class="col"><button type="button" class="btn btn-success" style="color: red" ><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-arrow-down" viewBox="0 0 16 16">\n' +
+                '  <path fill-rule="evenodd" d="M8 1a.5.5 0 0 1 .5.5v11.793l3.146-3.147a.5.5 0 0 1 .708.708l-4 4a.5.5 0 0 1-.708 0l-4-4a.5.5 0 0 1 .708-.708L7.5 13.293V1.5A.5.5 0 0 1 8 1z"/>\n' +
+                '</svg></button></div>' +
+                '</div>');
+            // let nameElement = $('');
+            // let collapsibleButton = $('')
+
+            let branchElements = $('<div class="row" id="branchElements" style="width: fit-content"</div>');
+            // divName.append(nameElement);
+            // divName.append(collapsibleButton);
+            let codeMultiverse = $('<div class="row" style="width: 110px"><button type="button" id="addCodeVariant" class="btn btn-success" style="color: red" >+</button></div>')
+
+            let myButton = $( "#addCodeVariant" );
+            console.log(codeMultiverse);
+            console.log(myButton);
+            // divName.append(nameElement);
+            // divName.append(collapsibleButton);
+            divContainer.append(divName);
+            divContainer.append(branchElements);
+            divContainer.append(codeMultiverse);
+            let liElement = $('<li id="' + elementID + '" draggable="true" class="description dragElement" style="' + liStyle + '">');
+
+            liElement.append(divContainer);
+            //datatypesList.append('<li id="' + elementID + '" draggable="true" class="description dragElement" style="' + liStyle + '"><a style="' + aStyle + '"><i class="' + iconClass + '" style="' + iStyle + '"></i></i></a></li>');
+            datatypesList.append(liElement);
+
+            var li = $("#" + elementID);
+
+            var acceptedIDs = $("#theCanvas").droppable("option", "accept");
+            acceptedIDs += ", #" + elementID;
+            $("#theCanvas").droppable("option", "accept", acceptedIDs);
+
+            if (iVoLVER.gui._paletteSections[sectionID]) {
+                iVoLVER.gui._paletteSections[sectionID].elements.push({
+                    id: elementID
+                });
+            }
+
+            $( "#addCodeVariant" ).click(function() {
+                let branchesDiv = $('#branchElements');
+
+                let rowDiv = $('<div class="row" style="width: 200px"</div>');
+                let nameTextArea = $('<div class="col" style="width: 20%"><input type="text" value = "Name" size="10"> </input></div>');
+                let updateButton = $('<div class="col"<button type="button" class="btn btn-success" style="color: red" >UPD</button></div>')
+                let deleteButton = $('<div class="col"<button type="button" class="btn btn-success" style="color: red" >DEL</button></div>')
+
+                rowDiv.append(nameTextArea);
+                rowDiv.append(updateButton);
+                rowDiv.append(deleteButton);
+
+                branchesDiv.append(rowDiv);
+            });
+
+            return elementID;
         },
 
         addLogicalOperatorsSection: function () {
@@ -3666,19 +3741,13 @@ var iVoLVER = {
 
         iVoLVER.gui._paletteSections = {};
         // Uncomment for rightpane
-        // iVoLVER.gui.addExtractorsSection();
-        // iVoLVER.gui.addMarksSection();
-        // iVoLVER.gui.addValuesSection();
-        // iVoLVER.gui.addOperatorsSection();
-        // iVoLVER.gui.addCollectionsSection();
-        // iVoLVER.gui.addLocatorsSection();
-        // iVoLVER.gui.addFunctionsSection();
-        iVoLVER.gui.addCanvasVariablesSection();
-        iVoLVER.gui.addCodeShiftSection();
-        iVoLVER.gui.addCodeNoteSection();
-        iVoLVER.gui.addSignalsSection();
+        //iVoLVER.gui.addCanvasVariablesSection();
+        //iVoLVER.gui.addCodeShiftSection();
+        //iVoLVER.gui.addCodeNoteSection();
+        //iVoLVER.gui.addSignalsSection();
         iVoLVER.gui.addLogicalOperatorsSection();
         iVoLVER.gui.addPlotsSection();
+        iVoLVER.gui.addcodeMultiverseSection();
 
         iVoLVER._pendingConnections = null;
         iVoLVER._connectableElements = null;

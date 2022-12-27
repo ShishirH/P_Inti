@@ -89,10 +89,24 @@ namespace P_Inti
         private void Execute(object sender, EventArgs e)
         {
             ThreadHelper.ThrowIfNotOnUIThread();
-            string message = string.Format(CultureInfo.CurrentCulture, "Inside {0}.MenuItemCallback()", this.GetType().FullName);
-            string title = "CodeControlAddExistingCode";
 
-           
+            CodeControlEditorAdornment.wereLinesUpdated = false;
+            System.IServiceProvider serviceProvider = package as System.IServiceProvider;
+            EnvDTE.DTE dte = (EnvDTE.DTE)serviceProvider.GetService(typeof(EnvDTE.DTE));
+            EnvDTE.TextSelection ts = dte.ActiveWindow.Selection as EnvDTE.TextSelection;
+
+            string codeControlText = CodeControls.AddExistingCodeToCodeControl(ts.Text);
+
+            MyWindowControl.printInBrowserConsole("CodeControlText is: ");
+            MyWindowControl.printInBrowserConsole(codeControlText);
+
+            ts.Text = codeControlText;
+
+            MyWindowControl.printInBrowserConsole("ts.Text is: ");
+            MyWindowControl.printInBrowserConsole(ts.Text);
+
+            CodeControlEditorAdornment.wereLinesUpdated = true;
+            //CodeControlEditorAdornment.CreateEditorVisuals(null);
         }
     }
 }

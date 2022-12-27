@@ -4,6 +4,407 @@ progvolver = {
     objects: {}
 };
 
+function getHashOfString(str) {
+    var hash = 0,
+        i, chr;
+    if (str.length === 0) return hash;
+    for (i = 0; i < str.length; i++) {
+        chr = str.charCodeAt(i);
+        hash = ((hash << 5) - hash) + chr;
+        hash |= 0; // Convert to 32bit integer
+    }
+    return hash.toString();
+}
+
+function setBottomButtonsVisibility() {
+    let timeLinePrevious = document.getElementById("timelinePrevious");
+    console.log(timeLinePrevious);
+    if (!hasCodeBeenCompiled) {
+        document.getElementById("timelinePreviousContainer").classList.add('bottomRowButtonsDisabled');
+        document.getElementById("playButtonContainer").classList.add('bottomRowButtonsDisabled');
+        document.getElementById("timelineNextContainer").classList.add('bottomRowButtonsDisabled');
+        document.getElementById("theSliderContainer").classList.add('bottomRowButtonsDisabled');
+    } else {
+        document.getElementById("timelinePreviousContainer").classList.remove('bottomRowButtonsDisabled');
+        document.getElementById("playButtonContainer").classList.remove('bottomRowButtonsDisabled');
+        document.getElementById("timelineNextContainer").classList.remove('bottomRowButtonsDisabled');
+        document.getElementById("theSliderContainer").classList.remove('bottomRowButtonsDisabled');
+    }
+}
+
+function getCombinedHashOfVariants() {
+    let appendedActiveBranches = "";
+    for (let i = 0; i < codeControlsOnCanvas.length; i++) {
+        let codeControl = codeControlsOnCanvas[i];
+        let activeBranch = codeControl.selectedBranch;
+        appendedActiveBranches += activeBranch;
+    }
+
+    if (appendedActiveBranches != "") {
+        return getHashOfString(appendedActiveBranches);
+    } else {
+        return "";
+    }
+}
+
+function loadLogFiles(response, lineInfoFileContent, waitingDialog) {
+    window.trackedSymbolsIDs = response.trackedSymbolsIDs;
+    window.trackedExpressionsIDs = response.trackedExpressionsIDs;
+    window.trackedSignalIDs = response.trackedSignalIDs;
+
+    // add index to lineLogData
+
+    var logFileContent = response.logFileContent.join("\n");
+    var scopeFileContent = response.scopeFileContent.join("\n");
+    var signalFileContent = response.signalFileContent.join("\n");
+    var lineInfoFileContentArray = response.lineInfoFileContent;
+
+    for (let i = 1; i < lineInfoFileContentArray.length; i++) {
+        lineInfoFileContentArray[i] = i + "~" + lineInfoFileContentArray[i];
+    }
+    lineInfoFileContent = lineInfoFileContentArray.join("\n");
+
+    logFileContent = preProcessLogFileForDuplicates(logFileContent);
+    processMethodParameters(logFileContent);
+    processLogFiles(logFileContent, scopeFileContent, signalFileContent, lineInfoFileContent);
+    window.snapshotWidget && window.snapshotWidget.parseMemberValues();
+
+    if (waitingDialog) {
+        waitingDialog.dialog('content', '<div style="text-align: center; margin-top: 20px;"><span align="center" style="font-size: 150%;">' + response.response + '</span></div>');
+        if (response.success) {
+            setTimeout(function () {
+                waitingDialog.dialog('hide');
+            }, 2000);
+        }
+    }
+}
+
+function clickRunCodeButton() {
+
+    hasCodeBeenCompiled = true;
+    setBottomButtonsVisibility();
+
+    let outputDir = "";
+
+    let combinedHash = getCombinedHashOfVariants();
+    if (combinedHash != "") {
+        outputDir = combinedHash;
+        codeControlsCompiledHashCodes.push(outputDir);
+    }
+
+    if (window.jsHandler) {
+        var lineInfoFileContent;
+        // console.log("addIndexToLineLogFile");
+        // window.jsHandler.addIndexToLineLogFile(null).then(function (response) {
+        //     console.log(response);
+        //     lineInfoFileContent = response.lineInfoFileContent;
+        // });
+
+        if (window.jsHandler.runCodeAnalyzer) {
+            var waitingDialog = new jWait('Running Program');
+            window.jsHandler.runCodeAnalyzer({
+                outputDir: outputDir
+            }).then(function (response) {
+                loadLogFiles(response, lineInfoFileContent, waitingDialog);
+            });
+        }
+    }
+
+    var theSlider = $("#theSlider").data("ionRangeSlider");
+    if (priorSliderFromPercentage > 0) {
+        console.log("Log files loaded")
+        while(theSlider.result.from_percent < priorSliderFromPercentage) {
+            console.log(theSlider.result.from_percent)
+            moveTimelineNext();
+        }
+    }
+}
+
+function goToLineInFile() {
+    let lineDetails = getLineNumberForCurrentTime(window.presentTime);
+
+    let fileName = lineDetails[0];
+    let lineNumber = lineDetails[1];
+
+    var args = {
+        id: "100",
+        mainColor: "#BDE0EB",
+        startLine: lineNumber,
+        endLine: lineNumber,
+        file: fileName,
+        lineNumber: lineNumber,
+        animate: true,
+        newDispatcher: true,
+        opacity: 0.5
+    };
+    //console.log(args);
+    window.jsHandler.goTo(args);
+}
+
+let priorSliderFromPercentage = -1;
+
+function getAssociatedVariablesForCodeVariants(variantCombinationString)
+{
+    let variableNamesStr = "";
+    let declaredLinesStr = "";
+    let typesStr = "";
+    let scopeLinesStr = "";
+    let fileNameStr = "";
+    let variableIdsStr = "";
+
+    variablesOnCanvas = [];
+    let variablesNamesArray = [];
+    let variablesValuesArray = [];
+    for (const [key, value] of Object.entries(namedSymbols)) {
+        let variable = value;
+
+        if (variableNamesStr === "") {
+            variableNamesStr += variable.name;
+            declaredLinesStr += variable.declareAtTo;
+            typesStr += variable.type;
+            scopeLinesStr += variable.scopeTo;
+            fileNameStr += variable.file;
+            variableIdsStr += variable.id;
+        } else {
+            variableNamesStr += "_" + variable.name;
+            declaredLinesStr += "_" + variable.declareAtTo;
+            typesStr += "_" + variable.type;
+            scopeLinesStr += "_" + variable.scopeTo;
+            fileNameStr += "_" + variable.file;
+            variableIdsStr += "!" + variable.id;
+        }
+    }
+
+    if (window.jsHandler) {
+        window.jsHandler.searchVariableAcrossVariants({
+            variableNamesStr: variableNamesStr,
+            declaredLinesStr: declaredLinesStr,
+            typesStr: typesStr,
+            scopeLinesStr: scopeLinesStr,
+            fileNameStr: fileNameStr,
+            variableIdsStr: variableIdsStr,
+            hashCodeOfCombinedBranches: getCombinedHashOfVariants()
+        }).then(function (response) {
+            console.log("Response was: ");
+            console.log(response);
+
+            variablesNamesArray = response.foundVariableNames.split("_");
+            variablesValuesArray = response.foundVariableValues.split("_");
+
+            console.log("variablesNamesArray");
+            console.log(variablesNamesArray);
+
+            console.log("variablesValuesArray");
+            console.log(variablesValuesArray);
+
+            // Set values for another code variant combination
+            for (let i = 0; i < variablesNamesArray.length; i++) {
+                let variable = namedSymbols[variablesNamesArray[i]];
+                variablesOnCanvas.push(variable);
+
+                if (variable.kind == "ArraySymbol") {
+                    variable.setValueForCurlyBrace(variablesValuesArray[i].trim());
+                } else {
+                    variable.value = variablesValuesArray[i];
+                }
+
+                if (!variable.isOnCanvas) {
+                    variable.isOnCanvas = true;
+                    variable.addAll();
+                    progvolver.objects[variable.id] = variable;
+                }
+            }
+
+            // Remove all other variables not in the code variant combination
+            for (const [key, value] of Object.entries(namedSymbols)) {
+                if (variablesOnCanvas.indexOf(value) == -1) {
+                    if (value.isOnCanvas) {
+                        value.removeAll();
+                        value.isOnCanvas = false;
+
+                        delete progvolver.objects[value.id];
+
+                    }
+                }
+            }
+
+            let lineInfoContent = "";
+
+            var theSlider = $("#theSlider").data("ionRangeSlider");
+            priorSliderFromPercentage = theSlider.result.from_percent;
+            if (response.logFileContent) {
+                loadLogFiles(response, lineInfoContent, null);
+
+                console.log("Log files loaded")
+                console.log("Prior slider percentage: " + priorSliderFromPercentage);
+                console.log("Current slider percentage: " + theSlider.result.from_percent);
+                while(theSlider.result.from_percent < priorSliderFromPercentage) {
+                    moveTimelineNext();
+                }
+            } else {
+                hasCodeBeenCompiled = false;
+                setBottomButtonsVisibility();
+            }
+
+        });
+    }
+
+}
+
+function moveTimelineNext() {
+    let currentTime = window.presentTime;
+    let currentIndex = 0;
+
+    var theSlider = $("#theSlider").data("ionRangeSlider");
+
+    if (!currentTime) {
+        // onSliderChange hasn't been called
+        currentTime = window.minTime;
+    }
+
+    console.log("currentTime is: ");
+    console.log(currentTime);
+
+    // get next time
+    currentIndex = getNextTimeLineDataIndex(currentTime);
+    currentTime = getNextTimeLineData(currentTime);
+
+    if (currentIndex == window.lineData.length || currentIndex == -1) {
+        return;
+    }
+
+    console.log("Next time is: ");
+    console.log(currentTime);
+
+    console.log("Current index is: ");
+    console.log(currentIndex);
+
+    window.presentTime = currentTime;
+
+    console.log("Updating the slider");
+    console.log("Slider percentage: " + (currentIndex * 100) / window.lineData.length);
+    theSlider.update({from: ((currentIndex * 100) / window.lineData.length)});
+
+    var ids = Object.keys(progvolver.objects);
+    ids.forEach(function (id) {
+        var object = progvolver.objects[id];
+        object.setProgramTime && object.setProgramTime(currentTime);
+    });
+
+
+    console.log("Appending marks")
+    sliderMarksElement.append(sliderMarksElements);
+
+    var selectedSymbol = canvas.getActiveObject();
+
+    if (selectedSymbol && selectedSymbol.showSliderMarks) {
+        selectedSymbol.showSliderMarks();
+    }
+}
+
+function getNextTimeLineData(currentTime) {
+    var dataItems = window.lineData.filter(item => item.time > currentTime);
+
+    if (dataItems.length > 0) {
+        return dataItems[0].time;
+    } else {
+        return -1;
+    }
+
+}
+
+function getNextTimeLineDataIndex(currentTime) {
+    var dataItems = window.lineData.filter(item => item.time > currentTime);
+
+    if (dataItems.length > 0) {
+        return dataItems[0].index;
+    } else {
+        return -1;
+    }
+}
+
+function moveTimelinePrevious() {
+    let currentTime = window.presentTime;
+    let currentIndex = 0;
+
+    var theSlider = $("#theSlider").data("ionRangeSlider");
+
+    if (!currentTime) {
+        // onSliderChange hasn't been called
+        currentTime = window.minTime;
+    }
+
+    console.log("currentTime is: ");
+    console.log(currentTime);
+
+    // get next time
+    currentTime = getPreviousTimeLineData(currentTime);
+    currentIndex = getPreviousTimeLineDataIndex(currentTime);
+
+    if (currentIndex == -1) {
+        return;
+    }
+
+    console.log("Previous time is: ");
+    console.log(currentTime);
+
+    console.log("Previous index is: ");
+    console.log(currentIndex);
+    var ids = Object.keys(progvolver.objects);
+    ids.forEach(function (id) {
+        var object = progvolver.objects[id];
+        object.setProgramTime && object.setProgramTime(currentTime);
+    });
+
+    theSlider.update({from: ((currentIndex * 100) / window.lineData.length)});
+
+    sliderMarksElement.append(sliderMarksElements);
+
+    var selectedSymbol = canvas.getActiveObject();
+
+    if (selectedSymbol && selectedSymbol.showSliderMarks) {
+        selectedSymbol.showSliderMarks();
+    }
+
+    window.presentTime = currentTime;
+}
+
+function getPreviousTimeLineData(currentTime) {
+    var filteredObjects =  window.lineData.filter(item => item.time < currentTime);
+
+    if (filteredObjects.length > 0) {
+        return filteredObjects[filteredObjects.length - 1].time;
+    } else {
+        return currentTime;
+    }
+}
+
+function getLineNumberForCurrentTime(currentTime) {
+    console.log("Current time is: ");
+    console.log(currentTime);
+    var filteredObjects =  window.lineData.filter(item => item.time <= currentTime);
+    let lineNumberArray = [];
+    if (filteredObjects.length > 0) {
+        let file = filteredObjects[filteredObjects.length - 1].filePath;
+        let lineNumber = filteredObjects[filteredObjects.length - 1].line;
+
+        lineNumberArray[0] = file;
+        lineNumberArray[1] = lineNumber;
+
+        return lineNumberArray;
+    } else {
+        return ["", -1];
+    }
+}
+
+function getPreviousTimeLineDataIndex(currentTime) {
+    for(let i = 0; i < window.lineData.length; i++) {
+        if (window.lineData[i].time > currentTime) {
+            return i - 1;
+        }
+    }
+}
+
 function drawCurveThroughPoints(ctx, points) {
     ctx.save();
     ctx.lineWidth = 2;
@@ -113,47 +514,340 @@ function getQuadraticBezierXYatT(startPt, controlPt, endPt, T) {
     });
 }
 
+function getPositionAlongTheLine(x1, y1, x2, y2, percentage) {
+    return {x : x1 * (1.0 - percentage) + x2 * percentage, y : y1 * (1.0 - percentage) + y2 * percentage};
+}
+
+function scale (old_input, old_output, new_input) {
+    if (old_input == 0)
+        return 0;
+    return (old_output/old_input) * new_input;
+}
+
+function scaleCoordinates(coordsArray, percentage) {
+    let scaledCoords = [];
+
+    for (let coord of coordsArray) {
+        let xCoord = percentage * coord[0];
+        let yCoord = scale(coord[0], coord[1], xCoord);
+
+        scaledCoords.push([xCoord, yCoord]);
+    }
+
+    return scaledCoords;
+}
+
+function chevronShootingStars(source, target) {
+    var theConnector = source;
+
+    let chevron = [
+        [3, 0],
+        [-4, 6],
+        [-10, 6],
+        [-2, 0],
+        [-10, -6],
+        [-4, -6]
+    ];
+
+    if (!source.beforeShootingStarRender) {
+        source.beforeShootingStarRender = source.render;
+    }
+
+    source.render = function(ctx) {
+        ctx.save();
+        source.beforeShootingStarRender(ctx);
+        ctx.fillStyle = ctx.strokeStyle;
+
+        let sourceCoords = source.getPointByOrigin('center', 'center');
+        let targetCoords = target.getPointByOrigin('center', 'center');
+        let initialScale = 0.35;
+        let initialOpacity = 0.20;
+
+        var x1 = sourceCoords.x;
+        var y1 = sourceCoords.y;
+        var x2 = targetCoords.x;
+        var y2 = targetCoords.y;
+
+
+        var deltaX = x2 - x1;
+        var deltaY = y2 - y1;
+
+        var angle = Math.atan(deltaY / deltaX);
+        if (theConnector.x1 > theConnector.x2) {
+            angle += fabric.util.degreesToRadians(180);
+        }
+
+        var p1 = {x: x1, y: y1};
+        var p2 = {x: x2, y: y2};
+        var line = {p1: p1, p2: p2};
+        var length = computeLength(line);
+        var step = 8;
+        var cummulatedDistance;
+
+        cummulatedDistance = step;
+        let arrowColor = rgb(220, 220, 0);
+
+        while (true) {
+            var point = getPointAlongLine(line, cummulatedDistance);
+            var x = point.x;
+            var y = point.y;
+
+            ctx.lineWidth = 2;
+
+            ctx.strokeStyle = arrowColor;
+            ctx.fillStyle = arrowColor;
+            ctx.globalAlpha = initialOpacity;
+            drawFilledChevron(translateShape(rotateShape(scaleCoordinates(chevron, initialScale), angle), x, y), ctx);
+
+            initialScale += 0.08;
+            initialOpacity += 0.05;
+            step += 2;
+            
+            cummulatedDistance += step;
+            if (cummulatedDistance >= length) {
+                break;
+            }
+        }
+        ctx.restore();
+    }
+
+}
+
+function drawCirclesAlongLine(ctx, points) {
+    //ctx.save();
+    let shootingStarsCircles = [];
+    let radius = 12;
+    let opacity = 0.5;
+    var numberOfPoints = 20;
+    for (var i = 0; i < numberOfPoints; i++) {
+        var point = getPositionAlongTheLine(points[0].x, points[0].y, points[2].x, points[2].y, i / 20)
+        var shootingStarCircle = new fabric.Circle({
+            radius: radius,
+            top: point.y,
+            left: point.x,
+            fill: rgba(255, 255, 0, opacity),
+            centerX: "center",
+            centerY: "center",
+            opacity: opacity
+        });
+
+        canvas.add(shootingStarCircle);
+        shootingStarsCircles.push(shootingStarCircle);
+
+        // ctx.beginPath();
+        // ctx.arc(point.x, point.y, radius, 0, Math.PI * 2);
+        // ctx.closePath();
+        // ctx.fillStyle = rgba(255, 255, 0, opacity);
+        // ctx.fill();
+        radius = radius - 0.3;
+        //opacity = opacity - 0.015;
+    }
+
+    return shootingStarsCircles;
+    //ctx.restore();
+}
+
 function drawCirclesAlongCurve(ctx, points) {
-    ctx.save();
-    let radius = 6.0;
-    let opacity = 0.3;
+    //ctx.save();
+    let shootingStarsCircles = [];
+    let radius = 12;
+    let opacity = 0.5;
     for (var t = 0; t < 101; t += 5) {
         var point = getQuadraticBezierXYatT(points[0], points[1], points[2], t / 100);
-        ctx.beginPath();
-        ctx.arc(point.x, point.y, radius, 0, Math.PI * 2);
-        ctx.closePath();
-        ctx.fillStyle = rgba(255, 255, 0, opacity);
-        ctx.fill();
-        radius = radius + 0.3;
-        opacity = opacity + 0.015;
+        var shootingStarCircle = new fabric.Circle({
+            radius: radius,
+            top: point.y,
+            left: point.x,
+            fill: rgba(255, 255, 0, opacity),
+            centerX: "center",
+            centerY: "center",
+            opacity: opacity,
+            eventable: false,
+            selectable: false
+        });
+
+        canvas.add(shootingStarCircle);
+        shootingStarsCircles.push(shootingStarCircle);
+
+        // ctx.beginPath();
+        // ctx.arc(point.x, point.y, radius, 0, Math.PI * 2);
+        // ctx.closePath();
+        // ctx.fillStyle = rgba(255, 255, 0, opacity);
+        // ctx.fill();
+        radius = radius - 0.3;
+        //opacity = opacity - 0.015;
     }
-    ctx.restore();
+
+    return shootingStarsCircles;
+    //ctx.restore();
+}
+
+function shootingStarsDecay(widget1, widget2) {
+    let currentTime = window.presentTime;
+    let currentIndex = window.lineData.filter(item => item.time == currentTime)[0].index;
+    let stepsToDecay = 3;
+
+    console.log("Widget 1");
+    console.log(widget1);
+    console.log(widget1.name);
+    console.log("widget2");
+    console.log(widget2);
+    console.log(widget2.name);
+    console.log("widget1.shootingStarsDict");
+    console.log(widget1.shootingStarsDict);
+
+    if (!widget1.name && widget1.array) { // isArrayElement
+        widget1 = widget1.array;
+    }
+    if (widget1.shootingStarsDict[widget2.name]) {
+        console.log("I am here");
+        let shootingStarsCreationTime = widget1.shootingStarsDict[widget2.name].time;
+        console.log("shootingStarsCreationTime" + shootingStarsCreationTime);
+        if (!shootingStarsCreationTime) {
+            console.log("Returning")
+            return;
+        }
+        let creationIndex = window.lineData.filter(item => item.time == shootingStarsCreationTime)[0].index;
+        console.log("CreationIndex");
+        console.log(creationIndex);
+
+        if (creationIndex == currentIndex) {
+            console.log("Shooting stars just created. Returning");
+            return;
+        }
+
+        let indexDifference = Math.abs(currentIndex - creationIndex) + 1;
+        console.log("indexDifference");
+        console.log(indexDifference);
+
+        if ((indexDifference >= stepsToDecay) || indexDifference == 0) {
+            // remove the shooting stars
+            console.log("Removing the shooting stars")
+            widget1.shootingStarsDict[widget2.name].array.forEach(function (shootingStar) {
+                canvas.remove(shootingStar);
+                //widget1.shootingStarsDict[widget2.name] = {};
+            });
+        } else if (indexDifference > 0){
+            // Reducing opacity
+            console.log("Reducing opacity")
+            widget1.shootingStarsDict[widget2.name].array.forEach(function (shootingStar) {
+                shootingStar.opacity = ((stepsToDecay - indexDifference) / stepsToDecay);
+                //shootingStar.opacity = Math.max(shootingStar.opacity - 0.5, 0);
+            });
+        }
+    }
 }
 
 function generateShootingStars(widget1, widget2) {
     let ctx = canvas.getContext();
-    var shootingStarStart = widget1.getPointByOrigin('right', 'center');
+    var shootingStarEnd = widget1.getPointByOrigin('center', 'center');
+    let shootingStarStart = widget2.getPointByOrigin('center', 'center');
     shootingStarStart.x += 5;
-    let shootingStarCenter = {x: shootingStarStart.x + 100, y: shootingStarStart.y + 100};
-    let shootingStarEnd = widget2.getPointByOrigin('right', 'center');
+    let shootingStarCenter = {x: (shootingStarStart.x + shootingStarEnd.x) / 2,
+        y: (shootingStarStart.y + shootingStarEnd.y) / 2};
 
     var points = [shootingStarStart, shootingStarCenter, shootingStarEnd];
-    drawCurveThroughPoints(ctx, points);
-    drawCirclesAlongCurve(ctx, points);
+    //drawCurveThroughPoints(ctx, points);
+    shootingStarsCircles = drawCirclesAlongCurve(ctx, points);
+
+    if (!widget1.name && widget1.array) { // array element
+        widget1 = widget1.array;
+    }
+
+    if (!widget2.name && widget2.array) { // array element
+        widget2 = widget2.array;
+    }
+
+    console.log("Shooting stars are: ");
+    console.log(shootingStarsCircles);
+    if (widget1.shootingStarsDict) {
+        console.log("shooting star dict exists");
+        console.log(widget1.shootingStarsDict[widget2.name]);
+        if (widget1.shootingStarsDict[widget2.name]) {
+            widget1.shootingStarsDict[widget2.name].array && widget1.shootingStarsDict[widget2.name].array.forEach(function (shootingStar) {
+                console.log("removing existing shooting star");
+                canvas.remove(shootingStar);
+            });
+        }
+    } else {
+        widget1.shootingStarsDict = {};
+        console.log("Creating dict");
+    }
+    widget1.shootingStarsDict[widget2.name] = {"time": window.presentTime, "array": shootingStarsCircles};
+    console.log("widget1.shootingStarsDict");
+    console.log(widget1.shootingStarsDict);
 }
 
-function parseShootingStarsSource(parentStatement) {
-    let parentString = "";
+function parseShootingStarsSource(parentStatement, widget) {
     if (parentStatement.includes("=")) {
         let leftHalf = parentStatement.split("=")[0].trim();
         let rightHalf = parentStatement.split("=")[1].trim();
 
+        let leftHalfIndex = null;
+        let rightHalfIndex = null;
         console.log("@# Left half is: " + leftHalf);
-        console.log("@# rightHalf is: " + rightHalf);
+        if (leftHalf.includes("[")) {
+            leftHalfIndex = leftHalf.substring(leftHalf.indexOf("[") + 1, leftHalf.indexOf("]"));
+            console.log("leftHalfIndex is now: " + leftHalfIndex)
+        }
 
-        if (namedSymbols[rightHalf]) {
-            console.log("Found " + rightHalf);
-            return rightHalf;
+        console.log("@# Right half is: " + rightHalf);
+        if (rightHalf.includes("[")) {
+            rightHalfIndex = rightHalf.substring(rightHalf.indexOf("[") + 1, rightHalf.indexOf("]"));
+            console.log("rightHalfIndex is now: " + rightHalfIndex)
+        }
+
+        if (rightHalf == widget.name) {
+            console.log("Found " + leftHalf);
+            if (leftHalfIndex) { // change to an array element
+                let index = namedSymbols[leftHalfIndex].value;
+                let arrayName = leftHalf.substring(0, leftHalf.indexOf("["));
+
+                console.log("Index is: " + index);
+                console.log("Array name is: " + arrayName);
+
+                if (namedSymbols[arrayName]){
+                    return namedSymbols[arrayName].arrayElementsArray[index][0];
+                }
+            }
+            if (namedSymbols[leftHalf]) {
+                return namedSymbols[leftHalf];
+            }
+        }
+    }
+}
+
+function parseShootingStarsSourceForArray(parentStatement, widget) {
+    if (parentStatement && parentStatement.includes("=")) {
+        let leftHalf = parentStatement.split("=")[0].trim();
+        let rightHalf = parentStatement.split("=")[1].trim();
+
+        let leftHalfIndex = null;
+        let rightHalfIndex = null;
+        console.log("@# Left half is: " + leftHalf);
+        if (leftHalf.includes("[")) {
+            leftHalfIndex = leftHalf.substring(leftHalf.indexOf("[") + 1, leftHalf.indexOf("]"));
+            console.log("leftHalfIndex is now: " + leftHalfIndex)
+        }
+
+        console.log("@# Right half is: " + rightHalf);
+        if (rightHalf.includes("[")) {
+            rightHalfIndex = rightHalf.substring(rightHalf.indexOf("[") + 1, rightHalf.indexOf("]")).trim();
+            console.log("rightHalfIndex is now: " + rightHalfIndex)
+        }
+
+        console.log(namedSymbols);
+        console.log("namedSymbols");
+
+        console.log(namedSymbols[rightHalfIndex]);
+        console.log("namedSymbols[rightHalfIndex]");
+
+        if (rightHalf.includes(widget.name)) {
+            console.log("Found " + leftHalf);
+            console.log("Index of change: " + rightHalfIndex)
+            if (namedSymbols[leftHalf]) {
+                return [leftHalf, namedSymbols[rightHalfIndex].value];
+            }
         }
     }
 }
@@ -374,8 +1068,22 @@ function getValueWidth(text, theFont) {
     ctx.font = theFont;
 
     var renderableValue = text;
-    return ctx.measureText(renderableValue).width;
+    let width =  ctx.measureText(renderableValue).width;
+    ctx.restore();
+    return width;
 }
+
+function getTextWidth(text, theFont) {
+    let ctx = canvas.getContext();
+    ctx.save();
+    ctx.font = theFont;
+
+    var renderableValue = text;
+    let width =  ctx.measureText(renderableValue).width;
+    ctx.restore();
+    return width;
+}
+
 
 function addSignalToCanvas(object) {
     object = object.split('@')
@@ -1638,6 +2346,7 @@ function showWebPage(url) {
 
 //    var handle = $('<div class="resize">Drag</div>', {style: 'cursor:move;'}); // TODO: This is the handle that allows the user to resize the div and, in consequence, the iFrame
 
+
 //    var defaultURL = 'http://www.bbc.co.uk/news';
 //    var defaultURL = 'pepe.html';
 //    var defaultURL = '5_28_115_1_5_40_188.html';
@@ -2168,8 +2877,15 @@ function objToString(obj) {
 
 function saveCanvasState() {
     console.log("persistent entries");
-    console.log(PERSISTENT_CANVAS_ENTRIES[0]);
-    var text = (PERSISTENT_CANVAS_ENTRIES[0].toJson());
+    console.log(PERSISTENT_CANVAS_ENTRIES);
+    let persistentJsonArray = [];
+
+    for (let entry in PERSISTENT_CANVAS_ENTRIES) {
+        persistentJsonArray.push(PERSISTENT_CANVAS_ENTRIES[entry].toJson());
+    }
+    var text = JSON.stringify(persistentJsonArray);
+    console.log("Text is: ");
+    console.log(text);
     var filename = "canvasContent";
     var blob = new Blob([text], {type: "text/plain;charset=utf-8"});
     window.jsHandler.saveCanvasFile({content: text})
@@ -2190,18 +2906,23 @@ function handleCanvasLoad(files) {
 }
 
 function onCanvasLoadComplete(canvasString) {
-    console.log("Canvas string is: ");
-    console.log(canvasString);
-    const obj = JSON.parse(canvasString);
+    const jsonArray = JSON.parse(canvasString);
 
-    console.log("Kind is: ");
-    let kind = obj['kind'];
-    console.log(kind);
+    for (let i = 0; i < jsonArray.length; i++) {
+        let obj = JSON.parse(jsonArray[i]);
+        console.log("Obj is: ");
+        console.log(obj);
+        console.log("Kind is: ");
+        let kind = obj['kind'];
+        console.log(kind);
 
-    if (kind === 'ProgvolverSymbol') {
-        ProgvolverSymbol.fromJson(obj);
-    } else if (kind === 'ReferenceWidget') {
-        ReferenceWidget.fromJson(obj);
+        if (kind === 'ProgvolverSymbol') {
+            ProgvolverSymbol.fromJson(obj);
+        } else if (kind === 'ReferenceWidget') {
+            ReferenceWidget.fromJson(obj);
+        } else if (kind === 'CodeControls') {
+            CodeControls.fromJson(obj);
+        }
     }
 }
 
@@ -4563,6 +5284,18 @@ function drawFilledPolygon(shape, ctx) {
     ctx.restore();
 }
 
+function drawFilledChevron(shape, ctx) {
+    ctx.save();
+    ctx.beginPath();
+    ctx.moveTo(shape[0][0], shape[0][1]);
+    for (var p in shape)
+        if (p > 0)
+            ctx.lineTo(shape[p][0], shape[p][1]);
+    ctx.lineTo(shape[0][0], shape[0][1]);
+    ctx.fill();
+    ctx.closePath();
+    ctx.restore();
+}
 
 // Functions to draw paths as marks
 
@@ -7051,7 +7784,21 @@ function enterFunctionButtonClicked() {
 //        activateFunctionDrawingMode();
 //    }
 //}
+function getValueWidth(theFont, background) {
+    console.log("This is being called");
+    var ctx = canvas.getContext();
+    ctx.save();
+    ctx.font = theFont;
 
+    var renderableValue = background.value;
+    if (!iVoLVER.util.isUndefined(background.value) && iVoLVER.util.isNumber(background.value)) {
+        renderableValue = background.value.toFixed(2);
+    }
+
+    let width =  ctx.measureText(renderableValue).width;
+    ctx.restore();
+    return width;
+}
 
 function drawFilledMarkButtonClicked() {
     if (canvas.isFilledMarkDrawingMode) {
@@ -7145,16 +7892,18 @@ function newConnectionReleasedOnCanvas(connection, coordX, coordY) {
         connection.setDestination(destination, true);
 
     } else if (connection.source.type === "ArrayColorWidgetOutput") {
+        console.log("Connection here is: ")
+        console.log(connection);
         destination = new CanvasVariable({
-            top: 250,
-            left: 250,
-            x: 250,
-            y: 250,
+            top: coordX,
+            left: coordY,
+            x: coordX,
+            y: coordY,
             fill: connection.source.fill,
             stroke: connection.source.stroke,
             parent: connection.source,
-            index: connection.source.index,
-            name: "" + connection.source.index,
+            index: "",
+            name: "",
             isColorWidgetOutput: true,
             type: "",
             value: connection.source.value
@@ -9196,21 +9945,30 @@ function onSliderChanged(data) {
 //
 //
 
-    if (window.signalData) {
-        var currentTime = changeRange(data.from, data.min, data.max, window.minTime, window.maxTime);
+    console.log("Data is: ");
+    console.log(data);
 
-        // currentTime -= window.sliderDelta;
-        var ids = Object.keys(progvolver.objects);
-        ids.forEach(function (id) {
-            var object = progvolver.objects[id];
-            object.setProgramTime && object.setProgramTime(currentTime);
-        });
-    }
+    // if (window.signalData) {
+    //     var currentTime = changeRange(data.from, data.min, data.max, window.minTime, window.maxTime);
+    //
+    //     window.presentTime = currentTime;
+    //     // currentTime -= window.sliderDelta;
+    //     var ids = Object.keys(progvolver.objects);
+    //     ids.forEach(function (id) {
+    //         var object = progvolver.objects[id];
+    //         object.setProgramTime && object.setProgramTime(currentTime);
+    //     });
+    // }
 
     if (window.logData && window.scopeData) {
 
 
         var currentTime = changeRange(data.from, data.min, data.max, window.minTime, window.maxTime);
+        // if (window.presentTime && (window.presentTime > currentTime)) {
+        //     console.log("Duplicate call. Returning");
+        //     return;
+        // }
+        //window.presentTime = currentTime;
 
         // 10% of difference between maxTime and minTime as the width for the Gaussian curve.
         window.colorDecayWidth = (window.maxTime - window.minTime) * 0.1;
@@ -9218,18 +9976,27 @@ function onSliderChanged(data) {
 
 
         var ids = Object.keys(progvolver.objects);
+        console.log("ids: ");
+        console.log(ids);
         ids.forEach(function (id) {
+            console.log("id: " + id);
             var object = progvolver.objects[id];
-            object.setProgramTime && object.setProgramTime(currentTime);
+            object.setProgramTime && object.setProgramTime(window.presentTime);
         });
+
+        console.log("Window rpesent time is: ");
+        console.log(window.presentTime);
+        let lineNumberDetails = getLineNumberForCurrentTime(window.presentTime);
+        console.log("lineNumberDetails");
+        console.log(lineNumberDetails);
 
         const result = window.logData.filter(item => item[window.sliderDimension] <= currentTime);
 
-
+        let lastRecordForExpression = null;
         if (result.length > 0) {
 
-
             let lastRecord = result[result.length - 1];
+            lastRecordForExpression = lastRecord;
             let evaluatedLine = lastRecord.line - 1;
 
 
@@ -9298,6 +10065,16 @@ function onSliderChanged(data) {
 
         }
 
+        let expressions = (lastRecordForExpression != null) ? lastRecordForExpression.expressions : null;
+
+        if (lineNumberDetails[0] && lineNumberDetails[0].length > 1) {
+            window.jsHandler.setCurrentLine({
+                lineNumber: lineNumberDetails[1] - 1,
+                filePath: lineNumberDetails[0],
+                expressions: expressions
+            }).then(function (response) {
+            });
+        }
 
     }
 
@@ -9363,6 +10140,35 @@ function playSlider() {
     playButton.data('playing', !playing);
 }
 
+function playSliderLineData() {
+
+    var playButton = $("#playButton");
+    playButton.toggleClass('icon-play');
+    playButton.toggleClass('icon-pause');
+
+    var playing = playButton.data('playing');
+    var theSlider = $("#theSlider").data("ionRangeSlider");
+    var interval = 2;
+
+    if (playing) {
+        clearInterval(sliderTimer);
+    } else {
+        sliderTimer = setInterval(function () {
+
+            theSlider.update({from: (theSlider.result.from + 1) % theSlider.result.max});
+
+            sliderMarksElement.append(sliderMarksElements);
+
+            var selectedSymbol = canvas.getActiveObject();
+
+            if (selectedSymbol && selectedSymbol.showSliderMarks) {
+                selectedSymbol.showSliderMarks();
+            }
+
+        }, interval);
+    }
+    playButton.data('playing', !playing);
+}
 
 function reloadPage() {
     window.location.reload(false);
@@ -9556,12 +10362,14 @@ function updateMemoryReferences(referencedObject) {
     console.log(referenceWidget.otherReferencedObjects);
 }
 
-function processLogFiles(logFileContent, scopeFileContent, signalFileContent) {
+function processLogFiles(logFileContent, scopeFileContent, signalFileContent, lineInfoFileContent) {
 
     window.minTimeSignalData = Infinity;
     window.maxTimeSignalData = -Infinity;
     window.minTimeLogData = Infinity;
     window.maxTimeLogData = -Infinity;
+    window.minTime = Infinity;
+    window.maxTime = -Infinity;
 
     if (signalFileContent) {
         Papa.parse(signalFileContent.trim(), {
@@ -9589,6 +10397,34 @@ function processLogFiles(logFileContent, scopeFileContent, signalFileContent) {
             }
         });
     }
+
+    if (lineInfoFileContent) {
+        Papa.parse(lineInfoFileContent.trim(), {
+            delimiter: "~",
+            header: true,
+            dynamicTyping: true,
+            complete: function (lineData) {
+                if (lineData && lineData.data && lineData.data[0]) {
+                    window.lineData = lineData.data;
+
+                    window.minTimeLineData = lineData.data[0].time;
+                    window.maxTimeLineData = lineData.data[lineData.data.length - 1].time;
+
+                     window.minTime = Math.min(window.minTime, window.minTimeLineData);
+                     window.maxTime = Math.max(window.maxTime, window.maxTimeLineData);
+
+                    // var ids = Object.keys(progvolver.objects);
+                    // ids.forEach(function (id) {
+                    //     var object = progvolver.objects[id];
+                    //     object.setSignalData && object.setSignalData();
+                    //     object.setProgramTime && object.setProgramTime(window.minTime);
+                    // });
+
+                }
+            }
+        });
+    }
+
 
     // we first process the content of the log file
     Papa.parse(logFileContent.trim(), {
@@ -9621,6 +10457,11 @@ function processLogFiles(logFileContent, scopeFileContent, signalFileContent) {
                     window.minTime = Math.min(window.minTimeLogData, window.minTimeSignalData);
                     window.maxTime = Math.max(window.maxTimeLogData, window.maxTimeSignalData);
 
+                    console.log("Window.minTime was: " + window.minTime);
+                    window.minTime = Math.min(window.minTime, window.minTimeLineData);
+                    window.maxTime = Math.max(window.maxTime, window.maxTimeLineData);
+
+                    console.log("Window.minTime is: " + window.minTime);
 
 //                    let sliderWidth = $("#theSlider").parent().width();
 //                    window.sliderMargin = 50; // pixels before the timeline starts to react to actual data
@@ -9755,6 +10596,8 @@ function processLogFiles(logFileContent, scopeFileContent, signalFileContent) {
                     });
 
 
+                    console.log("Timeoffset");
+                    console.log(logData.data[0].timeOffset);
                     window.firstOffset = moment(logData.data[0].timeOffset).toDate();
                     window.lastOffset = moment(logData.data[logData.data.length - 1].timeOffset).toDate();
                     window.programDuration = moment.duration(window.lastOffset - window.firstOffset).valueOf();
@@ -9808,10 +10651,22 @@ function processLogFiles(logFileContent, scopeFileContent, signalFileContent) {
                     });
 
                     // parse signal file contents
+
+                    // set timeline to the start position
+                    var theSlider = $("#theSlider").data("ionRangeSlider");
+                    theSlider.update({from: 0});
+                    window.presentTime = window.minTime;
+
+                    // determine new variable values for code variant combination and remove any variables if they do not exist
+                    //getAssociatedVariablesForCodeVariants();
+                    console.log("Window minTime: " + window.minTime);
+                    console.log("Window maxTime: " + window.maxTime);
                 }
             }
         }
     });
+
+
 }
 
 

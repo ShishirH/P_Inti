@@ -58,13 +58,24 @@ class ConnectableWidget {
             }
 
             if (this.history) {
+                this.oldValues = this.values;
                 this.values = this.history.filter(item => item[window.sliderDimension] <= time);
+
+                // if (this.oldValues && (this.oldValues.length == this.values.length)) {
+                //     console.log("Duplicate call. Returning");
+                //     return;
+                // }
+
                 if (this.values.length) {
+                    console.log("Mapped to time: " + this.values[this.values.length - 1].time)
                     this.onValuesUpdated && this.onValuesUpdated(this.values[this.values.length - 1]);
                     /*console.log(this.history);
                      console.log(this.values);*/
                 }
             }
+
+            console.log("Code was executed")
+            console.log(this.values);
 
 
             if (backgroundObject.movementInteractionEvent) {
@@ -113,6 +124,17 @@ class ConnectableWidget {
                     }
                 }
             }
+
+            // // shooting stars decay
+            // if (backgroundObject.shootingStarsDict) {
+            //     for (const [key, value] of Object.entries(backgroundObject.shootingStarsDict)) {
+            //         if (backgroundObject.shootingStarsDict[key].array) {
+            //             console.log("shooting star decay");
+            //             shootingStarsDecay(backgroundObject, namedSymbols[key]);
+            //         }
+            //     }
+            // }
+
         };
         return this.background;
     }

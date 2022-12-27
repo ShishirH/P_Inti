@@ -6,17 +6,22 @@ using System.Threading.Tasks;
 
 namespace P_Inti
 {
+    // Root myDeserializedClass = JsonConvert.DeserializeObject<CodeControlJsonResponse>(myJsonResponse);
     public class CodeControlJsonResponse
     {
-        // Root myDeserializedClass = JsonConvert.DeserializeObject<CodeControlJsonResponse>(myJsonResponse);
-        public List<Shift> shifts { get; set; }
-        
-        public class Shift
-        {
-            public string id { get; set; }
-            public List<string> changes { get; set; }
-        }
+        public string projectHashCode { get; set; }
+        public List<BranchInfo> branchInfo { get; set; }
 
+    }
+    public class BranchInfo
+    {
+        public string codeVariantId { get; set; }
+        public List<CodeVariantContent> codeVariantContents { get; set; }
+    }
 
+    public class CodeVariantContent
+    {
+        public string filePath { get; set; }
+        public List<string> codeVariantFileContents { get; set; }
     }
 }

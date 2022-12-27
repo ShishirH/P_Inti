@@ -55,12 +55,14 @@
     <StartArguments>/rootsuffix Exp</StartArguments>
   </PropertyGroup>
   <ItemGroup>
+    <Compile Include="AddToCodeShift.cs" />
     <Compile Include="BREAKPOINT_EDIT_OPERATION.cs" />
     <Compile Include="BREAKPOINT_FILTER_TYPE.cs" />
     <Compile Include="CodeAdornment.cs" />
     <Compile Include="CodeAdornmentTextViewCreationListener.cs" />
     <Compile Include="CodeAnalyzer.cs" />
     <Compile Include="CodeControlAddExistingCode.cs" />
+    <Compile Include="CodeControlAddExistingCodeContextMenu.cs" />
     <Compile Include="CodeControlBranchInfo.cs" />
     <Compile Include="CodeControlEditorAdornment.cs" />
     <Compile Include="CodeControlEditorAdornmentTextViewCreationListener.cs" />
@@ -229,9 +231,11 @@
     <None Include="Resources\public_html\js\contextMenu\jquery.contextMenu.min.js.map" />
     <None Include="Resources\public_html\js\graphlib.jscsrc" />
     <None Include="Resources\public_html\log.csv" />
+    <Content Include="Resources\AddToCodeShift.png" />
     <Content Include="Resources\CodeControlAddExistingCode.png" />
     <Content Include="Resources\ReusableCommand.png" />
     <Content Include="Resources\ToolWindow1Command.png" />
+    <Content Include="Resources\CodeControlAddExistingCodeContextMenu.png" />
     <Content Include="snapshot_blob.bin">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
       <IncludeInVSIX>true</IncludeInVSIX>

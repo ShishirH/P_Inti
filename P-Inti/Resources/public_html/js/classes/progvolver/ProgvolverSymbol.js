@@ -29,8 +29,8 @@ class ProgvolverSymbol extends ConnectableWidget {
         options.rx = options.rx || 5;
         options.ry = options.ry || 5;
         options.label = options.label || options.fileName && options.lineNumber ? options.fileName + ' (' + options.lineNumber + ')' : options.fileName || '';
-        options.fill = symbolKinds[options.kind];
-        options.stroke = options.stroke || darken(symbolKinds[options.kind]);
+        options.fill = options.fill || symbolKinds[options.kind];
+        options.stroke = options.stroke || darken(options.fill);
         options.strokeWidth = options.strokeWidth || 2;
         options.nonResizable = true;
         options.hasControls = false;
@@ -233,10 +233,6 @@ class ProgvolverSymbol extends ConnectableWidget {
             // drawCurveThroughPoints(ctx, points);
             // drawCirclesAlongCurve(ctx, points);
 
-            if (background.shootingStarTarget) {
-                background.drawShootingStars(ctx);
-            }
-
             var renderableValue = background.value;
             if (!iVoLVER.util.isUndefined(background.value) && iVoLVER.util.isNumber(background.value)) {
                 renderableValue = background.value.toFixed(2);
@@ -246,21 +242,41 @@ class ProgvolverSymbol extends ConnectableWidget {
         };
 
 
+        let currentDataItemIndex = -1;
         background.onValuesUpdated = function (dataItem) {
             if (dataItem) {
-                console.log("Data item is:")
-                console.log(dataItem);
 
+                console.log("dataItem");
+                console.log(dataItem);
                 let widgetIDs = dataItem.widgetsID.split(",");
                 let values = ("" + dataItem.values).split(",");
                 let types = ("" + dataItem.types).split(",");
                 let index = widgetIDs.indexOf(background.id);
 
-                let shootingStarsSource = parseShootingStarsSource(dataItem.parentStatement);
+                // // // shooting stars decay
+                // if (background.shootingStarsDict) {
+                //     for (const [key, value] of Object.entries(background.shootingStarsDict)) {
+                //         background.shootingStarsDict[key].array && background.shootingStarsDict[key].array.forEach(function (shootingStar) {
+                //             console.log("shooting star decay");
+                //             shootingStarsDecay(background, namedSymbols[key]);
+                //         });
+                //     }
+                // }
 
-                if (shootingStarsSource && shootingStarsSource != background.name) {
-                    generateShootingStars(background, namedSymbols[shootingStarsSource]);
-                }
+                // if (currentDataItemIndex !== dataItem.index) {
+                //     console.log("Variable is: " + background.name)
+                //     let shootingStarsSource;
+                //     shootingStarsSource = parseShootingStarsSource(dataItem.parentStatement, background);
+                //
+                //     if (!shootingStarsSource && dataItem.grandParentStatement)
+                //         shootingStarsSource = parseShootingStarsSource(dataItem.grandParentStatement, background);
+                //
+                //     console.log("Shooting star source is: " + shootingStarsSource);
+                //     if (shootingStarsSource && shootingStarsSource != background.name) {
+                //         console.log("Generating shooting stars");
+                //         generateShootingStars(background, shootingStarsSource);
+                //     }
+                // }
 
                 if (types[index] == "SimpleAssignmentExpression" || types[index] == "PostDecrementExpression" || types[index] == "PreDecrementExpression" || types[index] == "PostIncrementExpression") {
                     if (background.value != values[index]) {
@@ -272,8 +288,10 @@ class ProgvolverSymbol extends ConnectableWidget {
                     //background.setLabel(background.fileName + ' (' + background.lineNumber + ')');
                 }
 
-                background.updateColorDecay();
+                //background.updateColorDecay();
             }
+
+            currentDataItemIndex = dataItem.index;
 
 //            if (dataItem) {
 //                background.setValue(dataItem.value);
@@ -773,7 +791,16 @@ class ProgvolverSymbol extends ConnectableWidget {
         };
 
         background.addAll = function () {
-            background.expand();
+            canvas.add(background);
+            canvas.add(background.nameObject);
+        }
+
+        background.removeAll = function () {
+            background.childrenOnTop.forEach(function (child) {
+                canvas.remove(child);
+            });
+
+            canvas.remove(background);
         }
 
         background.toJson = function () {
@@ -808,34 +835,6 @@ class ProgvolverSymbol extends ConnectableWidget {
             })
         }
 
-        background.drawShootingStars = function (ctx) {
-            let curveEndCoords = null;
-            let curveStartCoords = null;
-            let curveMidCoords = null;
-
-            curveStartCoords = background.getPointByOrigin('right', 'center');
-            curveStartCoords.y -= 1.5;
-
-            if (background.shootingStarTarget) {
-                curveEndCoords = background.shootingStarTarget.getPointByOrigin('left', 'center');
-            }
-
-            curveMidCoords = {x: curveStartCoords.x + 100, y: curveStartCoords.y + 100};
-
-            let radius = 6.0;
-            let opacity = 0.3;
-            for (var t = 0; t < 101; t += 5) {
-                var point = getQuadraticBezierXYatT(curveStartCoords, curveMidCoords, curveEndCoords, t / 100);
-                ctx.beginPath();
-                ctx.arc(point.x, point.y, radius, 0, Math.PI * 2);
-                ctx.closePath();
-                ctx.fillStyle = rgba(255, 255, 0, opacity);
-                ctx.fill();
-                radius = radius + 0.3;
-                opacity = opacity + 0.015;
-            }
-        };
-
         console.log("Symbol is: ");
         console.log(background);
 
@@ -843,10 +842,13 @@ class ProgvolverSymbol extends ConnectableWidget {
         if (!this.doNotRegisterObject)
             registerProgvolverObject(this);
 
-        console.log("Adding to persistent entry")
         PERSISTENT_CANVAS_ENTRIES.push(background);
-        console.log("Persistent entry is now");
-        console.log(PERSISTENT_CANVAS_ENTRIES);
+
+        if (!window.source) {
+            window.source = background;
+        } else {
+            window.target = background;
+        }
         return background;
     }
 
