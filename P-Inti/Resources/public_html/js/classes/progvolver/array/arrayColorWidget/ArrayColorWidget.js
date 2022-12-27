@@ -21,6 +21,7 @@ class ArrayColorWidget {
         var addColorWidgetButton = function () {
             var colorWidgetAddition = new ArrayColorWidgetAddition({
                 parent: background,
+                array: background.array,
                 radius: 6
             });
 
@@ -142,7 +143,6 @@ class ArrayColorWidget {
         });
 
         this.progvolverType = "ArrayColorWidget";
-        registerProgvolverObject(this);
 
         return background;
     }

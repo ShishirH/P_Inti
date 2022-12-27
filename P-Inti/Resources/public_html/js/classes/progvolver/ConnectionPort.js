@@ -7,6 +7,13 @@ var ConnectionPort = iVoLVER.util.createClass(fabric.Circle, {
         options.originY = 'center';
         options.radius = options.radius || 6;
         this.callSuper('initialize', options);
+        this.type = options.type;
+        this.index = options.index;
+        this.value = options.value;
+
+        this.array = options.array;
+        this.outputNumberHolders = [];
+
         this.initConnectable();
     },
 

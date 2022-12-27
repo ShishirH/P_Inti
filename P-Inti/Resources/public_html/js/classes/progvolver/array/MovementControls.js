@@ -5,12 +5,11 @@ function getNewXPosition(indentation, hiddenNumber, arrayElementsArray, backgrou
         indentation = (currentColumn - hiddenNumber);
 
     let newXPosition = parseFloat(45 + (indentation * arrayElementsArray[currentRow - 1][currentColumn].width));
-
-    return {indentation, newXPosition};
+    return [indentation, newXPosition];
 }
 
 function setXPosition(newXPosition, i, j, background, hiddenNumber, leftHidden, elementWidth, rightHidden, arrayElementsArray) {
-    console.log("XPosition: " + newXPosition + " and index: " + (i - 1) + ", " + (j));
+    LOG && console.log("XPosition: " + newXPosition + " and index: " + (i - 1) + ", " + (j));
     if (background.columns === 1) {
         if (hiddenNumber >= i || newXPosition < 45) {
             newXPosition = 45;
@@ -32,11 +31,12 @@ function setXPosition(newXPosition, i, j, background, hiddenNumber, leftHidden, 
     }
     background.expandedOptions[arrayElementsArray[i - 1][j].id].x = newXPosition;
     background.compressedOptions[arrayElementsArray[i - 1][j].id].x = newXPosition;
-    return {leftHidden, rightHidden};
+    return [leftHidden, rightHidden];
 }
 
 function moveScrollX(background) {
     // Divide the X axis into ticks for the array. -20 is for the left and the right arrows.
+    let scrollablePortionWidth = (background.width - 45); // 12 for the left arrow, 12 for the right arrow
     if (!background.isCompressed) {
         let tickWidth;
 
@@ -49,9 +49,9 @@ function moveScrollX(background) {
         // Width of the scrollX movement is 205.5
 
         if (background.columns > 1) {
-            tickWidth = (background.width - scrollX.width) / (background.columns - 3); // TODO Work out the logic. Bugs with array size greater than 25
+            tickWidth = (scrollablePortionWidth) / (background.columns - 1); // TODO Work out the logic. Bugs with array size greater than 25
         } else {
-            tickWidth = (background.width - scrollX.width) / (arrayElementsArray.length - 3); // TODO Work out the logic. Bugs with array size greater than 25. 3 should be number of elements visible for array size - 1
+            tickWidth = (scrollablePortionWidth) / (arrayElementsArray.length - 3);
         }
 
         var updatedFirstVisible = false;
@@ -80,7 +80,10 @@ function moveScrollX(background) {
 
                 LOG && console.log("First visible is now: " + background.firstVisibleRow);
 
-                indentation, newXPosition = getNewXPosition(indentation, hiddenNumber, arrayElementsArray, background, i, j);
+                let indentationAndXPos = getNewXPosition(indentation, hiddenNumber, arrayElementsArray, background, i, j);;
+                indentation = indentationAndXPos[0];
+                newXPosition = indentationAndXPos[1];
+
                 let elementWidth = arrayElementsArray[i - 1][j].width;
 
                 LOG && console.log("XPosition: " + newXPosition + " and index: " + (i - 1) + ", " + (j));

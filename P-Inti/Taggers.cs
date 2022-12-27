@@ -348,17 +348,13 @@ namespace P_Inti
                     {
                         SnapshotSpan snapshotSpan = new SnapshotSpan(textSnapshotLine.Start + index, textSnapshotLine.Start + index + searchedText.Length);
 
+                        if (i < markers.Length)
+                        {
+                            TextMarkerTag highlight = markers[i];
+                            TagSpan<TextMarkerTag> tag = new TagSpan<TextMarkerTag>(snapshotSpan, highlight);
+                            yield return tag;
 
-
-
-
-
-
-
-                        TextMarkerTag highlight = markers[i];
-
-                        TagSpan<TextMarkerTag> tag = new TagSpan<TextMarkerTag>(snapshotSpan, highlight);
-                        yield return tag;
+                        }
                     }
                     i++;
 

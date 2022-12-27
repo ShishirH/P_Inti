@@ -23,61 +23,61 @@ class CodeControlAddition {
             ctx.restore();
         };
 
-        background.createCodeControl = function () {
+        background.createCodeControl = function (event, existingCodeVariant) {
+            let codeControlBranch = null;
+            if (existingCodeVariant) {
+                codeControlBranch = existingCodeVariant;
+            } else {
+                codeControlBranch = new CodeControlBranch({
+                    parent: background.parent,
+                    branchName: background.id
+                });
+            }
+
+            console.log("CodeControlBranch is: ");
+            console.log(codeControlBranch);
             if (window.selectedCodeControl === background.parent) {
-                if (window.jsHandler) {
-                    if (window.jsHandler.createCodeControl) {
-                        window.jsHandler.createCodeControl(null).then(function (response) {
+                let backgroundHeight = background.parent.height;
+                background.parent.set('height', backgroundHeight + 30);
 
-                            console.log("Response ID: " + response.id);
-                            console.log("Branch name: " + response.branchName);
+                console.log("Updating y pos");
+                const originParent = {originX: 'center', originY: 'top'};
+                const originChild = {originX: 'center', originY: 'top'};
 
-                            let codeControlBranch = new CodeControlBranch({
-                                parent: background.parent,
-                                id: response.id,
-                                branchName: response.branchName
-                            });
+                console.log("Getting yPos from here");
+                let yPosition = CodeControlBranch.getYPositionForIndex(background.parent.codeBranches.length);
 
-                            const originParent = {originX: 'center', originY: 'top'};
-                            const originChild = {originX: 'center', originY: 'top'};
+                console.log("yPosition for the branch is: " + yPosition);
+                background.parent.addChild(codeControlBranch, {
+                    whenCompressed: {
+                        x: 0, y: yPosition,
+                        scaleX: 1, scaleY: 1, opacity: 1,
+                        originParent: originParent,
+                        originChild: originChild
+                    },
+                    whenExpanded: {
+                        x: 0, y: yPosition,
+                        scaleX: 1, scaleY: 1, opacity: 1,
+                        originParent: originParent,
+                        originChild: originChild
+                    },
+                    movable: false
+                });
 
-                            let yPosition = CodeControlBranch.getYPositionForIndex(background.parent.codeBranches.length);
+                background.parent.childrenOnTop.push(codeControlBranch);
+                background.parent.codeBranches.push(codeControlBranch);
+                background.parent.codeBranchesMap[codeControlBranch.id] = codeControlBranch;
 
-                            background.parent.addChild(codeControlBranch, {
-                                whenCompressed: {
-                                    x: 0, y: yPosition,
-                                    scaleX: 1, scaleY: 1, opacity: 1,
-                                    originParent: originParent,
-                                    originChild: originChild
-                                },
-                                whenExpanded: {
-                                    x: 0, y: yPosition,
-                                    scaleX: 1, scaleY: 1, opacity: 1,
-                                    originParent: originParent,
-                                    originChild: originChild
-                                },
-                                movable: false
-                            });
+                // Move the addition button below the newly created branch
+                console.log("Another yPos for the addition button")
+                let additionYPosition = CodeControlBranch.getYPositionForIndex(background.parent.codeBranches.length);
 
-                            background.parent.childrenOnTop.push(codeControlBranch);
-                            background.parent.codeBranches.push(codeControlBranch);
-                            background.parent.codeBranchesMap[codeControlBranch.id] = codeControlBranch;
+                background.parent.expandedOptions[background.id].y = additionYPosition;
+                background.parent.compressedOptions[background.id].y = additionYPosition;
 
-                            let backgroundHeight = background.parent.height;
-                            background.parent.set('height', backgroundHeight + 30);
-
-                            // Move the addition button below the newly created branch
-                            let additionYPosition = CodeControlBranch.getYPositionForIndex(background.parent.codeBranches.length);
-                            background.parent.expandedOptions[background.id].y = additionYPosition;
-                            background.parent.compressedOptions[background.id].y = additionYPosition;
-
-                            canvas.add(codeControlBranch);
-                            background.parent.updateSelectedBranch(codeControlBranch);
-                            background.parent.positionObjects();
-                            codeControlBranch.positionObjects();
-                        });
-                    }
-                }
+                canvas.add(codeControlBranch);
+                background.parent.updateSelectedBranch(codeControlBranch);
+                background.parent.positionObjects();
             }
         }
 

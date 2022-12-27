@@ -36,10 +36,10 @@ namespace P_Inti
             ImageDrawing signalDrawing = new ImageDrawing();
             signalDrawing.Rect = new Rect(75, 75, 100, 100);
             signalDrawing.ImageSource = new BitmapImage(
-                new Uri(@"C:\Dev\P-Inti\signal2.png", UriKind.Absolute));
+                new Uri(@"E:\Dev\P_Inti\signalwave.png", UriKind.Absolute));
 
             DrawingBrush drawingBrush = new DrawingBrush(signalDrawing);
-            System.Windows.Shapes.Ellipse ellipse = new Ellipse();
+            Ellipse ellipse = new Ellipse();
             ellipse.Fill = drawingBrush;
             ellipse.StrokeThickness = 2;
             ellipse.Stroke = Brushes.DarkBlue;

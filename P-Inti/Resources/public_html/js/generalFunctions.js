@@ -4,6 +4,854 @@ progvolver = {
     objects: {}
 };
 
+function getHashOfString(str) {
+    var hash = 0,
+        i, chr;
+    if (str.length === 0) return hash;
+    for (i = 0; i < str.length; i++) {
+        chr = str.charCodeAt(i);
+        hash = ((hash << 5) - hash) + chr;
+        hash |= 0; // Convert to 32bit integer
+    }
+    return hash.toString();
+}
+
+function setBottomButtonsVisibility() {
+    let timeLinePrevious = document.getElementById("timelinePrevious");
+    console.log(timeLinePrevious);
+    if (!hasCodeBeenCompiled) {
+        document.getElementById("timelinePreviousContainer").classList.add('bottomRowButtonsDisabled');
+        document.getElementById("playButtonContainer").classList.add('bottomRowButtonsDisabled');
+        document.getElementById("timelineNextContainer").classList.add('bottomRowButtonsDisabled');
+        document.getElementById("theSliderContainer").classList.add('bottomRowButtonsDisabled');
+    } else {
+        document.getElementById("timelinePreviousContainer").classList.remove('bottomRowButtonsDisabled');
+        document.getElementById("playButtonContainer").classList.remove('bottomRowButtonsDisabled');
+        document.getElementById("timelineNextContainer").classList.remove('bottomRowButtonsDisabled');
+        document.getElementById("theSliderContainer").classList.remove('bottomRowButtonsDisabled');
+    }
+}
+
+function getCombinedHashOfVariants() {
+    let appendedActiveBranches = "";
+    for (let i = 0; i < codeControlsOnCanvas.length; i++) {
+        let codeControl = codeControlsOnCanvas[i];
+        let activeBranch = codeControl.selectedBranch;
+        appendedActiveBranches += activeBranch;
+    }
+
+    if (appendedActiveBranches != "") {
+        return getHashOfString(appendedActiveBranches);
+    } else {
+        return "";
+    }
+}
+
+function loadLogFiles(response, lineInfoFileContent, waitingDialog) {
+    window.trackedSymbolsIDs = response.trackedSymbolsIDs;
+    window.trackedExpressionsIDs = response.trackedExpressionsIDs;
+    window.trackedSignalIDs = response.trackedSignalIDs;
+
+    // add index to lineLogData
+
+    var logFileContent = response.logFileContent.join("\n");
+    var scopeFileContent = response.scopeFileContent.join("\n");
+    var signalFileContent = response.signalFileContent.join("\n");
+    var lineInfoFileContentArray = response.lineInfoFileContent;
+
+    for (let i = 1; i < lineInfoFileContentArray.length; i++) {
+        lineInfoFileContentArray[i] = i + "~" + lineInfoFileContentArray[i];
+    }
+    lineInfoFileContent = lineInfoFileContentArray.join("\n");
+
+    logFileContent = preProcessLogFileForDuplicates(logFileContent);
+    processMethodParameters(logFileContent);
+    processLogFiles(logFileContent, scopeFileContent, signalFileContent, lineInfoFileContent);
+    window.snapshotWidget && window.snapshotWidget.parseMemberValues();
+
+    if (waitingDialog) {
+        waitingDialog.dialog('content', '<div style="text-align: center; margin-top: 20px;"><span align="center" style="font-size: 150%;">' + response.response + '</span></div>');
+        if (response.success) {
+            setTimeout(function () {
+                waitingDialog.dialog('hide');
+            }, 2000);
+        }
+    }
+}
+
+function clickRunCodeButton() {
+
+    hasCodeBeenCompiled = true;
+    setBottomButtonsVisibility();
+
+    let outputDir = "";
+
+    let combinedHash = getCombinedHashOfVariants();
+    if (combinedHash != "") {
+        outputDir = combinedHash;
+        codeControlsCompiledHashCodes.push(outputDir);
+    }
+
+    if (window.jsHandler) {
+        var lineInfoFileContent;
+        // console.log("addIndexToLineLogFile");
+        // window.jsHandler.addIndexToLineLogFile(null).then(function (response) {
+        //     console.log(response);
+        //     lineInfoFileContent = response.lineInfoFileContent;
+        // });
+
+        if (window.jsHandler.runCodeAnalyzer) {
+            var waitingDialog = new jWait('Running Program');
+            window.jsHandler.runCodeAnalyzer({
+                outputDir: outputDir
+            }).then(function (response) {
+                loadLogFiles(response, lineInfoFileContent, waitingDialog);
+            });
+        }
+    }
+
+    var theSlider = $("#theSlider").data("ionRangeSlider");
+    if (priorSliderFromPercentage > 0) {
+        console.log("Log files loaded")
+        while(theSlider.result.from_percent < priorSliderFromPercentage) {
+            console.log(theSlider.result.from_percent)
+            moveTimelineNext();
+        }
+    }
+}
+
+function goToLineInFile() {
+    let lineDetails = getLineNumberForCurrentTime(window.presentTime);
+
+    let fileName = lineDetails[0];
+    let lineNumber = lineDetails[1];
+
+    var args = {
+        id: "100",
+        mainColor: "#BDE0EB",
+        startLine: lineNumber,
+        endLine: lineNumber,
+        file: fileName,
+        lineNumber: lineNumber,
+        animate: true,
+        newDispatcher: true,
+        opacity: 0.5
+    };
+    //console.log(args);
+    window.jsHandler.goTo(args);
+}
+
+let priorSliderFromPercentage = -1;
+
+function getAssociatedVariablesForCodeVariants(variantCombinationString)
+{
+    let variableNamesStr = "";
+    let declaredLinesStr = "";
+    let typesStr = "";
+    let scopeLinesStr = "";
+    let fileNameStr = "";
+    let variableIdsStr = "";
+
+    variablesOnCanvas = [];
+    let variablesNamesArray = [];
+    let variablesValuesArray = [];
+    for (const [key, value] of Object.entries(namedSymbols)) {
+        let variable = value;
+
+        if (variableNamesStr === "") {
+            variableNamesStr += variable.name;
+            declaredLinesStr += variable.declareAtTo;
+            typesStr += variable.type;
+            scopeLinesStr += variable.scopeTo;
+            fileNameStr += variable.file;
+            variableIdsStr += variable.id;
+        } else {
+            variableNamesStr += "_" + variable.name;
+            declaredLinesStr += "_" + variable.declareAtTo;
+            typesStr += "_" + variable.type;
+            scopeLinesStr += "_" + variable.scopeTo;
+            fileNameStr += "_" + variable.file;
+            variableIdsStr += "!" + variable.id;
+        }
+    }
+
+    if (window.jsHandler) {
+        window.jsHandler.searchVariableAcrossVariants({
+            variableNamesStr: variableNamesStr,
+            declaredLinesStr: declaredLinesStr,
+            typesStr: typesStr,
+            scopeLinesStr: scopeLinesStr,
+            fileNameStr: fileNameStr,
+            variableIdsStr: variableIdsStr,
+            hashCodeOfCombinedBranches: getCombinedHashOfVariants()
+        }).then(function (response) {
+            console.log("Response was: ");
+            console.log(response);
+
+            variablesNamesArray = response.foundVariableNames.split("_");
+            variablesValuesArray = response.foundVariableValues.split("_");
+
+            console.log("variablesNamesArray");
+            console.log(variablesNamesArray);
+
+            console.log("variablesValuesArray");
+            console.log(variablesValuesArray);
+
+            // Set values for another code variant combination
+            for (let i = 0; i < variablesNamesArray.length; i++) {
+                let variable = namedSymbols[variablesNamesArray[i]];
+                variablesOnCanvas.push(variable);
+
+                if (variable.kind == "ArraySymbol") {
+                    variable.setValueForCurlyBrace(variablesValuesArray[i].trim());
+                } else {
+                    variable.value = variablesValuesArray[i];
+                }
+
+                if (!variable.isOnCanvas) {
+                    variable.isOnCanvas = true;
+                    variable.addAll();
+                    progvolver.objects[variable.id] = variable;
+                }
+            }
+
+            // Remove all other variables not in the code variant combination
+            for (const [key, value] of Object.entries(namedSymbols)) {
+                if (variablesOnCanvas.indexOf(value) == -1) {
+                    if (value.isOnCanvas) {
+                        value.removeAll();
+                        value.isOnCanvas = false;
+
+                        delete progvolver.objects[value.id];
+
+                    }
+                }
+            }
+
+            let lineInfoContent = "";
+
+            var theSlider = $("#theSlider").data("ionRangeSlider");
+            priorSliderFromPercentage = theSlider.result.from_percent;
+            if (response.logFileContent) {
+                loadLogFiles(response, lineInfoContent, null);
+
+                console.log("Log files loaded")
+                console.log("Prior slider percentage: " + priorSliderFromPercentage);
+                console.log("Current slider percentage: " + theSlider.result.from_percent);
+                while(theSlider.result.from_percent < priorSliderFromPercentage) {
+                    moveTimelineNext();
+                }
+            } else {
+                hasCodeBeenCompiled = false;
+                setBottomButtonsVisibility();
+            }
+
+        });
+    }
+
+}
+
+function moveTimelineNext() {
+    let currentTime = window.presentTime;
+    let currentIndex = 0;
+
+    var theSlider = $("#theSlider").data("ionRangeSlider");
+
+    if (!currentTime) {
+        // onSliderChange hasn't been called
+        currentTime = window.minTime;
+    }
+
+    console.log("currentTime is: ");
+    console.log(currentTime);
+
+    // get next time
+    currentIndex = getNextTimeLineDataIndex(currentTime);
+    currentTime = getNextTimeLineData(currentTime);
+
+    if (currentIndex == window.lineData.length || currentIndex == -1) {
+        return;
+    }
+
+    console.log("Next time is: ");
+    console.log(currentTime);
+
+    console.log("Current index is: ");
+    console.log(currentIndex);
+
+    window.presentTime = currentTime;
+
+    console.log("Updating the slider");
+    console.log("Slider percentage: " + (currentIndex * 100) / window.lineData.length);
+    theSlider.update({from: ((currentIndex * 100) / window.lineData.length)});
+
+    var ids = Object.keys(progvolver.objects);
+    ids.forEach(function (id) {
+        var object = progvolver.objects[id];
+        object.setProgramTime && object.setProgramTime(currentTime);
+    });
+
+
+    console.log("Appending marks")
+    sliderMarksElement.append(sliderMarksElements);
+
+    var selectedSymbol = canvas.getActiveObject();
+
+    if (selectedSymbol && selectedSymbol.showSliderMarks) {
+        selectedSymbol.showSliderMarks();
+    }
+}
+
+function getNextTimeLineData(currentTime) {
+    var dataItems = window.lineData.filter(item => item.time > currentTime);
+
+    if (dataItems.length > 0) {
+        return dataItems[0].time;
+    } else {
+        return -1;
+    }
+
+}
+
+function getNextTimeLineDataIndex(currentTime) {
+    var dataItems = window.lineData.filter(item => item.time > currentTime);
+
+    if (dataItems.length > 0) {
+        return dataItems[0].index;
+    } else {
+        return -1;
+    }
+}
+
+function moveTimelinePrevious() {
+    let currentTime = window.presentTime;
+    let currentIndex = 0;
+
+    var theSlider = $("#theSlider").data("ionRangeSlider");
+
+    if (!currentTime) {
+        // onSliderChange hasn't been called
+        currentTime = window.minTime;
+    }
+
+    console.log("currentTime is: ");
+    console.log(currentTime);
+
+    // get next time
+    currentTime = getPreviousTimeLineData(currentTime);
+    currentIndex = getPreviousTimeLineDataIndex(currentTime);
+
+    if (currentIndex == -1) {
+        return;
+    }
+
+    console.log("Previous time is: ");
+    console.log(currentTime);
+
+    console.log("Previous index is: ");
+    console.log(currentIndex);
+    var ids = Object.keys(progvolver.objects);
+    ids.forEach(function (id) {
+        var object = progvolver.objects[id];
+        object.setProgramTime && object.setProgramTime(currentTime);
+    });
+
+    theSlider.update({from: ((currentIndex * 100) / window.lineData.length)});
+
+    sliderMarksElement.append(sliderMarksElements);
+
+    var selectedSymbol = canvas.getActiveObject();
+
+    if (selectedSymbol && selectedSymbol.showSliderMarks) {
+        selectedSymbol.showSliderMarks();
+    }
+
+    window.presentTime = currentTime;
+}
+
+function getPreviousTimeLineData(currentTime) {
+    var filteredObjects =  window.lineData.filter(item => item.time < currentTime);
+
+    if (filteredObjects.length > 0) {
+        return filteredObjects[filteredObjects.length - 1].time;
+    } else {
+        return currentTime;
+    }
+}
+
+function getLineNumberForCurrentTime(currentTime) {
+    console.log("Current time is: ");
+    console.log(currentTime);
+    var filteredObjects =  window.lineData.filter(item => item.time <= currentTime);
+    let lineNumberArray = [];
+    if (filteredObjects.length > 0) {
+        let file = filteredObjects[filteredObjects.length - 1].filePath;
+        let lineNumber = filteredObjects[filteredObjects.length - 1].line;
+
+        lineNumberArray[0] = file;
+        lineNumberArray[1] = lineNumber;
+
+        return lineNumberArray;
+    } else {
+        return ["", -1];
+    }
+}
+
+function getPreviousTimeLineDataIndex(currentTime) {
+    for(let i = 0; i < window.lineData.length; i++) {
+        if (window.lineData[i].time > currentTime) {
+            return i - 1;
+        }
+    }
+}
+
+function drawCurveThroughPoints(ctx, points) {
+    ctx.save();
+    ctx.lineWidth = 2;
+    ctx.strokeStyle = rgba(255, 255, 0, 0.5);
+    ctx.moveTo((points[0].x), points[0].y);
+
+    if (points.length === 3) {
+        console.log("Three points");
+        ctx.quadraticCurveTo(points[1].x, points[1].y, points[2].x, points[2].y);
+    } else {
+        console.log("More than 3 points");
+        for (var i = 0; i < points.length - 1; i++) {
+            var x_mid = (points[i].x + points[i + 1].x) / 2;
+            var y_mid = (points[i].y + points[i + 1].y) / 2;
+            var cp_x1 = (x_mid + points[i].x) / 2;
+            var cp_x2 = (x_mid + points[i + 1].x) / 2;
+            ctx.quadraticCurveTo(cp_x1, points[i].y, x_mid, y_mid);
+            ctx.quadraticCurveTo(cp_x2, points[i + 1].y, points[i + 1].x, points[i + 1].y);
+        }
+    }
+    ctx.stroke();
+    ctx.restore();
+}
+
+function processMethodParameters(logFileContent) {
+    methodParameters.forEach(function (parameter) {
+        let referencedObjectId = parameter.referencedObjectId;
+        let initialArrayValue = "";
+        // Get the initial value (first array passed to the function)
+        Papa.parse(logFileContent.trim(), {
+            delimiter: "~",
+            header: true,
+            dynamicTyping: true,
+            complete: function (logData) {
+
+                // index~symbols~expressions~types~values~line~file~widgetsID~time~column~row~array~memoryAddress
+                if (logData && logData.data && logData.data[0]) {
+                    console.log("logData");
+                    console.log(logData);
+
+                    console.log("logData.data[0]");
+                    console.log(logData.data[0]);
+
+                    if (!iVoLVER.util.isUndefined(logData.data[0]) && !iVoLVER.util.isUndefined(logData.data[0][window.sliderDimension]) && !iVoLVER.util.isUndefined(logData.data[logData.data.length - 1]) && !iVoLVER.util.isUndefined(logData.data[logData.data.length - 1][window.sliderDimension])) {
+                        methodParameterLogData = logData.data.filter(item => item.widgetsID == referencedObjectId);
+
+                        for (let logLine of methodParameterLogData) {
+                            if (logLine.array) {
+                                initialArrayValue = logLine.array;
+                                break;
+                            }
+                        }
+
+                        console.log("Method parameter log data is: ");
+                        console.log(methodParameterLogData);
+
+                        console.log("Method parameter log array value is: ");
+                        console.log(initialArrayValue);
+
+                        initialArrayValue = initialArrayValue.replace("[", "{")
+                        initialArrayValue = initialArrayValue.replace("]", "}");
+                        initialArrayValue = initialArrayValue.replace(/;/g,", ");
+
+                        let response = parameter.referencedObjectDetails;
+
+                        var theSymbol = new ArraySymbol({
+                            value: '',
+                            containingType: response.ContainingType,
+                            containingSymbol: response.ContainingSymbol,
+                            containingNamespace: response.ContainingNamespace,
+                            kind: response.Kind_String,
+                            type: response.dataType,
+                            name: response.Name,
+                            file: response.fileName,
+                            fileName: response.fileName.split('\\').pop().split('/').pop(),
+                            lineNumber: response.declareAtFrom,
+                            id: response.symbolID,
+                            declareAtFrom: response.declareAtFrom,
+                            declareAtTo: response.declareAtTo,
+                            scopeFrom: response.scopeFrom,
+                            scopeTo: response.scopeTo,
+                            initialValue: initialArrayValue,
+                            isCompressed: true,
+                            isMember: true,
+                            isClass: false,
+                            members: null,
+                            movable: true
+                        });
+
+                        parameter.object = theSymbol;
+                        parameter.minimizeButton.sign = "+";
+                        parameter.reInitializeObject();
+                    }
+                }
+            }
+        });
+
+    })
+}
+
+function getQuadraticBezierXYatT(startPt, controlPt, endPt, T) {
+    var x = Math.pow(1 - T, 2) * startPt.x + 2 * (1 - T) * T * controlPt.x + Math.pow(T, 2) * endPt.x;
+    var y = Math.pow(1 - T, 2) * startPt.y + 2 * (1 - T) * T * controlPt.y + Math.pow(T, 2) * endPt.y;
+    return ({
+        x: x,
+        y: y
+    });
+}
+
+function getPositionAlongTheLine(x1, y1, x2, y2, percentage) {
+    return {x : x1 * (1.0 - percentage) + x2 * percentage, y : y1 * (1.0 - percentage) + y2 * percentage};
+}
+
+function scale (old_input, old_output, new_input) {
+    if (old_input == 0)
+        return 0;
+    return (old_output/old_input) * new_input;
+}
+
+function scaleCoordinates(coordsArray, percentage) {
+    let scaledCoords = [];
+
+    for (let coord of coordsArray) {
+        let xCoord = percentage * coord[0];
+        let yCoord = scale(coord[0], coord[1], xCoord);
+
+        scaledCoords.push([xCoord, yCoord]);
+    }
+
+    return scaledCoords;
+}
+
+function chevronShootingStars(source, target) {
+    var theConnector = source;
+
+    let chevron = [
+        [3, 0],
+        [-4, 6],
+        [-10, 6],
+        [-2, 0],
+        [-10, -6],
+        [-4, -6]
+    ];
+
+    if (!source.beforeShootingStarRender) {
+        source.beforeShootingStarRender = source.render;
+    }
+
+    source.render = function(ctx) {
+        ctx.save();
+        source.beforeShootingStarRender(ctx);
+        ctx.fillStyle = ctx.strokeStyle;
+
+        let sourceCoords = source.getPointByOrigin('center', 'center');
+        let targetCoords = target.getPointByOrigin('center', 'center');
+        let initialScale = 0.35;
+        let initialOpacity = 0.20;
+
+        var x1 = sourceCoords.x;
+        var y1 = sourceCoords.y;
+        var x2 = targetCoords.x;
+        var y2 = targetCoords.y;
+
+
+        var deltaX = x2 - x1;
+        var deltaY = y2 - y1;
+
+        var angle = Math.atan(deltaY / deltaX);
+        if (theConnector.x1 > theConnector.x2) {
+            angle += fabric.util.degreesToRadians(180);
+        }
+
+        var p1 = {x: x1, y: y1};
+        var p2 = {x: x2, y: y2};
+        var line = {p1: p1, p2: p2};
+        var length = computeLength(line);
+        var step = 8;
+        var cummulatedDistance;
+
+        cummulatedDistance = step;
+        let arrowColor = rgb(220, 220, 0);
+
+        while (true) {
+            var point = getPointAlongLine(line, cummulatedDistance);
+            var x = point.x;
+            var y = point.y;
+
+            ctx.lineWidth = 2;
+
+            ctx.strokeStyle = arrowColor;
+            ctx.fillStyle = arrowColor;
+            ctx.globalAlpha = initialOpacity;
+            drawFilledChevron(translateShape(rotateShape(scaleCoordinates(chevron, initialScale), angle), x, y), ctx);
+
+            initialScale += 0.08;
+            initialOpacity += 0.05;
+            step += 2;
+            
+            cummulatedDistance += step;
+            if (cummulatedDistance >= length) {
+                break;
+            }
+        }
+        ctx.restore();
+    }
+
+}
+
+function drawCirclesAlongLine(ctx, points) {
+    //ctx.save();
+    let shootingStarsCircles = [];
+    let radius = 12;
+    let opacity = 0.5;
+    var numberOfPoints = 20;
+    for (var i = 0; i < numberOfPoints; i++) {
+        var point = getPositionAlongTheLine(points[0].x, points[0].y, points[2].x, points[2].y, i / 20)
+        var shootingStarCircle = new fabric.Circle({
+            radius: radius,
+            top: point.y,
+            left: point.x,
+            fill: rgba(255, 255, 0, opacity),
+            centerX: "center",
+            centerY: "center",
+            opacity: opacity
+        });
+
+        canvas.add(shootingStarCircle);
+        shootingStarsCircles.push(shootingStarCircle);
+
+        // ctx.beginPath();
+        // ctx.arc(point.x, point.y, radius, 0, Math.PI * 2);
+        // ctx.closePath();
+        // ctx.fillStyle = rgba(255, 255, 0, opacity);
+        // ctx.fill();
+        radius = radius - 0.3;
+        //opacity = opacity - 0.015;
+    }
+
+    return shootingStarsCircles;
+    //ctx.restore();
+}
+
+function drawCirclesAlongCurve(ctx, points) {
+    //ctx.save();
+    let shootingStarsCircles = [];
+    let radius = 12;
+    let opacity = 0.5;
+    for (var t = 0; t < 101; t += 5) {
+        var point = getQuadraticBezierXYatT(points[0], points[1], points[2], t / 100);
+        var shootingStarCircle = new fabric.Circle({
+            radius: radius,
+            top: point.y,
+            left: point.x,
+            fill: rgba(255, 255, 0, opacity),
+            centerX: "center",
+            centerY: "center",
+            opacity: opacity,
+            eventable: false,
+            selectable: false
+        });
+
+        canvas.add(shootingStarCircle);
+        shootingStarsCircles.push(shootingStarCircle);
+
+        // ctx.beginPath();
+        // ctx.arc(point.x, point.y, radius, 0, Math.PI * 2);
+        // ctx.closePath();
+        // ctx.fillStyle = rgba(255, 255, 0, opacity);
+        // ctx.fill();
+        radius = radius - 0.3;
+        //opacity = opacity - 0.015;
+    }
+
+    return shootingStarsCircles;
+    //ctx.restore();
+}
+
+function shootingStarsDecay(widget1, widget2) {
+    let currentTime = window.presentTime;
+    let currentIndex = window.lineData.filter(item => item.time == currentTime)[0].index;
+    let stepsToDecay = 3;
+
+    console.log("Widget 1");
+    console.log(widget1);
+    console.log(widget1.name);
+    console.log("widget2");
+    console.log(widget2);
+    console.log(widget2.name);
+    console.log("widget1.shootingStarsDict");
+    console.log(widget1.shootingStarsDict);
+
+    if (!widget1.name && widget1.array) { // isArrayElement
+        widget1 = widget1.array;
+    }
+    if (widget1.shootingStarsDict[widget2.name]) {
+        console.log("I am here");
+        let shootingStarsCreationTime = widget1.shootingStarsDict[widget2.name].time;
+        console.log("shootingStarsCreationTime" + shootingStarsCreationTime);
+        if (!shootingStarsCreationTime) {
+            console.log("Returning")
+            return;
+        }
+        let creationIndex = window.lineData.filter(item => item.time == shootingStarsCreationTime)[0].index;
+        console.log("CreationIndex");
+        console.log(creationIndex);
+
+        if (creationIndex == currentIndex) {
+            console.log("Shooting stars just created. Returning");
+            return;
+        }
+
+        let indexDifference = Math.abs(currentIndex - creationIndex) + 1;
+        console.log("indexDifference");
+        console.log(indexDifference);
+
+        if ((indexDifference >= stepsToDecay) || indexDifference == 0) {
+            // remove the shooting stars
+            console.log("Removing the shooting stars")
+            widget1.shootingStarsDict[widget2.name].array.forEach(function (shootingStar) {
+                canvas.remove(shootingStar);
+                //widget1.shootingStarsDict[widget2.name] = {};
+            });
+        } else if (indexDifference > 0){
+            // Reducing opacity
+            console.log("Reducing opacity")
+            widget1.shootingStarsDict[widget2.name].array.forEach(function (shootingStar) {
+                shootingStar.opacity = ((stepsToDecay - indexDifference) / stepsToDecay);
+                //shootingStar.opacity = Math.max(shootingStar.opacity - 0.5, 0);
+            });
+        }
+    }
+}
+
+function generateShootingStars(widget1, widget2) {
+    let ctx = canvas.getContext();
+    var shootingStarEnd = widget1.getPointByOrigin('center', 'center');
+    let shootingStarStart = widget2.getPointByOrigin('center', 'center');
+    shootingStarStart.x += 5;
+    let shootingStarCenter = {x: (shootingStarStart.x + shootingStarEnd.x) / 2,
+        y: (shootingStarStart.y + shootingStarEnd.y) / 2};
+
+    var points = [shootingStarStart, shootingStarCenter, shootingStarEnd];
+    //drawCurveThroughPoints(ctx, points);
+    shootingStarsCircles = drawCirclesAlongCurve(ctx, points);
+
+    if (!widget1.name && widget1.array) { // array element
+        widget1 = widget1.array;
+    }
+
+    if (!widget2.name && widget2.array) { // array element
+        widget2 = widget2.array;
+    }
+
+    console.log("Shooting stars are: ");
+    console.log(shootingStarsCircles);
+    if (widget1.shootingStarsDict) {
+        console.log("shooting star dict exists");
+        console.log(widget1.shootingStarsDict[widget2.name]);
+        if (widget1.shootingStarsDict[widget2.name]) {
+            widget1.shootingStarsDict[widget2.name].array && widget1.shootingStarsDict[widget2.name].array.forEach(function (shootingStar) {
+                console.log("removing existing shooting star");
+                canvas.remove(shootingStar);
+            });
+        }
+    } else {
+        widget1.shootingStarsDict = {};
+        console.log("Creating dict");
+    }
+    widget1.shootingStarsDict[widget2.name] = {"time": window.presentTime, "array": shootingStarsCircles};
+    console.log("widget1.shootingStarsDict");
+    console.log(widget1.shootingStarsDict);
+}
+
+function parseShootingStarsSource(parentStatement, widget) {
+    if (parentStatement.includes("=")) {
+        let leftHalf = parentStatement.split("=")[0].trim();
+        let rightHalf = parentStatement.split("=")[1].trim();
+
+        let leftHalfIndex = null;
+        let rightHalfIndex = null;
+        console.log("@# Left half is: " + leftHalf);
+        if (leftHalf.includes("[")) {
+            leftHalfIndex = leftHalf.substring(leftHalf.indexOf("[") + 1, leftHalf.indexOf("]"));
+            console.log("leftHalfIndex is now: " + leftHalfIndex)
+        }
+
+        console.log("@# Right half is: " + rightHalf);
+        if (rightHalf.includes("[")) {
+            rightHalfIndex = rightHalf.substring(rightHalf.indexOf("[") + 1, rightHalf.indexOf("]"));
+            console.log("rightHalfIndex is now: " + rightHalfIndex)
+        }
+
+        if (rightHalf == widget.name) {
+            console.log("Found " + leftHalf);
+            if (leftHalfIndex) { // change to an array element
+                let index = namedSymbols[leftHalfIndex].value;
+                let arrayName = leftHalf.substring(0, leftHalf.indexOf("["));
+
+                console.log("Index is: " + index);
+                console.log("Array name is: " + arrayName);
+
+                if (namedSymbols[arrayName]){
+                    return namedSymbols[arrayName].arrayElementsArray[index][0];
+                }
+            }
+            if (namedSymbols[leftHalf]) {
+                return namedSymbols[leftHalf];
+            }
+        }
+    }
+}
+
+function parseShootingStarsSourceForArray(parentStatement, widget) {
+    if (parentStatement && parentStatement.includes("=")) {
+        let leftHalf = parentStatement.split("=")[0].trim();
+        let rightHalf = parentStatement.split("=")[1].trim();
+
+        let leftHalfIndex = null;
+        let rightHalfIndex = null;
+        console.log("@# Left half is: " + leftHalf);
+        if (leftHalf.includes("[")) {
+            leftHalfIndex = leftHalf.substring(leftHalf.indexOf("[") + 1, leftHalf.indexOf("]"));
+            console.log("leftHalfIndex is now: " + leftHalfIndex)
+        }
+
+        console.log("@# Right half is: " + rightHalf);
+        if (rightHalf.includes("[")) {
+            rightHalfIndex = rightHalf.substring(rightHalf.indexOf("[") + 1, rightHalf.indexOf("]")).trim();
+            console.log("rightHalfIndex is now: " + rightHalfIndex)
+        }
+
+        console.log(namedSymbols);
+        console.log("namedSymbols");
+
+        console.log(namedSymbols[rightHalfIndex]);
+        console.log("namedSymbols[rightHalfIndex]");
+
+        if (rightHalf.includes(widget.name)) {
+            console.log("Found " + leftHalf);
+            console.log("Index of change: " + rightHalfIndex)
+            if (namedSymbols[leftHalf]) {
+                return [leftHalf, namedSymbols[rightHalfIndex].value];
+            }
+        }
+    }
+}
+
 function createObjectBackground(baseClass, options, theWidget) {
     var BackgroundClass = iVoLVER.util.createClass(baseClass, {
         initialize: function (options) {
@@ -220,8 +1068,22 @@ function getValueWidth(text, theFont) {
     ctx.font = theFont;
 
     var renderableValue = text;
-    return ctx.measureText(renderableValue).width;
+    let width =  ctx.measureText(renderableValue).width;
+    ctx.restore();
+    return width;
 }
+
+function getTextWidth(text, theFont) {
+    let ctx = canvas.getContext();
+    ctx.save();
+    ctx.font = theFont;
+
+    var renderableValue = text;
+    let width =  ctx.measureText(renderableValue).width;
+    ctx.restore();
+    return width;
+}
+
 
 function addSignalToCanvas(object) {
     object = object.split('@')
@@ -256,6 +1118,7 @@ function addSignalToCanvas(object) {
 
     canvas.add(signalHolder);
 }
+
 function registerProgvolverObject(object) {
     progvolver.objects[object.id] = object;
 }
@@ -267,9 +1130,9 @@ function registerProgvolverObject(object) {
     //         http://www.bitstorm.org/jquery/color-animation/jquery.animate-colors.js
     function calculateColor(begin, end, pos) {
         var color = 'rgba('
-                + parseInt((begin[0] + pos * (end[0] - begin[0])), 10) + ','
-                + parseInt((begin[1] + pos * (end[1] - begin[1])), 10) + ','
-                + parseInt((begin[2] + pos * (end[2] - begin[2])), 10);
+            + parseInt((begin[0] + pos * (end[0] - begin[0])), 10) + ','
+            + parseInt((begin[1] + pos * (end[1] - begin[1])), 10) + ','
+            + parseInt((begin[2] + pos * (end[2] - begin[2])), 10);
 
         color += ',' + (begin && end ? parseFloat(begin[3] + pos * (end[3] - begin[3])) : 1);
         color += ')';
@@ -289,7 +1152,7 @@ function registerProgvolverObject(object) {
      */
     function animateColor(fromColor, toColor, duration, options) {
         var startColor = new fabric.Color(fromColor).getSource(),
-                endColor = new fabric.Color(toColor).getSource();
+            endColor = new fabric.Color(toColor).getSource();
 
         options = options || {};
 
@@ -300,8 +1163,8 @@ function registerProgvolverObject(object) {
             byValue: endColor,
             easing: function (currentTime, startValue, byValue, duration) {
                 var posValue = options['colorEasing']
-                        ? options['colorEasing'](currentTime, duration)
-                        : 1 - Math.cos(currentTime / duration * (Math.PI / 2));
+                    ? options['colorEasing'](currentTime, duration)
+                    : 1 - Math.cos(currentTime / duration * (Math.PI / 2));
                 return calculateColor(startValue, byValue, posValue);
             }
         }));
@@ -360,8 +1223,6 @@ function isBlank(str) {
 }
 
 
-
-
 function canBeCurrency(string) {
     var regex = /^[1-9]\d*(((,\d{3})*)?(\.\d*)?)$/;
     return regex.test(string);
@@ -396,7 +1257,6 @@ function isValidURL(aString) {
     var regexp = /(ftp|http|https):\/\/(\w+:{0,1}\w*@)?(\S+)(:[0-9]+)?(\/|\/([\w#!:.?+=&%@!\-\/]))?/
     return regexp.test(aString);
 }
-
 
 
 // Zoom In
@@ -826,19 +1686,6 @@ function allowTextExtractor(textExtractorType) {
 //}
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
 function draw(figureType) {
 
     disableDrawingMode();
@@ -1057,7 +1904,6 @@ function setBrushColor() {
 }
 
 
-
 function enableMarksExpansion() {
     $('#toggleMarksExpansionActivatorLink').html('<i id="checkMarksExpansion" class="icon-check"></i> Expand marks');
     expandMarks();
@@ -1072,10 +1918,12 @@ function disableDrawingMode() {
     $('#drawingModeActivatorLink').html('<i id="checkDrawingMode" class="icon-check-empty"></i> Activate');
     canvas.isDrawingMode = false;
 }
+
 function enableDrawingMode() {
     $('#drawingModeActivatorLink').html('<i id="checkDrawingMode" class="icon-check"></i> Deactivate');
     canvas.isDrawingMode = true;
 }
+
 function setLineWidth(width) {
     enableDrawingMode();
     canvas.freeDrawingBrush.width = width;
@@ -1101,8 +1949,6 @@ function toggleDrawingMode() {
         disableDrawingMode();
     }
 }
-
-
 
 
 //function toggleConnectorsVisibility() {
@@ -1143,10 +1989,6 @@ function disableConnectorsVisibility() {
     $('#connectorsVisibilityButton').html('<i class="fa fa-eye-slash"></i>');
     hideConnectors();
 }
-
-
-
-
 
 
 function toggleMarksExpansion() {
@@ -1328,10 +2170,16 @@ function showCameraSignal() {
 
     var infoPanel = $('<div/>', {id: 'infoPanel'});
     infoPanel.append($('<label/>', {text: "Camera signal:", style: "margin-right: 5px; font-size: 18px;"}));
-    var cameraSignal = $('<div />', {id: 'cameraSignal', style: 'margin-top: 8px; width:320px; height:240px; background-color: #fff; border-color: #000; border-style: solid; border-width: 1px;'});
+    var cameraSignal = $('<div />', {
+        id: 'cameraSignal',
+        style: 'margin-top: 8px; width:320px; height:240px; background-color: #fff; border-color: #000; border-style: solid; border-width: 1px;'
+    });
 
     var preTakeButtons = $('<div />', {id: 'preTakeButtons', style: 'width: 100%;'});
-    var captureButton = $('<button/>', {class: "square", style: "margin-top: 5px; width: 50%; margin-left: 25%; float: left; border-color: #000; border-style: solid; border-width: 2px; color: black; "});
+    var captureButton = $('<button/>', {
+        class: "square",
+        style: "margin-top: 5px; width: 50%; margin-left: 25%; float: left; border-color: #000; border-style: solid; border-width: 2px; color: black; "
+    });
     var captureLi = $('<li/>', {class: "fa fa-flash"});
     captureButton.append(captureLi);
     captureButton.append($('<span>Take Snapshot<span/>'));
@@ -1339,11 +2187,17 @@ function showCameraSignal() {
 
     var postTakeButtons = $('<div />', {id: 'postTakeButtons', style: 'width: 100%; display: none;'});
 
-    var takeAgainButton = $('<button/>', {class: "square", style: "margin-top: 5px; width: 45.5%; margin-left: 3%; float: left; border-color: #000; border-style: solid; border-width: 2px; color: black; "});
+    var takeAgainButton = $('<button/>', {
+        class: "square",
+        style: "margin-top: 5px; width: 45.5%; margin-left: 3%; float: left; border-color: #000; border-style: solid; border-width: 2px; color: black; "
+    });
     var takeAgainLi = $('<li/>', {class: "fa fa-arrow-left"});
 
 
-    var importToCanvasButton = $('<button/>', {class: "square", style: "margin-top: 5px; width: 45.5%; margin-right: 3%; float: right; border-color: #000; border-style: solid; border-width: 2px; color: black; "});
+    var importToCanvasButton = $('<button/>', {
+        class: "square",
+        style: "margin-top: 5px; width: 45.5%; margin-right: 3%; float: right; border-color: #000; border-style: solid; border-width: 2px; color: black; "
+    });
     var importToCanvasLi = $('<li/>', {class: "fa fa-arrow-right"});
 
     takeAgainButton.append(takeAgainLi);
@@ -1449,11 +2303,9 @@ function loadWebPage(displayerElementID, url) {
                 if (textResponse.trim().length > 0) {
 
 
-
                     var theiFrame = document.getElementById(displayerElementID);
                     theiFrame.contentWindow.document.close();
                     theiFrame.contentWindow.document.write(textResponse);
-
 
 
 //                    var response = JSON.parse(textResponse);
@@ -1474,18 +2326,6 @@ function loadWebPage(displayerElementID, url) {
 }
 
 
-
-
-
-
-
-
-
-
-
-
-
-
 function showWebPage(url) {
 
     // if (LOG) {
@@ -1493,12 +2333,12 @@ function showWebPage(url) {
 //    }
 
 
-
     var block = $('<div/>', {id: 'block', class: 'block'}); // TODO: This is the handle that allows the user to resize the div and, in consequence, the iFrame
 
     var webPagePanel = $('<div/>', {id: 'webPagePanel'});
 
 //    var handle = $('<div class="resize">Drag</div>', {style: 'cursor:move;'}); // TODO: This is the handle that allows the user to resize the div and, in consequence, the iFrame
+
 
 //    var defaultURL = 'http://www.bbc.co.uk/news';
 //    var defaultURL = 'pepe.html';
@@ -1522,10 +2362,18 @@ function showWebPage(url) {
     var urlLabel = $('<label/>', {text: "URL:", style: "float: left; margin-top: 18px; font-size: 18px;"});
     var aSpan = $('<span/>', {style: 'display: block; overflow: hidden; padding: 0 5px'});
 
-    var urlInputField = $('<input/>', {id: 'urlInputField', type: 'text', value: url, style: 'margin-top: 8px; font-size: 18px; width: 100%; -moz-box-sizing: border-box; -webkit-box-sizing: border-box; box-sizing: border-box'});
+    var urlInputField = $('<input/>', {
+        id: 'urlInputField',
+        type: 'text',
+        value: url,
+        style: 'margin-top: 8px; font-size: 18px; width: 100%; -moz-box-sizing: border-box; -webkit-box-sizing: border-box; box-sizing: border-box'
+    });
 
     var closeButton = $('<button/>', {style: "margin-top: 2px; float:right; -moz-box-sizing: border-box; -webkit-box-sizing: border-box; box-sizing: border-box; border-color: #000; border-style: solid; border-width: 2px; color: black;"});
-    var closeLi = $('<li/>', {class: "fa fa-close fa-2x", style: "margin-left: -22px; margin-top: -12px; height: 0px; width: 20px;"});
+    var closeLi = $('<li/>', {
+        class: "fa fa-close fa-2x",
+        style: "margin-left: -22px; margin-top: -12px; height: 0px; width: 20px;"
+    });
     closeButton.append(closeLi);
 
     aSpan.append(urlInputField);
@@ -1548,9 +2396,10 @@ function showWebPage(url) {
 
 //    var webPageDisplayer = $('<iframe />', {id: 'webPageDisplayer', style: 'resize:both; overflow:auto; margin-top: 8px; min-width:630px; min-height: 900px; max-height:' + idealHeight + 'px; background-color: #fff; border-color: #000; border-style: solid; border-width: 1px;'});
 
-    var webPageDisplayer = $('<iframe />', {id: 'webPageDisplayer', style: 'resize:both; overflow:auto; margin-top: 8px; min-width:630px; min-height: ' + idealHeight + 'px; max-height:' + idealHeight + 'px; background-color: #fff; border-color: #000; border-style: solid; border-width: 1px;'});
-
-
+    var webPageDisplayer = $('<iframe />', {
+        id: 'webPageDisplayer',
+        style: 'resize:both; overflow:auto; margin-top: 8px; min-width:630px; min-height: ' + idealHeight + 'px; max-height:' + idealHeight + 'px; background-color: #fff; border-color: #000; border-style: solid; border-width: 1px;'
+    });
 
 
     closeButton.click(function () {
@@ -1577,7 +2426,6 @@ function showWebPage(url) {
 //    });
 
 
-
     $("#openWebPageButton").tooltipster({
 //        content: webPagePanel,
         content: block,
@@ -1599,7 +2447,6 @@ function showWebPage(url) {
     // console.log("iFrame: ");
     // console.log(webPageDisplayer);
 //    }
-
 
 
     var ifrm = document.getElementById('webPageDisplayer');
@@ -1661,7 +2508,6 @@ function showWebPage(url) {
 //    }
 
 
-
     $(documentElement).mousemove(function (event) {
         var msg = "Handler for .mousemove() called at ";
         msg += event.pageX + ", " + event.pageY;
@@ -1672,7 +2518,6 @@ function showWebPage(url) {
 
 
     });
-
 
 
     var onIFrameResizeFunction = function (e) {
@@ -1701,9 +2546,6 @@ function showWebPage(url) {
     $("#webPagePanel").resize(onIFrameResizeFunction);
 
 
-
-
-
     var pancho = function (event) {
         var msg = "Handler for .mousemove() called at ";
         msg += event.pageX + ", " + event.pageY;
@@ -1728,22 +2570,12 @@ function showWebPage(url) {
 //    }
 
 
-
-
-
     $('#webPageDisplayer').contents().find('body').bind('mousemove', pancho);
-
-
-
-
 
 
 //    $('#block').dragResize({grid: 20}); / This call is conflicting with the edition of the url input text
 
 }
-
-
-
 
 
 function saveCanvas() {
@@ -1858,7 +2690,6 @@ function duplicateObject() {
                 for (var i = 0; i < items.length; i++) {
 
 
-
                     var item = items[i];
                     if (item.isMark) {
                         item.animateBirth(false, null, null, i !== items.length - 1);
@@ -1870,9 +2701,6 @@ function duplicateObject() {
 
             }
         }
-
-
-
 
 
 //        alertify.error("Select only one object");
@@ -1923,8 +2751,6 @@ function duplicateObject() {
             }
 
 
-
-
         } else {
             alertify.error("No objects selected");
         }
@@ -1969,12 +2795,10 @@ function displaywheel(e) {
 }
 
 
-
 function readSVGFileAsData() {
     var dataSVGFileInput = document.getElementById('dataSVGFileInput');
     dataSVGFileInput.click();
 }
-
 
 
 function loadDatafile() {
@@ -1992,7 +2816,6 @@ function createObjectFromFile() {
     var objectSVGFileInput = document.getElementById('objectSVGFileInput');
     objectSVGFileInput.click();
 }
-
 
 
 function loadSVGFile() {
@@ -2037,7 +2860,7 @@ function onLogFileReadComplete(event, file) {
     processLogFileContent(logFileContent);
 }
 
-function objToString (obj) {
+function objToString(obj) {
     let str = '';
     for (const [p, val] of Object.entries(obj)) {
         str += `${p}::${val}\n`;
@@ -2047,8 +2870,15 @@ function objToString (obj) {
 
 function saveCanvasState() {
     console.log("persistent entries");
-    console.log(PERSISTENT_CANVAS_ENTRIES[0]);
-    var text = (PERSISTENT_CANVAS_ENTRIES[0].toJson());
+    console.log(PERSISTENT_CANVAS_ENTRIES);
+    let persistentJsonArray = [];
+
+    for (let entry in PERSISTENT_CANVAS_ENTRIES) {
+        persistentJsonArray.push(PERSISTENT_CANVAS_ENTRIES[entry].toJson());
+    }
+    var text = JSON.stringify(persistentJsonArray);
+    console.log("Text is: ");
+    console.log(text);
     var filename = "canvasContent";
     var blob = new Blob([text], {type: "text/plain;charset=utf-8"});
     window.jsHandler.saveCanvasFile({content: text})
@@ -2069,18 +2899,23 @@ function handleCanvasLoad(files) {
 }
 
 function onCanvasLoadComplete(canvasString) {
-    console.log("Canvas string is: ");
-    console.log(canvasString);
-    const obj = JSON.parse(canvasString);
+    const jsonArray = JSON.parse(canvasString);
 
-    console.log("Kind is: ");
-    let kind = obj['kind'];
-    console.log(kind);
+    for (let i = 0; i < jsonArray.length; i++) {
+        let obj = JSON.parse(jsonArray[i]);
+        console.log("Obj is: ");
+        console.log(obj);
+        console.log("Kind is: ");
+        let kind = obj['kind'];
+        console.log(kind);
 
-    if (kind === 'ProgvolverSymbol') {
-        ProgvolverSymbol.fromJson(obj);
-    } else if (kind === 'ReferenceWidget') {
-        ReferenceWidget.fromJson(obj);
+        if (kind === 'ProgvolverSymbol') {
+            ProgvolverSymbol.fromJson(obj);
+        } else if (kind === 'ReferenceWidget') {
+            ReferenceWidget.fromJson(obj);
+        } else if (kind === 'CodeControls') {
+            CodeControls.fromJson(obj);
+        }
     }
 }
 
@@ -2133,7 +2968,6 @@ function onDataFileReadComplete(event, file) {
         alertify.error("File type not supported!", "", 2000);
         return;
     }
-
 
 
 }
@@ -2200,18 +3034,12 @@ function addMarkFromSVGString(file, SVGString) {
 //
 
 
-
-
     fabric.loadSVGFromString(SVGString, function (objects, options) {
-
-
 
 
 //
         var obj = new fabric.Group(objects, options);
         canvas.add(obj);
-
-
 
 
         // if (LOG)
@@ -2232,7 +3060,6 @@ function addMarkFromSVGString(file, SVGString) {
 //        };
 //        options = $.extend(true, {}, defaultOptions, options);
 //        options.type = SVGPATHGROUP_MARK;
-
 
 
         options.label = (typeof file !== 'undefined') ? file.name : '';
@@ -2557,7 +3384,6 @@ function computePathArea(object) {
 }
 
 
-
 function onSVGFileReadComplete(event, file, asSingleMark) {
 
     // console.log(event);
@@ -2589,7 +3415,10 @@ function onSVGFileReadComplete(event, file, asSingleMark) {
             var pathGroupProperties = [
                 {name: visualPropertiesNames.shape, value: createShapeValue(CIRCULAR_MARK)},
                 {name: visualPropertiesNames.color, value: createColorValue(rgb(174, 174, 172))},
-                {name: visualPropertiesNames.label, value: createStringValue(!iVoLVER.util.isUndefined(file) ? file.name : '')}
+                {
+                    name: visualPropertiesNames.label,
+                    value: createStringValue(!iVoLVER.util.isUndefined(file) ? file.name : '')
+                }
             ];
 
             options.objects = objects;
@@ -2673,20 +3502,12 @@ function onSVGFileReadComplete(event, file, asSingleMark) {
             });
 
 
-
             SVGString = (new XMLSerializer()).serializeToString(svgDoc);
 //        // console.log("SVGString after flattenning: ");
 //        // console.log(formatXml(SVGString));
 
 
-
-
         }
-
-
-
-
-
 
 
         fabric.loadSVGFromString(SVGString, function (objects, options) {
@@ -2718,7 +3539,6 @@ function onSVGFileReadComplete(event, file, asSingleMark) {
                 lockScalingY: true,
                 isSVGFileExtractor: true
             });
-
 
 
             parentObject.addToGroup = function (theGroup) {
@@ -2820,7 +3640,6 @@ function onSVGFileReadComplete(event, file, asSingleMark) {
                     var area = computePolygonArea(polygon);
 
 
-
                     /*// console.log("thePath:");
                      // console.log(thePath);
                      
@@ -2886,7 +3705,6 @@ function onSVGFileReadComplete(event, file, asSingleMark) {
                     // console.log("Text object found:");
                     // console.log(object);
 //                    }
-
 
 
                     var string = object.text;
@@ -2981,9 +3799,7 @@ function onSVGFileReadComplete(event, file, asSingleMark) {
         });
 
 
-
     }
-
 
 
 }
@@ -3088,14 +3904,12 @@ function importImageToCanvas(options) {
         imgInstance.selectable = true;
 
 
-
         var canvasActualCenter = getActualCanvasCenter();
         options.left = options.left || canvasActualCenter.x;
         options.top = options.top || canvasActualCenter.y;
 
         imgInstance.left = options.left;
         imgInstance.top = options.top;
-
 
 
         var d = new Date();
@@ -3119,11 +3933,11 @@ function importImageToCanvas(options) {
             var boundary = Math.random().toString().substr(2);
             request.setRequestHeader("content-type", "multipart/form-data; charset=utf-8; boundary=" + boundary);
             var multipart = "--" + boundary + "\r\n" +
-                    "Content-Disposition: form-data; name=" + imgInstance.id + "\r\n" +
-                    "Content-type: image/png\r\n\r\n" +
-                    //                            imgInstance.toDataURL({multiplier: 1}) + "\r\n" +
-                    img.src + "\r\n" +
-                    "--" + boundary + "--\r\n";
+                "Content-Disposition: form-data; name=" + imgInstance.id + "\r\n" +
+                "Content-type: image/png\r\n\r\n" +
+                //                            imgInstance.toDataURL({multiplier: 1}) + "\r\n" +
+                img.src + "\r\n" +
+                "--" + boundary + "--\r\n";
 
 //            // if (LOG)
 //                // console.log(imgInstance.toDataURL({multiplier: 1}));
@@ -3238,9 +4052,6 @@ function importImageToCanvas(options) {
         });
 
 
-
-
-
         // Once the image has been added to the canvas, the extractor associated to id are added:
         var extractors = options.extractorsOptions;
         if (extractors) {
@@ -3257,7 +4068,12 @@ function importImageToCanvas(options) {
                 if (extractorType === COLOR_REGION_EXTRACTOR) {
 
                     extractorOptions.fill = extractorOptions.fillColor;
-                    extractorOptions.finalOptions = {left: extractorOptions.left, top: extractorOptions.top, scaleX: imgInstance.getScaleX(), scaleY: imgInstance.getScaleY()};
+                    extractorOptions.finalOptions = {
+                        left: extractorOptions.left,
+                        top: extractorOptions.top,
+                        scaleX: imgInstance.getScaleX(),
+                        scaleY: imgInstance.getScaleY()
+                    };
                     extractorOptions.thePath = extractorOptions.values.shape.path;
                     extractorOptions.angle = imgInstance.getAngle();
 
@@ -3281,17 +4097,11 @@ function importImageToCanvas(options) {
         }
 
 
-
-
         if (typeof options.xmlID !== 'undefined') {
             imgInstance.executePendingConnections();
         }
 
         disableDrawingMode();
-
-
-
-
 
 
 //        var topLeft = imgInstance.getPointByOrigin('left', 'top');
@@ -3301,7 +4111,6 @@ function importImageToCanvas(options) {
 //            // console.log(topLeft);
 
 
-
     };
     img.src = options.imageData;
 
@@ -3309,11 +4118,11 @@ function importImageToCanvas(options) {
 
 function isMarkShape(string) {
     return string === CIRCULAR_MARK ||
-            string === RECTANGULAR_MARK ||
-            string === ELLIPTIC_MARK ||
-            string === FATFONT_MARK ||
-            string === FILLEDPATH_MARK ||
-            string === SVGPATHGROUP_MARK;
+        string === RECTANGULAR_MARK ||
+        string === ELLIPTIC_MARK ||
+        string === FATFONT_MARK ||
+        string === FILLEDPATH_MARK ||
+        string === SVGPATHGROUP_MARK;
 }
 
 function isHexColor(string) {
@@ -3336,7 +4145,7 @@ function pointInPolygon(point, vs) {
         var xj = vs[j][0], yj = vs[j][1];
 
         var intersect = ((yi > y) != (yj > y))
-                && (x < (xj - xi) * (y - yi) / (yj - yi) + xi);
+            && (x < (xj - xi) * (y - yi) / (yj - yi) + xi);
         if (intersect)
             inside = !inside;
     }
@@ -3458,8 +4267,6 @@ function lightenrgb(r, g, b, percentage) {
 }
 
 
-
-
 var findSelfIntersects = function (coordinates) {
 
     var geometryFactory = new jsts.geom.GeometryFactory();
@@ -3487,7 +4294,6 @@ var findSelfIntersects = function (coordinates) {
     var r = cat.isNodeConsistentArea();
 
 
-
     if (!r) {
         var pt = cat.getInvalidPoint();
         res.push([pt.x, pt.y]);
@@ -3507,10 +4313,8 @@ function PointIsOnLine(start, end, point) {
         return (endY - startY) / (endX - startX) * (somex - startX) + startY;
     };
     return Math.abs(f(px) - py) < 1e-6 // tolerance, rounding errors
-            && px >= startX && px <= endX;      // are they also on this segment?
+        && px >= startX && px <= endX;      // are they also on this segment?
 }
-
-
 
 
 function hammerEventOverCanvas(ev) {
@@ -3529,10 +4333,6 @@ function hammerEventOverCanvas(ev) {
 //function containsPoint(point, topLeft, bottomRigth) {
 //    return (point.x > topLeft.x && point.x < bottomRigth.x) && (point.y > topLeft.y && point.y < bottomRigth.y);
 //}
-
-
-
-
 
 
 // allowedTypes is an array of strings that will indicate allowed parameters to test
@@ -3586,8 +4386,6 @@ function findObjectBelow(point) {
 }
 
 
-
-
 function findVisualVariablePotentialDestination(point) {
 
     var theObject = null;
@@ -3617,11 +4415,6 @@ function findVisualVariablePotentialDestination(point) {
 
     return theObject;
 }
-
-
-
-
-
 
 
 function findVisualPropertyPotentialDestination(point) {
@@ -3667,7 +4460,6 @@ function getObjectContaining(point, ignoreTypes) {
 //    drawRectAt(point, "aqua");
 //    // if (LOG) // console.log(point);
 //    // if (LOG) // console.log("FUNCTION getObjectContaining");
-
 
 
     canvas.forEachObject(function (object) {
@@ -3762,10 +4554,7 @@ function repositionAllWidgets(targetObject) {
         var newXScale = widget.untransformedScaleX * targetObject.getScaleX();
 
 
-
-
         var newYScale = widget.untransformedScaleY * targetObject.getScaleY();
-
 
 
 //        // if (LOG) // console.log("newXScale: " + newXScale);
@@ -3912,12 +4701,10 @@ function computeUntransformedProperties(child, parent) {
 //    // if (LOG) // console.log(widgetTopLeft);
 
 
-
 //    drawRectAt(widgetTopLeft, 'blue');
 //    drawRectAt(widgetCenter, 'red');
 
     var rotatedWidgetCenter = fabric.util.rotatePoint(new fabric.Point(widgetCenter.x, widgetCenter.y), parentTopLeft, angleInRadians);
-
 
 
 //    var rotatedWidgetTopLeft = fabric.util.rotatePoint(widgetTopLeft, topLeft, fabric.util.degreesToRadians(-parentObject.getAngle()));
@@ -3927,8 +4714,6 @@ function computeUntransformedProperties(child, parent) {
 
 //    drawRectAt(rotatedWidgetCenter, 'green');
 //    drawRectAt(rotatedWidgetTopLeft, 'purple');
-
-
 
 
 //    drawRectAt(topLeft, 'black');
@@ -3986,11 +4771,7 @@ function computeUntransformedProperties(child, parent) {
         child.untransformedY = (rotatedWidgetCenter.y - parentTopLeft.y - child.getHeight() / 2 - 1.5) / parent.getScaleY();
 
 
-
-
-
     } else {
-
 
 
 //        // if (LOG) // console.log("%cDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDD", "background: red; color: white;");
@@ -3998,7 +4779,6 @@ function computeUntransformedProperties(child, parent) {
 
 //        drawRectAt(rotatedWidgetCenter, "red");
 //        drawRectAt(topLeft, "blue");
-
 
 
 //        // if (LOG) // console.log("%c widget.getWidth(): " + widget.getWidth(), "background: red; color: white;");
@@ -4010,8 +4790,6 @@ function computeUntransformedProperties(child, parent) {
         var untransformedY = (rotatedWidgetTopLeft.y - parentTopLeft.y - parent.strokeWidth / 2 + child.strokeWidth / 2) / parent.getScaleY();
 //        // if (LOG) // console.log("%c untransformedX: " + untransformedX, "background: brown; color: white;");
 //        // if (LOG) // console.log("%c untransformedY: " + untransformedY, "background: brown; color: white;");
-
-
 
 
         child.untransformedX = untransformedX;
@@ -4038,8 +4816,6 @@ function computeUntransformedProperties(child, parent) {
 //    // if (LOG) // console.log(widget.untransformedAngle);
 
 
-
-
     var rotatedRect = new fabric.Rect({
         left: child.untransformedX + (child.getWidth() / parent.getScaleX()) / 2,
         top: child.untransformedY + (child.getHeight() / parent.getScaleY()) / 2,
@@ -4059,13 +4835,13 @@ function computeUntransformedProperties(child, parent) {
 
     var rotatedRectTopLeft = rotatedRect.getPointByOrigin('left', 'top');
 
-    child.roi = {x: rotatedRectTopLeft.x, y: rotatedRectTopLeft.y, width: child.getWidth() / parent.getScaleX(), height: child.getHeight() / parent.getScaleY(), angle: rotatedRect.angle};
-
-
-
-
-
-
+    child.roi = {
+        x: rotatedRectTopLeft.x,
+        y: rotatedRectTopLeft.y,
+        width: child.getWidth() / parent.getScaleX(),
+        height: child.getHeight() / parent.getScaleY(),
+        angle: rotatedRect.angle
+    };
 
 
 //    widget.roi = {x: widgetTopLeft.x, y: widgetTopLeft.y, width: widget.width, height: widget.height, angle: rotatedRect.angle};
@@ -4129,7 +4905,6 @@ function computeWidgetPosition(widget, parent) {
         finalY = (y * scaleY) + ((parent.getTop() - parent.getHeight() / 2) + widget.getHeight() / 2);
 
 
-
     }
 
     var rotationCenter = new fabric.Point(parent.getLeft() - parent.getWidth() / 2, parent.getTop() - parent.getHeight() / 2);
@@ -4146,7 +4921,6 @@ function computeWidgetPosition(widget, parent) {
 
     finalX = widgetCenter.x;
     finalY = widgetCenter.y;
-
 
 
     var point = new fabric.Point(finalX, finalY);
@@ -4213,15 +4987,13 @@ function getMode(array) {
         return null;
     var modeMap = {};
     var maxEl = array[0], maxCount = 1;
-    for (var i = 0; i < array.length; i++)
-    {
+    for (var i = 0; i < array.length; i++) {
         var el = array[i];
         if (modeMap[el] == null)
             modeMap[el] = 1;
         else
             modeMap[el]++;
-        if (modeMap[el] > maxCount)
-        {
+        if (modeMap[el] > maxCount) {
             maxEl = el;
             maxCount = modeMap[el];
         }
@@ -4232,6 +5004,7 @@ function getMode(array) {
 function getLastElementOfArray(array) {
     return array[array.length - 1];
 }
+
 //
 //fabric.Canvas.prototype.getAbsoluteCoords = function (object) {
 //    return {
@@ -4252,8 +5025,8 @@ fabric.Canvas.prototype.getAbsoluteCoords = function (object) {
 
 fabric.Canvas.prototype._fireConnectionOutEvents = function (target, e) {
     var _hoveredTarget = this._hoveredTarget,
-            _hoveredTargets = this._hoveredTargets, targets = this.targets,
-            length = Math.max(_hoveredTargets.length, targets.length);
+        _hoveredTargets = this._hoveredTargets, targets = this.targets,
+        length = Math.max(_hoveredTargets.length, targets.length);
 
     this.fireSyntheticInOutEvents(target, e, {
         oldTarget: _hoveredTarget,
@@ -4272,8 +5045,6 @@ fabric.Canvas.prototype._fireConnectionOutEvents = function (target, e) {
     this._hoveredTarget = target;
     this._hoveredTargets = this.targets.concat();
 };
-
-
 
 
 function generateRandomColor() {
@@ -4330,7 +5101,6 @@ function makeLine(coords) {
     canvas.add(line);
     return line;
 }
-
 
 
 function getConnectorsCrossedByLine(line) {
@@ -4456,7 +5226,6 @@ function compressMarks() {
 }
 
 
-
 function translateShape(shape, x, y) {
     var rv = [];
     for (var p in shape)
@@ -4508,6 +5277,18 @@ function drawFilledPolygon(shape, ctx) {
     ctx.restore();
 }
 
+function drawFilledChevron(shape, ctx) {
+    ctx.save();
+    ctx.beginPath();
+    ctx.moveTo(shape[0][0], shape[0][1]);
+    for (var p in shape)
+        if (p > 0)
+            ctx.lineTo(shape[p][0], shape[p][1]);
+    ctx.lineTo(shape[0][0], shape[0][1]);
+    ctx.fill();
+    ctx.closePath();
+    ctx.restore();
+}
 
 // Functions to draw paths as marks
 
@@ -4561,24 +5342,26 @@ function deactivateDrawing(canvas) {
 }
 
 /************************************************/
+
 /* Flood fill to select a single colored region */
 function activateFloodFill() {
     deactivateDrawing(canvas);
     canvas.isFloodFillMode = true;
     canvas.defaultCursor = "pointer";
 }
+
 function deactivateFloodFill(restore1FingerCanvasOperation) {
     canvas.isFloodFillMode = false;
     if (restore1FingerCanvasOperation) {
         restorePan1FingerBehaviour();
     }
 }
+
 /************************************************/
 
 
-
-
 /**********************************************/
+
 /* Selecting multiple colored regions at once */
 function activateMultipleColorRegionSelection() {
     activateDrawing(canvas)
@@ -4586,6 +5369,7 @@ function activateMultipleColorRegionSelection() {
     canvas.makeSingleRegion = false;
     canvas.defaultCursor = "pointer";
 }
+
 function deactivateMultipleColorRegionSelection(restore1FingerCanvasOperation) {
     var canvas = iVoLVER.canvas;
     deactivateDrawing(canvas);
@@ -4594,11 +5378,12 @@ function deactivateMultipleColorRegionSelection(restore1FingerCanvasOperation) {
         restorePan1FingerBehaviour();
     }
 }
+
 /**********************************************/
 
 
-
 /*******************************************/
+
 /* Grouping several colored regions in one */
 function activateGroupColorRegionSelection() {
     var canvas = iVoLVER.canvas;
@@ -4607,6 +5392,7 @@ function activateGroupColorRegionSelection() {
     canvas.makeSingleRegion = true;
     canvas.defaultCursor = "pointer";
 }
+
 function deactivateGroupColorRegionSelection(restore1FingerCanvasOperation) {
     var canvas = iVoLVER.canvas;
     deactivateDrawing(canvas);
@@ -4615,20 +5401,19 @@ function deactivateGroupColorRegionSelection(restore1FingerCanvasOperation) {
         restorePan1FingerBehaviour();
     }
 }
+
 /*******************************************/
 
 
-
-
-
-
 /*************************/
+
 /* LINE text extraction */
 function activateLineTextExtraction() {
     deactivateDrawing(canvas);
     disableObjectEvents();
     allowTextExtractor(LINE_TEXT_EXTRACTOR);
 }
+
 function deactivateLineTextExtraction(restore1FingerCanvasOperation) {
     var canvas = iVoLVER.canvas;
     canvas.off();
@@ -4638,14 +5423,17 @@ function deactivateLineTextExtraction(restore1FingerCanvasOperation) {
         restorePan1FingerBehaviour();
     }
 }
+
 /*************************/
 /*************************/
+
 /* BLOCK text extraction */
 function activateBlockTextExtraction() {
     deactivateDrawing(canvas);
     disableObjectEvents();
     allowTextExtractor(BLOCK_TEXT_EXTRACTOR);
 }
+
 function deactivateBlockTextExtraction(restore1FingerCanvasOperation) {
     var canvas = iVoLVER.canvas;
     canvas.off();
@@ -4655,8 +5443,8 @@ function deactivateBlockTextExtraction(restore1FingerCanvasOperation) {
         restorePan1FingerBehaviour();
     }
 }
-/*************************/
 
+/*************************/
 
 
 function saveObjectsStatus(canvas) {
@@ -4667,6 +5455,7 @@ function saveObjectsStatus(canvas) {
         object.evented = false;
     });
 }
+
 function restoreObjectsStatus(canvas) {
     canvas.forEachObject(function (object) {
         if (object.previousSelectableState && object.previousEventedState) {
@@ -4677,14 +5466,15 @@ function restoreObjectsStatus(canvas) {
 }
 
 
-
 /***********************/
+
 /* FREE color sampling */
 function activateFreeColorSampling() {
     activateDrawing(canvas)
     canvas.isSamplingMode = true;
     canvas.defaultCursor = "pointer";
 }
+
 function deactivateFreeColorSampling(restore1FingerCanvasOperation) {
     var canvas = iVoLVER.canvas;
     deactivateDrawing(canvas);
@@ -4693,8 +5483,10 @@ function deactivateFreeColorSampling(restore1FingerCanvasOperation) {
         restorePan1FingerBehaviour();
     }
 }
+
 /***********************/
 /***********************/
+
 /* LINE color sampling */
 function activateLineColorSampling() {
     var canvas = iVoLVER.canvas;
@@ -4704,6 +5496,7 @@ function activateLineColorSampling() {
     canvas.isSamplingLineMode = true;
     canvas.defaultCursor = "crosshair";
 }
+
 function deactivateLineColorSampling(restore1FingerCanvasOperation) {
     var canvas = iVoLVER.canvas;
     canvas.isSamplingLineMode = false;
@@ -4712,18 +5505,12 @@ function deactivateLineColorSampling(restore1FingerCanvasOperation) {
         restorePan1FingerBehaviour();
     }
 }
+
 /***********************/
 
 
-
-
-
-
-
-
-
-
 /**********************/
+
 /* PATH marks drawing */
 function activatePathMarkDrawing() {
     var canvas = iVoLVER.canvas;
@@ -4731,6 +5518,7 @@ function activatePathMarkDrawing() {
     canvas.isPathMarkDrawingMode = true;
     canvas.defaultCursor = "crosshair";
 }
+
 function deactivatePathMarkDrawing(restore1FingerCanvasOperation) {
     var canvas = iVoLVER.canvas;
     deactivateDrawing(canvas);
@@ -4830,15 +5618,15 @@ function buildObjectFromConnectedPoints() {
 /**********************/
 
 
-
-
 /*****************************/
+
 /* FILLED path marks drawing */
 function activateFilledPathMarkDrawing() {
     activateDrawing(canvas)
     canvas.isFilledMarkDrawingMode = true;
     canvas.defaultCursor = "pointer";
 }
+
 function deactivateFilledPathMarkDrawing(restore1FingerCanvasOperation) {
     deactivateDrawing(canvas);
     canvas.isFilledMarkDrawingMode = false;
@@ -4846,19 +5634,19 @@ function deactivateFilledPathMarkDrawing(restore1FingerCanvasOperation) {
         restorePan1FingerBehaviour();
     }
 }
+
 /*****************************/
 
 
-
-
-
 /********************/
+
 /* FUNCTION drawing */
 function activateFunctionDrawing() {
     activateDrawing(canvas)
     canvas.isFunctionDrawingMode = true;
     canvas.defaultCursor = "crosshair";
 }
+
 function deactivateFunctionDrawing(restore1FingerCanvasOperation) {
     deactivateDrawing(canvas);
 
@@ -4871,11 +5659,12 @@ function deactivateFunctionDrawing(restore1FingerCanvasOperation) {
         restorePan1FingerBehaviour();
     }
 }
+
 /********************/
 
 
-
 /*********************/
+
 /* SQUARED selecction */
 function activateSquaredSelection() {
     deactivateDrawing(canvas);
@@ -4883,24 +5672,26 @@ function activateSquaredSelection() {
     canvas.selection = true;
     canvas.defaultCursor = 'default';
 }
+
 function deactivateSquaredSelection(restore1FingerCanvasOperation) {
     canvas.selection = false;
     if (restore1FingerCanvasOperation) {
         restorePan1FingerBehaviour();
     }
 }
+
 /********************/
 
 
-
-
 /*********************/
+
 /* FREE selecction */
 function activateFreeSelection() {
     activateDrawing(canvas)
     canvas.isFreeSelectionMode = true;
     canvas.defaultCursor = 'default';
 }
+
 function deactivateFreeSelection(restore1FingerCanvasOperation) {
     canvas.selection = false;
     canvas.isFreeSelectionMode = false;
@@ -4909,6 +5700,7 @@ function deactivateFreeSelection(restore1FingerCanvasOperation) {
         restorePan1FingerBehaviour();
     }
 }
+
 /********************/
 
 
@@ -4934,7 +5726,6 @@ function applySelectableStates() {
         }
     });
 }
-
 
 
 function getMutuallyExclusiveModesButtons(buttonName) {
@@ -5052,9 +5843,6 @@ function modeButtonClicked(button) {
                 applyInactiveMenuButtonStyle(clickedButton);
 
 
-
-
-
                 restorePan1FingerBehaviour();
 
             }
@@ -5077,18 +5865,7 @@ function modeButtonClicked(button) {
             deactivateMode(clickedModeID, true);
 
 
-
-
-
-
-
-
-
-
-
         }
-
-
 
 
     } else {
@@ -5107,7 +5884,6 @@ function modeButtonClicked(button) {
             }
 
             canvas.activeMode = customModeName;
-
 
 
             if (customModeDescription.onActivation) {
@@ -5156,16 +5932,7 @@ function modeButtonClicked(button) {
                 }
 
 
-
-
-
-
-
-
             } else {
-
-
-
 
 
                 if (clickedModeID === 'floodFillButton') {
@@ -5186,9 +5953,7 @@ function modeButtonClicked(button) {
                 }
 
 
-
             }
-
 
 
         });
@@ -5289,7 +6054,6 @@ function animateObjectProperty(object, prop, endValue, duration, easing, refresh
 }
 
 
-
 function compensateBoundingRect(boundingRect) {
     var zoom = canvas.getZoom();
     var viewportMatrix = canvas.viewportTransform;
@@ -5298,7 +6062,6 @@ function compensateBoundingRect(boundingRect) {
     boundingRect.width /= zoom;
     boundingRect.height /= zoom;
 }
-
 
 
 function hexToR(h) {
@@ -5384,11 +6147,11 @@ function isFullyContainedBy(object, container) {
 //    drawRectAt(objectTopRigth, "green");
 
     return (
-            pointInPolygon([objectTopLeft.x, objectTopLeft.y], containerPolygon) &&
-            pointInPolygon([objectBottomRigth.x, objectBottomRigth.y], containerPolygon) &&
-            pointInPolygon([objectBottomLeft.x, objectBottomLeft.y], containerPolygon) &&
-            pointInPolygon([objectTopRigth.x, objectTopRigth.y], containerPolygon)
-            );
+        pointInPolygon([objectTopLeft.x, objectTopLeft.y], containerPolygon) &&
+        pointInPolygon([objectBottomRigth.x, objectBottomRigth.y], containerPolygon) &&
+        pointInPolygon([objectBottomLeft.x, objectBottomLeft.y], containerPolygon) &&
+        pointInPolygon([objectTopRigth.x, objectTopRigth.y], containerPolygon)
+    );
 }
 
 function isPartiallyContainedBy(object, container) {
@@ -5419,14 +6182,12 @@ function isPartiallyContainedBy(object, container) {
 //    drawRectAt(objectTopRigth, "green");
 
     return (
-            pointInPolygon([objectTopLeft.x, objectTopLeft.y], containerPolygon) ||
-            pointInPolygon([objectBottomRigth.x, objectBottomRigth.y], containerPolygon) ||
-            pointInPolygon([objectBottomLeft.x, objectBottomLeft.y], containerPolygon) ||
-            pointInPolygon([objectTopRigth.x, objectTopRigth.y], containerPolygon)
-            );
+        pointInPolygon([objectTopLeft.x, objectTopLeft.y], containerPolygon) ||
+        pointInPolygon([objectBottomRigth.x, objectBottomRigth.y], containerPolygon) ||
+        pointInPolygon([objectBottomLeft.x, objectBottomLeft.y], containerPolygon) ||
+        pointInPolygon([objectTopRigth.x, objectTopRigth.y], containerPolygon)
+    );
 }
-
-
 
 
 function bezier(pts) {
@@ -5865,10 +6626,6 @@ function processScribbleFromPath(drawnPath) {
     });
 
 
-
-
-
-
     var request = new XMLHttpRequest();
 //    request.open("POST", "processScribble", true);
     request.open("POST", "FillAreaByScribble", true);
@@ -5904,7 +6661,6 @@ function processScribbleFromPath(drawnPath) {
 //                                // console.log(findingObject);
 
 
-
                                 var pathString = findingObject['path'];
                                 if (pathString) {
 
@@ -5938,7 +6694,12 @@ function processScribbleFromPath(drawnPath) {
                                     var fillColor = 'rgba(' + (r * 1.5).toFixed(0) + ',  ' + (g * 1.5).toFixed(0) + ', ' + (b * 1.5).toFixed(0) + ', ' + 0.75 + ')';
 
                                     var extractorOptions = {
-                                        finalOptions: {left: finalX, top: finalY, scaleX: parentObject.getScaleX(), scaleY: parentObject.getScaleY()},
+                                        finalOptions: {
+                                            left: finalX,
+                                            top: finalY,
+                                            scaleX: parentObject.getScaleX(),
+                                            scaleY: parentObject.getScaleY()
+                                        },
                                         left: finalX,
                                         top: finalY,
                                         fillColor: fillColor,
@@ -5970,19 +6731,13 @@ function processScribbleFromPath(drawnPath) {
                                 }
 
 
-
                             }, waitingTime);
-
 
 
                             k++;
 
 
-
                         });
-
-
-
 
 
                     }
@@ -6101,6 +6856,7 @@ function computeDateDifference(date1, date2, outputUnits) {
 }
 
 var dateAndTimeFormats = null;
+
 function getDateAndTimeFormats() {
     if (!dateAndTimeFormats) {
         var timeFormats = getTimeFormats();
@@ -6111,6 +6867,7 @@ function getDateAndTimeFormats() {
 }
 
 var timeFormats = null;
+
 function getTimeFormats() {
     if (!timeFormats) {
         timeFormats = new Array();
@@ -6122,6 +6879,7 @@ function getTimeFormats() {
 }
 
 var dateFormats = null;
+
 function getDateFormats() {
     if (!dateFormats) {
         dateFormats = new Array();
@@ -6281,8 +7039,6 @@ function getDateFormats() {
         dateFormats.push('dddd, MMMMDD,');
 
 
-
-
     }
     return dateFormats;
 }
@@ -6292,7 +7048,6 @@ function capitalizeFirstLetter(string) {
         return string.charAt(0).toUpperCase() + string.slice(1);
     }
 }
-
 
 
 function hideWithAnimation(object) {
@@ -6472,6 +7227,7 @@ function getR(stringColor) {
     }
     return tmp._source[0];
 }
+
 function getG(stringColor) {
     var tmp = stringColor;
     if (iVoLVER.util.isString(stringColor)) {
@@ -6479,6 +7235,7 @@ function getG(stringColor) {
     }
     return tmp._source[1];
 }
+
 function getB(stringColor) {
     var tmp = stringColor;
     if (iVoLVER.util.isString(stringColor)) {
@@ -6754,7 +7511,6 @@ function extractXYValues(fabricPath, useAlternativeExtraction, doNotSimplify) {
     }
 
 
-
 //    // console.log("simplifiedPolyline:");
 //    // console.log(simplifiedPolyline);
 
@@ -6917,10 +7673,7 @@ function getClosestDate(dateValue, arrayOfDateValues) {
 }
 
 
-
-
 function getProportionalDistance(color1, color2, color3) {
-
 
 
     var r1 = getR(color1);
@@ -7024,7 +7777,21 @@ function enterFunctionButtonClicked() {
 //        activateFunctionDrawingMode();
 //    }
 //}
+function getValueWidth(theFont, background) {
+    console.log("This is being called");
+    var ctx = canvas.getContext();
+    ctx.save();
+    ctx.font = theFont;
 
+    var renderableValue = background.value;
+    if (!iVoLVER.util.isUndefined(background.value) && iVoLVER.util.isNumber(background.value)) {
+        renderableValue = background.value.toFixed(2);
+    }
+
+    let width =  ctx.measureText(renderableValue).width;
+    ctx.restore();
+    return width;
+}
 
 function drawFilledMarkButtonClicked() {
     if (canvas.isFilledMarkDrawingMode) {
@@ -7033,7 +7800,6 @@ function drawFilledMarkButtonClicked() {
         activateFilledMarkDrawingMode();
     }
 }
-
 
 
 function drawPathMarkButtonClicked() {
@@ -7118,8 +7884,37 @@ function newConnectionReleasedOnCanvas(connection, coordX, coordY) {
         destination._addIncomingConnection(connection);
         connection.setDestination(destination, true);
 
-    } else {
+    } else if (connection.source.type === "ArrayColorWidgetOutput") {
+        console.log("Connection here is: ")
+        console.log(connection);
+        destination = new CanvasVariable({
+            top: coordX,
+            left: coordY,
+            x: coordX,
+            y: coordY,
+            fill: connection.source.fill,
+            stroke: connection.source.stroke,
+            parent: connection.source,
+            index: "",
+            name: "",
+            isColorWidgetOutput: true,
+            type: "",
+            value: connection.source.value
+        });
 
+        connection.source.outputNumberHolders.push(destination);
+        canvas.add(destination);
+        connection.source._addOutgoingConnection(destination);
+        connection.setDestination(destination, true);
+
+        destination.on('moving', function() {
+            var massCenter = destination.getPointByOrigin('center', 'center');
+            connection.set({'x2': massCenter.x, 'y2': massCenter.y});
+            connection.setCoords();
+        })
+
+        animateBirth(destination, false, 1, 1);
+    } else {
 
 //        destination = CreateVisualValueFromValue(theValue);
 //        destination.top = coordY;
@@ -7136,7 +7931,7 @@ function newConnectionReleasedOnCanvas(connection, coordX, coordY) {
             destinationCompulsory: true,
             showLabel: true
         });
-        
+
 //        destination = new iVoLVER.model.ValueHolder({
 //            value: theValue,
 //            top: coordY,
@@ -7146,8 +7941,6 @@ function newConnectionReleasedOnCanvas(connection, coordX, coordY) {
 //        });
         canvas.add(destination);
 
-        //destination._addIncomingConnection(connection);
-        //connection.setDestination(destination, true);
         animateBirth(destination, false, 1, 1);
 
     }
@@ -7173,7 +7966,6 @@ function getAdditionFunctionForType(type) {
     }
 
 }
-
 
 
 function createArrayFromXMLNode(arrayNode) {
@@ -7357,7 +8149,12 @@ function createValueOfType(homogeneityGuess) {
         var outPrefix = '';
         var theUnits = '';
 
-        return createNumberValue({unscaledValue: unscaledValue, inPrefix: inPrefix, outPrefix: outPrefix, theUnits: theUnits});
+        return createNumberValue({
+            unscaledValue: unscaledValue,
+            inPrefix: inPrefix,
+            outPrefix: outPrefix,
+            theUnits: theUnits
+        });
 
     } else if (desiredType === "dateAndTime") {
 
@@ -7688,9 +8485,6 @@ function addVisualElementFromHTML(parsedHTML, canvasCoords, addToCanvas) {
                     });
 
 
-
-
-
                     aDataWidget.left = x;
                     aDataWidget.top = y;
                     aDataWidget.setCoords();
@@ -7703,7 +8497,6 @@ function addVisualElementFromHTML(parsedHTML, canvasCoords, addToCanvas) {
                     aDataWidget.parseCSVString();
 
                     return aDataWidget;
-
 
 
                 } else { // This should be a COLLECTION
@@ -7734,9 +8527,6 @@ function addVisualElementFromHTML(parsedHTML, canvasCoords, addToCanvas) {
 
                 }
             }
-
-
-
 
 
 //                    } else if (elementType === "TH" || elementType === "TR") {
@@ -7833,14 +8623,7 @@ function addVisualElementFromHTML(parsedHTML, canvasCoords, addToCanvas) {
                 }
 
 
-
-
-
             }
-
-
-
-
 
 
         }
@@ -7856,7 +8639,6 @@ function addVisualElementFromHTML(parsedHTML, canvasCoords, addToCanvas) {
         });
 
     }
-
 
 
 }
@@ -7924,16 +8706,9 @@ function createBestVisualVariableFromText(theText, x, y) {
                 }
 
 
-
-
             }
 
         }
-
-
-
-
-
 
 
     }
@@ -7985,7 +8760,6 @@ function createBestValueFromText(theText) {
             } else {
 
 
-
                 if (isColor(theText)) {
 
                     // What if it is color?!
@@ -8000,17 +8774,9 @@ function createBestValueFromText(theText) {
                 }
 
 
-
-
-
             }
 
         }
-
-
-
-
-
 
 
     }
@@ -8089,7 +8855,6 @@ function canvasDropFunction(ev, ui) {
             if ((elementType && elementType === 'operator') || id === "addition-operator" || id === "subtraction-operator" || id === "multiplication-operator" || id === "division-operator") {
 
 
-
                 var operatorName = $(dropedElement).data("operatorName");
 
 
@@ -8099,7 +8864,6 @@ function canvasDropFunction(ev, ui) {
                     top: y,
                 });
                 canvas.add(operator);
-
 
 
 //            var type = replaceAll(id, "-operator", "");
@@ -8113,11 +8877,6 @@ function canvasDropFunction(ev, ui) {
 //            };
 //
 //            addOperator(options);
-
-
-
-
-
 
 
             } else if (id === "emptyFunction") {
@@ -8316,7 +9075,6 @@ function canvasDropFunction(ev, ui) {
             } else if (id === "rectPrototype") {
 
 
-
                 if (iVoLVER.util.isUndefined(iVoLVER.RectangularMark)) {
                     iVoLVER.RectangularMark = iVoLVER.obj.Mark.createClass(fabric.Rect);
                 }
@@ -8328,10 +9086,31 @@ function canvasDropFunction(ev, ui) {
                     {name: visualPropertiesNames.shape, value: createShapeValue(RECTANGULAR_MARK)},
                     {name: visualPropertiesNames.color, value: createColorValue({r: 200, g: 100, b: 145})},
                     {name: visualPropertiesNames.label, value: createStringValue({string: ''})},
-                    {name: visualPropertiesNames.width, value: createNumberValue({unscaledValue: width, inPrefix: '', outPrefix: '', units: 'pixels'}), path: paths.width.rw},
-                    {name: visualPropertiesNames.height, value: createNumberValue({unscaledValue: height, inPrefix: '', outPrefix: '', units: 'pixels'}), path: paths.height.rw},
-                    {name: visualPropertiesNames.area, value: createNumberValue({unscaledValue: width * height, inPrefix: '', outPrefix: '', units: 'pixels'}), path: paths.area.rw},
-                    {name: visualPropertiesNames.angle, value: createNumberValue({unscaledValue: 0, inPrefix: '', outPrefix: '', units: 'degrees'}), path: paths.angle.rw}
+                    {
+                        name: visualPropertiesNames.width,
+                        value: createNumberValue({unscaledValue: width, inPrefix: '', outPrefix: '', units: 'pixels'}),
+                        path: paths.width.rw
+                    },
+                    {
+                        name: visualPropertiesNames.height,
+                        value: createNumberValue({unscaledValue: height, inPrefix: '', outPrefix: '', units: 'pixels'}),
+                        path: paths.height.rw
+                    },
+                    {
+                        name: visualPropertiesNames.area,
+                        value: createNumberValue({
+                            unscaledValue: width * height,
+                            inPrefix: '',
+                            outPrefix: '',
+                            units: 'pixels'
+                        }),
+                        path: paths.area.rw
+                    },
+                    {
+                        name: visualPropertiesNames.angle,
+                        value: createNumberValue({unscaledValue: 0, inPrefix: '', outPrefix: '', units: 'degrees'}),
+                        path: paths.angle.rw
+                    }
                 ];
                 var rectangle = new iVoLVER.RectangularMark({
                     left: x,
@@ -8393,7 +9172,6 @@ function canvasDropFunction(ev, ui) {
 //                animateBirth(circle, false, 1, 1);
 
 
-
             } else if (id == "fatFontPrototype") {
 
                 var options3 = {
@@ -8425,10 +9203,31 @@ function canvasDropFunction(ev, ui) {
                     {name: visualPropertiesNames.shape, value: createShapeValue(CIRCULAR_MARK)},
                     {name: visualPropertiesNames.color, value: createColorValue({r: 232, g: 195, b: 69})},
                     {name: visualPropertiesNames.label, value: createStringValue()},
-                    {name: visualPropertiesNames.rx, value: createNumberValue({unscaledValue: rx, inPrefix: '', outPrefix: '', units: 'pixels'}), path: paths.rx.rw},
-                    {name: visualPropertiesNames.ry, value: createNumberValue({unscaledValue: ry, inPrefix: '', outPrefix: '', units: 'pixels'}), path: paths.ry.rw},
-                    {name: visualPropertiesNames.area, value: createNumberValue({unscaledValue: Math.PI * rx * ry, inPrefix: '', outPrefix: '', units: 'pixels'}), path: paths.area.rw},
-                    {name: visualPropertiesNames.angle, value: createNumberValue({unscaledValue: 0, inPrefix: '', outPrefix: '', units: 'degrees'}), path: paths.angle.rw}
+                    {
+                        name: visualPropertiesNames.rx,
+                        value: createNumberValue({unscaledValue: rx, inPrefix: '', outPrefix: '', units: 'pixels'}),
+                        path: paths.rx.rw
+                    },
+                    {
+                        name: visualPropertiesNames.ry,
+                        value: createNumberValue({unscaledValue: ry, inPrefix: '', outPrefix: '', units: 'pixels'}),
+                        path: paths.ry.rw
+                    },
+                    {
+                        name: visualPropertiesNames.area,
+                        value: createNumberValue({
+                            unscaledValue: Math.PI * rx * ry,
+                            inPrefix: '',
+                            outPrefix: '',
+                            units: 'pixels'
+                        }),
+                        path: paths.area.rw
+                    },
+                    {
+                        name: visualPropertiesNames.angle,
+                        value: createNumberValue({unscaledValue: 0, inPrefix: '', outPrefix: '', units: 'degrees'}),
+                        path: paths.angle.rw
+                    }
                 ];
                 var ellipse = new iVoLVER.EllipticalMark({
                     iVoLVERType: 'EllipticalMark',
@@ -8479,7 +9278,6 @@ function canvasDropFunction(ev, ui) {
         }
 
     }
-
 
 
 }
@@ -8591,7 +9389,6 @@ function getCenterPointWithinGroup(object) {
 }
 
 
-
 function scaleCoordiates(object, coordinates, coordinate, max) {
 
     var numbers = new Array();
@@ -8653,11 +9450,19 @@ function showModeSelectionPanel(point) {
     var aPanningModeButton = $('<a/>');
     var iPanningModeButton = $('<i/>', {class: 'fa fa-hand-paper-o fa-2x'});
 
-    var disconnectingModeButton = $('<li/>', {id: 'disconnectingModeButton1', class: 'verticalLeftDivider', unselectable: 'on', });
+    var disconnectingModeButton = $('<li/>', {
+        id: 'disconnectingModeButton1',
+        class: 'verticalLeftDivider',
+        unselectable: 'on',
+    });
     var aDisconnectingModeButton = $('<a/>');
     var iDisconnectingModeButton = $('<i/>', {class: 'fa fa-unlink fa-2x'});
 
-    var squaredSelectionButton = $('<li/>', {id: 'squaredSelectionButton1', class: 'verticalLeftDivider', unselectable: 'on', });
+    var squaredSelectionButton = $('<li/>', {
+        id: 'squaredSelectionButton1',
+        class: 'verticalLeftDivider',
+        unselectable: 'on',
+    });
     var aSquaredSelectionButton = $('<a/>');
     var iSquaredSelectionButton = $('<i/>', {class: 'fa fa-object-group fa-2x'});
 
@@ -8818,7 +9623,6 @@ function entities(s) {
 }
 
 
-
 function undo() {
     // console.log("Attempting to undo... " + new Date());
     iVoLVER.undo();
@@ -8854,8 +9658,6 @@ function paths2string(paths, scale) {
         svgpath = "M0,0";
     return svgpath;
 }
-
-
 
 
 function getVisualValueSVG(iconPolygons, finalSide, backgroundPolygons) {
@@ -9092,8 +9894,6 @@ function updateVariable(symbolID, value) {
 function onSliderChanged(data) {
 
 
-
-
 //    if (window.useData) {
 //
 //
@@ -9138,54 +9938,67 @@ function onSliderChanged(data) {
 //
 //
 
-    if (window.signalData) {
-        var currentTime = changeRange(data.from, data.min, data.max, window.minTime, window.maxTime);
+    console.log("Data is: ");
+    console.log(data);
 
-        // currentTime -= window.sliderDelta;
-        var ids = Object.keys(progvolver.objects);
-        ids.forEach(function (id) {
-            var object = progvolver.objects[id];
-            object.setProgramTime && object.setProgramTime(currentTime);
-        });
-    }
+    // if (window.signalData) {
+    //     var currentTime = changeRange(data.from, data.min, data.max, window.minTime, window.maxTime);
+    //
+    //     window.presentTime = currentTime;
+    //     // currentTime -= window.sliderDelta;
+    //     var ids = Object.keys(progvolver.objects);
+    //     ids.forEach(function (id) {
+    //         var object = progvolver.objects[id];
+    //         object.setProgramTime && object.setProgramTime(currentTime);
+    //     });
+    // }
 
     if (window.logData && window.scopeData) {
 
 
         var currentTime = changeRange(data.from, data.min, data.max, window.minTime, window.maxTime);
+        // if (window.presentTime && (window.presentTime > currentTime)) {
+        //     console.log("Duplicate call. Returning");
+        //     return;
+        // }
+        //window.presentTime = currentTime;
 
         // 10% of difference between maxTime and minTime as the width for the Gaussian curve.
         window.colorDecayWidth = (window.maxTime - window.minTime) * 0.1;
         // currentTime -= window.sliderDelta;
 
 
-
         var ids = Object.keys(progvolver.objects);
+        console.log("ids: ");
+        console.log(ids);
         ids.forEach(function (id) {
+            console.log("id: " + id);
             var object = progvolver.objects[id];
-            object.setProgramTime && object.setProgramTime(currentTime);
+            object.setProgramTime && object.setProgramTime(window.presentTime);
         });
+
+        console.log("Window rpesent time is: ");
+        console.log(window.presentTime);
+        let lineNumberDetails = getLineNumberForCurrentTime(window.presentTime);
+        console.log("lineNumberDetails");
+        console.log(lineNumberDetails);
 
         const result = window.logData.filter(item => item[window.sliderDimension] <= currentTime);
 
-
-
+        let lastRecordForExpression = null;
         if (result.length > 0) {
 
-
-
-
-
             let lastRecord = result[result.length - 1];
+            lastRecordForExpression = lastRecord;
             let evaluatedLine = lastRecord.line - 1;
 
 
-
-
-
-
-
-            window.jsHandler.setEvaluatedLine({lineNumber: evaluatedLine, expressions: lastRecord.expressions, values: lastRecord.values, types: lastRecord.types}).then(function (response) {
+            window.jsHandler.setEvaluatedLine({
+                lineNumber: evaluatedLine,
+                expressions: lastRecord.expressions,
+                values: lastRecord.values,
+                types: lastRecord.types
+            }).then(function (response) {
                 //console.log(response);
 
 //                var args = {
@@ -9207,21 +10020,12 @@ function onSliderChanged(data) {
             });
 
 
-
-
-
-
-
-
-
-
-
-
-
-
             console.log(result);
 
-            var currentScope = {from: result[result.length - 1].enclosingSymbolStart, to: result[result.length - 1].enclosingSymbolEnd};
+            var currentScope = {
+                from: result[result.length - 1].enclosingSymbolStart,
+                to: result[result.length - 1].enclosingSymbolEnd
+            };
 
             // const itemsInScope = window.logData.filter(item => (item.declareAtFrom <= currentScope.to && item.declareAtFrom >= currentScope.from) || (item.scopeFrom <= currentScope.from && item.scopeTo >= currentScope.to));
 
@@ -9240,8 +10044,6 @@ function onSliderChanged(data) {
             // // console.log(inScope);
 
 
-
-
 //            window.trackedSymbolsIDs.forEach(function (symbolID) {
 //                var data = getLastDataOf(symbolID, result);
 //                var symbolWidget = findObjectByID(symbolID);
@@ -9254,21 +10056,20 @@ function onSliderChanged(data) {
 //            });
 
 
-
-
-
-
-
-
-
         }
 
+        let expressions = (lastRecordForExpression != null) ? lastRecordForExpression.expressions : null;
 
-
+        if (lineNumberDetails[0] && lineNumberDetails[0].length > 1) {
+            window.jsHandler.setCurrentLine({
+                lineNumber: lineNumberDetails[1] - 1,
+                filePath: lineNumberDetails[0],
+                expressions: expressions
+            }).then(function (response) {
+            });
+        }
 
     }
-
-
 
 
 }
@@ -9332,6 +10133,35 @@ function playSlider() {
     playButton.data('playing', !playing);
 }
 
+function playSliderLineData() {
+
+    var playButton = $("#playButton");
+    playButton.toggleClass('icon-play');
+    playButton.toggleClass('icon-pause');
+
+    var playing = playButton.data('playing');
+    var theSlider = $("#theSlider").data("ionRangeSlider");
+    var interval = 2;
+
+    if (playing) {
+        clearInterval(sliderTimer);
+    } else {
+        sliderTimer = setInterval(function () {
+
+            theSlider.update({from: (theSlider.result.from + 1) % theSlider.result.max});
+
+            sliderMarksElement.append(sliderMarksElements);
+
+            var selectedSymbol = canvas.getActiveObject();
+
+            if (selectedSymbol && selectedSymbol.showSliderMarks) {
+                selectedSymbol.showSliderMarks();
+            }
+
+        }, interval);
+    }
+    playButton.data('playing', !playing);
+}
 
 function reloadPage() {
     window.location.reload(false);
@@ -9368,16 +10198,6 @@ function findObjectByID(id) {
     }
     return null;
 }
-
-
-
-
-
-
-
-
-
-
 
 
 /*function addSliderData(dataLine) {
@@ -9436,15 +10256,113 @@ function stopEditingITexts() {
     });
 }
 
+function getHashCodeForString(str) {
+    var hash = 0, i, chr;
+    if (str.length === 0) return hash;
+    for (i = 0; i < str.length; i++) {
+        chr   = str.charCodeAt(i);
+        hash  = ((hash << 5) - hash) + chr;
+        hash |= 0; // Convert to 32bit integer
+    }
+    return hash;
+}
+
+function removeLinesFromFile(data, lines = []) {
+    return data
+        .split('\n')
+        .filter((val, idx) => lines.indexOf(idx) === -1)
+        .join('\n');
+}
+
+function preProcessLogFileForDuplicates(logFileContent) {
+    let linesToRemove = [];
+    Papa.parse(logFileContent.trim(), {
+        delimiter: "~",
+        header: true,
+        dynamicTyping: true,
+        complete: function (logData) {
+
+            // index~symbols~expressions~types~values~line~file~widgetsID~time~column~row~array
+            if (logData && logData.data && logData.data[0]) {
+                console.log("logData");
+                console.log(logData);
+
+                console.log("logData.data[0]");
+                console.log(logData.data[0]);
+
+                if (!iVoLVER.util.isUndefined(logData.data[0]) && !iVoLVER.util.isUndefined(logData.data[0][window.sliderDimension]) && !iVoLVER.util.isUndefined(logData.data[logData.data.length - 1]) && !iVoLVER.util.isUndefined(logData.data[logData.data.length - 1][window.sliderDimension])) {
+
+                    let previousItemHash = 0;
+                    let previousItemId = "";
+                    let currentItemHash = -1;
+                    let currentItemId = "";
+                    logData.data.forEach(function (item, index) {
+
+                        let stringToHash = "" + item.symbols + item.expressions + item.types + item.values + item.line + item.file + item.column + item.row + item.array;
+                        if (previousItemHash === 0) {
+                            previousItemHash = getHashCodeForString(stringToHash);
+                            previousItemId = item.widgetsID;
+                        } else {
+                            currentItemHash = getHashCodeForString(stringToHash);
+                            currentItemId = item.widgetsID;
+                            if (previousItemHash === currentItemHash) { // duplicate lines
+                                if (currentItemId !== previousItemId) { // line with different widgets ID causing the duplicate bug.
+                                    // remove line from the file, accounting for the header which is the first line
+                                    linesToRemove.push(index + 1);
+                                }
+                            }
+                            previousItemHash = currentItemHash;
+                            previousItemId = currentItemId;
+                        }
+                    });
+
+                }
+            }
+        }
+    });
+    return removeLinesFromFile(logFileContent, linesToRemove);
+}
+
+function updateMemoryReferences(referencedObject) {
+    console.log("Updating memory references");
+    let referenceWidget = referencedObject.referenceWidget;
+
+    console.log("Referenced object is: ");
+    console.log(referencedObject);
+
+    if (methodParameters.indexOf(referenceWidget) != -1 && referenceWidget.otherReferencedObjects.length == 0) {
+        for (let objectOnCanvas of referencedObjects) {
+            if (objectOnCanvas.memoryAddress === referencedObject.memoryAddress) {
+                referenceWidget.otherReferencedObjects.push(objectOnCanvas);
+            }
+        }
+    }
+
+    if (referenceWidget.otherReferencedObjects.length > 0) {
+        referenceWidget.otherReferencedObjects.forEach(function (objectOnCanvas) {
+            // Update other objects with same memory location to have same values
+            objectOnCanvas.setValue(referencedObject.getValue());
+        })
+    }
 
 
+    //Draw arrow to the same memory location objects.
+    referenceWidget.drawArrowToObjectsAtSameMemory();
+    // Draw transluscent block
+    //referenceWidget.drawTransluscentBlockToObjectAtSameMemory();
 
-function processLogFiles(logFileContent, scopeFileContent, signalFileContent) {
+    console.log("Other referencedObjects");
+    console.log(referenceWidget.otherReferencedObjects);
+}
+
+function processLogFiles(logFileContent, scopeFileContent, signalFileContent, lineInfoFileContent) {
 
     window.minTimeSignalData = Infinity;
     window.maxTimeSignalData = -Infinity;
     window.minTimeLogData = Infinity;
     window.maxTimeLogData = -Infinity;
+    window.minTime = Infinity;
+    window.maxTime = -Infinity;
 
     if (signalFileContent) {
         Papa.parse(signalFileContent.trim(), {
@@ -9473,6 +10391,34 @@ function processLogFiles(logFileContent, scopeFileContent, signalFileContent) {
         });
     }
 
+    if (lineInfoFileContent) {
+        Papa.parse(lineInfoFileContent.trim(), {
+            delimiter: "~",
+            header: true,
+            dynamicTyping: true,
+            complete: function (lineData) {
+                if (lineData && lineData.data && lineData.data[0]) {
+                    window.lineData = lineData.data;
+
+                    window.minTimeLineData = lineData.data[0].time;
+                    window.maxTimeLineData = lineData.data[lineData.data.length - 1].time;
+
+                     window.minTime = Math.min(window.minTime, window.minTimeLineData);
+                     window.maxTime = Math.max(window.maxTime, window.maxTimeLineData);
+
+                    // var ids = Object.keys(progvolver.objects);
+                    // ids.forEach(function (id) {
+                    //     var object = progvolver.objects[id];
+                    //     object.setSignalData && object.setSignalData();
+                    //     object.setProgramTime && object.setProgramTime(window.minTime);
+                    // });
+
+                }
+            }
+        });
+    }
+
+
     // we first process the content of the log file
     Papa.parse(logFileContent.trim(), {
         delimiter: "~",
@@ -9496,8 +10442,6 @@ function processLogFiles(logFileContent, scopeFileContent, signalFileContent) {
                 console.log(logData.data[0][window.sliderDimension]);
 
 
-
-
                 if (!iVoLVER.util.isUndefined(logData.data[0]) && !iVoLVER.util.isUndefined(logData.data[0][window.sliderDimension]) && !iVoLVER.util.isUndefined(logData.data[logData.data.length - 1]) && !iVoLVER.util.isUndefined(logData.data[logData.data.length - 1][window.sliderDimension])) {
 
                     window.minTimeLogData = logData.data[0][window.sliderDimension];
@@ -9506,6 +10450,11 @@ function processLogFiles(logFileContent, scopeFileContent, signalFileContent) {
                     window.minTime = Math.min(window.minTimeLogData, window.minTimeSignalData);
                     window.maxTime = Math.max(window.maxTimeLogData, window.maxTimeSignalData);
 
+                    console.log("Window.minTime was: " + window.minTime);
+                    window.minTime = Math.min(window.minTime, window.minTimeLineData);
+                    window.maxTime = Math.max(window.maxTime, window.maxTimeLineData);
+
+                    console.log("Window.minTime is: " + window.minTime);
 
 //                    let sliderWidth = $("#theSlider").parent().width();
 //                    window.sliderMargin = 50; // pixels before the timeline starts to react to actual data
@@ -9519,23 +10468,10 @@ function processLogFiles(logFileContent, scopeFileContent, signalFileContent) {
 //                    window.maxTime = maxTime;
 
 
-
-
-
-
-
-
-
-
-
-
-
-
                     window.items = new vis.DataSet();
 
 
                     let groupsSet = new Set();
-
 
 
                     window.logData.forEach(function (item, index) {
@@ -9580,9 +10516,6 @@ function processLogFiles(logFileContent, scopeFileContent, signalFileContent) {
                         });
 
 
-
-
-
                     });
 
 
@@ -9594,7 +10527,6 @@ function processLogFiles(logFileContent, scopeFileContent, signalFileContent) {
 //                    trackedExpressionsIDs.forEach(function (expression) {
 //                        groups.add({id: expression, content: expression});
 //                    });
-
 
 
                     function onSelect(properties) {
@@ -9609,7 +10541,6 @@ function processLogFiles(logFileContent, scopeFileContent, signalFileContent) {
                         let item = $('*[data-id="' + properties.item + '"]');
 
                         if (item.length) {
-
 
 
                             let file = item.data('file');
@@ -9644,10 +10575,7 @@ function processLogFiles(logFileContent, scopeFileContent, signalFileContent) {
                             }
 
 
-
-
                         }
-
 
 
                     }
@@ -9661,6 +10589,8 @@ function processLogFiles(logFileContent, scopeFileContent, signalFileContent) {
                     });
 
 
+                    console.log("Timeoffset");
+                    console.log(logData.data[0].timeOffset);
                     window.firstOffset = moment(logData.data[0].timeOffset).toDate();
                     window.lastOffset = moment(logData.data[logData.data.length - 1].timeOffset).toDate();
                     window.programDuration = moment.duration(window.lastOffset - window.firstOffset).valueOf();
@@ -9677,14 +10607,9 @@ function processLogFiles(logFileContent, scopeFileContent, signalFileContent) {
 //                    console.log(programDuration);
 
 
-
                     console.log("logData.data:");
                     console.log(logData.data);
                     console.log("*************************");
-
-
-
-
 
 
                     timeline.setOptions(window.timelineOptions);
@@ -9697,6 +10622,7 @@ function processLogFiles(logFileContent, scopeFileContent, signalFileContent) {
                     ids.forEach(function (id) {
                         var object = progvolver.objects[id];
                         object.setHistory && object.setHistory();
+                        object.setMemoryAddress && object.setMemoryAddress();
                         object.setProgramTime && object.setProgramTime(window.minTime);
                     });
 
@@ -9718,10 +10644,22 @@ function processLogFiles(logFileContent, scopeFileContent, signalFileContent) {
                     });
 
                     // parse signal file contents
+
+                    // set timeline to the start position
+                    var theSlider = $("#theSlider").data("ionRangeSlider");
+                    theSlider.update({from: 0});
+                    window.presentTime = window.minTime;
+
+                    // determine new variable values for code variant combination and remove any variables if they do not exist
+                    //getAssociatedVariablesForCodeVariants();
+                    console.log("Window minTime: " + window.minTime);
+                    console.log("Window maxTime: " + window.maxTime);
                 }
             }
         }
     });
+
+
 }
 
 

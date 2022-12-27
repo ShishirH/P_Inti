@@ -67,7 +67,7 @@ var SignalReceiverWidget = iVoLVER.util.createClass(fabric.Circle, {
         
         if (this.isAffectWidget) {
             console.log(this.background.outputPort);
-            this.background.outputPort.emitSignal();
+            this.background.outputPort.emitSignal(this.signalsReceived);
         }
     }
 });

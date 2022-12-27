@@ -32,6 +32,7 @@
                 CefSharp.BindObjectAsync("jsHandler", "jsHandler");
             }
         </script>
+        <link rel="stylesheet" type="text/css" href="./bootstrap-5.2.3-dist/css/bootstrap.min.css" />
 
         <link rel="stylesheet" type="text/css" href="./css/monserratFont.css">
         <link rel="stylesheet" type="text/css" href="./css/main.css" />
@@ -62,12 +63,13 @@
         <link rel="stylesheet" type="text/css" href="./js/contextMenu/jquery.contextMenu.min.css" />
 
 
+
+
         <script type="text/javascript" src="./js/jquery-1.10.2.js"></script>
         <script type="text/javascript" src="./js/jquery.ajaxfileupload.js"></script>
         <script type="text/javascript" src="./js/jquery-ui-1.10.4.min.js"></script>
         <script type="text/javascript" src="./js/jquery.path.js"></script>
         <script type="text/javascript" src="./js/kickstart.js"></script>
-        <script type="text/javascript" src="./js/drawingCanvas.js"></script>
 
         <!--        <script type="text/javascript" src="./js/fabric4.4.0.js"></script>-->
         <script type="text/javascript" src="./js/fabric.js"></script>
@@ -120,6 +122,8 @@
         <script type="text/javascript" src="./js/contextMenu/jquery.contextMenu.js"></script>
         <script type="text/javascript" src="./js/contextMenu/jquery.ui.position.min.js"></script>
 
+<!--        <script type="text/javascript" src="./bootstrap-5.2.3-dist/js/bootstrap.bundle.min.js"></script>-->
+
         <script type="text/javascript" src="./js/progvolver.js"></script>
         <script type="text/javascript" src="./js/classes/types/Value.js"></script>
         <script type="text/javascript" src="./js/classes/VisualProperty.js"></script>
@@ -171,6 +175,7 @@
         <script type="text/javascript" src="js/classes/progvolver/canvasVariable/CanvasVariableConnectionPort.js"></script>
 
         <script type="text/javascript" src="js/classes/progvolver/codeControl/CodeControls.js"></script>
+        <script type="text/javascript" src="js/classes/progvolver/codeControl/CodeControlCheckBox.js"></script>
         <script type="text/javascript" src="js/classes/progvolver/codeControl/CodeControlAddition.js"></script>
         <script type="text/javascript" src="js/classes/progvolver/codeControl/Branch/CodeControlBranch.js"></script>
         <script type="text/javascript" src="js/classes/progvolver/codeControl/Branch/CodeControlBranchUpdate.js"></script>
@@ -181,6 +186,20 @@
 
         <script type="text/javascript" src="js/interaction/interactionEvents/MovementInteractionEvent.js"></script>
         <script type="text/javascript" src="js/interaction/interactionEvents/DisappearanceInteractionEvent.js"></script>
+
+        <script type="text/javascript" src="js/classes/progvolver/logicalOperatorWidget/ComparisonOperators.js"></script>
+        <script type="text/javascript" src="js/classes/progvolver/logicalOperatorWidget/LogicalOperators.js"></script>
+        <script type="text/javascript" src="js/classes/progvolver/logicalOperatorWidget/ArithmeticOperators.js"></script>
+        <script type="text/javascript" src="js/classes/progvolver/logicalOperatorWidget/VariableInputConnection.js"></script>
+        <script type="text/javascript" src="js/classes/progvolver/logicalOperatorWidget/VariableOutputConnection.js"></script>
+        <script type="text/javascript" src="js/classes/progvolver/logicalOperatorWidget/LogicalInputConnection.js"></script>
+        <script type="text/javascript" src="js/classes/progvolver/logicalOperatorWidget/LogicalOutputConnection.js"></script>
+        <script type="text/javascript" src="js/classes/progvolver/logicalOperatorWidget/ResultWidget.js"></script>
+        <script type="text/javascript" src="js/classes/progvolver/logicalOperatorWidget/TextChange.js"></script>
+
+
+        <script type="text/javascript" src="js/classes/progvolver/Plots/LollipopPlot.js"></script>
+        <script type="text/javascript" src="js/classes/progvolver/Plots/Scatterplot.js"></script>
 
         <link rel="stylesheet" type="text/css" href="./js/spectrum.min.css"/>
         <script src="./js/spectrum.min.js"></script>
@@ -229,14 +248,9 @@
             <li class="verticalLeftDivider verticalRightDivider verticalRightDivider2"><a onclick="zoomOut()"><i class="icon-zoom-out "></i></a></li>
 
             <!-- DRAGGING & PANNING MODES -->
-            <li id="panningModeButton" onmousedown='modeButtonClicked(this);' draggable="false" class="mode"><a><i class="fa fa-hand-paper-o "> </i> </a></li>
-            <li class="verticalLeftDivider mode" id="disconnectingModeButton" onmousedown='modeButtonClicked(this);' draggable="false"><a><i class="fa fa-unlink "> </i> </a></li>
-            <li class="verticalLeftDivider verticalRightDivider verticalRightDivider2 mode" id="squaredSelectionButton" onmousedown='modeButtonClicked(this);' draggable="false"><a><i class="fa fa-object-group "> </i> </a></li>
-
-            <!-- CONNECTORS VISIBILITY -->
-            <li class="verticalLeftDivider verticalRightDivider verticalRightDivider2 mode" draggable="false"><a id="connectorsVisibilityButton" onmousedown="toggleConnectorsVisibility(this);"><i class="fa fa-eye "></i></a></li>
-
-
+            <li id="panningModeButton" onmousedown='modeButtonClicked(this);' draggable="false" class="mode"><a><i class="fa fa-hand-paper-o fa-2x"> </i> </a></li>
+            <li class="verticalLeftDivider mode" id="disconnectingModeButton" onmousedown='modeButtonClicked(this);' draggable="false"><a><i class="fa fa-unlink fa-2x"> </i> </a></li>
+            <li class="verticalLeftDivider verticalRightDivider verticalRightDivider2 mode" id="squaredSelectionButton" onmousedown='modeButtonClicked(this);' draggable="false"><a><i class="fa fa-object-group fa-2x"> </i> </a></li>
 
             <!-- OPERATIONS ON OBJECTS -->
             <!--            <li class="mode verticalLeftDivider" onmousedown='duplicateObject();' draggable="false"><a><i class="fa fa-clone fa-flip-horizontal  clicMenu"> </i> </a></li>
@@ -285,13 +299,17 @@
                     <button class="large" onclick="toggleExtendedTimeline()" style="position: relative; top: -15px; border-radius: 15px; width: 30px; height: 30px; padding: 0px; margin: 0px; "><i id="extendedTimelineButtonIcon" style=" position: relative; top: -2px; font-size: 18px; color: black;" class="fa fa-chevron-down"></i></button>
                 </div>
 
-                <div style=" height:60px; width:80px; border-right: #6f6f6f 1px solid; float:left; ">
+                <div style=" height:60px; width:248px; border-right: #6f6f6f 1px solid; float:left; ">
                     <ul class="menu nonSelection">
-                        <li class=""><a onclick="playSlider()"><i id="playButton" class="icon-play fa-2x" style="padding:10px 10px;"></i></a></li>
+                        <li id="runCodeAnalyzerContainer" class="verticalRightDivider verticalRightDivider2"><a onclick="clickRunCodeButton()"><i id="runCodeAnalyzer" class="fa fa-cogs fa-2x" style="padding:10px 10px;"></i></a></li>
+                        <li id="timelinePreviousContainer" class="verticalLeftDivider verticalRightDivider verticalRightDivider2"><a onclick="moveTimelinePrevious()"><i id="timelinePrevious" class="fa fa-step-backward fa-2x" style="padding:10px 10px;"></i></a></li>
+                        <li id="playButtonContainer" class="verticalLeftDivider verticalRightDivider verticalRightDivider2"><a onclick="playSliderLineData()"><i id="playButton" class="icon-play fa-2x" style="padding:10px 10px;"></i></a></li>
+                        <li id="timelineNextContainer" class=""><a onclick="moveTimelineNext()"><i id="timelineNext" class="fa fa-step-forward fa-2x" style="padding:10px 10px;"></i></a></li>
+<!--                        <li class=""><a onclick="goToLineInFile()"><i id="goToButton" class="fa fa-motorcycle fa-2x" style="padding:5px 5px;"></i></a></li>-->
                     </ul>
                 </div>
 
-                <div style=" width:auto; height:60px; overflow:hidden;">
+                <div id="theSliderContainer" style=" width:auto; height:60px; overflow:hidden;">
                     <input style="width: available;" type="text" id="theSlider" name="theSlider" value="" />
                 </div>
 
@@ -522,42 +540,14 @@
 
 
 
-
-
-
-        iVoLVER.gui.add.button({
-            sectionID: iVoLVER.gui.toolbar, // variable storing the id of the top toolbar
-            tooltip: 'Run',
-            iconClass: 'fa-cogs',
-            onClick: function () {
-                if (window.jsHandler) {
-                    if (window.jsHandler.runCodeAnalyzer) {
-                        var waitingDialog = new jWait('Running Program');
-                        window.jsHandler.runCodeAnalyzer(null).then(function (response) {
-
-                            window.trackedSymbolsIDs = response.trackedSymbolsIDs;
-                            window.trackedExpressionsIDs = response.trackedExpressionsIDs;
-                            window.trackedSignalIDs = response.trackedSignalIDs;
-                            console.log("Signal IDs:");
-                            console.log(response.trackedSignalIDs);
-                            var logFileContent = response.logFileContent.join("\n");
-                            var scopeFileContent = response.scopeFileContent.join("\n");
-                            var signalFileContent = response.signalFileContent.join("\n");
-                            //console.log("Signal file content is: " + response.signalFileContent.join("\n"));
-                            processLogFiles(logFileContent, scopeFileContent, signalFileContent);
-                            window.snapshotWidget && window.snapshotWidget.parseMemberValues();
-                            waitingDialog.dialog('content', '<div style="text-align: center; margin-top: 20px;"><span align="center" style="font-size: 150%;">' + response.response + '</span></div>');
-                            if (response.success) {
-                                setTimeout(function () {
-                                    waitingDialog.dialog('hide');
-                                }, 2000);
-                            }
-
-                        });
-                    }
-                }
-            }
-        });
+        // iVoLVER.gui.add.button({
+        //     sectionID: iVoLVER.gui.toolbar, // variable storing the id of the top toolbar
+        //     tooltip: 'Run',
+        //     iconClass: 'fa-cogs',
+        //     onClick: function () {
+        //         clickRunCodeButton();
+        //     }
+        // });
 //            iVoLVER.gui.add.button({
 //                sectionID: iVoLVER.gui.toolbar, // variable storing the id of the top toolbar
 //                tooltip: 'Wait',
@@ -601,307 +591,168 @@
          }
          });*/
 
-
-        iVoLVER.gui.add.modeButton({
-            name: 'DrawSquare',
-            iconClass: 'fa-sticky-note',
-            persistent: false,
-            onMouseDown: function (x, y, workspace) {
-                workspace.down = true;
-                workspace.initalX = x;
-                workspace.initalY = y;
-                workspace.fill = iVoLVER.util.getRandomColor();
-                workspace.stroke = darken(workspace.fill);
-                var square = new fabric.Rect({
-                    left: x, top: y,
-                    width: 0, height: 0,
-                    strokeWidth: 1,
-                    stroke: workspace.stroke,
-                    fill: workspace.fill,
-                });
-                workspace.square = square;
-                canvas.add(workspace.square);
-            },
-            onMouseMove: function (x, y, workspace) {
-                if (workspace.down) {
-                    // updating the line's ending coordinates
-                    var width = Math.abs(workspace.initalX - x);
-                    var height = Math.abs(workspace.initalY - y);
-                    workspace.square.set({width: width, height: height});
-                    workspace.square.setCoords();
-                }
-            },
-            onMouseUp: function (x, y, workspace) {
-                if (workspace.down) {
-                    workspace.square.setCoords();
-                    var squareCenter = workspace.square.getPointByOrigin('center', 'center');
-                    var note = new CodeNote({
-                        x: squareCenter.x,
-                        y: squareCenter.y,
-                        width: workspace.square.width,
-                        height: workspace.square.height,
-                        stroke: workspace.stroke,
-                        fill: workspace.fill,
-                        programElementType: "N",
-                        drawIconSpace: true,
-                    });
-                    window.note = note;
-                    canvas.remove(workspace.square);
-                    canvas.add(note);
-                    // updating the line's ending coordinates
-//                        var width = Math.abs(workspace.initalX - x);
-//                        var height = Math.abs(workspace.initalY - y);
-//                        workspace.square.set({width: width, height: height});
-                }
-            }
-        });
-        iVoLVER.gui.add.modeButton({
-            name: 'DrawPlotter',
-            tooltip: 'Plotter',
-            iconClass: 'fa-square',
-            persistent: false,
-            onMouseDown: function (x, y, workspace) {
-                workspace.down = true;
-                workspace.initalX = x;
-                workspace.initalY = y;
-                workspace.fill = iVoLVER.util.getRandomColor();
-                workspace.stroke = darken(workspace.fill);
-                var square = new fabric.Rect({
-                    left: x, top: y,
-                    width: 0, height: 0,
-                    strokeWidth: 1,
-                    stroke: workspace.stroke,
-                    fill: workspace.fill,
-                });
-                workspace.square = square;
-                canvas.add(workspace.square);
-            },
-            onMouseMove: function (x, y, workspace) {
-                if (workspace.down) {
-                    // updating the line's ending coordinates
-                    var width = Math.abs(workspace.initalX - x);
-                    var height = Math.abs(workspace.initalY - y);
-                    workspace.square.set({width: width, height: height});
-                    workspace.square.setCoords();
-                }
-            },
-            onMouseUp: function (x, y, workspace) {
-                if (workspace.down) {
-                    workspace.square.setCoords();
-                    var squareCenter = workspace.square.getPointByOrigin('center', 'center');
-                    var plotter = new Plotter({
-                        x: squareCenter.x,
-                        y: squareCenter.y,
-                        width: workspace.square.width,
-                        height: workspace.square.height,
-                        stroke: workspace.stroke,
-                        fill: workspace.fill,
-                        programElementType: "...",
-                        drawIconSpace: true,
-                    });
-                    window.note = plotter;
-                    canvas.remove(workspace.square);
-                    canvas.add(plotter);
-                }
-            }
-        });
-
-        iVoLVER.gui.add.modeButton({
-            name: 'WhenWidget',
-            tooltip: 'When Widget',
-            iconClass: 'fa-exchange',
-            persistent: false,
-            onMouseDown: function (x, y, workspace) {
-                workspace.down = true;
-                workspace.initalX = x;
-                workspace.initalY = y;
-                workspace.fill = iVoLVER.util.getRandomColor();
-                workspace.stroke = darken(workspace.fill);
-                var square = new fabric.Rect({
-                    left: x, top: y,
-                    width: 0, height: 0,
-                    strokeWidth: 1,
-                    stroke: workspace.stroke,
-                    fill: workspace.fill,
-                });
-                workspace.square = square;
-                canvas.add(workspace.square);
-            },
-            onMouseMove: function (x, y, workspace) {
-                if (workspace.down) {
-                    // updating the line's ending coordinates
-                    var width = Math.abs(workspace.initalX - x);
-                    var height = Math.abs(workspace.initalY - y);
-                    workspace.square.set({width: width, height: height});
-                    workspace.square.setCoords();
-                }
-            },
-            onMouseUp: function (x, y, workspace) {
-                if (workspace.down) {
-                    workspace.square.setCoords();
-                    var squareCenter = workspace.square.getPointByOrigin('center', 'center');
-                    var whenWidget = new WhenWidget({
-                        fill: '#F02466',
-                        stroke: '#F02466',
-                        width: 180,
-                        height: 100,
-                        x: squareCenter.x,
-                        y: squareCenter.y,
-                    });
-
-                    window.whenWidget = whenWidget;
-                    canvas.remove(workspace.square);
-                    canvas.add(whenWidget);
-                    // updating the line's ending coordinates
-//                        var width = Math.abs(workspace.initalX - x);
-//                        var height = Math.abs(workspace.initalY - y);
-//                        workspace.square.set({width: width, height: height});
-                }
-            }
-        });
-
-        iVoLVER.gui.add.modeButton({
-            name: 'AffectWidget',
-            tooltip: 'Affect Widget',
-            iconClass: 'fa-signal',
-            persistent: false,
-            onMouseDown: function (x, y, workspace) {
-                workspace.down = true;
-                workspace.initalX = x;
-                workspace.initalY = y;
-                workspace.fill = iVoLVER.util.getRandomColor();
-                workspace.stroke = darken(workspace.fill);
-                var square = new fabric.Rect({
-                    left: x, top: y,
-                    width: 0, height: 0,
-                    strokeWidth: 1,
-                    stroke: workspace.stroke,
-                    fill: workspace.fill,
-                });
-                workspace.square = square;
-                canvas.add(workspace.square);
-            },
-            onMouseMove: function (x, y, workspace) {
-                if (workspace.down) {
-                    // updating the line's ending coordinates
-                    var width = Math.abs(workspace.initalX - x);
-                    var height = Math.abs(workspace.initalY - y);
-                    workspace.square.set({width: width, height: height});
-                    workspace.square.setCoords();
-                }
-            },
-            onMouseUp: function (x, y, workspace) {
-                if (workspace.down) {
-                    workspace.square.setCoords();
-                    var squareCenter = workspace.square.getPointByOrigin('center', 'center');
-                    var affectWidget = new AffectWidget({
-                        fill: '#F02466',
-                        stroke: '#F02466',
-                        width: 180,
-                        height: 100,
-                        x: squareCenter.x,
-                        y: squareCenter.y,
-                    });
-
-                    window.affectWidget = affectWidget;
-                    canvas.remove(workspace.square);
-                    canvas.add(affectWidget);
-                    // updating the line's ending coordinates
-//                        var width = Math.abs(workspace.initalX - x);
-//                        var height = Math.abs(workspace.initalY - y);
-//                        workspace.square.set({width: width, height: height});
-                }
-            }
-        });
-
-        iVoLVER.gui.add.modeButton({
-            name: 'SnapshotWidget',
-            tooltip: 'Snapshot Widget',
-            iconClass: 'fa-photo',
-            persistent: false,
-            onMouseDown: function (x, y, workspace) {
-                workspace.down = true;
-                workspace.initalX = x;
-                workspace.initalY = y;
-                workspace.fill = iVoLVER.util.getRandomColor();
-                workspace.stroke = darken(workspace.fill);
-                var square = new fabric.Rect({
-                    left: x, top: y,
-                    width: 0, height: 0,
-                    strokeWidth: 1,
-                    stroke: workspace.stroke,
-                    fill: workspace.fill,
-                });
-                workspace.square = square;
-                canvas.add(workspace.square);
-            },
-            onMouseMove: function (x, y, workspace) {
-                if (workspace.down) {
-                    // updating the line's ending coordinates
-                    var width = Math.abs(workspace.initalX - x);
-                    var height = Math.abs(workspace.initalY - y);
-                    workspace.square.set({width: width, height: height});
-                    workspace.square.setCoords();
-                }
-            },
-            onMouseUp: function (x, y, workspace) {
-                if (workspace.down) {
-                    workspace.square.setCoords();
-                    var squareCenter = workspace.square.getPointByOrigin('center', 'center');
-                    var snapshotWidget = new SnapshotWidget({
-                        fill: '#F02466',
-                        stroke: '#F02466',
-                        width: workspace.square.width,
-                        height: workspace.square.height,
-                        x: squareCenter.x,
-                        y: squareCenter.y
-                    });
-
-
-                    window.snapshotWidget = snapshotWidget;
-                    canvas.remove(workspace.square);
-                    canvas.add(snapshotWidget);
-                    // updating the line's ending coordinates
-//                        var width = Math.abs(workspace.initalX - x);
-//                        var height = Math.abs(workspace.initalY - y);
-//                        workspace.square.set({width: width, height: height});
-                }
-            }
-        });
-
-        iVoLVER.gui.add.modeButton({
-            name: 'CanvasVariable',
-            tooltip: 'Canvas Variable',
-            iconClass: 'fa-circle',
-            persistent: false,
-            onMouseDown: function (x, y, workspace) {
-                workspace.down = true;
-                workspace.initalX = x;
-                workspace.initalY = y;
-                workspace.stroke = darken(workspace.fill);
-                var square = new CanvasVariable({
-                    type: "dataType",
-                    name: "name",
-                    left: x, top: y,
-                    x: x, y: y,
-                    value: ""
-                });
-                workspace.square = square;
-                canvas.add(workspace.square);
-            },
-            onMouseMove: function (x, y, workspace) {
-                if (workspace.down) {
-                    // updating the line's ending coordinates
-                    workspace.square.setCoords();
-                    workspace.square.positionObjects();
-                }
-            },
-            onMouseUp: function(x, y, workspace) {
-                workspace.down = false;
-                workspace.square.positionObjects();
-                workspace.square.compress();
-            }
-        });
+//         iVoLVER.gui.add.modeButton({
+//             name: 'WhenWidget',
+//             tooltip: 'When Widget',
+//             iconClass: 'fa-exchange',
+//             persistent: false,
+//             onMouseDown: function (x, y, workspace) {
+//                 workspace.down = true;
+//                 workspace.initalX = x;
+//                 workspace.initalY = y;
+//                 workspace.fill = iVoLVER.util.getRandomColor();
+//                 workspace.stroke = darken(workspace.fill);
+//                 var square = new fabric.Rect({
+//                     left: x, top: y,
+//                     width: 0, height: 0,
+//                     strokeWidth: 1,
+//                     stroke: workspace.stroke,
+//                     fill: workspace.fill,
+//                 });
+//                 workspace.square = square;
+//                 canvas.add(workspace.square);
+//             },
+//             onMouseMove: function (x, y, workspace) {
+//                 if (workspace.down) {
+//                     // updating the line's ending coordinates
+//                     var width = Math.abs(workspace.initalX - x);
+//                     var height = Math.abs(workspace.initalY - y);
+//                     workspace.square.set({width: width, height: height});
+//                     workspace.square.setCoords();
+//                 }
+//             },
+//             onMouseUp: function (x, y, workspace) {
+//                 if (workspace.down) {
+//                     workspace.square.setCoords();
+//                     var squareCenter = workspace.square.getPointByOrigin('center', 'center');
+//                     var whenWidget = new WhenWidget({
+//                         fill: '#F02466',
+//                         stroke: '#F02466',
+//                         width: 180,
+//                         height: 100,
+//                         x: squareCenter.x,
+//                         y: squareCenter.y,
+//                     });
+//
+//                     window.whenWidget = whenWidget;
+//                     canvas.remove(workspace.square);
+//                     canvas.add(whenWidget);
+//                     // updating the line's ending coordinates
+// //                        var width = Math.abs(workspace.initalX - x);
+// //                        var height = Math.abs(workspace.initalY - y);
+// //                        workspace.square.set({width: width, height: height});
+//                 }
+//             }
+//         });
+//
+//         iVoLVER.gui.add.modeButton({
+//             name: 'AffectWidget',
+//             tooltip: 'Affect Widget',
+//             iconClass: 'fa-signal',
+//             persistent: false,
+//             onMouseDown: function (x, y, workspace) {
+//                 workspace.down = true;
+//                 workspace.initalX = x;
+//                 workspace.initalY = y;
+//                 workspace.fill = iVoLVER.util.getRandomColor();
+//                 workspace.stroke = darken(workspace.fill);
+//                 var square = new fabric.Rect({
+//                     left: x, top: y,
+//                     width: 0, height: 0,
+//                     strokeWidth: 1,
+//                     stroke: workspace.stroke,
+//                     fill: workspace.fill,
+//                 });
+//                 workspace.square = square;
+//                 canvas.add(workspace.square);
+//             },
+//             onMouseMove: function (x, y, workspace) {
+//                 if (workspace.down) {
+//                     // updating the line's ending coordinates
+//                     var width = Math.abs(workspace.initalX - x);
+//                     var height = Math.abs(workspace.initalY - y);
+//                     workspace.square.set({width: width, height: height});
+//                     workspace.square.setCoords();
+//                 }
+//             },
+//             onMouseUp: function (x, y, workspace) {
+//                 if (workspace.down) {
+//                     workspace.square.setCoords();
+//                     var squareCenter = workspace.square.getPointByOrigin('center', 'center');
+//                     var affectWidget = new AffectWidget({
+//                         fill: '#F02466',
+//                         stroke: '#F02466',
+//                         width: 180,
+//                         height: 100,
+//                         x: squareCenter.x,
+//                         y: squareCenter.y,
+//                     });
+//
+//                     window.affectWidget = affectWidget;
+//                     canvas.remove(workspace.square);
+//                     canvas.add(affectWidget);
+//                     // updating the line's ending coordinates
+// //                        var width = Math.abs(workspace.initalX - x);
+// //                        var height = Math.abs(workspace.initalY - y);
+// //                        workspace.square.set({width: width, height: height});
+//                 }
+//             }
+//         });
+//
+//         iVoLVER.gui.add.modeButton({
+//             name: 'SnapshotWidget',
+//             tooltip: 'Snapshot Widget',
+//             iconClass: 'fa-photo',
+//             persistent: false,
+//             onMouseDown: function (x, y, workspace) {
+//                 workspace.down = true;
+//                 workspace.initalX = x;
+//                 workspace.initalY = y;
+//                 workspace.fill = iVoLVER.util.getRandomColor();
+//                 workspace.stroke = darken(workspace.fill);
+//                 var square = new fabric.Rect({
+//                     left: x, top: y,
+//                     width: 0, height: 0,
+//                     strokeWidth: 1,
+//                     stroke: workspace.stroke,
+//                     fill: workspace.fill,
+//                 });
+//                 workspace.square = square;
+//                 canvas.add(workspace.square);
+//             },
+//             onMouseMove: function (x, y, workspace) {
+//                 if (workspace.down) {
+//                     // updating the line's ending coordinates
+//                     var width = Math.abs(workspace.initalX - x);
+//                     var height = Math.abs(workspace.initalY - y);
+//                     workspace.square.set({width: width, height: height});
+//                     workspace.square.setCoords();
+//                 }
+//             },
+//             onMouseUp: function (x, y, workspace) {
+//                 if (workspace.down) {
+//                     workspace.square.setCoords();
+//                     var squareCenter = workspace.square.getPointByOrigin('center', 'center');
+//                     var snapshotWidget = new SnapshotWidget({
+//                         fill: '#F02466',
+//                         stroke: '#F02466',
+//                         width: workspace.square.width,
+//                         height: workspace.square.height,
+//                         x: squareCenter.x,
+//                         y: squareCenter.y
+//                     });
+//
+//
+//                     window.snapshotWidget = snapshotWidget;
+//                     canvas.remove(workspace.square);
+//                     canvas.add(snapshotWidget);
+//                     // updating the line's ending coordinates
+// //                        var width = Math.abs(workspace.initalX - x);
+// //                        var height = Math.abs(workspace.initalY - y);
+// //                        workspace.square.set({width: width, height: height});
+//                 }
+//             }
+//         });
 
 
 //             var circle1 = drawCircleAt({x: 300, y: 100}, 'green', 40);
@@ -1181,16 +1032,19 @@
         };
         // Create a Timeline
         var timeline = new vis.Timeline(container);
-//        var whenWidget = new WhenWidget({
-//            fill: '#F02466',
-//            stroke: '#F02466',
-//            width: 180,
-//            height: 100,
-//            y: 350,
-//            x: 500
-//        });
-//
-//        canvas.add(whenWidget);
+
+        setBottomButtonsVisibility();
+
+       // var whenWidget = new WhenWidget({
+       //     fill: '#F02466',
+       //     stroke: '#F02466',
+       //     width: 180,
+       //     height: 100,
+       //     y: 350,
+       //     x: 500
+       // });
+       //
+       // canvas.add(whenWidget);
 ////
 //        var affectWidget = new AffectWidget({
 //            fill: '#F02466',
@@ -1214,23 +1068,23 @@
         //canvas.add(referenceWidget);
         //console.log(referenceWidget);
 
-//            var objectMembersArray = [];
-//
-//            for (let i = 0; i < 20; i++) {
-//                var objectMembers = [];
-//
-//                var progvolverString = new ProgvolverSymbol({
-//                    dataType: "double",
-//                    fill: '#B3CDE3',
-//                    type: "string",
-//                    name: i,
-//                    value: "Hello",
-//                    isMember: true
-//                });
-//
-//                objectMembers.push(progvolverString);
-//                objectMembersArray.push(objectMembers);
-//            }
+           // var objectMembersArray = [];
+           //
+           // for (let i = 0; i < 20; i++) {
+           //     var objectMembers = [];
+           //
+           //     var progvolverString = new ProgvolverSymbol({
+           //         dataType: "double",
+           //         fill: '#B3CDE3',
+           //         type: "string",
+           //         name: "asd a",
+           //         value: "Hello",
+           //         isMember: true
+           //     });
+           //
+           //     objectMembers.push(progvolverString);
+           //     objectMembersArray.push(objectMembers);
+           // }
 //
 //
 //            var arrayWidget = new ArraySymbol({
@@ -1274,33 +1128,35 @@
         //canvas.add(arrayWidget);
 
 
-//            var progvolverString = new ProgvolverSymbol({
-//                dataType: "double",
-//                y: 500,
-//                x: 500,
-//                fill: '#B3CDE3',
-//                type: "string",
-//                value: "This is a referenced string"
-//            });
-//
-//            var anotherString = new ProgvolverSymbol({
-//                dataType: "double",
-//                y: 500,
-//                x: 500,
-//                fill: '#B3CDE3',
-//                type: "string",
-//                value: "This is another string"
-//            });
-//
-//            var objectWidget = new ObjectWidget({
-//                fill: '#B3CDE3',
-//                stroke: '#F02466',
-//                y: 250,
-//                name: "var",
-//                x: 250,
-//                objectMembers: [anotherString, progvolverString]});
-//
-//            canvas.add(objectWidget);
+           // var progvolverString = new ProgvolverSymbol({
+           //     dataType: "double",
+           //     y: 500,
+           //     x: 500,
+           //     fill: '#B3CDE3',
+           //     type: "string",
+           //     name: "sample ",
+           //     value: "This is a referenced string"
+           // });
+           //
+           // var anotherString = new ProgvolverSymbol({
+           //     dataType: "double",`
+           //     y: 500,
+           //     x: 500,
+           //     fill: '#B3CDE3',
+           //     type: "string",
+           //     name: "another sample",
+           //     value: "This is another string"
+           // });
+           //
+           // var objectWidget = new ObjectWidget({
+           //     fill: '#B3CDE3',
+           //     stroke: '#F02466',
+           //     y: 250,
+           //     name: "var",
+           //     x: 250,
+           //     objectMembers: [anotherString, progvolverString]});
+           //
+           // canvas.add(objectWidget);
 
 
 //            var oneDArray = new ArraySymbol({
@@ -1480,9 +1336,12 @@
        // canvas.add(canvasVariable);
 
         // var codeControls = new CodeControls({
-        //     x: 600,
-        //     y: 600
+        //     x: 250,
+        //     y: 250
         // });
+        //
+        // canvas.add(codeControls);
+
         //
         // var arrayControls = new CodeControls({
         //     x: 250,
@@ -1491,6 +1350,85 @@
         //
         // canvas.add(arrayControls);
         // canvas.add(codeControls);
+
+        // var comparisonOperator = new ComparisonOperators({
+        //     fill: '#F02466',
+        //     stroke: '#F02466',
+        //     y: 500,
+        //     x: 500,
+        //     top: 500,
+        //     left: 500
+        // });
+        //
+        // canvas.add(comparisonOperator);
+        //
+        // var anotherComparison = new ComparisonOperators({
+        //     fill: '#F02466',
+        //     stroke: '#F02466',
+        //     y: 250,
+        //     x: 500,
+        //     top: 250,
+        //     left: 250
+        // });
+        //
+        // canvas.add(anotherComparison);
+
+        // var logicalOperator = new LogicalOperators({
+        //     y: 400,
+        //     x: 400,
+        //     top: 400,
+        //     left: 400
+        // });
+        //
+        // canvas.add(logicalOperator);
+        // //
+        // var arithmeticOperator = new ArithmeticOperators({
+        //     y: 400,
+        //     x: 500,
+        //     top: 500,
+        //     left: 500
+        // });
+        //
+        // canvas.add(arithmeticOperator);
+        // //
+        // //
+        // var resultWidget = new ResultWidget({
+        //     y: 500,
+        //     x: 500,
+        //     top: 500,
+        //     left: 500
+        // });
+        //
+        // canvas.add(resultWidget);
+
+
+        // var plotter = new LollipopPlot({
+        //     x: 650,
+        //     y: 350,
+        //     width: 250,
+        //     height: 250,
+        //     programElementType: "...",
+        //     drawIconSpace: true,
+        // });
+        //
+        // canvas.add(plotter);
+
+        // var textChange = new ResultWidget({
+        //     x: 250,
+        //     y: 250,
+        //     width: 250,
+        //     height: 250
+        // })
+        //
+        // canvas.add(textChange);
+        // textChange.expand();
+
+
+        // var canvasVariableSection = iVoLVER.gui.add.iconGroup({
+        //     title: iVoLVER.gui.progvolverSectionTitles.canvasVariable
+        // });
+        //
+
     </script>
 </body>
 </html>

@@ -104,7 +104,6 @@ class ColorPickerSignalHolder {
         });
 
         this.progvolverType = "ColorPickerSignalHolder";
-        registerProgvolverObject(this);
 
         return background;
     }

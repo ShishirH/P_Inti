@@ -49,6 +49,10 @@ namespace P_Inti
             // Do any initialization that requires the UI thread after switching to the UI thread.
             await this.JoinableTaskFactory.SwitchToMainThreadAsync(cancellationToken);
             await MyWindowCommand.InitializeAsync(this);
+            await ProgvolverEditorContextualMenu.InitializeAsync(this);
+            await CodeControlAddExistingCode.InitializeAsync(this);
+            await AddToCodeShift.InitializeAsync(this);
+            await CodeControlAddExistingCodeContextMenu.InitializeAsync(this);
         }
 
         #endregion

@@ -29,8 +29,8 @@ class ProgvolverSymbol extends ConnectableWidget {
         options.rx = options.rx || 5;
         options.ry = options.ry || 5;
         options.label = options.label || options.fileName && options.lineNumber ? options.fileName + ' (' + options.lineNumber + ')' : options.fileName || '';
-        options.fill = symbolKinds[options.kind];
-        options.stroke = options.stroke || darken(symbolKinds[options.kind]);
+        options.fill = options.fill || symbolKinds[options.kind];
+        options.stroke = options.stroke || darken(options.fill);
         options.strokeWidth = options.strokeWidth || 2;
         options.nonResizable = true;
         options.hasControls = false;
@@ -71,8 +71,6 @@ class ProgvolverSymbol extends ConnectableWidget {
 
 //        this.compressedOptions[theWidget.ports['bottom'].id].y = 42;
 //        this.expandedOptions[theWidget.ports['bottom'].id].y = 42;
-
-
 
 
         /*theWidget.thePorts.forEach(function (port) {
@@ -200,8 +198,6 @@ class ProgvolverSymbol extends ConnectableWidget {
 
             theWidget.thePorts && theWidget.thePorts.forEach(function (port) {
 //                port.setValue(iVoLVER_Value, withAnimation);
-                console.log("The port is");
-                console.log(port);
                 port.setValue(newValue, withAnimation);
             });
 
@@ -220,11 +216,22 @@ class ProgvolverSymbol extends ConnectableWidget {
         background.oldRender = background.render;
         background.render = function (ctx) {
             background.oldRender(ctx);
+
             ctx.font = symbolFont;
             ctx.fillStyle = background.fontColor;
             ctx.textAlign = "center";
             ctx.textBaseline = "middle";
             var center = background.getPointByOrigin('center', 'center');
+
+            //Drawing shooting stars
+            // var shootingStarStart = background.getPointByOrigin('right', 'center');
+            // shootingStarStart.x += 5;
+            // let shootingStarCenter = {x: shootingStarStart.x + 100, y: shootingStarStart.y + 100};
+            // let shootingStarEnd = {x: shootingStarStart.x + 250, y: shootingStarStart.y};
+            //
+            // var points = [shootingStarStart, shootingStarCenter, shootingStarEnd];
+            // drawCurveThroughPoints(ctx, points);
+            // drawCirclesAlongCurve(ctx, points);
 
             var renderableValue = background.value;
             if (!iVoLVER.util.isUndefined(background.value) && iVoLVER.util.isNumber(background.value)) {
@@ -235,14 +242,41 @@ class ProgvolverSymbol extends ConnectableWidget {
         };
 
 
+        let currentDataItemIndex = -1;
         background.onValuesUpdated = function (dataItem) {
             if (dataItem) {
-                console.log(dataItem);
 
+                console.log("dataItem");
+                console.log(dataItem);
                 let widgetIDs = dataItem.widgetsID.split(",");
                 let values = ("" + dataItem.values).split(",");
                 let types = ("" + dataItem.types).split(",");
                 let index = widgetIDs.indexOf(background.id);
+
+                // // // shooting stars decay
+                // if (background.shootingStarsDict) {
+                //     for (const [key, value] of Object.entries(background.shootingStarsDict)) {
+                //         background.shootingStarsDict[key].array && background.shootingStarsDict[key].array.forEach(function (shootingStar) {
+                //             console.log("shooting star decay");
+                //             shootingStarsDecay(background, namedSymbols[key]);
+                //         });
+                //     }
+                // }
+
+                // if (currentDataItemIndex !== dataItem.index) {
+                //     console.log("Variable is: " + background.name)
+                //     let shootingStarsSource;
+                //     shootingStarsSource = parseShootingStarsSource(dataItem.parentStatement, background);
+                //
+                //     if (!shootingStarsSource && dataItem.grandParentStatement)
+                //         shootingStarsSource = parseShootingStarsSource(dataItem.grandParentStatement, background);
+                //
+                //     console.log("Shooting star source is: " + shootingStarsSource);
+                //     if (shootingStarsSource && shootingStarsSource != background.name) {
+                //         console.log("Generating shooting stars");
+                //         generateShootingStars(background, shootingStarsSource);
+                //     }
+                // }
 
                 if (types[index] == "SimpleAssignmentExpression" || types[index] == "PostDecrementExpression" || types[index] == "PreDecrementExpression" || types[index] == "PostIncrementExpression") {
                     if (background.value != values[index]) {
@@ -254,8 +288,10 @@ class ProgvolverSymbol extends ConnectableWidget {
                     //background.setLabel(background.fileName + ' (' + background.lineNumber + ')');
                 }
 
-                background.updateColorDecay();
+                //background.updateColorDecay();
             }
+
+            currentDataItemIndex = dataItem.index;
 
 //            if (dataItem) {
 //                background.setValue(dataItem.value);
@@ -298,7 +334,6 @@ class ProgvolverSymbol extends ConnectableWidget {
                         if (window.jsHandler.setEvaluatedLine) {
 
 
-
                             window.jsHandler.setEvaluatedLine({lineNumber: line}).then(function (response) {
 
                                 var args = {
@@ -330,7 +365,6 @@ class ProgvolverSymbol extends ConnectableWidget {
 
             let times = new Array();
             let colors = new Array();
-
 
 
             background.history.forEach(function (dataItem) {
@@ -435,7 +469,7 @@ class ProgvolverSymbol extends ConnectableWidget {
             background.movementInteractionEvent = movementInteractionEvent;
             background.disappearanceInteractionEvent = disappearanceInteraction;
 
-            background.registerListener('mouseup', function(event) {
+            background.registerListener('mouseup', function (event) {
                 var rightClick = (event.e.which) ? (event.e.which == 3) : (event.e.which == 2);
 
                 if (rightClick) {
@@ -721,7 +755,6 @@ class ProgvolverSymbol extends ConnectableWidget {
             });
 
 
-
             background.nameObject = nameObject;
             background.typeObject = typeObject;
 
@@ -758,7 +791,16 @@ class ProgvolverSymbol extends ConnectableWidget {
         };
 
         background.addAll = function () {
-            background.expand();
+            canvas.add(background);
+            canvas.add(background.nameObject);
+        }
+
+        background.removeAll = function () {
+            background.childrenOnTop.forEach(function (child) {
+                canvas.remove(child);
+            });
+
+            canvas.remove(background);
         }
 
         background.toJson = function () {
@@ -772,7 +814,7 @@ class ProgvolverSymbol extends ConnectableWidget {
             json['x'] = background.left;
             json['y'] = background.top;
             json['fill'] = background.fill,
-            json['kind'] = "ProgvolverSymbol";
+                json['kind'] = "ProgvolverSymbol";
             return JSON.stringify(json);
         }
 
@@ -793,21 +835,27 @@ class ProgvolverSymbol extends ConnectableWidget {
             })
         }
 
+        console.log("Symbol is: ");
+        console.log(background);
+
         this.progvolverType = "CodeNote";
         if (!this.doNotRegisterObject)
             registerProgvolverObject(this);
 
-        console.log("Adding to persistent entry")
         PERSISTENT_CANVAS_ENTRIES.push(background);
-        console.log("Persistent entry is now");
-        console.log(PERSISTENT_CANVAS_ENTRIES);
+
+        if (!window.source) {
+            window.source = background;
+        } else {
+            window.target = background;
+        }
         return background;
     }
 
-    static fromJson (json) {
+    static fromJson(json) {
         console.log("This is being called");
 
-        let obj =  new ProgvolverSymbol({
+        let obj = new ProgvolverSymbol({
             value: json['value'],
             type: json['type'],
             name: json['name'],

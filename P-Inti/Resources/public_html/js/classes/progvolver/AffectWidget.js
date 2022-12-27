@@ -3,7 +3,7 @@ class AffectWidget {
         var symbolFont = '12px Helvetica';
 
         options.height = 44;
-        options.width = 220;
+        options.width = 140;
         options.rx = options.rx || 0;
         options.ry = options.ry || 0;
         options.fill = WHEN_WIDGET_FILL;
@@ -36,11 +36,11 @@ class AffectWidget {
             ctx.font = symbolFont;
             background.oldRender(ctx);
             var center = background.getPointByOrigin('right', 'top');
-            ctx.fillText("var name: ", center.x - 60, center.y + 20);
+            //ctx.fillText("var name: ", center.x - 60, center.y + 20);
 
             if (background.signalReceiver) {
                 var renderableValue = background.signalReceiver.signalsReceived;
-                ctx.fillText(renderableValue, center.x - 40, center.y + 40);
+                //ctx.fillText(renderableValue, center.x - 40, center.y + 40);
             }
             ctx.restore();
         };
@@ -118,24 +118,24 @@ class AffectWidget {
 
 
             var selectDropdown = $('<select/>')
-                    .css({
-                        position: "absolute",
-                        outline: 'none',
-                        'box-shadow': 'none',
-                        'font': 'Helvetica',
-                        'border-radius': '0px',
-                        'font-size': '17px',
-                        'color': 'rgba(65, 65, 65, 1)',
-                        border: background.stroke + ' 1px solid',
-                        resize: 'both',
-                        'background-color': lighten(background.fill, 10)
-                    })
-                    .focus(function () {
-                        canvas.setActiveObject(background);
-                        background.fire('selected');
-                    })
-                    .appendTo("body")
-                    .addClass('scalable');
+                .css({
+                    position: "absolute",
+                    outline: 'none',
+                    'box-shadow': 'none',
+                    'font': 'Helvetica',
+                    'border-radius': '0px',
+                    'font-size': '17px',
+                    'color': 'rgba(65, 65, 65, 1)',
+                    border: background.stroke + ' 1px solid',
+                    resize: 'both',
+                    'background-color': lighten(background.fill, 10)
+                })
+                .focus(function () {
+                    canvas.setActiveObject(background);
+                    background.fire('selected');
+                })
+                .appendTo("body")
+                .addClass('scalable');
 
             $(events).each(function () {
                 selectDropdown.append($("<option>").attr('value', this.val).text(this.text));
@@ -200,7 +200,7 @@ class AffectWidget {
             background.positionObjects();
         });
 
-        this.progvolverType = "CodeNote";
+        this.progvolverType = "AffectWidget";
         registerProgvolverObject(this);
 
         return this.background;

@@ -58,13 +58,24 @@ class ConnectableWidget {
             }
 
             if (this.history) {
+                this.oldValues = this.values;
                 this.values = this.history.filter(item => item[window.sliderDimension] <= time);
+
+                // if (this.oldValues && (this.oldValues.length == this.values.length)) {
+                //     console.log("Duplicate call. Returning");
+                //     return;
+                // }
+
                 if (this.values.length) {
+                    console.log("Mapped to time: " + this.values[this.values.length - 1].time)
                     this.onValuesUpdated && this.onValuesUpdated(this.values[this.values.length - 1]);
                     /*console.log(this.history);
                      console.log(this.values);*/
                 }
             }
+
+            console.log("Code was executed")
+            console.log(this.values);
 
 
             if (backgroundObject.movementInteractionEvent) {
@@ -113,8 +124,65 @@ class ConnectableWidget {
                     }
                 }
             }
+
+            // // shooting stars decay
+            // if (backgroundObject.shootingStarsDict) {
+            //     for (const [key, value] of Object.entries(backgroundObject.shootingStarsDict)) {
+            //         if (backgroundObject.shootingStarsDict[key].array) {
+            //             console.log("shooting star decay");
+            //             shootingStarsDecay(backgroundObject, namedSymbols[key]);
+            //         }
+            //     }
+            // }
+
         };
         return this.background;
+    }
+
+    createBackground(baseClass, options) {
+        var theWidget = this;
+        var BackgroundClass = iVoLVER.util.createClass(baseClass, {
+            initialize: function (options) {
+                options || (options = {});
+
+                options.noScaleCache = false; // to guarantee that the object gets updated during scaling
+                this.callSuper('initialize', options);
+                this.initExpandable();
+            }
+        });
+        iVoLVER.util.extends(BackgroundClass.prototype, iVoLVER.model.Expandable);
+
+        var fill = options.fill || iVoLVER.util.getRandomColor();
+        options.fill = fill;
+        options.originX = options.originX || 'center';
+        options.originY = options.originY || 'center';
+        options.top = options.y;
+        options.left = options.x;
+        options.stroke = options.stroke || darken(fill);
+        options.strokeWidth = options.strokeWidth || 1;
+        options.strokeUniform = options.strokeUniform || true;
+        options.transparentCorners = options.transparentCorners || false;
+        options.cornerColor = options.cornerColor || lighten(fill, 15);
+        options.borderColor = options.borderColor || lighten(fill, 10);
+        options.borderDashArray = options.borderDashArray || [7, 7];
+        options.cornerStrokeColor = options.cornerStrokeColor || darken(fill);
+        options.compressed = options.compressed || true;
+        options.scaleX = options.scaleX || options.addWithAnimation ? 0 : 1;
+        options.scaleY = options.scaleY || options.addWithAnimation ? 0 : 1;
+        options.opacity = options.opacity || options.addWithAnimation ? 0 : 1;
+        var theBackground = new BackgroundClass(options);
+        theBackground.doNotCompressWhenCanvasClicked = options.doNotCompressWhenCanvasClicked;
+        if (!options.nonResizable) {
+            theBackground.setControlsVisibility({
+                mt: false,
+                mb: false,
+                mr: false,
+                ml: false,
+                mtr: false
+            });
+        }
+        theBackground.widget = theWidget;
+        return theBackground;
     }
 
     addLabelObject(isMember) {

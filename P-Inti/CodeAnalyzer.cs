@@ -27,6 +27,7 @@ using System.Windows.Media.Animation;
 using CefSharp;
 using Microsoft.VisualStudio.Settings;
 using Microsoft.VisualStudio.Text.Tagging;
+using System.Collections.Specialized;
 
 namespace TestingCodeAnalysis
 {
@@ -380,6 +381,37 @@ namespace TestingCodeAnalysis
             StringBuilder assignmentStringBuilder = new StringBuilder();
 
             string parentExpression = parent.ToString().Replace("\"", "\\\"").Replace("{", "{{").Replace("}", "}}");
+            // Line contents
+            int lineNumber = parent.GetLocation().GetLineSpan().StartLinePosition.Line + 1;
+            var activePoint = ((EnvDTE.TextSelection)windowControl.dte.ActiveDocument.Selection).ActivePoint;
+            string lineText = activePoint.CreateEditPoint().GetLines(lineNumber, lineNumber + 1);
+
+            string lineContent = "";
+            string grandParentLineContent = "";
+            if (!parentExpression.StartsWith("["))
+            {
+                lineContent = parentExpression;
+                grandParentLineContent = parent.Parent.ToString().Replace("\"", "\\\"").Replace("{", "{{").Replace("}", "}}");
+            }
+            else
+            {
+                lineContent = parent.Parent.Parent.ToString().Replace("\"", "\\\"").Replace("{", "{{").Replace("}", "}}");
+                grandParentLineContent = parent.Parent.Parent.Parent.ToString().Replace("\"", "\\\"").Replace("{", "{{").Replace("}", "}}");
+
+            }
+
+            if (grandParentLineContent.Contains("\n"))
+            {
+                grandParentLineContent = "";
+            }
+
+            MyWindowControl.printInBrowserConsole("###### Grandparent contents is !!!: " + grandParentLineContent);
+            MyWindowControl.printInBrowserConsole("###### Found node is !!!: " + foundNode.ToString());
+            MyWindowControl.printInBrowserConsole("###### location contents is !!!: " + location.ToString());
+            MyWindowControl.printInBrowserConsole("###### symbolID contents is !!!: " + symbolID);
+            MyWindowControl.printInBrowserConsole("###### symbol contents is !!!: " + symbol.Name.ToString());
+            MyWindowControl.printInBrowserConsole("###### Line number is !!!: " + line.Line);
+
 
             /*Dictionary<string, object> scopeInfo = JsHandler.getScope(symbol, document, windowControl);
             scopeInfo.TryGetValue("declareAtFrom", out object declareAtFrom);
@@ -390,7 +422,7 @@ namespace TestingCodeAnalysis
 
             string filePath = document.FilePath.Replace(@"\", "/");
             string expressionsToLog;
-            string logString = " Logger.logAssignment(\"{0}~{1}~{2}~{{0}}~{3}~{4}~{5}\", {6});";
+            string logString = " Logger.logAssignment(\"{0}~{1}~{2}~{{0}}~{3}~{4}~{5}~{7}~{8}\", {6});";
 
             // only here when we are logging arrays or matrices
             if (parentType == SyntaxKind.ElementAccessExpression)
@@ -422,7 +454,7 @@ namespace TestingCodeAnalysis
 
                 expressionsToLog = foundNode + "," + result;
 
-                assignmentStringBuilder.AppendFormat(logString, foundNode, parentExpression, parentType, line.Line + 1, filePath, symbolID, expressionsToLog);
+                assignmentStringBuilder.AppendFormat(logString, foundNode, parentExpression, parentType, line.Line + 1, filePath, symbolID, expressionsToLog, lineContent, grandParentLineContent);
 
 
                 //if (is2D) {
@@ -450,7 +482,7 @@ namespace TestingCodeAnalysis
 
                 expressionsToLog = foundNode.ToString();
 
-                assignmentStringBuilder.AppendFormat(logString, foundNode, parentExpression, parentType, line.Line + 1, filePath, symbolID, expressionsToLog);
+                assignmentStringBuilder.AppendFormat(logString, foundNode, parentExpression, parentType, line.Line + 1, filePath, symbolID, expressionsToLog, lineContent, grandParentLineContent);
 
 
 
@@ -465,6 +497,7 @@ namespace TestingCodeAnalysis
             Dictionary<string, Tuple<List<ISymbol>, List<SyntaxNode>>> symbolsPerExpressions = new Dictionary<string, Tuple<List<ISymbol>, List<SyntaxNode>>>();
             foreach (KeyValuePair<string, Tuple<SyntaxNode, string>> kvp in expressions)
             {
+                MyWindowControl.printInBrowserConsole("kvp value " + kvp.Value);
                 string expressionID = kvp.Key;
                 Tuple<SyntaxNode, string> expressionTuple = kvp.Value;
                 SyntaxNode expressionNode = expressionTuple.Item1;
@@ -484,13 +517,14 @@ namespace TestingCodeAnalysis
 
 
 
-
         public static string getContainingExpressionID(Dictionary<ISymbol, ReferenceLocation> symbols, Dictionary<string, Tuple<List<ISymbol>, List<SyntaxNode>>> symbolsPerExpressions, MyWindowControl windowControl, out SyntaxNode expression)
+
         {
 
             Dictionary<ISymbol, ReferenceLocation>.KeyCollection theKyes = symbols.Keys;
             List<ISymbol> theSymbols = theKyes.ToList();
-            theSymbols.Sort(delegate (ISymbol x, ISymbol y) {
+            theSymbols.Sort(delegate (ISymbol x, ISymbol y)
+            {
                 return x.Name.CompareTo(y.Name);
             });
 
@@ -506,8 +540,10 @@ namespace TestingCodeAnalysis
 
                 if (theSymbols.Count() == expressionSymbols.Count())
                 {
+                    MyWindowControl.printInBrowserConsole("ttttttttt ttttt");
 
-                    expressionSymbols.Sort(delegate (ISymbol x, ISymbol y) {
+                    expressionSymbols.Sort(delegate (ISymbol x, ISymbol y)
+                    {
                         return x.Name.CompareTo(y.Name);
                     });
                     MyWindowControl.printInBrowserConsole("$$$$$$$$$$$$$$ AFTER SORTING $$$$$$$$$$$$$$");
@@ -530,25 +566,35 @@ namespace TestingCodeAnalysis
                         ISymbol symbol2 = expressionSymbols.ElementAt(i);
                         if (symbol1.Name == symbol2.Name && symbol1.Kind == symbol2.Kind && location1.Location.GetLineSpan().StartLinePosition.Line == location2.GetLineSpan().StartLinePosition.Line)
                         {
+                            MyWindowControl.printInBrowserConsole("mmmmmmmmmmmmm");
+
                             totalCoincidences++;
                         }
                         else
                         {
+                            MyWindowControl.printInBrowserConsole("bbbbbbbbbbbbbb");
+
                             MyWindowControl.printInBrowserConsole($"The symbols {symbol1} did not coincide {symbol2} at locations {location1} and {location2}");
                         }
                     }
                     if (totalCoincidences == totalSymbols)
                     {
+                        MyWindowControl.printInBrowserConsole("qqqqqqqqqqqqqqqqq");
+
                         expression = currentExpression;
                         return key;
                     }
                     else
                     {
+                        MyWindowControl.printInBrowserConsole("zzzzzzzzzzzzzzzzzzzz");
+
                         MyWindowControl.printInBrowserConsole($"Only {totalCoincidences} were found.");
                     }
                 }
                 else
                 {
+                    MyWindowControl.printInBrowserConsole("pppppppppppppppppp");
+
                     MyWindowControl.printInBrowserConsole("PROBLEM: The compared collections have different sizes");
                 }
 
@@ -663,6 +709,11 @@ namespace TestingCodeAnalysis
 
         public static string getSymbolScopeString(string widgetID, ISymbol symbol, Dictionary<string, object> scopeInfo)
         {
+            if (!scopeInfo.ContainsKey("initialValue"))
+            {
+                scopeInfo["initialValue"] = null;
+            }
+
             return $"{symbol}~{scopeInfo["initialValue"]}~{widgetID}~{scopeInfo["declareAtFrom"]}~{scopeInfo["declareAtTo"]}~{scopeInfo["scopeFrom"]}~{scopeInfo["scopeTo"]}~{scopeInfo["declarator"]}~{scopeInfo["filePath"]}";
         }
 
@@ -695,6 +746,30 @@ namespace TestingCodeAnalysis
             }
 
             List<string> scopeFileLines = new List<string>();
+            Dictionary<string, Dictionary<string, string>> lineContentsOfDocuments = new Dictionary<string, Dictionary<string, string>>();
+
+            foreach (Document document in allDocuments.Values)
+            {
+                IEnumerable<MethodDeclarationSyntax> methodsList = document.GetSyntaxTreeAsync().Result.GetRoot().DescendantNodes().OfType<MethodDeclarationSyntax>();
+
+                Dictionary<string, string> documentContents = new Dictionary<string, string>();
+                foreach (MethodDeclarationSyntax method in methodsList)
+                {
+                    int startLineNumber = method.GetLocation().GetLineSpan().StartLinePosition.Line + 1;
+                    int endLineNumber = method.GetLocation().GetLineSpan().EndLinePosition.Line;
+
+                    MyWindowControl.printInBrowserConsole("!@!@ Start line number: " + startLineNumber);
+                    MyWindowControl.printInBrowserConsole("!@!@ End line number: " + endLineNumber);
+
+                    for (int lineNum = startLineNumber; lineNum < endLineNumber; lineNum++)
+                    {
+                        // check if allContents[document.FilePath][lineNum] is empty or a comment
+                        string lineContent = allContents[document.FilePath][lineNum];
+                        documentContents.Add(lineNum.ToString(), lineContent);
+                    }
+                    lineContentsOfDocuments.Add(document.FilePath, documentContents);
+                }
+            }
 
             int i = 0;
             foreach (string fileName in fileNames)
@@ -719,7 +794,11 @@ namespace TestingCodeAnalysis
                 i++;
             }
 
+            MyWindowControl.printInBrowserConsole(" &*&*&*&*&* windowControl.trackedExpressions " + windowControl.trackedExpressions.Count());
+
             Dictionary<string, Tuple<List<ISymbol>, List<SyntaxNode>>> symbolsPerExpressions = getSymbolsPerExpressions(windowControl.trackedExpressions, allDocuments);
+
+            MyWindowControl.printInBrowserConsole("symbolsPerExpressions: " + symbolsPerExpressions);
 
             // scope of the symbols that compose the EXPRESSIONS dragged onto the canvas
             foreach (string expressionId in windowControl.trackedExpressionsIDs)
@@ -771,14 +850,14 @@ namespace TestingCodeAnalysis
 
                 MyWindowControl.printInBrowserConsole("\n\nOnlyParentType: " + onlyParentType.ToString());
                 MyWindowControl.printInBrowserConsole("Line number: " + line);
-                if (tuples.Count() == 1 && (onlyParentType == SyntaxKind.SimpleAssignmentExpression ||
+                if (tuples.Count == 1 && (onlyParentType == SyntaxKind.SimpleAssignmentExpression ||
                             onlyParentType == SyntaxKind.PreDecrementExpression ||
                             onlyParentType == SyntaxKind.PostDecrementExpression ||
                             onlyParentType == SyntaxKind.PreIncrementExpression ||
                             onlyParentType == SyntaxKind.PostIncrementExpression ||
                             onlyParentType == SyntaxKind.ElementAccessExpression))
                 {
-
+                    MyWindowControl.printInBrowserConsole("Single tuple case: ");
                     string widgetID = onlyTuple.Item2;
                     ReferenceLocation location = onlyTuple.Item3;
                     ISymbol symbol = onlyTuple.Item4;
@@ -786,11 +865,15 @@ namespace TestingCodeAnalysis
                     string parentExpression = symbol.ToString().Replace("\"", "\\\"").Replace("{", "{{").Replace("}", "}}");
                     string type = onlyNode.Kind().ToString();
                     string useString = processAssignmentNode(windowControl, onlyNode, location, widgetID, symbol, document);
+                    docContent[line] = string.Concat(useString, docContent[line]);
                     docContent[line] = string.Concat(docContent[line], useString);
 
                 }
                 else
                 {
+
+
+                    MyWindowControl.printInBrowserConsole("co-occurence tuple case: ");
 
                     // we are here in a co-ocurrence case (i.e., one or variables are being referred together)
 
@@ -800,11 +883,18 @@ namespace TestingCodeAnalysis
                     string widgetsIDs = "";
                     string types = "";
 
-
                     Dictionary<ISymbol, ReferenceLocation> allSymbols = new Dictionary<ISymbol, ReferenceLocation>();
+                    Dictionary<ISymbol, Document> symbolDocument = new Dictionary<ISymbol, Document>();
+                    string symbolsStringWithScope = "";
+                    string symbolsStringWithScopeAfter = "";
+                    Dictionary<ISymbol, Dictionary<string, object>> symbolsWithScope = new Dictionary<ISymbol, Dictionary<string, object>>();
+                    List<LineNumberProcessAssignmentNode> lineProcessingNodeString = new List<LineNumberProcessAssignmentNode>();
 
+                    string lineContent = "";
+                    string grandParentLineContent = "";
                     foreach (Tuple<SyntaxNode, string, ReferenceLocation, ISymbol, Document> tuple in tuples)
                     {
+
 
                         SyntaxNode node = tuple.Item1;
                         string symbolID = tuple.Item2;
@@ -813,24 +903,122 @@ namespace TestingCodeAnalysis
                         Document document = tuple.Item5;
                         SyntaxNode parent = node.Parent;
                         SyntaxKind parentType = parent.Kind();
+                        // TODO CHECK IF IT DEPENDS ON TYPE
                         string parentStatement = parent.ToString().Replace("\"", "\\\"").Replace("{", "{{").Replace("}", "}}");
 
-                        allSymbols.Add(symbol, location);
+                        // Line contents
+                        int lineNumber = parent.GetLocation().GetLineSpan().StartLinePosition.Line + 1;
+                        var activePoint = ((EnvDTE.TextSelection)windowControl.dte.ActiveDocument.Selection).ActivePoint;
+                        string lineText = activePoint.CreateEditPoint().GetLines(lineNumber, lineNumber + 1);
+                        
+                        if (!parentStatement.StartsWith("["))
+                        {
+                            lineContent = parentStatement;
+                            grandParentLineContent = parent.Parent.ToString().Replace("\"", "\\\"").Replace("{", "{{").Replace("}", "}}");
 
-                        MyWindowControl.printInBrowserConsole("Node: ");
-                        //JsHandler.printNodeHeirarchy(node);
-                        MyWindowControl.printInBrowserConsole("Node parent: ");
-                        //JsHandler.printNodeHeirarchy(parent);
+                        }
+                        else
+                        {
+                            lineContent = parent.Parent.Parent.ToString().Replace("\"", "\\\"").Replace("{", "{{").Replace("}", "}}");
+                            grandParentLineContent = parent.Parent.Parent.Parent.ToString().Replace("\"", "\\\"").Replace("{", "{{").Replace("}", "}}");
+                        }
 
-                        MyWindowControl.printInBrowserConsole("\tnode: " + node.ToString());
-                        MyWindowControl.printInBrowserConsole("\tnodeID: " + symbolID);
+                        if (grandParentLineContent.Contains("\n"))
+                        {
+                            grandParentLineContent = "";
+                        }
 
-                        symbolsString += symbol + ",";
-                        values += symbol + ",";
-                        parentStatements += parentStatement + ",";
-                        widgetsIDs += symbolID + ",";
-                        //types += node.Kind() + ",";
-                        types += parent.Kind() + ",";
+                        MyWindowControl.printInBrowserConsole("%%%%%%% Line contents is !!!: " + lineContent);
+                        MyWindowControl.printInBrowserConsole("%%%%%%% Grandparent contents is !!!: " + grandParentLineContent);
+
+                        if (!allSymbols.ContainsKey(symbol))
+                        {
+
+                            allSymbols.Add(symbol, location);
+                            symbolDocument.Add(symbol, document);
+                            symbolsWithScope.Add(symbol, JsHandler.getScope(symbol, document, windowControl));
+
+                            string symbolName = symbol.ToString();
+                            // TODO LOOK HERE
+                            MyWindowControl.printInBrowserConsole("XXXXXX Symbolname !!!: " + symbolName);
+                            MyWindowControl.printInBrowserConsole("XXXXXX SymbolKind !!!: " + symbol.Kind);
+                            MyWindowControl.printInBrowserConsole("XXXXXX SymbolContainingType !!!: " + symbol.ContainingType);
+                            MyWindowControl.printInBrowserConsole("XXXXXX SymbolContainingSymbol !!!: " + symbol.ContainingSymbol);
+                            MyWindowControl.printInBrowserConsole("XXXXXX Parent statement is: ");
+                            MyWindowControl.printInBrowserConsole(parentStatement);
+                            MyWindowControl.printInBrowserConsole("XXXXXX Parent kind is: ");
+
+                            if (symbolName == "int[]")
+                            {
+                                symbolName = parentStatement;
+                            }
+
+                            if (parent.Kind().ToString() == "ArgumentList")
+                            {
+                                parentStatement = symbolName;
+                            }
+
+                            //MyWindowControl.printInBrowserConsole("XXXXXX SymbolEverything !!!: " + symbol.);
+
+                            // TODO WHY DO THIS?
+                            // ONLY DO IT WHEN PARTICULAR TYPE OF EXPRESSION?? ELEMENTACCESS
+                            if (parentStatement.StartsWith("["))
+                            {
+                                MyWindowControl.printInBrowserConsole("ASASAS Parent statement is: ");
+                                MyWindowControl.printInBrowserConsole(parentStatement);
+
+                                int startIndex = parentStatement.IndexOf('[');
+                                int endIndex = parentStatement.IndexOf(']');
+
+                                parentStatement = parentStatement.Substring(startIndex + 1, endIndex - 1);
+                                MyWindowControl.printInBrowserConsole(parentStatement);
+                            }
+
+                            if (parentStatement.StartsWith("="))
+                            {
+                                parentStatement = parentStatement.Replace('=', ' ');
+                                parentStatement = parentStatement.Trim();
+                            }
+
+                            if (symbolName.StartsWith("["))
+                            {
+                                symbolName = symbolName.Substring(1, symbolName.Length - 1);
+                            }
+                            else
+                            {
+                                MyWindowControl.printInBrowserConsole("Size of symbols is: " + symbolsPerExpressions.Count);
+
+                                foreach (string key in symbolsPerExpressions.Keys)
+                                {
+                                    MyWindowControl.printInBrowserConsole("Key is: " + key);
+                                }
+                                symbolsPerExpressions.Remove(symbolID);
+
+                                string useString = processAssignmentNode(windowControl, onlyNode, location, symbolID, symbol, document);
+
+                                // saving it to a dictionary, which will be accessed and the strings appended to the docContent once the bracesOffset is obtained.
+                                
+                                lineProcessingNodeString.Add(new LineNumberProcessAssignmentNode(line, useString));
+                                //docContent[line] = string.Concat(docContent[line], useString);
+                            }
+
+                            MyWindowControl.printInBrowserConsole("Node: ");
+                            //JsHandler.printNodeHeirarchy(node);
+                            MyWindowControl.printInBrowserConsole("Node parent: ");
+                            //JsHandler.printNodeHeirarchy(parent);
+
+                            MyWindowControl.printInBrowserConsole("\tnode: " + node.ToString());
+                            MyWindowControl.printInBrowserConsole("\tnodeID: " + symbolID);
+
+                            symbolsString += symbolName + ",";
+                            values += symbolName + ",";
+                            parentStatements += parentStatement + ",";
+                            widgetsIDs += symbolID + ",";
+                            //types += node.Kind() + ",";
+                            types += parent.Kind() + ",";
+                        }
+
+
                     }
 
                     symbolsString = symbolsString.TrimEnd(',');
@@ -850,6 +1038,8 @@ namespace TestingCodeAnalysis
 
                     if (containingExpression != null)
                     {
+                        MyWindowControl.printInBrowserConsole("\t eeeeeeeeeee else types: " + types);
+
 
                         symbolsString += "," + containingExpression.ToString();
                         values += "," + containingExpression;
@@ -866,6 +1056,7 @@ namespace TestingCodeAnalysis
                     }
                     else
                     {
+                        MyWindowControl.printInBrowserConsole("\t ffffffffff else types: " + types);
 
                         MyWindowControl.printInBrowserConsole($"No expression was found for the symbols {symbolsString} at the location {line + 1}!!!");
                         SyntaxNode firstNode = tuples.FirstOrDefault().Item1;
@@ -875,6 +1066,8 @@ namespace TestingCodeAnalysis
 
                     if (controlAncestors != null && controlAncestors.Count() > 0)
                     {
+                        MyWindowControl.printInBrowserConsole("\t 00000000000 else types: " + types);
+
                         closestControlAncestor = controlAncestors.First();
                         MyWindowControl.printInBrowserConsole("closestControlAncestor.ToString(): " + closestControlAncestor.ToString());
                     }
@@ -882,48 +1075,224 @@ namespace TestingCodeAnalysis
                     MyWindowControl.printInBrowserConsole("parentExpressions: ");
                     MyWindowControl.printInBrowserConsole(parentStatements);
 
-                    string logReferenceString = " Logger.logReferences(\"{5}\", \"{0}~{1}~{6}~{{0}}~{2}~{3}~{4}\", {1});";
+                    string logReferenceString = " Logger.logReferences(\"{5}\", \"{0}~{1}~{6}~{{0}}~{2}~{3}~{4}~{7}~{8}\", {1});";
 
                     if (closestControlAncestor != null)
                     {
+                        int endOfWhile = closestControlAncestor.GetLocation().GetLineSpan().EndLinePosition.Line;
 
-                        var key = "while at " + fileName + " line " + (line + 1) + "_" + symbolsString + "_" + widgetsIDs + Utils.generateID();
+                        MyWindowControl.printInBrowserConsole("AAAA symbolsString " + symbolsString);
 
-                        int whileLine = closestControlAncestor.GetLocation().GetLineSpan().StartLinePosition.Line;
-                        if (whileLine == line)
+                        var key = "RAND ancestor at " + fileName + " line " + (line + 1) + "_" + symbolsString + "_" + widgetsIDs + Utils.generateID();
+                        MyWindowControl.printInBrowserConsole("`````` Key was: " + key);
+
+
+                        MyWindowControl.printInBrowserConsole("||||||closestControlAncestor.ToString(): " + closestControlAncestor.ToString());
+                        MyWindowControl.printInBrowserConsole("||||||closestControlAncestor.GetLocation() " + closestControlAncestor.GetLocation().ToString());
+                        MyWindowControl.printInBrowserConsole("||||||closestControlAncestor.GetLocation().GetLineSpan() " + closestControlAncestor.GetLocation().GetLineSpan().ToString()); ;
+                        MyWindowControl.printInBrowserConsole("||||||closestControlAncestor.GetLocation().GetLineSpan().StartLinePosition.Line " + closestControlAncestor.GetLocation().GetLineSpan().StartLinePosition.Line.ToString()); ;
+
+                        //braces not on same line fix
+                        string closestControlAncestorStr = closestControlAncestor.ToString();
+                        int bracesOffset = GetLineNumber(closestControlAncestorStr, "{") - 1;
+
+                        // Add the earlier info from processAssignmentNode
+                        foreach (LineNumberProcessAssignmentNode lineNumberProcessAssignment in lineProcessingNodeString)
+                        {
+                            int lineNumber = lineNumberProcessAssignment.LineNumber;
+                            string value = lineNumberProcessAssignment.ProcessAssignmentNodeString;
+
+                            int linePosition = lineNumber + bracesOffset;
+                            if (linePosition == endOfWhile)
+                            {
+                                docContent[lineNumber + bracesOffset] = string.Concat(value, docContent[lineNumber + bracesOffset]);
+                                docContent[lineNumber + bracesOffset] = string.Concat(docContent[lineNumber + bracesOffset], value);
+                            }
+                            else
+                            {
+                                docContent[lineNumber + bracesOffset] = string.Concat(docContent[lineNumber + bracesOffset], value);
+                                docContent[lineNumber + bracesOffset] = string.Concat(value, docContent[lineNumber + bracesOffset]);
+                            }
+                        }
+
+                        MyWindowControl.printInBrowserConsole("||||||Braces offset: " + bracesOffset);
+
+                        int ancestorLine = closestControlAncestor.GetLocation().GetLineSpan().StartLinePosition.Line + bracesOffset;
+                        //line += bracesOffset;
+                        if (ancestorLine == line)
                         {
 
-                            MyWindowControl.printInBrowserConsole("111 whileAncestor.ToString(): " + closestControlAncestor.ToString());
+                            MyWindowControl.printInBrowserConsole("\t 12121212 else types: " + types);
 
-                            StringBuilder beforeControlSB = new StringBuilder();
-                            beforeControlSB.AppendFormat(logReferenceString, symbolsString, parentStatements, line + 1, fileName, widgetsIDs, key, types);
-                            String beforeString = beforeControlSB.ToString();
+                            MyWindowControl.printInBrowserConsole("closestControlAncestor.ToString(): " + closestControlAncestor.ToString());
+
+                            String beforeString = "";
+                            MyWindowControl.printInBrowserConsole("`````` onlyParentType " + onlyParentType);
+
+
+                            bool areSymbolsInScopeBefore = true;
+                            bool areSymbolsInScopeAfter = true;
+
+                            foreach(ISymbol symbol in symbolsWithScope.Keys)
+                            {
+                                Dictionary<string, object> scopeDict = symbolsWithScope[symbol];
+                                int declaredLineFrom = (int)scopeDict["scopeFrom"];
+                                int declaredLineTo = (int)scopeDict["scopeTo"];
+
+                                MyWindowControl.printInBrowserConsole("`````` symbol here is: " + symbol.Name);
+                                MyWindowControl.printInBrowserConsole("`````` declaredLine here is: " + declaredLineFrom);
+                                MyWindowControl.printInBrowserConsole("`````` declaredLineTo here is: " + declaredLineTo);
+                                MyWindowControl.printInBrowserConsole("`````` Line here is: " + line);
+
+                                if (declaredLineFrom < (line + 1))
+                                {
+                                    symbolsStringWithScope += symbol.Name + ",";
+                                } 
+                                else
+                                {
+                                    areSymbolsInScopeBefore = false;
+                                }
+
+                                if (declaredLineTo >= endOfWhile)
+                                {
+                                    symbolsStringWithScopeAfter += symbol.Name + ",";
+                                }
+                                else
+                                {
+                                    areSymbolsInScopeAfter = false;
+                                }
+                            }
+
+                            if (!areSymbolsInScopeBefore)
+                            {
+                                symbolsStringWithScope = "";
+                            }
+
+                            if (!areSymbolsInScopeAfter)
+                            {
+                                symbolsStringWithScopeAfter = "";
+                            }
+
+                            if (symbolsStringWithScope != "")
+                            {
+                                symbolsStringWithScope = symbolsStringWithScope.TrimEnd(',');
+                            }
+
+                            if (containingExpression != null)
+                            {
+                                symbolsStringWithScope += "," + containingExpression.ToString();
+                            }
+
+                            if (symbolsStringWithScopeAfter != "")
+                            {
+                                symbolsStringWithScopeAfter = symbolsStringWithScopeAfter.TrimEnd(',');
+                            }
+
+                            if (containingExpression != null)
+                            {
+                                symbolsStringWithScopeAfter += "," + containingExpression.ToString();
+                            }
+
+
+                            //key = "RAND ancestor at " + fileName + " line " + (line + 1) + "_" + symbolsStringWithScope + "_" + widgetsIDs + Utils.generateID();
+                            MyWindowControl.printInBrowserConsole("`````` Key is now!!!: " + key);
+                            MyWindowControl.printInBrowserConsole("`````` Types !!!: " + types);
+
+
+                            if (symbolsStringWithScope != "")
+                            {
+                                StringBuilder beforeControlSB = new StringBuilder();
+                                //beforeControlSB.AppendFormat(logReferenceString, symbolsString, parentStatements, line + 1, fileName, widgetsIDs, key, types);
+                                //                     string logReferenceString = " Logger.logReferences(\"{5}\", \"{0}~{1}~{6}~{{0}}~{2}~{3}~{4}\", {1});";
+                                beforeControlSB.AppendFormat(logReferenceString, symbolsStringWithScope, symbolsStringWithScope, line + 1, fileName, widgetsIDs, key, types, lineContent, grandParentLineContent);
+                                MyWindowControl.printInBrowserConsole("`````` logReferenceString !!!: " + logReferenceString);
+                                MyWindowControl.printInBrowserConsole("`````` symbolsStringWithScope !!!: " + symbolsStringWithScope);
+                                MyWindowControl.printInBrowserConsole("`````` line + 1 !!!: " + (line + 1));
+                                MyWindowControl.printInBrowserConsole("`````` fileName !!!: " + fileName);
+                                MyWindowControl.printInBrowserConsole("`````` widgetsIDs !!!: " + widgetsIDs);
+                                MyWindowControl.printInBrowserConsole("XXXXXX Parent statement !!!: " + parentStatements);
+
+                                beforeString = beforeControlSB.ToString();
+                                MyWindowControl.printInBrowserConsole("***** beforeString " + beforeString);
+                            }
 
                             StringBuilder insideControlSB = new StringBuilder();
-                            insideControlSB.AppendFormat(" if ( Logger.getExecutionCount(\"{5}\") != 1 ) {{ " + logReferenceString + " }} else {{ Logger.increaseExecutionCount(\"{5}\"); }}", symbolsString, parentStatements, line + 1, fileName, widgetsIDs, key, types);
+
+                            if (onlyParentType == SyntaxKind.ElementAccessExpression)
+                            {
+                                // TODO IF PARAMETERKIND, DON'T DO THIS
+                                MyWindowControl.printInBrowserConsole("\t ssssssssss else types: " + types);
+
+
+                                //insideControlSB.AppendFormat("/*COMMENT INSIDE1*/ if ( Logger.getExecutionCount(\"{5}\") != 1 ) {{ " + logReferenceString + " }} else {{ Logger.increaseExecutionCount(\"{5}\"); }}", symbolsString, symbolsString, line + 1, fileName, widgetsIDs, key, types, lineContent, grandParentLineContent);
+                                insideControlSB.AppendFormat(logReferenceString, symbolsString, symbolsString, line + 1, fileName, widgetsIDs, key, types, lineContent, grandParentLineContent + "insideControlSB");
+
+                            }
+                            else
+                            {
+                                MyWindowControl.printInBrowserConsole("\t gggggggggg else types: " + types);
+
+                                //insideControlSB.AppendFormat("/*COMMENT INSIDE2*/ if ( Logger.getExecutionCount(\"{5}\") != 1 ) {{ " + "/* BEFORE LOG REFERENCE */" + logReferenceString + "/* AFTER */" + " }} else {{ Logger.increaseExecutionCount(\"{5}\"); }}", symbolsString, symbolsString, line + 1, fileName, widgetsIDs, key, types, lineContent, grandParentLineContent);
+                                insideControlSB.AppendFormat(logReferenceString, symbolsString, symbolsString, line + 1, fileName, widgetsIDs, key, types, lineContent, grandParentLineContent);
+
+                            }
+                            //insideControlSB.AppendFormat(" if ( Logger.getExecutionCount(\"{5}\") != 1 ) {{ " + logReferenceString + " }} else {{ Logger.increaseExecutionCount(\"{5}\"); }}", symbolsString, parentStatements, line + 1, fileName, widgetsIDs, key, types);
+                            //insideControlSB.AppendFormat(" if ( Logger.getExecutionCount(\"{5}\") != 1 ) {{ " + logReferenceString + " }} else {{ Logger.increaseExecutionCount(\"{5}\"); }}", symbolsString, symbolsString, line + 1, fileName, widgetsIDs, key, types);
+
+                            MyWindowControl.printInBrowserConsole("***** insideControlSB " + insideControlSB.ToString());
+
                             String afterString = insideControlSB.ToString();
 
-                            string tmp = string.Concat(beforeString, docContent[line]);
-                            docContent[line] = string.Concat(tmp, afterString);
+                            string tmp = string.Concat(beforeString, docContent[line + bracesOffset]);
+                            MyWindowControl.printInBrowserConsole("***** tmp " + tmp);
+                            docContent[line + bracesOffset] = string.Concat(tmp, afterString);
 
-                            int endOfWhile = closestControlAncestor.GetLocation().GetLineSpan().EndLinePosition.Line;
 
                             // at the end of the loop, we need to log the final value of the expression 
                             // This has to be done ONLY IF the program actually entered into the while loop
 
-                            StringBuilder afterControlSB = new StringBuilder();
-                            afterControlSB.AppendFormat(" if ( Logger.getExecutionCount(\"{5}\") > 1 ) {{ " + logReferenceString + " }}", symbolsString, parentStatements, line + 1, fileName, widgetsIDs, key, types);
-                            docContent[endOfWhile] = docContent[endOfWhile] + afterControlSB.ToString();
+                            MyWindowControl.printInBrowserConsole("SHISHIR symbolsStringWithScopeAfter " + symbolsStringWithScopeAfter);
+                            if (symbolsStringWithScopeAfter != "")
+                            {
+                                StringBuilder afterControlSB = new StringBuilder();
+                                //afterControlSB.AppendFormat(" if ( Logger.getExecutionCount(\"{5}\") > 1 ) {{ " + logReferenceString + " }}", symbolsString, parentStatements, line + 1, fileName, widgetsIDs, key, types);
+                                afterControlSB.AppendFormat(" if ( Logger.getExecutionCount(\"{5}\") > 1 ) {{ " + logReferenceString + " }}", symbolsStringWithScopeAfter, symbolsStringWithScopeAfter, line + 1, fileName, widgetsIDs, key, types, lineContent, grandParentLineContent);
+                                MyWindowControl.printInBrowserConsole("***** afterControlSB " + afterControlSB);
+                                MyWindowControl.printInBrowserConsole("+++++ Parent statement !!!: " + parentStatements);
+                                docContent[endOfWhile] = docContent[endOfWhile] + afterControlSB.ToString();
+                            }
 
                         }
                         else
                         {
+                            MyWindowControl.printInBrowserConsole("\t 555555555555 else types: " + types);
+                            MyWindowControl.printInBrowserConsole("`````` else onlyParentType " + onlyParentType);
+                            MyWindowControl.printInBrowserConsole("||||||Braces offset: " + bracesOffset); ;
+
                             // the while loop found is not on the same line as the symbols
                             StringBuilder useStringBuilder = new StringBuilder();
-                            useStringBuilder.AppendFormat(logReferenceString, symbolsString, parentStatements, line + 1, fileName, widgetsIDs, null, types);
-                            docContent[line] = string.Concat(useStringBuilder.ToString(), docContent[line]);
-                        }
+                            if (onlyParentType == SyntaxKind.ElementAccessExpression)
+                            {
+                                MyWindowControl.printInBrowserConsole("\t ccccccccccc else types: " + types);
 
+                                useStringBuilder.AppendFormat(logReferenceString, symbolsString, symbolsString, line + 1 + bracesOffset, fileName, widgetsIDs, null, types, lineContent, grandParentLineContent);
+                            }
+                            else
+                            {
+                                MyWindowControl.printInBrowserConsole("\t vvvvvvvvv else types: " + types);
+
+                                useStringBuilder.AppendFormat(logReferenceString, symbolsString, parentStatements, line + 1 + bracesOffset, fileName, widgetsIDs, null, types, lineContent, grandParentLineContent);
+
+                            }
+
+                            if (bracesOffset > 0)
+                            {
+                                bracesOffset += 1;
+                            }
+
+                            docContent[line + bracesOffset] = string.Concat(useStringBuilder.ToString(), docContent[line + bracesOffset]);
+                            docContent[line + bracesOffset] = string.Concat(docContent[line + bracesOffset], useStringBuilder.ToString());
+                        }
                     }
                     else
                     {
@@ -932,9 +1301,42 @@ namespace TestingCodeAnalysis
 
                         MyWindowControl.printInBrowserConsole("\t 888888888888888888888888888888 types: " + types);
 
-                        useStringBuilder.AppendFormat(logReferenceString, symbolsString, parentStatements, line + 1, fileName, widgetsIDs, null, types);
+                        if (onlyParentType == SyntaxKind.ElementAccessExpression)
+                        {
+                            MyWindowControl.printInBrowserConsole("\t 66666666666 if types: " + types);
+
+                            useStringBuilder.AppendFormat(logReferenceString, symbolsString, symbolsString, line + 1, fileName, widgetsIDs, null, types, lineContent, grandParentLineContent);
+                        }
+                        else
+                        {
+                            MyWindowControl.printInBrowserConsole("\t 7777777777 else types: " + types);
+
+                            useStringBuilder.AppendFormat(logReferenceString, symbolsString, parentStatements, line + 1, fileName, widgetsIDs, null, types, lineContent, grandParentLineContent);
+                        }
+
                         docContent[line] = string.Concat(docContent[line], useStringBuilder.ToString());
+                        docContent[line] = string.Concat(useStringBuilder.ToString(), docContent[line]);
+
+                        // Add the earlier info from processAssignmentNode
+                        int bracesOffset = 0;
+                        foreach (LineNumberProcessAssignmentNode lineNumberProcessAssignment in lineProcessingNodeString)
+                        {
+                            int lineNumber = lineNumberProcessAssignment.LineNumber;
+                            string value = lineNumberProcessAssignment.ProcessAssignmentNodeString;
+
+                            int linePosition = lineNumber + bracesOffset;
+                            MyWindowControl.printInBrowserConsole("SSS Adding lineNumberProcessAssignment : \n" + value + "\n to " + linePosition);
+                            docContent[lineNumber + bracesOffset] = string.Concat(docContent[lineNumber + bracesOffset], value);
+                            docContent[lineNumber + bracesOffset] = string.Concat(value, docContent[lineNumber + bracesOffset]);                      
+                        }
                     }
+
+
+
+
+
+
+
                 }
 
             }
@@ -944,7 +1346,29 @@ namespace TestingCodeAnalysis
 
             saveScopeFile(scopeFileLines, logFileName, outputFolder);
 
+            // log to file number logger
+            foreach(string documentFilePath in lineContentsOfDocuments.Keys)
+            {
+                Dictionary<string, string> lineContents = lineContentsOfDocuments[documentFilePath];
+                foreach(string lineNumber in lineContents.Keys)
+                {
+                    string line = lineContents[lineNumber];
+                    allContents[documentFilePath][Int32.Parse(lineNumber)] += $" Logger.logLineInfo(@\"{documentFilePath}~{lineNumber}~{line}\");";
+                }
+            }
 
+
+            // log initializations
+            foreach(string key in JsHandler.initializationValues.Keys)
+            {
+                string filePath = key.Split('~')[0];
+                int lineNumber = int.Parse(key.Split('~')[1]);
+
+                string logInitializationString = "Logger.logInitialization(@\"" + filePath + "~" + 
+                     JsHandler.initializationValues[key] + "~\"," + JsHandler.initializationValues[key] + ");";
+                
+                //allContents[filePath][lineNumber] = string.Concat(allContents[filePath][lineNumber], logInitializationString);
+            }
             // we need to modify the program files further to be able to log the signals
             foreach (string key in MyWindowControl.signalsPositions.Keys)
             {
@@ -959,6 +1383,23 @@ namespace TestingCodeAnalysis
 
             return compileModifiedFiles(outputFolder, out logFileContent, out useFileContent, allContents, logFileName, runMode, windowControl, out success, syntaxTrees);
 
+        }
+
+        // In a multi line string text, get the line number of another string lineToFind.
+        private static int GetLineNumber(string text, string lineToFind, StringComparison comparison = StringComparison.CurrentCulture)
+        {
+            int lineNum = 0;
+            using (StringReader reader = new StringReader(text))
+            {
+                string line;
+                while ((line = reader.ReadLine()) != null)
+                {
+                    lineNum++;
+                    if (line.Contains(lineToFind))
+                        return lineNum;
+                }
+            }
+            return -1;
         }
 
         private static void saveScopeFile(List<string> scopeFileLines, string fileName, string outputFolder)
@@ -1025,6 +1466,8 @@ namespace TestingCodeAnalysis
 
                 int totalSymbols = symbols.Count();
 
+                string lineContent = "";
+
                 for (int i = 0; i < totalSymbols; i++)
                 {
                     ISymbol symbol = symbols.ElementAt(i);
@@ -1032,12 +1475,29 @@ namespace TestingCodeAnalysis
                     SyntaxNode parent = node.Parent;
                     string parentStatement = parent.ToString().Replace("\"", "\\\"").Replace("{", "{{").Replace("}", "}}");
 
+                    // Line contents
+                    int lineNumber = parent.GetLocation().GetLineSpan().StartLinePosition.Line + 1;
+                    var activePoint = ((EnvDTE.TextSelection)windowControl.dte.ActiveDocument.Selection).ActivePoint;
+                    string lineText = activePoint.CreateEditPoint().GetLines(lineNumber, lineNumber + 1);
+
+                    if (!parentStatement.StartsWith("["))
+                    {
+                        lineContent = parentStatement;
+
+                    }
+                    else
+                    {
+                        lineContent = parent.Parent.Parent.ToString().Replace("\"", "\\\"").Replace("{", "{{").Replace("}", "}}");
+
+                    }
+
                     symbolsString += symbol + ",";
                     values += symbol + ",";
                     parentStatements += parentStatement + ",";
                     widgetIDs += windowControl.trackedSymbols.FirstOrDefault(s => s.Value.Name == symbol.Name && s.Value.Kind == symbol.Kind && s.Value.Locations.FirstOrDefault().SourceSpan.Start == symbol.Locations.FirstOrDefault().SourceSpan.Start && s.Value.Locations.FirstOrDefault().SourceSpan.End == symbol.Locations.FirstOrDefault().SourceSpan.End).Key + ",";
                     types += parent.Kind() + ",";
                 }
+                MyWindowControl.printInBrowserConsole("XXXXXX Expression !!!: " + expression.ToString());
 
                 symbolsString += expression.ToString();
                 values += expression;
@@ -1047,8 +1507,9 @@ namespace TestingCodeAnalysis
 
                 string cleanFileName = fileName.Replace(@"\", "/");
                 string key = "Expression at " + cleanFileName + "_" + line + "_" + expression + "_" + Utils.generateID();
-                string logReferenceString = " Logger.logReferences(\"{5}\", \"{0}~{1}~{6}~{{0}}~{2}~{3}~{4}\", {1});";
+                string logReferenceString = " Logger.logReferences(\"{5}\", \"{0}~{1}~{6}~{{0}}~{2}~{3}~{4}~{7}\", {1});";
 
+                MyWindowControl.printInBrowserConsole("$^%%% expression " + expression.Kind());
                 if (controlAncestors.Count() > 0)
                 {
 
@@ -1057,12 +1518,19 @@ namespace TestingCodeAnalysis
 
                     // key += closestAncestor.ToString();
 
-                    StringBuilder beforeWhileSB = new StringBuilder();
-                    beforeWhileSB.AppendFormat(logReferenceString, symbolsString, parentStatements, line + 1, cleanFileName, widgetIDs, key, types);
-                    String beforeString = beforeWhileSB.ToString();
+                    MyWindowControl.printInBrowserConsole("$^% expression " + expression.Kind());
+                    String beforeString = "";
+                    if (expression.Kind() != SyntaxKind.DeclarationExpression)
+                    {
+                        StringBuilder beforeWhileSB = new StringBuilder();
+                        //beforeWhileSB.AppendFormat(logReferenceString, symbolsString, parentStatements, line + 1, cleanFileName, widgetIDs, key, types);
+                        beforeWhileSB.AppendFormat(logReferenceString, symbolsString, symbolsString, line + 1, cleanFileName, widgetIDs, key, types, lineContent);
+                        MyWindowControl.printInBrowserConsole("======== Parent statement !!!: " + parentStatements);
+                        beforeString = beforeWhileSB.ToString();
+                    }
 
                     StringBuilder insideWhileSB = new StringBuilder();
-                    insideWhileSB.AppendFormat(" if ( Logger.getExecutionCount(\"{5}\") != 1 ) {{ " + logReferenceString + " }} else {{ Logger.increaseExecutionCount(\"{5}\"); }}", symbolsString, parentStatements, line + 1, cleanFileName, widgetIDs, key, types);
+                    insideWhileSB.AppendFormat(" if ( Logger.getExecutionCount(\"{5}\") != 1 ) {{ " + logReferenceString + " }} else {{ Logger.increaseExecutionCount(\"{5}\"); }}", symbolsString, parentStatements, line + 1, cleanFileName, widgetIDs, key, types, lineContent);
                     String afterString = insideWhileSB.ToString();
 
                     string tmp = string.Concat(beforeString, docContent[line]);
@@ -1074,7 +1542,10 @@ namespace TestingCodeAnalysis
                     // This has to be done ONLY IF the program actually entered into the while loop
 
                     StringBuilder afterWhileSB = new StringBuilder();
-                    afterWhileSB.AppendFormat(" if ( Logger.getExecutionCount(\"{5}\") > 1 ) {{ " + logReferenceString + " }}", symbolsString, parentStatements, line + 1, cleanFileName, widgetIDs, key, types);
+                    //afterWhileSB.AppendFormat(" if ( Logger.getExecutionCount(\"{5}\") > 1 ) {{ " + logReferenceString + " }}", symbolsString, parentStatements, line + 1, cleanFileName, widgetIDs, key, types);
+                    afterWhileSB.AppendFormat(" if ( Logger.getExecutionCount(\"{5}\") > 1 ) {{ " + logReferenceString + " }}", symbolsString, symbolsString, line + 1, cleanFileName, widgetIDs, key, types, lineContent);
+                    MyWindowControl.printInBrowserConsole("))))))) Parent statement !!!: " + parentStatements);
+
                     docContent[endOfWhile] = docContent[endOfWhile] + afterWhileSB.ToString();
 
 
@@ -1083,7 +1554,9 @@ namespace TestingCodeAnalysis
                 {
 
                     StringBuilder sb = new StringBuilder();
-                    sb.AppendFormat(logReferenceString, symbolsString, parentStatements, line + 1, cleanFileName, widgetIDs, key, types);
+                    //sb.AppendFormat(logReferenceString, symbolsString, parentStatements, line + 1, cleanFileName, widgetIDs, key, types);
+                    sb.AppendFormat(logReferenceString, symbolsString, symbolsString, line + 1, cleanFileName, widgetIDs, key, types, lineContent);
+                    MyWindowControl.printInBrowserConsole("(((((( Parent statement !!!: " + parentStatements);
                     docContent[line] = docContent[line] + sb.ToString();
 
                     MyWindowControl.printInBrowserConsole("fileName: " + fileName);
@@ -1191,7 +1664,8 @@ namespace TestingCodeAnalysis
                 //}
 
                 // TMP
-                syntaxTrees.Add(CSharpSyntaxTree.ParseText(File.ReadAllText(@"C:\Dev\P-Inti\P-Inti\Resources\Logger.cs")));
+                //syntaxTrees.Add(CSharpSyntaxTree.ParseText(File.ReadAllText(@"C:\Users\Admin\Documents\GitHub\P_Inti\P-Inti\Resources\Logger.cs")));
+                syntaxTrees.Add(CSharpSyntaxTree.ParseText(File.ReadAllText(@"E:\Dev\P_Inti\P-Inti\Resources\Logger.cs")));
 
 
                 refs.Add(MetadataReference.CreateFromFile(typeof(object).GetTypeInfo().Assembly.Location));
@@ -1236,7 +1710,7 @@ namespace TestingCodeAnalysis
                         logFileContent = new string[] { "" };
                         scopeFileContent = new string[] { "" };
                         signalFileContent = new string[] { "" };
-                        stringResult = "The following <b>problems</b> arose when trying to compile the program:<br/><br/>";
+                        stringResult = "The   following <b>problems</b> arose when trying to compile the program:<br/><br/>";
                         int count = 1;
 
                         IEnumerable<Diagnostic> failures = result.Diagnostics;
@@ -1442,6 +1916,18 @@ namespace TestingCodeAnalysis
             Taggers.currentEvaluatedLine = lineNumber;
             HighlightWordTagger.currentEvaluatedLine = lineNumber;
             HighlightWordTagger.expressionsToHighlight = expressions;
+            HighlightWordTagger.markers = markers;
+            Taggers.updateTags();
+            HighlightWordTagger.updateTags();
+        }
+
+        public static void setCurrentLine(int lineNumber, string filePath, string lineContent, TextMarkerTag[] markers)
+        {
+            MyWindowControl.printInBrowserConsole("Inside setCurrentLine CodeAnalyzer");
+            string[] expressionsArray = { lineContent };
+            Taggers.currentEvaluatedLine = lineNumber;
+            HighlightWordTagger.currentEvaluatedLine = lineNumber;
+            HighlightWordTagger.expressionsToHighlight = expressionsArray;
             HighlightWordTagger.markers = markers;
             Taggers.updateTags();
             HighlightWordTagger.updateTags();

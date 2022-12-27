@@ -40,18 +40,20 @@ class SignalHolder {
         var addSignal = function () {
             var signal = background.signal;
             var originParent = {originX: 'right', originY: 'center'};
-            var originChild = {originX: 'left', originY: 'center'};
+            var originChild = {originX: 'center', originY: 'center'};
 
 
             background.addChild(signal, {
                 whenCompressed: {
-                    x: 4, y: 0,
+                    x: 10, y: 0,
                     scaleX: 1, scaleY: 1, opacity: 1,
+                    angle: 90,
                     originParent: originParent,
                     originChild: originChild
                 },
                 whenExpanded: {
-                    x: 4, y: 0,
+                    x: 10, y: 0,
+                    angle: 90,
                     originParent: originParent,
                     originChild: originChild
                 },
@@ -136,7 +138,9 @@ class SignalHolder {
         var addLineContent = function () {
             let font = '15px Courier New';
             let constrainedText = '';
-            let lineContentWidth = getValueWidth(background.lineContent, font);
+            console.log("Background linecontent")
+            console.log(background.lineContent)
+            let lineContentWidth = getTextWidth(background.lineContent, font) + 15;
             console.log("full line width " + lineContentWidth);
             console.log("Background width " + background.width);
 
@@ -185,6 +189,10 @@ class SignalHolder {
         }
 
         addLineContent();
+
+        background.setProgramTime = function (time) {
+            background.signal.setProgramTime(time);
+        };
 
         background.on('scaling', function () {
 //            background.set('height', background.cacheHeight);

@@ -25,6 +25,7 @@ class ArraySymbol {
 //            height: 10
 //        }
         var background = createObjectBackground(fabric.Rect, options, null);
+        background.kind = "ArraySymbol";
 
         console.log("Background is: " + background);
         console.log(background)
@@ -32,6 +33,7 @@ class ArraySymbol {
         background.expandedHeight = 0;
         background.compressed = true;
         background.isMember = options.isMember;
+        background.referenceWidget = null;
 //        background.compressedProperties = {
 //            width: 10,
 //            height: 10,
@@ -164,22 +166,77 @@ class ArraySymbol {
         background.isInitialized = false;
 
         background.onValuesUpdated = function (dataItem) {
-            if (columns == 1)
-                background.setValue(dataItem.array);
+            if (columns == 1) {
+
+                if (dataItem) {
+                    console.log("Data item is: ");
+                    console.log(dataItem);
+                    console.log("Parent staetment");
+                    console.log(dataItem.parentStatement);
+
+                    // let shootingStarsSourceAndIndex;
+                    //
+                    // shootingStarsSourceAndIndex = parseShootingStarsSourceForArray(dataItem.parentStatement, background);
+                    //
+                    // if (!shootingStarsSourceAndIndex)
+                    //     shootingStarsSourceAndIndex = parseShootingStarsSourceForArray(dataItem.grandParentStatement, background);
+                    //
+                    // if (shootingStarsSourceAndIndex) {
+                    //     console.log("shootingStarsSourceAndIndex");
+                    //     console.log(shootingStarsSourceAndIndex);
+                    //     let shootingStarsSource = shootingStarsSourceAndIndex[0];
+                    //     let shootingStarsIndex = shootingStarsSourceAndIndex[1];
+                    //
+                    //     if (shootingStarsSource && shootingStarsSource != background.name) {
+                    //         if (arrayElementsArray[shootingStarsIndex][0].visible) {
+                    //             generateShootingStars(arrayElementsArray[shootingStarsIndex][0], namedSymbols[shootingStarsSource]);
+                    //         }
+                    //     }
+                    // }
+
+                    background.setValue(dataItem.array, dataItem);
+                    if (dataItem.memoryAddress) {
+                        // memory address changed
+                        if (!background.memoryAddress != dataItem.memoryAddress) {
+                            background.memoryAddress = dataItem.memoryAddress;
+                            background.referenceWidget.otherReferencedObjects = [];
+
+                            background.referenceWidget.otherReferencedObjectsArrows.forEach(function (line) {
+                                canvas.remove(line);
+                            })
+                        }
+                    }
+                }
+                updateMemoryReferences(background);
+            }
         };
 
         background.setProgramTime = function (time) {
-
             // 'this' here refers to the variable background
+            console.log("Inside program time");
             background.time = time;
             background.currentTime = time;
             if (background.history) {
                 background.values = background.history.filter(item => item.time <= time);
                 if (background.values.length) {
                     background.onValuesUpdated && background.onValuesUpdated(background.values[background.values.length - 1]);
+                } else {
+                    background.onValuesUpdated && background.onValuesUpdated(null);
                 }
             }
-        };
+
+            // shooting star decay
+            // for (let i = 0; i < rows; i++) {
+            //     if (arrayElementsArray[i][0].shootingStarsDict) {
+            //         for (const [key, value] of Object.entries(arrayElementsArray[i][0].shootingStarsDict)) {
+            //             arrayElementsArray[i][0].shootingStarsDict[key].array && arrayElementsArray[i][0].shootingStarsDict[key].array.forEach(function (shootingStar) {
+            //                 shootingStarsDecay(arrayElementsArray[i][0], namedSymbols[key]);
+            //             });
+            //         }
+            //     }
+            //
+            // }
+        }
 
         background.registerListener('added', function (options) {
             if (!background.isInitialized) {
@@ -423,6 +480,54 @@ class ArraySymbol {
             background.positionObjects();
         }
 
+        background.setValueForCurlyBrace = function(initialValue) {
+            let indexOfOpeningBrace = initialValue.indexOf('[');
+            let indexOfClosingBrace = initialValue.indexOf(']');
+
+            console.log("Initial value: " + initialValue.substring(indexOfOpeningBrace + 1, indexOfClosingBrace));
+            let rowNumbers;
+            // No [] present in initialValue. Declaration is of the form int[] array = {1, 2, 3, 4, 5}, or { {1, 2}, {3, 4},  {5, 6} } OR
+            // There are braces, but it doesn't contain the size. For instance int[] arr = new int[] {1, 2, 3, 4, 5}
+            if ((indexOfClosingBrace === -1 && indexOfOpeningBrace === -1) ||
+                (indexOfClosingBrace === indexOfOpeningBrace + 1)) {
+                let firstOpener = initialValue.indexOf('{');
+                let firstCloser = initialValue.lastIndexOf('}');
+
+                let innerContents = initialValue.substring(firstOpener + 1, firstCloser).trim();
+                console.log("Inner contents are: " + innerContents);
+                if (innerContents.indexOf('{') === -1) {
+                    // 1, 2, 3, 4, 5 -> 1D array
+                    rowNumbers = innerContents.split(',').map(function (item) {
+                        return item.trim();
+                    });
+
+                    for (let i = 0; i < rows; i++) {
+                        background.arrayElementsArray[i][0].element = rowNumbers[i];
+                    }
+                // } else {
+                //     let arrayElementStartIndex = 0;
+                //     let rowIndex = 0;
+                //     let elementString = innerContents;
+                //
+                //     while (elementString.substring(arrayElementStartIndex).indexOf('{') !== -1) {
+                //         elementString = innerContents.substring(arrayElementStartIndex);
+                //         let braceStartIndex = elementString.indexOf('{');
+                //         let braceEndIndex = elementString.indexOf('}');
+                //
+                //         let arrayRowNumbers = elementString.substring(braceStartIndex + 1, braceEndIndex).split(',').map(function (item) {
+                //             return item.trim();
+                //         });
+                //
+                //         // Only 2D arrays supported for now
+                //         defaultValue.push(arrayRowNumbers);
+                //         rowIndex++;
+                //         arrayElementStartIndex = braceEndIndex + 1 + innerContents.substring(braceEndIndex + 1).indexOf(',') + 1;
+                //     }
+
+                }
+
+            }
+        }
         background.addLabelObject = function () {
             var labelObject = new fabric.Text(background.label, {
                 fontFamily: 'Arial',
@@ -1331,20 +1436,49 @@ class ArraySymbol {
             return arrayWidget;
         }
 
-        background.setValue = function (newValue) {
+        background.setValue = function (newValue, dataItem) {
             // [3;40;60;100000000;0;0;0;0;0]
+
+            console.log("New value is: ");
+            console.log(newValue);
+
+            if (!newValue)
+                return;
 
             var valuesArray = newValue.substring(1, newValue.length - 1).split(';');
             for (let i = 0; i < valuesArray.length; i++) {
                 let currentValue = arrayElementsArray[i][0].element;
+
+                // if (arrayElementsArray[i][0].shootingStarsDict) {
+                //     for (const [key, value] of Object.entries(arrayElementsArray[i][0].shootingStarsDict)) {
+                //         arrayElementsArray[i][0].shootingStarsDict[key].array && arrayElementsArray[i][0].shootingStarsDict[key].array.forEach(function (shootingStar) {
+                //             shootingStarsDecay(arrayElementsArray[i][0], namedSymbols[key]);
+                //         });
+                //     }
+                // }
 
                 if (currentValue != valuesArray[i]) {
                     arrayElementsArray[i][0].timeOfChange = background.currentTime;
                 }
 
                 arrayElementsArray[i][0].element = valuesArray[i];
-                background.updateColorDecay(arrayElementsArray[i][0]);
+                //background.updateColorDecay(arrayElementsArray[i][0]);
             }
+        }
+
+        background.getValue = function () {
+            let openingArray = "[";
+            let closingArray = "]";
+            let valueString = "";
+
+            for (let i = 0; i < background.arrayElementsArray.length; i++) {
+                valueString += background.arrayElementsArray[i][0].element + ";"
+            }
+
+            // Remove the last ;
+            valueString = valueString.slice(0, -1);
+
+            return openingArray + valueString + closingArray;
         }
 
         background.updateColorDecay = function (arrayElement) {
@@ -1367,8 +1501,10 @@ class ArraySymbol {
                 parent: background,
                 array: background.array,
                 fill: colorsArray[colorIndex],
+                type: "ArrayColorWidgetOutput",
                 stroke: darken((colorsArray[colorIndex]))
             });
+
 
             let parentOrigin = {originX: 'left', originY: 'bottom'};
             let childOrigin = {originX: 'left', originY: 'top'};
@@ -1444,7 +1580,7 @@ class ArraySymbol {
             let indexOfClosingBrace = initialValue.indexOf(']');
             let rows, columns, defaultValue = [];
 
-            LOG && console.log("Initial value: " + initialValue.substring(indexOfOpeningBrace + 1, indexOfClosingBrace));
+            console.log("Initial value: " + initialValue.substring(indexOfOpeningBrace + 1, indexOfClosingBrace));
 
             // No [] present in initialValue. Declaration is of the form int[] array = {1, 2, 3, 4, 5}, or { {1, 2}, {3, 4},  {5, 6} } OR
             // There are braces, but it doesn't contain the size. For instance int[] arr = new int[] {1, 2, 3, 4, 5}
@@ -1457,25 +1593,26 @@ class ArraySymbol {
                 console.log("Inner contents are: " + innerContents);
                 if (innerContents.indexOf('{') === -1) {
                     // 1, 2, 3, 4, 5 -> 1D array
-                    let rowNumbers = innerContents.split(',').map(function(item) {
+                    let rowNumbers = innerContents.split(',').map(function (item) {
                         return item.trim();
                     });
 
+                    console.log("Row numbers is: ");
+                    console.log(rowNumbers);
                     rows = rowNumbers.length;
                     columns = 1;
                     defaultValue.push(rowNumbers);
                 } else {
-                    // { {1, 2}, {3, 4},  {5, 6} } -> 2D array
                     let arrayElementStartIndex = 0;
                     let rowIndex = 0;
                     let elementString = innerContents;
 
-                    while(elementString.substring(arrayElementStartIndex).indexOf('{') !== -1) {
+                    while (elementString.substring(arrayElementStartIndex).indexOf('{') !== -1) {
                         elementString = innerContents.substring(arrayElementStartIndex);
                         let braceStartIndex = elementString.indexOf('{');
                         let braceEndIndex = elementString.indexOf('}');
 
-                        let arrayRowNumbers = elementString.substring(braceStartIndex + 1, braceEndIndex).split(',').map(function(item) {
+                        let arrayRowNumbers = elementString.substring(braceStartIndex + 1, braceEndIndex).split(',').map(function (item) {
                             return item.trim();
                         });
 
@@ -1504,11 +1641,10 @@ class ArraySymbol {
             return [rows, columns, defaultValue]
         }
 
-        registerProgvolverObject(this);
         return background;
     }
 
-    static fromJson (json) {
+    static fromJson(json) {
         return new ArraySymbol({
             value: json['value'],
             type: json['type'],

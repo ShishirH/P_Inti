@@ -53,13 +53,11 @@ input[type="radio"]:not(:focus){
 
 }
 
-
-
-
-
-
-
-
+.bottomRowButtonsDisabled {
+    background-color: #666;
+    pointer-events:none;
+    opacity:0.6;
+}
 
 .horizontalButtomsRow {
     margin: 0;

@@ -20,8 +20,11 @@ var CanvasVariableConnectionPort = iVoLVER.util.createClass(fabric.Circle, {
 
         this.inConnection = source;
 
-        console.log("Connection source is: ");
-        console.log(connection);
+        if (source.value) {
+            this.parent.setValue(source.value);
+        } else {
+            this.parent.setValue("" + source.numberOfSignalsEmitted);
+        }
         return {
             connectionAccepted: connectionAccepted,
             message: message
@@ -35,7 +38,7 @@ var CanvasVariableConnectionPort = iVoLVER.util.createClass(fabric.Circle, {
     },
 
     signalEmitted: function (value) {
-        this.parent.setValue(this.value);
+        this.parent.setValue("" + value);
         this.value += 1;
     },
 
@@ -50,6 +53,15 @@ var CanvasVariableConnectionPort = iVoLVER.util.createClass(fabric.Circle, {
             setTimeout(function () {
                 connector.objectCaching = false;
             }, 500);
+        }
+    },
+
+    setOperandValue: function (newValue) {
+        let connectionPort = this;
+
+        if (connectionPort.outConnections && connectionPort.outConnections.length > 0) {
+            let connector = connectionPort.outConnections[0];
+            connector.target.operandValue = parseFloat(newValue);
         }
     }
 });

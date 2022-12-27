@@ -1948,6 +1948,7 @@ function bindCanvasDefaultEvents(canvas) {
                                 var allInfo = "";
                                 var keys = Object.keys(response);
 
+                                console.log("response");
                                 console.log(response);
 
                                 if (response.dataType.includes("[") && response.dataType.includes("]")) {
@@ -1984,6 +1985,11 @@ function bindCanvasDefaultEvents(canvas) {
                                         movable: true
                                     });
 
+                                    // method parameter
+                                    if (response.initialValue === undefined) {
+                                        theSymbol = undefined;
+                                    }
+
                                     var referenceWidget = new ReferenceWidget({
                                         fill: '#F02466',
                                         stroke: '#F02466',
@@ -1994,10 +2000,20 @@ function bindCanvasDefaultEvents(canvas) {
                                         kind: response.Kind_String,
                                         type: response.dataType,
                                         name: response.Name,
+                                        referencedObjectId: response.symbolID,
+                                        referencedObjectDetails: response,
                                         isArray: true
                                     }, theSymbol);
 
+                                    // method parameter
+                                    if (response.initialValue === undefined) {
+                                        methodParameters.push(referenceWidget);
+                                    } else {
+                                        referencedObjects.push(theSymbol);
+                                    }
+
                                     allSymbols.push(theSymbol);
+                                    namedSymbols[theSymbol.name] = theSymbol;
 
                                     canvas.add(referenceWidget);
                                     referenceWidget.expand();
@@ -2085,6 +2101,8 @@ function bindCanvasDefaultEvents(canvas) {
                                     referenceWidget.expand();
 
                                     allSymbols.push(objectWidget);
+                                    namedSymbols[objectWidget.name] = objectWidget;
+
                                     //canvas.add(objectWidget);
 
                                 } else {
@@ -2121,7 +2139,9 @@ function bindCanvasDefaultEvents(canvas) {
 //                                    canvas.add(referenceWidget)
 
                                     allSymbols.push(theSymbol);
+                                    namedSymbols[theSymbol.name] = theSymbol;
                                     canvas.add(theSymbol);
+                                    theSymbol.isOnCanvas = true;
                                 }
 
 
