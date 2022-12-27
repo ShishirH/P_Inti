@@ -138,7 +138,9 @@ class SignalHolder {
         var addLineContent = function () {
             let font = '15px Courier New';
             let constrainedText = '';
-            let lineContentWidth = getValueWidth(background.lineContent, font);
+            console.log("Background linecontent")
+            console.log(background.lineContent)
+            let lineContentWidth = getTextWidth(background.lineContent, font) + 15;
             console.log("full line width " + lineContentWidth);
             console.log("Background width " + background.width);
 

@@ -1068,8 +1068,22 @@ function getValueWidth(text, theFont) {
     ctx.font = theFont;
 
     var renderableValue = text;
-    return ctx.measureText(renderableValue).width;
+    let width =  ctx.measureText(renderableValue).width;
+    ctx.restore();
+    return width;
 }
+
+function getTextWidth(text, theFont) {
+    let ctx = canvas.getContext();
+    ctx.save();
+    ctx.font = theFont;
+
+    var renderableValue = text;
+    let width =  ctx.measureText(renderableValue).width;
+    ctx.restore();
+    return width;
+}
+
 
 function addSignalToCanvas(object) {
     object = object.split('@')
@@ -7764,6 +7778,7 @@ function enterFunctionButtonClicked() {
 //    }
 //}
 function getValueWidth(theFont, background) {
+    console.log("This is being called");
     var ctx = canvas.getContext();
     ctx.save();
     ctx.font = theFont;
@@ -7773,7 +7788,9 @@ function getValueWidth(theFont, background) {
         renderableValue = background.value.toFixed(2);
     }
 
-    return ctx.measureText(renderableValue).width;
+    let width =  ctx.measureText(renderableValue).width;
+    ctx.restore();
+    return width;
 }
 
 function drawFilledMarkButtonClicked() {
