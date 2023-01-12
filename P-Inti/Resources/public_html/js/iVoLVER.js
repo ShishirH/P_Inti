@@ -3745,9 +3745,9 @@ var iVoLVER = {
         //iVoLVER.gui.addCodeShiftSection();
         //iVoLVER.gui.addCodeNoteSection();
         //iVoLVER.gui.addSignalsSection();
-        iVoLVER.gui.addLogicalOperatorsSection();
-        iVoLVER.gui.addPlotsSection();
-        iVoLVER.gui.addcodeMultiverseSection();
+        // iVoLVER.gui.addLogicalOperatorsSection();
+        // iVoLVER.gui.addPlotsSection();
+        // iVoLVER.gui.addcodeMultiverseSection();
 
         iVoLVER._pendingConnections = null;
         iVoLVER._connectableElements = null;

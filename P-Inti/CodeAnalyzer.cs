@@ -767,8 +767,8 @@ namespace TestingCodeAnalysis
                         string lineContent = allContents[document.FilePath][lineNum];
                         documentContents.Add(lineNum.ToString(), lineContent);
                     }
-                    lineContentsOfDocuments.Add(document.FilePath, documentContents);
                 }
+                lineContentsOfDocuments.Add(document.FilePath, documentContents);
             }
 
             int i = 0;
@@ -1353,6 +1353,11 @@ namespace TestingCodeAnalysis
                 foreach(string lineNumber in lineContents.Keys)
                 {
                     string line = lineContents[lineNumber];
+
+                    if (line.Trim() == "")
+                    {
+                        continue;
+                    }
                     allContents[documentFilePath][Int32.Parse(lineNumber)] += $" Logger.logLineInfo(@\"{documentFilePath}~{lineNumber}~{line}\");";
                 }
             }
@@ -1365,10 +1370,11 @@ namespace TestingCodeAnalysis
                 int lineNumber = int.Parse(key.Split('~')[1]);
 
                 string logInitializationString = "Logger.logInitialization(@\"" + filePath + "~" + 
-                     JsHandler.initializationValues[key] + "~\"," + JsHandler.initializationValues[key] + ");";
+                     JsHandler.initializationValues[key] + "~" + lineNumber + "\"," + JsHandler.initializationValues[key] + ");";
                 
-                //allContents[filePath][lineNumber] = string.Concat(allContents[filePath][lineNumber], logInitializationString);
+                allContents[filePath][lineNumber] = string.Concat(allContents[filePath][lineNumber], logInitializationString);
             }
+
             // we need to modify the program files further to be able to log the signals
             foreach (string key in MyWindowControl.signalsPositions.Keys)
             {

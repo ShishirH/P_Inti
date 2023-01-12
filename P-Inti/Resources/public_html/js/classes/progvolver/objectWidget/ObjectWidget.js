@@ -73,6 +73,10 @@ class ObjectWidget {
         background.objectMembers = [];
 
         background.objectMembers = [];
+        background.objectWidgetsDict = {};
+
+        console.log("background.objectMembersDict");
+        console.log(background.objectMembersDict);
         var addObjectMembers = function () {
             var originParent = {originX: 'center', originY: 'top'};
             var originChild = {originX: 'left', originY: 'top'};
@@ -103,6 +107,7 @@ class ObjectWidget {
 
                 canvas.add(objectMember);
                 background.objectMembers.push(objectMember);
+                background.objectWidgetsDict[key] = objectMember;
                 background.children.push(objectMember);
 
                 if (objectMember.isReference) {
@@ -383,7 +388,24 @@ class ObjectWidget {
 
         background.addAll = this.addAll;
         background.removeAll = this.removeAll;
-        this.progvolverType = "CodeNote";
+
+        background.setValue = function(value) {
+            console.log("value is: ");
+            console.log(value);
+
+            const valueObj = JSON.parse(value);
+            if (valueObj && valueObj.constructor == Object) {
+                // confirmed that value is a dictionary
+                console.log("Value is a dict")
+                for (const [key, memberValue] of Object.entries(valueObj)) {
+                    console.log("Key: " + key);
+                    console.log("Value: ");
+                    console.log(memberValue);
+                    background.objectWidgetsDict[key].setValue(memberValue);
+                }
+            }
+        }
+        this.progvolverType = "ObjectWidget";
         registerProgvolverObject(this);
         return background;
     }

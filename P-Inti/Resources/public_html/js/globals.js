@@ -285,4 +285,5 @@ var variablesOnCanvas = [];
 var codeVariantAssociatedVariables = {};
 var codeControlsCompiledHashCodes = [];
 var hasCodeBeenCompiled = false;
+var objectInfo = {};
 

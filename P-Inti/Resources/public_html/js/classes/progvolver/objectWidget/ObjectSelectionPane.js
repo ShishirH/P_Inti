@@ -13,6 +13,8 @@ class ObjectSelectionPane {
         options.hasControls = true;
         options.hasBorders = true;
         options.lockScalingX = false;
+        options.eventable = false;
+        options.selectable = false;
         options.value = "Object selection pane"; //options.name;
 
         var background = createObjectBackground(fabric.Rect, options);

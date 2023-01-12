@@ -57,8 +57,11 @@ function loadLogFiles(response, lineInfoFileContent, waitingDialog) {
     var logFileContent = response.logFileContent.join("\n");
     var scopeFileContent = response.scopeFileContent.join("\n");
     var signalFileContent = response.signalFileContent.join("\n");
+    var initFileContent = response.initFileContent.join("\n");
     var lineInfoFileContentArray = response.lineInfoFileContent;
 
+    console.log("initFileContent");
+    console.log(initFileContent);
     for (let i = 1; i < lineInfoFileContentArray.length; i++) {
         lineInfoFileContentArray[i] = i + "~" + lineInfoFileContentArray[i];
     }
@@ -66,7 +69,7 @@ function loadLogFiles(response, lineInfoFileContent, waitingDialog) {
 
     logFileContent = preProcessLogFileForDuplicates(logFileContent);
     processMethodParameters(logFileContent);
-    processLogFiles(logFileContent, scopeFileContent, signalFileContent, lineInfoFileContent);
+    processLogFiles(logFileContent, scopeFileContent, signalFileContent, lineInfoFileContent, initFileContent);
     window.snapshotWidget && window.snapshotWidget.parseMemberValues();
 
     if (waitingDialog) {
@@ -7778,7 +7781,6 @@ function enterFunctionButtonClicked() {
 //    }
 //}
 function getValueWidth(theFont, background) {
-    console.log("This is being called");
     var ctx = canvas.getContext();
     ctx.save();
     ctx.font = theFont;
@@ -9969,10 +9971,7 @@ function onSliderChanged(data) {
 
 
         var ids = Object.keys(progvolver.objects);
-        console.log("ids: ");
-        console.log(ids);
         ids.forEach(function (id) {
-            console.log("id: " + id);
             var object = progvolver.objects[id];
             object.setProgramTime && object.setProgramTime(window.presentTime);
         });
@@ -10062,7 +10061,7 @@ function onSliderChanged(data) {
 
         if (lineNumberDetails[0] && lineNumberDetails[0].length > 1) {
             window.jsHandler.setCurrentLine({
-                lineNumber: lineNumberDetails[1] - 1,
+                lineNumber: lineNumberDetails[1],
                 filePath: lineNumberDetails[0],
                 expressions: expressions
             }).then(function (response) {
@@ -10355,7 +10354,7 @@ function updateMemoryReferences(referencedObject) {
     console.log(referenceWidget.otherReferencedObjects);
 }
 
-function processLogFiles(logFileContent, scopeFileContent, signalFileContent, lineInfoFileContent) {
+function processLogFiles(logFileContent, scopeFileContent, signalFileContent, lineInfoFileContent, initFileContent) {
 
     window.minTimeSignalData = Infinity;
     window.maxTimeSignalData = -Infinity;
@@ -10400,12 +10399,24 @@ function processLogFiles(logFileContent, scopeFileContent, signalFileContent, li
                 if (lineData && lineData.data && lineData.data[0]) {
                     window.lineData = lineData.data;
 
-                    window.minTimeLineData = lineData.data[0].time;
-                    window.maxTimeLineData = lineData.data[lineData.data.length - 1].time;
+                    window.minTimeLineData = window.lineData[0].time;
+                    window.maxTimeLineData = window.lineData[lineData.data.length - 1].time;
 
-                     window.minTime = Math.min(window.minTime, window.minTimeLineData);
+                    console.log("window.minTime");
+                    console.log(window.minTime);
+                    console.log("window.maxTime");
+                    console.log(window.maxTime);
+
+                    window.minTime = Math.min(window.minTime, window.minTimeLineData);
                      window.maxTime = Math.max(window.maxTime, window.maxTimeLineData);
 
+                     console.log("window.minTimeLineData");
+                     console.log(window.minTimeLineData);
+                     console.log("window.maxTimeLineData");
+                     console.log(window.maxTimeLineData);
+
+                     console.log("Window.minTime is now after line: " + window.minTime);
+                     console.log("Window.maxTime is now after line: " + window.maxTime);
                     // var ids = Object.keys(progvolver.objects);
                     // ids.forEach(function (id) {
                     //     var object = progvolver.objects[id];
@@ -10444,6 +10455,8 @@ function processLogFiles(logFileContent, scopeFileContent, signalFileContent, li
 
                 if (!iVoLVER.util.isUndefined(logData.data[0]) && !iVoLVER.util.isUndefined(logData.data[0][window.sliderDimension]) && !iVoLVER.util.isUndefined(logData.data[logData.data.length - 1]) && !iVoLVER.util.isUndefined(logData.data[logData.data.length - 1][window.sliderDimension])) {
 
+                    console.log("Logdata is: ");
+                    console.log(logData);
                     window.minTimeLogData = logData.data[0][window.sliderDimension];
                     window.maxTimeLogData = logData.data[logData.data.length - 1][window.sliderDimension];
 
@@ -10456,6 +10469,8 @@ function processLogFiles(logFileContent, scopeFileContent, signalFileContent, li
 
                     console.log("Window.minTime is: " + window.minTime);
 
+                    console.log("Window.minTime is now after line: " + window.minTime);
+                    console.log("Window.maxTime is now after line: " + window.maxTime);
 //                    let sliderWidth = $("#theSlider").parent().width();
 //                    window.sliderMargin = 50; // pixels before the timeline starts to react to actual data
 //                    let newMin = changeRange(-window.sliderMargin, 0, sliderWidth, minTime, maxTime);
@@ -10649,6 +10664,32 @@ function processLogFiles(logFileContent, scopeFileContent, signalFileContent, li
                     var theSlider = $("#theSlider").data("ionRangeSlider");
                     theSlider.update({from: 0});
                     window.presentTime = window.minTime;
+
+                    // set initial values for widgets
+                    Papa.parse(initFileContent.trim(), {
+                        delimiter: "~",
+                        header: true,
+                        dynamicTyping: true,
+                        complete: function (initData) {
+                            if (initData && initData.data) {
+                                window.initData = initData.data;
+
+                                window.initData.forEach(function (item, index) {
+                                    console.log("item is: ");
+                                    console.log(item);
+                                    let symbolName = item.symbol;
+
+                                    if (namedSymbols[symbolName]) {
+                                        namedSymbols[symbolName].setValue(item.value);
+                                    } else {
+                                        console.log("Not found?")
+                                    }
+                                });
+                            }
+
+                            // $("#theSlider").data("ionRangeSlider").update({disable: false}); TMP
+                        }
+                    });
 
                     // determine new variable values for code variant combination and remove any variables if they do not exist
                     //getAssociatedVariablesForCodeVariants();

@@ -343,6 +343,10 @@ namespace P_Inti
                 {
 
                     List<int> indices = Utils.AllIndexesOf(text, searchedText);
+                    if (indices == null)
+                    {
+                        continue;
+                    }
                     MyWindowControl.printInBrowserConsole(searchedText + " " + string.Join(",", indices));
                     foreach (int index in indices)
                     {

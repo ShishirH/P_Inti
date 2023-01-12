@@ -7,8 +7,8 @@ class ReferenceWidget {
         options.width = options.width || 70;
         options.rx = options.rx || 5;
         options.ry = options.ry || 5;
-        options.fill = 'transparent';//options.fill || 'white';//"#B3CDE3";
-        options.stroke = 'transparent';//options.stroke || 'white';//"#B3CDE3";
+        options.fill = options.fill || 'transparent';//options.fill || 'white';//"#B3CDE3";
+        options.stroke = options.fill || 'transparent';//options.stroke || 'white';//"#B3CDE3";
         options.strokeWidth = options.strokeWidth || 0;
         options.nonResizable = true;
         options.hasControls = false;
@@ -390,6 +390,10 @@ class ReferenceWidget {
         }
 
         function minimizeButtonMouseup() {
+            if (!background.object) {
+                return;
+            }
+
             let minimizeButton = background.minimizeButton;
             let screenCoords = background.minimizeButton.getPointByOrigin('right', 'center');
             let xPosition = screenCoords.x + (background.object.expandedWidth / 2) + 5;
@@ -806,17 +810,36 @@ class ReferenceWidget {
         background.setValue = function (newValue) {
             console.log("New value is: ");
             console.log(newValue);
-            // [3;40;60;100000000;0;0;0;0;0]
 
-            background.object.setValue(newValue);
+            if (newValue === undefined) {
+                minimizeButtonMouseup();
+                background.object = undefined;
+                background.minimizeButton.sign = "?";
+            } else if (newValue === null) {
+                minimizeButtonMouseup();
+                background.object = undefined;
+                background.minimizeButton.sign = "X";
+            } else if (newValue) {
+                // A valid value was passed. For example: [3;40;60;100000000;0;0;0;0;0]
+
+                // if currently background.object is undefined or null, have to create background.object widget
+                if (!background.object) {
+
+                }
+                if (background.object) {
+                    background.object.setValue(newValue);
+                }
+            }
         }
 
         background.setProgramTime = function (currentTime) {
-            background.object.setProgramTime(currentTime);
+            if (background.object)
+                background.object.setProgramTime(currentTime);
         }
 
         background.setHistory = function () {
-            background.object.history = window.logData.filter(item => item.widgetsID.indexOf(background.object.id) != -1);
+            if (background.object)
+                background.object.history = window.logData.filter(item => item.widgetsID.indexOf(background.object.id) != -1);
         }
 
         this.progvolverType = "ReferenceWidget";

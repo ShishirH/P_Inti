@@ -980,6 +980,8 @@ namespace P_Inti
                             }
 
                             // TODO Add validation for keys
+                            MyWindowControl.printInBrowserConsole("INIT: Key- " + filePath + "~" + declarationLineNumber);
+                            MyWindowControl.printInBrowserConsole("INIT: Value- " + symbol.Name);
                             initializationValues.Add(filePath + "~" + declarationLineNumber, symbol.Name);
                         }
 
@@ -1883,18 +1885,27 @@ namespace P_Inti
                 string[] lineInfoFileContent = { };
                 string lineInfoFilePath = outputDir + "\\" + "run" + ".lineInfo";
 
+                string[] initFileContent = { };
+                string initFilePath = outputDir + "\\" + "run" + ".init";
+
                 FileInfo signalFileInfo = new FileInfo(signalFilePath);
 
                 if (signalFileInfo.Exists)
                 {
-                    signalFileContent = File.ReadAllLines(outputDir + "\\" + "run" + ".signal");
+                    signalFileContent = File.ReadAllLines(signalFilePath);
                 }
 
                 FileInfo lineFileInfo = new FileInfo(lineInfoFilePath);
 
                 if (lineFileInfo.Exists)
                 {
-                    lineInfoFileContent = File.ReadAllLines(outputDir + "\\" + "run" + ".lineInfo");
+                    lineInfoFileContent = File.ReadAllLines(lineInfoFilePath);
+                }
+
+                FileInfo initFileInfo = new FileInfo(initFilePath);
+                if (initFileInfo.Exists)
+                {
+                    initFileContent = File.ReadAllLines(initFilePath);
                 }
 
                 result.Add("trackedSymbolsIDs", trackedSymbolsIDs.ToArray());
@@ -1904,6 +1915,7 @@ namespace P_Inti
                 result.Add("scopeFileContent", scopeFileContent);
                 result.Add("signalFileContent", signalFileContent);
                 result.Add("lineInfoFileContent", lineInfoFileContent);
+                result.Add("initFileContent", initFileContent);
                 result.Add("success", success);
                 result.Add("response", compilationMessage);
                 result.Add("utilsId", utilsId);

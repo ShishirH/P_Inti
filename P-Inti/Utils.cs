@@ -139,7 +139,10 @@ namespace P_Inti
         public static List<int> AllIndexesOf(string str, string value)
         {
             if (String.IsNullOrEmpty(value))
-                throw new ArgumentException("the string to find may not be empty", "value");
+            {
+                //throw new ArgumentException("the string to find may not be empty", "value");
+                return null;
+            }
             List<int> indexes = new List<int>();
             for (int index = 0; ; index += value.Length)
             {

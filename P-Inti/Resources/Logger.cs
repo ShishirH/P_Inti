@@ -5,6 +5,7 @@ using System.Globalization;
 using System.Diagnostics;
 using System.Reflection;
 using Newtonsoft.Json.Linq;
+using Newtonsoft.Json;
 
 namespace ConsoleApp1 {
 
@@ -53,10 +54,10 @@ namespace ConsoleApp1 {
             signalFile.WriteLine("file~line~widgetsID~time");
 
             lineInfoFile = new System.IO.StreamWriter(System.IO.File.Create(fileName + ".lineInfo"));
-            lineInfoFile.WriteLine("index~filePath~line~time");
+            lineInfoFile.WriteLine("index~filePath~line~lineContent~time");
 
             initializationFile = new System.IO.StreamWriter(System.IO.File.Create(fileName + ".init"));
-            initializationFile.WriteLine("filePath~symbol~value");
+            initializationFile.WriteLine("filePath~symbol~lineNumber~value");
         }
 
 
@@ -173,6 +174,11 @@ namespace ConsoleApp1 {
 
         public static JObject getFieldsForClass(object o)
         {
+            if (o == null)
+            {
+                return null;
+            }
+
             JObject fieldsObject = new JObject();
             foreach (FieldInfo field in o.GetType().GetFields())
             {
@@ -185,7 +191,7 @@ namespace ConsoleApp1 {
                     if (Char.IsLetter(fieldValue[index + 1]))
                     {
                         // Object member is also an object. Call it recursively
-                        fieldValue = getFieldsForClass(field.GetValue(o)).ToString();
+                        fieldValue = getFieldsForClass(field.GetValue(o)).ToString(Formatting.None);
                     }
                 }
                 fieldsObject.Add(fieldName, fieldValue);
@@ -209,7 +215,7 @@ namespace ConsoleApp1 {
             if (isClass) {
                 // DO THE SAME FOR PROPERTIES
                 JObject fieldValues = new JObject();
-                stringForFile = getFieldsForClass(parameter).ToString();
+                stringForFile = getFieldsForClass(parameter).ToString(Formatting.None);
                 //parameters.Add(stringForFile);
                 parameters.Add(stringForFile + "ASDASD");
 
@@ -293,7 +299,12 @@ namespace ConsoleApp1 {
             // Only do this for custom classes?
             if (isCustomClass(o))
             {
-                //initializationValue = getFieldsForClass(o).ToString();
+                JObject initializationValueObject = getFieldsForClass(o);
+
+                if (initializationValueObject != null)
+                {
+                    initializationValue = initializationValueObject.ToString(Formatting.None);
+                }
             }
 
             initializationFile.WriteLine(logString + "~" + initializationValue);
