@@ -406,7 +406,6 @@ class ObjectWidget {
             }
         }
         this.progvolverType = "ObjectWidget";
-        registerProgvolverObject(this);
         return background;
     }
 }

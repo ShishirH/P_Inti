@@ -238,7 +238,8 @@ class ProgvolverSymbol extends ConnectableWidget {
                 renderableValue = background.value.toFixed(2);
             }
 
-            ctx.fillText(renderableValue, center.x, center.y + 3);
+            if (!(background.isMember && background.compressed))
+                ctx.fillText(renderableValue, center.x, center.y + 3);
         };
 
 

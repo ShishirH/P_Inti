@@ -3,6 +3,145 @@ window.sliderDimension = "time";
 progvolver = {
     objects: {}
 };
+function createObjectMemberWidgets(objectMembers, response, screenCoords) {
+    var objectMembersDict = {};
+    var fileName = response.fileName.split('\\').pop().split('/').pop();
+
+    for (let i = 0; i < objectMembers["Members"].length; i++) {
+        let member = JSON.parse(objectMembers["Members"][i]);
+
+        if (!member) {
+            continue;
+        }
+
+        console.log("MEMBER IS: ")
+        console.log(member);
+        let accessModifier = member["access_modifier"];
+
+        if (!accessModifier.includes("private")) {
+            let objectType = member["object"];
+
+            if (objectType) {
+                objectMembersDict[response.Name + "." + objectType["Name"]] = getReferenceWidgetForInnerClass(response, member);
+            } else {
+                let type = member["type"];
+                let name = member["name"];
+
+                let theSymbol = null;
+                // Not a primitive. Object member is another object.
+                if (!builtInTypes.includes(type)) {
+                    theSymbol = new ReferenceWidget({
+                        // fill: '#F02466',
+                        // stroke: '#F02466',
+                        x: screenCoords.x,
+                        y: screenCoords.y,
+                        kind: response.Kind_String,
+                        type: response.dataType,
+                        name: name,
+                        isMember: true,
+                        isArrayMember: true,
+                    }, undefined);
+
+                    console.log("reference widget created");
+                } else {
+                    theSymbol = new ProgvolverSymbol({
+                        value: '',
+                        kind: response.Kind_String,
+                        type: type,
+                        name: name,
+                        file: response.fileName,
+                        fileName: fileName,
+                        lineNumber: response.declareAtFrom,
+                        x: screenCoords.x, y: screenCoords.y,
+                        declareAtFrom: response.declareAtFrom,
+                        declareAtTo: response.declareAtTo,
+                        scopeFrom: response.scopeFrom,
+                        scopeTo: response.scopeTo,
+                        doNotRegisterObject: true,
+                        isMember: true,
+                        doNotCompressWhenCanvasClicked: true,
+                        connectionPortLocations: ['right'],
+                        doNotAddLabelObject: true
+                    });
+                }
+                console.log("Name is: " + name);
+                console.log(theSymbol);
+                objectMembersDict[name] = theSymbol;
+            }
+        }
+    }
+    return objectMembersDict;
+}
+
+function createObjectMemberWidgetsWithoutResponse(objectMembers, screenCoords, fileName, name) {
+
+    var objectMembersDict = getObjectMembersDict(objectMembers, screenCoords, fileName);
+    var objectWidget = new ObjectWidget({
+        value: '',
+        kind: "Local",
+        type: objectMembers["Type"],
+        name: name,
+        file: fileName,
+        fileName: fileName,
+        x: screenCoords.x, y: screenCoords.y,
+        objectMembers: objectMembersDict,
+    });
+
+    return objectWidget;
+}
+function getObjectMembersDict(objectMembers, screenCoords, fileName) {
+    var objectMembersDict = {};
+
+    for (let i = 0; i < objectMembers["Members"].length; i++) {
+        let member = JSON.parse(objectMembers["Members"][i]);
+
+        if (!member) {
+            continue;
+        }
+
+        console.log("MEMBER IS: ")
+        console.log(member);
+        let accessModifier = member["access_modifier"];
+
+        if (!accessModifier.includes("private")) {
+            let type = member["type"];
+            let name = member["name"];
+
+            let theSymbol = null;
+            // Not a primitive. Object member is another object.
+            if (!builtInTypes.includes(type)) {
+                theSymbol = new ReferenceWidget({
+                    // fill: '#F02466',
+                    // stroke: '#F02466',
+                    x: screenCoords.x,
+                    y: screenCoords.y,
+                    kind: "Local",
+                    type: objectMembers["Type"],
+                    name: name,
+                    isMember: true,
+                    isArrayMember: true,
+                }, undefined);
+            } else {
+                theSymbol = new ProgvolverSymbol({
+                    value: '',
+                    kind: "Local",
+                    type: type,
+                    name: name,
+                    fileName: fileName,
+                    x: screenCoords.x, y: screenCoords.y,
+                    doNotRegisterObject: true,
+                    isMember: true,
+                    doNotCompressWhenCanvasClicked: true,
+                    connectionPortLocations: ['right'],
+                    doNotAddLabelObject: true
+                });
+            }
+            objectMembersDict[name] = theSymbol;
+
+        }
+    }
+    return objectMembersDict;
+}
 
 function getHashOfString(str) {
     var hash = 0,
@@ -10067,7 +10206,6 @@ function onSliderChanged(data) {
             }).then(function (response) {
             });
         }
-
     }
 
 

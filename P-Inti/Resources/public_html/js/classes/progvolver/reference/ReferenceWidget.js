@@ -24,6 +24,7 @@ class ReferenceWidget {
         background.name = options.name;
         background.type = options.type;
         background.isReference = true;
+        background.fileName = options.fileName;
         background.children = [];
         background.isArrayElement = options.isArrayElement || false;
         background.isArray = options.isArray || false;
@@ -380,7 +381,7 @@ class ReferenceWidget {
 
             if (background.object) {
                 background.object.referenceWidget = background;
-                minimizeButton.registerListener('mouseup', minimizeButtonMouseup);
+                minimizeButton.registerListener('mouseup', background.minimizeButtonMouseup);
             }
 
             canvas.add(minimizeButton);
@@ -389,7 +390,7 @@ class ReferenceWidget {
             background.childrenOnTop.push(background.minimizeButton);
         }
 
-        function minimizeButtonMouseup() {
+        background.minimizeButtonMouseup = function() {
             if (!background.object) {
                 return;
             }
@@ -432,6 +433,10 @@ class ReferenceWidget {
             if (background.object === undefined) {
                 background.minimizeButton.sign = "?";
                 return;
+            } else if (background.minimizeButton.sign == "?" || background.minimizeButton.sign == "X") {
+                background.minimizeButton.sign = "+";
+                background.object.referenceWidget = background;
+                background.minimizeButton.registerListener('mouseup', background.minimizeButtonMouseup);
             }
 
             var rightSc = getScreenCoordinates(background.getPointByOrigin('right', 'center'));
@@ -803,7 +808,7 @@ class ReferenceWidget {
         }
 
         background.reInitializeObject = function () {
-            background.minimizeButton.registerListener('mouseup', minimizeButtonMouseup);
+            background.minimizeButton.registerListener('mouseup', background.minimizeButtonMouseup);
             addReferencedObject();
             background.object.referenceWidget = background;
         }
@@ -811,35 +816,59 @@ class ReferenceWidget {
             console.log("New value is: ");
             console.log(newValue);
 
-            if (newValue === undefined) {
-                minimizeButtonMouseup();
+            if (newValue === undefined || newValue === "undefined") {
+                background.minimizeButtonMouseup();
                 background.object = undefined;
                 background.minimizeButton.sign = "?";
-            } else if (newValue === null) {
-                minimizeButtonMouseup();
+            } else if (newValue === null || newValue === "null") {
+                background.minimizeButtonMouseup();
                 background.object = undefined;
                 background.minimizeButton.sign = "X";
             } else if (newValue) {
                 // A valid value was passed. For example: [3;40;60;100000000;0;0;0;0;0]
 
+                console.log("Currently Background object is: ");
+                console.log(background.object);
+
                 // if currently background.object is undefined or null, have to create background.object widget
                 if (!background.object) {
+                    console.log("NEW AVLUE IS: ")
+                    console.log(newValue);
+                    var rightSc = getScreenCoordinates(background.getPointByOrigin('right', 'center'));
+                    background.object = createObjectMemberWidgetsWithoutResponse(objectInfo[background.type], rightSc, background.fileName, background.name)
 
+                    console.log("Background object is: ");
+                    console.log(background.object);
+                    addReferencedObject();
                 }
-                if (background.object) {
-                    background.object.setValue(newValue);
+                background.object.setValue(newValue);
+            }
+        }
+
+        background.setProgramTime = function (time) {
+            if (background.history) {
+                background.time = time;
+                console.log("Background history is: ");
+                console.log(background.history);
+                this.values = background.history.filter(item => item.time <= time);
+                console.log(this.values);
+                if (this.values.length) {
+                    //background.onValuesUpdated && background.onValuesUpdated(this.values);
+
+                    for (let i = this.values.length - 1; i >= 0; i--) {
+                        if (this.values[i].array) {
+                            if (background.object) {
+                                background.object.setValue(this.values[i].array);
+                            }
+                            break;
+                        }
+                    }
                 }
             }
         }
 
-        background.setProgramTime = function (currentTime) {
-            if (background.object)
-                background.object.setProgramTime(currentTime);
-        }
-
         background.setHistory = function () {
-            if (background.object)
-                background.object.history = window.logData.filter(item => item.widgetsID.indexOf(background.object.id) != -1);
+            background.history = window.logData.filter(item => item.widgetsID.indexOf(background.id) != -1);
         }
 
         this.progvolverType = "ReferenceWidget";
