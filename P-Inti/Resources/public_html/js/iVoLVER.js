@@ -1650,7 +1650,7 @@ var iVoLVER = {
         },
         progvolverSectionTitles: {
             canvasVariable: 'Canvas variable',
-            codeShift: 'Code Shift',
+            codeShift: 'Code Multiverses',
             codeNote: 'Code Note',
             plots: 'Plots',
             signals: 'Signals',
@@ -3741,10 +3741,10 @@ var iVoLVER = {
 
         iVoLVER.gui._paletteSections = {};
         // Uncomment for rightpane
-        //iVoLVER.gui.addCanvasVariablesSection();
-        //iVoLVER.gui.addCodeShiftSection();
-        //iVoLVER.gui.addCodeNoteSection();
-        //iVoLVER.gui.addSignalsSection();
+        iVoLVER.gui.addCanvasVariablesSection();
+        iVoLVER.gui.addCodeShiftSection();
+        // iVoLVER.gui.addCodeNoteSection();
+        // iVoLVER.gui.addSignalsSection();
         // iVoLVER.gui.addLogicalOperatorsSection();
         // iVoLVER.gui.addPlotsSection();
         // iVoLVER.gui.addcodeMultiverseSection();
