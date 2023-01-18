@@ -994,12 +994,29 @@ namespace TestingCodeAnalysis
                                 }
                                 symbolsPerExpressions.Remove(symbolID);
 
-                                string useString = processAssignmentNode(windowControl, onlyNode, location, symbolID, symbol, document);
+                                MyWindowControl.printInBrowserConsole("XXXX onlyNode.ToString() is: " + onlyNode.ToString());
+                                MyWindowControl.printInBrowserConsole("XXXX symboloName is: " + symbolName);
+                                MyWindowControl.printInBrowserConsole("XXXX node is: " + node.ToFullString());
+                                if (true) // onlyNode.ToString().Equals(symbolName)
+                                {
+                                    SyntaxNode nodeAssigned = null;
 
-                                // saving it to a dictionary, which will be accessed and the strings appended to the docContent once the bracesOffset is obtained.
-                                
-                                lineProcessingNodeString.Add(new LineNumberProcessAssignmentNode(line, useString));
-                                //docContent[line] = string.Concat(docContent[line], useString);
+                                    if (onlyNode.ToString().Equals(symbolName))
+                                    {
+                                        nodeAssigned = onlyNode;
+                                    }
+                                    else
+                                    {
+                                        nodeAssigned = node;
+                                    }
+                                    string useString = processAssignmentNode(windowControl, nodeAssigned, location, symbolID, symbol, document);
+                                    // saving it to a list, which will be accessed and the strings appended to the docContent once the bracesOffset is obtained.
+
+                                    MyWindowControl.printInBrowserConsole("XXXX useString is: " + useString);
+                                    lineProcessingNodeString.Add(new LineNumberProcessAssignmentNode(line, useString));
+                                    //docContent[line] = string.Concat(docContent[line], useString);
+                                }
+
                             }
 
                             MyWindowControl.printInBrowserConsole("Node: ");

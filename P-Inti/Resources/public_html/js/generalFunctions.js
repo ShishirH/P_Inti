@@ -185,7 +185,11 @@ function getCombinedHashOfVariants() {
         return "";
     }
 }
-
+function updateLoggingFileToRemoveDuplicates(logFileData) {
+    window.jsHandler && window.jsHandler.updateLoggingFileToRemoveDuplicates({
+        logFileData: logFileData
+    });
+}
 function loadLogFiles(response, lineInfoFileContent, waitingDialog) {
     window.trackedSymbolsIDs = response.trackedSymbolsIDs;
     window.trackedExpressionsIDs = response.trackedExpressionsIDs;
@@ -199,6 +203,8 @@ function loadLogFiles(response, lineInfoFileContent, waitingDialog) {
     var initFileContent = response.initFileContent.join("\n");
     var lineInfoFileContentArray = response.lineInfoFileContent;
 
+    console.log("Log file data before removing duplicates");
+    console.log(logFileContent);
     console.log("initFileContent");
     console.log(initFileContent);
     for (let i = 1; i < lineInfoFileContentArray.length; i++) {
@@ -207,6 +213,9 @@ function loadLogFiles(response, lineInfoFileContent, waitingDialog) {
     lineInfoFileContent = lineInfoFileContentArray.join("\n");
 
     logFileContent = preProcessLogFileForDuplicates(logFileContent);
+    console.log("Log file content after removing duplicates");
+    console.log(logFileContent);
+    updateLoggingFileToRemoveDuplicates(logFileContent);
     processMethodParameters(logFileContent);
     processLogFiles(logFileContent, scopeFileContent, signalFileContent, lineInfoFileContent, initFileContent);
     window.snapshotWidget && window.snapshotWidget.parseMemberValues();

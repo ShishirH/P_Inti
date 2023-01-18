@@ -19,7 +19,7 @@ class ObjectWidget {
         background.childrenOnTop = [];
         background.innerReferences = [];
 
-        background.expandedHeight = (((Object.keys(options.objectMembers).length - 1) * 60) + 35) || 300;
+        background.expandedHeight = (((Object.keys(options.objectMembers).length - 1) * 70) + 35) || 300;
         background.expandedWidth = 150;
 
         background.onChangeCompressing = function (currentValue) {

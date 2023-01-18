@@ -203,6 +203,7 @@ namespace ConsoleApp1 {
         public static void logAssignment(String logString, params object[] parentExpressions) {
 
             string stringForFile = "";
+            string parameterString = "";
             string row = "", column = "", arrayElementValue = "";
             string values = "";
             List<string> parameters = new List<string>();
@@ -239,9 +240,9 @@ namespace ConsoleApp1 {
                 parameters.Add(arrayElementValue);
                 //parameters.Add(column);
                 //parameters.Add(row);
-                //parameters.Add(stringForFile);
+                parameters.Add(stringForFile);
 
-                //logFile.WriteLine("stringForFile //////// " + stringForFile);
+                logFile.WriteLine("stringForFile //////// " + stringForFile);
                 //logFile.WriteLine("arrayElementValue //////// " + arrayElementValue);
                 //logFile.WriteLine("column //////// " + column);
                 //logFile.WriteLine("row //////// " + row);

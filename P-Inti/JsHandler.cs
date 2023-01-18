@@ -1813,6 +1813,7 @@ namespace P_Inti
 
 
         string outputDirectory = "";
+        public string loggingFileOutputDirectory = "";
         public Dictionary<string, object> runCodeAnalyzer(object arg)
         {
 
@@ -1866,6 +1867,7 @@ namespace P_Inti
                 if (outputDir == "")
                 {
                     outputDir = progvolverDir + "/" + utilsId;
+                    loggingFileOutputDirectory = outputDir;
                 }
 
                 List<string> fileNames = windowControl.fileNames;
@@ -1924,6 +1926,24 @@ namespace P_Inti
             return result;
         }
 
+        public Dictionary<string, object> updateLoggingFileToRemoveDuplicates(object arg)
+        {
+            Dictionary<string, object> result = null;
+            IDictionary<string, object> input = (IDictionary<string, object>)arg;
+
+            input.TryGetValue("logFileData", out object logFileDataObject);
+            string logFileData = (string)logFileDataObject;
+
+            if (Directory.Exists(loggingFileOutputDirectory))
+            {
+                string logFilePath = loggingFileOutputDirectory + "\\" + "run" + ".log";
+                System.IO.File.Move(logFilePath, logFilePath + "Old");
+
+                File.WriteAllText(logFilePath, logFileData);
+            }
+
+            return result;
+        }
 
         public Dictionary<string, object> onObjectSelected(object arg)
         {

@@ -78,9 +78,9 @@ class ReferenceWidget {
             var scaleX = 0, scaleY = 0, opacity = 0;
 
             if (options.isMember) {
-                xPosition = 250;
-                yPosition = 0;
-                originParent = {originX: 'center', originY: 'center'};
+                xPosition = 0;
+                yPosition = -1.5;
+                originParent = {originX: 'left', originY: 'center'};
                 originChild = {originX: 'left', originY: 'center'};
             } else if (options.isArrayMember) {
                 xPosition = 0;
@@ -90,12 +90,12 @@ class ReferenceWidget {
                 scaleX = 1;
                 scaleY = 1;
                 opacity = 1;
+            } else {
+                xPosition = 3;
+                yPosition = 1.5;
+                originParent = {originX: 'left', originY: 'center'};
+                originChild = {originX: 'left', originY: 'center'};
             }
-
-            xPosition = 3;
-            yPosition = 1.5;
-            originParent = {originX: 'left', originY: 'center'};
-            originChild = {originX: 'left', originY: 'center'};
 
             background.addChild(referencePointer, {
                 whenCompressed: {
@@ -206,8 +206,9 @@ class ReferenceWidget {
                 var y = point.y;
 
                 //ctx.restore();
-                if (!background.isCompressed)
+                if (!background.isCompressed && !(background.isMember || background.minimizeButton.sign === '-')) {
                     drawFilledPolygon(translateShape(rotateShape(theConnector.triangle, angle), line.x2 + (line.strokeWidth / 2), line.y2 + (line.strokeWidth / 2)), ctx);
+                }
             };
 
             background.addChild(line, {
@@ -346,7 +347,7 @@ class ReferenceWidget {
             if (options.isMember) {
                 xPosition = 12;
                 yPosition = 0;
-                originParent = {originX: 'center', originY: 'center'};
+                originParent = {originX: 'left', originY: 'center'};
                 originChild = {originX: 'left', originY: 'center'};
             } else {
                 xPosition = 12;
@@ -354,6 +355,9 @@ class ReferenceWidget {
                 originParent = {originX: 'right', originY: 'center'};
                 originChild = {originX: 'left', originY: 'center'};
             }
+
+            background.minimizeButtonOriginalXPos = xPosition;
+            background.minimizeButtonOriginalYPos = yPosition;
 
             background.addChild(minimizeButton, {
                 whenCompressed: {
@@ -371,11 +375,12 @@ class ReferenceWidget {
                 movable: false
             });
 
-            var sc = background.getPointByOrigin('right', 'center');
-            minimizeButton.x = sc.x + 12;
-            minimizeButton.y = sc.y;
-            minimizeButton.left = sc.x + 12;
-            minimizeButton.top = sc.y;
+            // WHY WAS THIS HERE?
+            // var sc = background.getPointByOrigin('right', 'center');
+            // minimizeButton.x = sc.x + 12;
+            // minimizeButton.y = sc.y;
+            // minimizeButton.left = sc.x + 12;
+            // minimizeButton.top = sc.y;
 
             minimizeButton.state = "minimize";
 
@@ -400,6 +405,16 @@ class ReferenceWidget {
             let xPosition = screenCoords.x + (background.object.expandedWidth / 2) + 5;
             let yPosition = screenCoords.y;
 
+
+            let minimizeButtonXPos;
+            let minimizeButtonYPos;
+            if (background.isMember) {
+                xPosition = screenCoords.x + (background.object.expandedWidth) + 20;
+                minimizeButtonXPos = screenCoords.x + (background.object.expandedWidth) + 20;
+            } else {
+                minimizeButtonXPos = background.minimizeButtonOriginalXPos;
+            }
+
             background.object.x = xPosition;
             background.object.left = xPosition;
 
@@ -408,6 +423,8 @@ class ReferenceWidget {
 
             // display class that it is reference of, and hide the button
             if (minimizeButton.state == "minimize") {
+                console.log("I am in here");
+                console.log(background);
                 if (background.object.addAll)
                     background.object.addAll();
                 else
@@ -415,7 +432,24 @@ class ReferenceWidget {
 
                 minimizeButton.state = "maximize"
                 minimizeButton.sign = "–";
+
+
+                if (background.isMember) {
+                    var position = (background.object.getPointByOrigin('left', 'center'));
+
+                    let yPosition = parseFloat(position.y) - 3
+                    let xPosition = parseFloat(position.x) - 90;
+                    background.minimizeButton.x = xPosition;
+                    background.minimizeButton.y = yPosition;
+                    background.minimizeButton.left = xPosition;
+                    background.minimizeButton.top = yPosition;
+                }
             } else {
+                if (background.isMember) {
+                    background.compressedOptions[background.minimizeButton.id].x = background.minimizeButtonOriginalXPos;
+                    background.expandedOptions[background.minimizeButton.id].x = background.minimizeButtonOriginalXPos;
+                }
+
                 if (background.object.removeAll)
                     background.object.removeAll();
                 else
@@ -423,6 +457,7 @@ class ReferenceWidget {
 
                 minimizeButton.state = "minimize"
                 minimizeButton.sign = "+";
+                background.positionObjects();
             }
         }
 
@@ -848,6 +883,7 @@ class ReferenceWidget {
         background.setProgramTime = function (time) {
             if (background.history) {
                 background.time = time;
+                console.log("Name of ref: " + background.name);
                 console.log("Background history is: ");
                 console.log(background.history);
                 this.values = background.history.filter(item => item.time <= time);
@@ -856,8 +892,11 @@ class ReferenceWidget {
                     //background.onValuesUpdated && background.onValuesUpdated(this.values);
 
                     for (let i = this.values.length - 1; i >= 0; i--) {
-                        if (this.values[i].array) {
+                        if (this.values[i].array && this.values[i].symbols.indexOf(background.name) != -1) {
+                            console.log("this.values[i].array")
+                            console.log(this.values[i].array)
                             if (background.object) {
+                                console.log("Setting value");
                                 background.object.setValue(this.values[i].array);
                             }
                             break;
