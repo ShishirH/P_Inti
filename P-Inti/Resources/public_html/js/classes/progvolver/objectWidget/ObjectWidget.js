@@ -1,8 +1,8 @@
 class ObjectWidget {
     constructor(options) {
         var symbolFont = '20px Helvetica';
-        options.height = options.height || 1;
-        options.width = options.width || 1;
+        options.height = options.height || 0;
+        options.width = options.width || 0;
         options.rx = options.rx || 0;
         options.ry = options.ry || 0;
         options.fill = OBJECT_WIDGET_FILL;
@@ -19,8 +19,8 @@ class ObjectWidget {
         background.childrenOnTop = [];
         background.innerReferences = [];
 
-        background.expandedHeight = (((Object.keys(options.objectMembers).length - 1) * 70) + 35) || 300;
-        background.expandedWidth = 150;
+        background.expandedHeight = (((Object.keys(options.objectMembers).length - 1) * 60) + 32) || 300;
+        background.expandedWidth = 120;
 
         background.onChangeCompressing = function (currentValue) {
             background.set('width', (background.expandedWidth * currentValue) + 50);
@@ -78,23 +78,23 @@ class ObjectWidget {
         console.log("background.objectMembersDict");
         console.log(background.objectMembersDict);
         var addObjectMembers = function () {
-            var originParent = {originX: 'center', originY: 'top'};
+            var originParent = {originX: 'left', originY: 'top'};
             var originChild = {originX: 'left', originY: 'top'};
             let index = 0;
 
             background.elementHeight = 45;
-            background.gap = 15;
+            background.gap = 5;
             for (const [key, objectMember] of Object.entries(background.objectMembersDict)) {
 
                 background.addChild(objectMember, {
                     whenCompressed: {
-                        x: 0, y: (index * background.elementHeight) + background.gap,
+                        x: 53, y: (index * background.elementHeight) + background.gap,
                         //scaleX: 1, scaleY: 1, opacity: 1,
                         originParent: originParent,
                         originChild: originChild
                     },
                     whenExpanded: {
-                        x: 0, y: (index * background.elementHeight) + background.gap,
+                        x: 53, y: (index * background.elementHeight) + background.gap,
                         scaleX: 1, scaleY: 1, opacity: 1,
                         originParent: originParent,
                         originChild: originChild
@@ -219,16 +219,14 @@ class ObjectWidget {
         var objectMembersSelect = [];
         background.addCollapseButton = function () {
             var collapseButton = createObjectBackground(fabric.Rect, {
-                height: 15,
-                width: 15,
+                height: 10,
+                width: 10,
                 fill: background.stroke,
                 strokeWidth: 2,
                 stroke: darken(OBJECT_WIDGET_FILL),
                 hasControls: false,
                 hasBorders: false
             }, null);
-
-            window.test = collapseButton;
 
             collapseButton.oldRender = collapseButton.render;
             collapseButton.render = function (ctx) {
@@ -256,13 +254,13 @@ class ObjectWidget {
 
             background.addChild(collapseButton, {
                 whenCompressed: {
-                    x: -17, y: 0,
+                    x: -12, y: 0,
                     scaleX: 0, scaleY: 0, opacity: 0,
                     originParent: originParent,
                     originChild: originChild
                 },
                 whenExpanded: {
-                    x: -17, y: 0,
+                    x: -12, y: 0,
                     scaleX: 1, scaleY: 1, opacity: 1,
                     originParent: originParent,
                     originChild: originChild
@@ -401,7 +399,12 @@ class ObjectWidget {
                     console.log("Key: " + key);
                     console.log("Value: ");
                     console.log(memberValue);
-                    background.objectWidgetsDict[key].setValue(memberValue);
+
+                    if (key === "memoryAddress") {
+                        background.memoryAddress = memberValue;
+                    } else {
+                        background.objectWidgetsDict[key].setValue(memberValue);
+                    }
                 }
             }
         }

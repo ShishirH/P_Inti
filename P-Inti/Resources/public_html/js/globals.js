@@ -286,4 +286,6 @@ var codeVariantAssociatedVariables = {};
 var codeControlsCompiledHashCodes = [];
 var hasCodeBeenCompiled = false;
 var objectInfo = {};
+var referenceWidgetsList = [];
+var referenceWidgetsSameMemoryLines = new Set();
 

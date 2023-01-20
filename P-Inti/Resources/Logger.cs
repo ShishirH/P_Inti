@@ -197,6 +197,7 @@ namespace ConsoleApp1 {
                 fieldsObject.Add(fieldName, fieldValue);
             }
 
+            fieldsObject.Add("memoryAddress", o.GetHashCode());
             return fieldsObject;
         }
         // for any assignment

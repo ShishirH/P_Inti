@@ -437,8 +437,10 @@ function moveTimelineNext() {
     theSlider.update({from: ((currentIndex * 100) / window.lineData.length)});
 
     var ids = Object.keys(progvolver.objects);
+    referenceWidgetsSameMemoryLines.clear();
     ids.forEach(function (id) {
         var object = progvolver.objects[id];
+        console.log("Running object: " + object.name);
         object.setProgramTime && object.setProgramTime(currentTime);
     });
 
@@ -1209,6 +1211,7 @@ function getReferenceWidgetForInnerClass(response, memberJson, isArrayMember, re
         doNotCompressWhenCanvasClicked: true,
     }, objectWidget);
 
+    referenceWidgetsList.push(referenceWidget);
     return referenceWidget;
     //canvas.add(objectWidget); 
 }
@@ -10781,10 +10784,11 @@ function processLogFiles(logFileContent, scopeFileContent, signalFileContent, li
 
 
                     var ids = Object.keys(progvolver.objects);
+                    referenceWidgetsSameMemoryLines.clear();
                     ids.forEach(function (id) {
                         var object = progvolver.objects[id];
                         object.setHistory && object.setHistory();
-                        object.setMemoryAddress && object.setMemoryAddress();
+                        //object.setMemoryAddress && object.setMemoryAddress();
                         object.setProgramTime && object.setProgramTime(window.minTime);
                     });
 

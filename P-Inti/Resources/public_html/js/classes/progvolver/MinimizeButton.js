@@ -2,6 +2,7 @@ class MinimizeButton {
     constructor(options) {
         var symbolFont = '20px Helvetica';
         options.originX = 'center';
+        options.radius = 6;
         options.originY = 'center';
         options.value = "";
         options.fill = options.fill || "#FED9A6";
@@ -18,7 +19,12 @@ class MinimizeButton {
             background.oldRender(ctx);
             ctx.save();
             if (!background.parent.isCompressed) {
-                ctx.font = 'bold 20px Helvetica';
+                ctx.font = 'bold 10px Helvetica';
+
+                if (background.sign === '?' || background.sign === 'X') {
+                    ctx.font = 'bold 13px Helvetica';
+                }
+
                 ctx.fillStyle = darken(darken(background.fill));
                 ctx.textAlign = "center";
                 ctx.textBaseline = "middle";

@@ -2008,6 +2008,8 @@ function bindCanvasDefaultEvents(canvas) {
                                     allSymbols.push(theSymbol);
                                     namedSymbols[theSymbol.name] = theSymbol;
 
+                                    referenceWidgetsList.push(referenceWidget);
+
                                     canvas.add(referenceWidget);
                                     referenceWidget.expand();
 
@@ -2058,7 +2060,11 @@ function bindCanvasDefaultEvents(canvas) {
 
                                     allSymbols.push(objectWidget);
                                     namedSymbols[objectWidget.name] = referenceWidget;
-                                    window.rootObject = referenceWidget;
+
+                                    if (!window.rootObject)
+                                        window.rootObject = referenceWidget;
+                                    else if (!window.auxObject)
+                                        window.auxObject = referenceWidget;
                                     //canvas.add(objectWidget);
 
                                 } else {
