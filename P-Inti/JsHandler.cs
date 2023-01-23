@@ -51,10 +51,20 @@ namespace P_Inti
         public static Dictionary<string, string> initializationValues = new Dictionary<string, string>();
 
         public static string codeControlFilePath;
+
+        private ToolWindow1Control toolWindow1Control;
+        private Dispatcher currentDispatcher;
+
         public JsHandler(MyWindowControl windowControl, Dispatcher dispatcher)
         {
             this.theDispatcher = dispatcher;
             this.windowControl = windowControl;
+        }
+
+        public JsHandler(ToolWindow1Control toolWindow1Control, Dispatcher currentDispatcher)
+        {
+            this.toolWindow1Control = toolWindow1Control;
+            this.currentDispatcher = currentDispatcher;
         }
 
         public void showDevTools(object arg)
@@ -1780,6 +1790,11 @@ namespace P_Inti
             CodeAnalyzer.setEvaluatedLine(lineNumber, expressions.Split(','), markers);
         }
 
+        public void startCodeUnboxer(object arg)
+        {
+            MyWindowControl.openCodeUnboxer(arg);
+        }
+
         public void setCurrentLine(object arg)
         {
             MyWindowControl.printInBrowserConsole("Inside setCurrentLine");
@@ -1921,7 +1936,7 @@ namespace P_Inti
                 result.Add("success", success);
                 result.Add("response", compilationMessage);
                 result.Add("utilsId", utilsId);
-                result.Add("outputDir", outputDirectory);
+                result.Add("outputDir", outputDirectory); // TODOFIX outputDir vs outputDirectory
             }
             return result;
         }
@@ -1942,6 +1957,138 @@ namespace P_Inti
                 File.WriteAllText(logFilePath, logFileData);
             }
 
+            return result;
+        }
+
+        public string[] runCodeUnboxer(object arg)
+        {
+            string solutionDir = "";
+            string str = "";
+            string highDir = "";
+            string[] lineInfoFileContent = { };
+            if (toolWindow1Control.projectOpen())
+            {
+
+                string solutionPath = toolWindow1Control.dte.Solution.FullName;
+                solutionDir = System.IO.Path.GetDirectoryName(solutionPath);
+                string progvolverDir = solutionDir + "/progvolver";
+                DirectoryInfo d = new DirectoryInfo(progvolverDir);
+                string[] dirs = Directory.GetDirectories(progvolverDir, "*", SearchOption.TopDirectoryOnly);
+                FileInfo[] Files = d.GetFiles("*.*");
+
+                foreach (string file in dirs)
+                {
+                    str = str + ", " + file;
+                }
+                DateTime lastHigh = new DateTime(1900, 1, 1);
+
+                foreach (string subdir in Directory.GetDirectories(progvolverDir))
+                {
+                    DirectoryInfo fi1 = new DirectoryInfo(subdir);
+                    DateTime created = fi1.LastWriteTime;
+
+                    if (created > lastHigh)
+                    {
+                        highDir = subdir;
+                        lastHigh = created;
+                    }
+                }
+
+
+
+                string signalFilePath = highDir + "\\" + "run" + ".lineinfo";
+
+                FileInfo signalFileInfo = new FileInfo(signalFilePath);
+
+                if (signalFileInfo.Exists)
+                {
+                    lineInfoFileContent = File.ReadAllLines(highDir + "\\" + "run" + ".lineinfo");
+                }
+
+            }
+            return lineInfoFileContent;
+        }
+
+
+        public string[] getLineInfo(object arg)
+        {
+            string solutionDir = "";
+            string str = "";
+            string highDir = "";
+            string[] lineInfoFileContent = { };
+            if (toolWindow1Control.projectOpen())
+            {
+
+                string solutionPath = toolWindow1Control.dte.Solution.FullName;
+                solutionDir = System.IO.Path.GetDirectoryName(solutionPath);
+                string progvolverDir = solutionDir + "/progvolver";
+                DirectoryInfo d = new DirectoryInfo(progvolverDir);
+                string[] dirs = Directory.GetDirectories(progvolverDir, "*", SearchOption.TopDirectoryOnly);
+                FileInfo[] Files = d.GetFiles("*.*");
+
+                foreach (string file in dirs)
+                {
+                    str = str + ", " + file;
+                }
+                DateTime lastHigh = new DateTime(1900, 1, 1);
+
+                foreach (string subdir in Directory.GetDirectories(progvolverDir))
+                {
+                    DirectoryInfo fi1 = new DirectoryInfo(subdir);
+                    DateTime created = fi1.LastWriteTime;
+
+                    if (created > lastHigh)
+                    {
+                        highDir = subdir;
+                        lastHigh = created;
+                    }
+                }
+
+
+
+                string signalFilePath = highDir + "\\" + "run" + ".log";
+
+                FileInfo signalFileInfo = new FileInfo(signalFilePath);
+
+                if (signalFileInfo.Exists)
+                {
+                    lineInfoFileContent = File.ReadAllLines(highDir + "\\" + "run" + ".log");
+                }
+
+            }
+            return lineInfoFileContent;
+        }
+
+        public Dictionary<string, object> unboxSelectedSol(object arg)
+        {
+            Dictionary<string, object> result = new Dictionary<string, object>();
+
+            if (windowControl.projectOpen())
+            {
+                //result.add("ineInfoContent", arg["file"]);
+                //string solutionPath = windowControl.dte.Solution.FullName;
+                //string solutionDir = System.IO.Path.GetDirectoryName(solutionPath);
+                //string progvolverDir = solutionDir + "/progvolver";
+
+                //if (!Directory.Exists(progvolverDir))
+                //{
+                //    Directory.CreateDirectory(progvolverDir);
+                //}
+                //var outputDir = progvolverDir + "/" + Utils.generateID();
+
+
+                //string[] signalFileContent = { };
+                //string signalFilePath = outputDir + "\\" + "run" + ".lineinfo";
+
+                //FileInfo signalFileInfo = new FileInfo(signalFilePath);
+
+                //if (signalFileInfo.Exists)
+                //{
+                //    signalFileContent = File.ReadAllLines(outputDir + "\\" + "run" + ".lineinfo");
+                //}
+                //result.Add("ineInfoContent", signalFileContent);
+
+            }
             return result;
         }
 

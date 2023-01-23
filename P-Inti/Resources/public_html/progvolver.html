@@ -221,7 +221,7 @@
     <!--<body oncontextmenu="return false;" onresize="adjustCanvasDimensions(canvas);">-->
     <body onresize="adjustCanvasDimensions();">
 
-
+        <div style="display: none; " id="tempCompiledDirectory"></div>
         <!-- HORIZONTAL MENU -->
         <ul id="theMenu" class="menu nonSelection">
 
@@ -564,7 +564,19 @@
 //            });
 
 
-
+        iVoLVER.gui.add.button({
+            sectionID: iVoLVER.gui.toolbar, // variable storing the id of the top toolbar
+            tooltip: 'Unbox',
+            iconClass: 'fa-square-o unboxButton',
+            onClick: function () {
+                if (window.jsHandler) {
+                    window.jsHandler.startCodeUnboxer($("#tempCompiledDirectory").text()).then(function (response) {
+                        console.log("HERE IS THE COMPILED DIRECTORY!!!!!!");
+                        console.log($("#tempCompiledDirectory").text());
+                    });  ;
+                }
+            }
+        });
 
         iVoLVER.gui.add.button({
             sectionID: iVoLVER.gui.toolbar, // variable storing the id of the top toolbar

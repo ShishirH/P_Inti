@@ -222,6 +222,7 @@ function loadLogFiles(response, lineInfoFileContent, waitingDialog) {
 
     if (waitingDialog) {
         waitingDialog.dialog('content', '<div style="text-align: center; margin-top: 20px;"><span align="center" style="font-size: 150%;">' + response.response + '</span></div>');
+        $("#tempCompiledDirectory").text(response.outputDir);
         if (response.success) {
             setTimeout(function () {
                 waitingDialog.dialog('hide');

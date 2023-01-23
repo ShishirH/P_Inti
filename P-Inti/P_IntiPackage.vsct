@@ -78,6 +78,13 @@
           <ButtonText>Invoke CodeControlAddExistingCodeContextMenu</ButtonText>
         </Strings>
       </Button>-->
+      <Button guid="guidP_IntiPackageCmdSet" id="cmdidToolWindow1Command" priority="0x0100" type="Button">
+        <Parent guid="guidSHLMainMenu" id="IDG_VS_WNDO_OTRWNDWS1" />
+        <Icon guid="guidImages4" id="bmpPic1" />
+        <Strings>
+          <ButtonText>ToolWindow1</ButtonText>
+        </Strings>
+      </Button>
     </Buttons>
 
     <!--The bitmaps section is used to define the bitmaps that are used for the commands.-->
@@ -91,6 +98,7 @@
       <Bitmap guid="guidImages1" href="Resources\CodeControlAddExistingCode.png" usedList="bmpPic1, bmpPic2, bmpPicSearch, bmpPicX, bmpPicArrows, bmpPicStrikethrough" />
       <Bitmap guid="guidImages2" href="Resources\AddToCodeShift.png" usedList="bmpPic1, bmpPic2, bmpPicSearch, bmpPicX, bmpPicArrows, bmpPicStrikethrough" />
       <Bitmap guid="guidImages3" href="Resources\CodeControlAddExistingCodeContextMenu.png" usedList="bmpPic1, bmpPic2, bmpPicSearch, bmpPicX, bmpPicArrows, bmpPicStrikethrough" />
+      <Bitmap guid="guidImages4" href="Resources\ToolWindow1Command.png" usedList="bmpPic1, bmpPic2, bmpPicSearch, bmpPicX, bmpPicArrows, bmpPicStrikethrough" />
     </Bitmaps>
     <Groups>
       <Group guid="guidP_IntiPackageCmdSet1" id="MyMenuGroup" priority="0x0600">
@@ -109,6 +117,7 @@
     <!-- This is the guid used to group the menu commands together -->
     <GuidSymbol name="guidP_IntiPackageCmdSet" value="{4a9895a9-35f0-4e62-815b-d5af0b89215d}">
       <IDSymbol name="MyWindowCommandId" value="0x0100" />
+      <IDSymbol value="257" name="cmdidToolWindow1Command" />
     </GuidSymbol>
 
     <GuidSymbol name="guidImages" value="{05af6518-9405-42c2-82f6-99cf7a8d9f0f}">
@@ -146,6 +155,15 @@
     </GuidSymbol>
   
     <GuidSymbol value="{f9bfd035-29b1-436b-a857-5333188b088c}" name="guidImages3">
+      <IDSymbol name="bmpPic1" value="1" />
+      <IDSymbol name="bmpPic2" value="2" />
+      <IDSymbol name="bmpPicSearch" value="3" />
+      <IDSymbol name="bmpPicX" value="4" />
+      <IDSymbol name="bmpPicArrows" value="5" />
+      <IDSymbol name="bmpPicStrikethrough" value="6" />
+    </GuidSymbol>
+  
+    <GuidSymbol value="{a3fcce1b-32ae-4b67-863d-6e557238403a}" name="guidImages4">
       <IDSymbol name="bmpPic1" value="1" />
       <IDSymbol name="bmpPic2" value="2" />
       <IDSymbol name="bmpPicSearch" value="3" />

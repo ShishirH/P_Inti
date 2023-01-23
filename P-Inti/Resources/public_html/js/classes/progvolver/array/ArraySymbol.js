@@ -743,25 +743,11 @@ class ArraySymbol {
                                 xPosition = (1 - background.orientation) * (xPosition + arrayElementsArray[i - 1][0].width);
                                 yPosition = background.orientation * (yPosition + arrayElementsArray[i - 1][0].height);
                             }
-                        } else {
-                            if (j == 0) {
-                                xPosition = (1 - background.orientation) * 45;
-                                yPosition = background.orientation * 25;
-                            } else {
-                                xPosition = (1 - background.orientation) * (xPosition + arrayElementsArray[i][j - 1].width);
-                                yPosition = background.orientation * (yPosition + arrayElementsArray[i][j - 1].height);
-                            }
                         }
 
                         let arrayElement = arrayElementsArray[i][j];
-
-                        if (background.orientation == 1 && i == 0) {
-                            console.log("X and y position are: " + xPosition + " and " + yPosition);
-                        }
                         widthSum = widthSum + arrayElement.width;
                         heightSum = heightSum + arrayElement.height;
-
-                        console.log(arrayElementsArray[i]);
 
                         background.compressedOptions[arrayElement.id].originParent = originParent;
                         background.compressedOptions[arrayElement.id].originChild = originChild;
@@ -774,7 +760,6 @@ class ArraySymbol {
 
                         background.expandedOptions[arrayElement.id].x = xPosition;
                         background.expandedOptions[arrayElement.id].y = yPosition;
-                        console.log("Xpos and ypos of current element are " + background.compressedOptions[arrayElement.id].x + " and " + background.compressedOptions[arrayElement.id].y);
                     }
                 }
 
@@ -807,7 +792,6 @@ class ArraySymbol {
                 background.expandedHeight = background.width;
                 background.positionObjects();
 
-                console.log("Here")
                 if (background.orientation == 1) {
                     canvas.remove(background.scrollX);
                     canvas.remove(background.leftArrow);
@@ -827,12 +811,11 @@ class ArraySymbol {
                 }
             });
 
-
-            canvas.add(rotationButton);
-            background.rotationButton = rotationButton;
-            background.children.push(background.rotationButton);
-
-
+            if (columns < 2 ){
+                canvas.add(rotationButton);
+                background.rotationButton = rotationButton;
+                background.children.push(background.rotationButton);
+            }
         }
 
         var hiddenTop = 0;
@@ -931,8 +914,6 @@ class ArraySymbol {
             });
 
             scrollY.registerListener('moving', function () {
-                // Divide the y axis into ticks for the array. -20 is for the left and the right arrows.
-                console.log("ScrollY moving!");
                 let ticks;
 
                 if (columns > 1) {
@@ -941,46 +922,42 @@ class ArraySymbol {
                     ticks = (background.height - scrollY.height) / arrayElementsArray.length;
                 }
 
-                console.log("Number of ticks are: " + ticks);
-
                 let currentY = background.expandedOptions[scrollY.id].y;
-                console.log("CurrentY is: " + currentY);
                 background.compressedOptions[scrollY.id].y = currentY;
 
                 let hiddenNumber = (currentY / ticks);
-                hiddenNumber = Math.floor(hiddenNumber);
+                hiddenNumber = Math.floor(hiddenNumber) -2;
 
                 if (hiddenNumber == hiddenTop)
                     return;
                 else
                     hiddenTop = hiddenNumber;
 
-                console.log("Hidden number is: " + hiddenNumber);
-
                 var areElementsOnTop = false;
                 var areElementsOnBottom = false;
                 var updatedFirstVisible = false;
                 var updatedLastVisible = false;
                 let indentation;
+                console.log(hiddenNumber);
+
                 for (let i = 1; i <= rows; i++) {
                     for (let j = 0; j < columns; j++) {
                         var topHidden = false;
                         var bottomHidden = false;
 
-                        console.log("First visible is now: " + background.firstVisibleRow);
-                        indentation = (i - hiddenNumber - 1); // CHANGE FOR ORIENTATION
+                        indentation = (i - hiddenNumber); // CHANGE FOR ORIENTATION
+                        let newYPosition = parseFloat((indentation * 40) );
 
-                        let newYPosition = parseFloat((indentation * 40) + 30);
                         let elementHeight = arrayElementsArray[i - 1][j].height;
-                        console.log("YPosition: " + newYPosition + " and index: " + (i - 1) + ", " + (j));
 
-                        if (hiddenNumber >= i || newYPosition < 30) {
-                            newYPosition = 30;
+                        console.log(newYPosition);
+                        if (hiddenNumber > i ) {
+                            newYPosition = 10;
                             topHidden = true;
                             areElementsOnTop = true;
                         }
 
-                        if (newYPosition + elementHeight > (background.height - 30)) {
+                        if (newYPosition + elementHeight > (background.height)) {
                             newYPosition = background.height - 30;
                             bottomHidden = true;
                             areElementsOnBottom = true;
@@ -999,25 +976,13 @@ class ArraySymbol {
                             console.log("Array index: " + (i - 1) + ", " + (j) + " going to hide top");
                             arrayElementsArray[i - 1][j].setVisible(false);
                         } else if (bottomHidden) {
-                            console.log("Hiding to the bottom");
                             background.expandedOptions[arrayElementsArray[i - 1][j].id].opacity = 0;
                             background.compressedOptions[arrayElementsArray[i - 1][j].id].opacity = 0;
                             arrayElementsArray[i - 1][j].setVisible(false);
 
-                            console.log("Array index: " + (i - 1) + ", " + (j) + " going to hide bottom");
                         } else { // Visible
-                            if (!updatedFirstVisible) {
-                                updatedFirstVisible = true;
-                                background.firstVisibleRow = i;
-                            }
-
-                            let maxWidth = background.width - 80;
-                            if (background.expandedOptions[arrayElementsArray[i - 1][j].id].x > maxWidth)
-                                continue;
                             arrayElementsArray[i - 1][j].setVisible(true);
-
                             arrayElementsArray[i - 1][j].opacity = 1;
-                            console.log("Array index: " + (i - 1) + ", " + (j) + " is visible");
                             background.expandedOptions[arrayElementsArray[i - 1][j].id].opacity = 1;
                             background.compressedOptions[arrayElementsArray[i - 1][j].id].opacity = 1;
                             background.lastVisible = i;

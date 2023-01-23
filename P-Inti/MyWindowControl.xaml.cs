@@ -149,7 +149,7 @@
 
             debuggerEvents.OnEnterBreakMode += new _dispDebuggerEvents_OnEnterBreakModeEventHandler(OnEnterBreakModeHandler);
             debuggerEvents.OnEnterDesignMode += OnEnterDesignMode;
-
+            closeCodeUnboxer(null);
         }
 
         private void ChromeBrowser_IsBrowserInitializedChanged(object sender, DependencyPropertyChangedEventArgs e)
@@ -157,6 +157,35 @@
             theBrowser.ShowDevTools();
         }
 
+        public static void openCodeUnboxer(object directory)
+        {
+            IVsUIShell vsUIShell = (IVsUIShell)Package.GetGlobalService(typeof(SVsUIShell));
+            Guid guid = typeof(ToolWindow1).GUID;
+            IVsWindowFrame windowFrame;
+            int result = vsUIShell.FindToolWindow((uint)__VSFINDTOOLWIN.FTW_fFindFirst, ref guid, out windowFrame);   // Find MyToolWindow
+
+            if (result != VSConstants.S_OK)
+                result = vsUIShell.FindToolWindow((uint)__VSFINDTOOLWIN.FTW_fForceCreate, ref guid, out windowFrame); // Crate MyToolWindow if not found
+
+            if (result == VSConstants.S_OK)
+            {                                                                 // Show MyToolWindow
+                ErrorHandler.ThrowOnFailure(windowFrame.Show());
+                //ToolWindow1Control.readFiles(directory.ToString());
+            }
+        }
+        public static void closeCodeUnboxer(object directory)
+        {
+            IVsUIShell vsUIShell = (IVsUIShell)Package.GetGlobalService(typeof(SVsUIShell));
+            Guid guid = typeof(ToolWindow1).GUID;
+            IVsWindowFrame windowFrame;
+            int result = vsUIShell.FindToolWindow((uint)__VSFINDTOOLWIN.FTW_fFindFirst, ref guid, out windowFrame);   // Find MyToolWindow
+
+            if (result != VSConstants.S_OK)
+                result = vsUIShell.FindToolWindow((uint)__VSFINDTOOLWIN.FTW_fForceCreate, ref guid, out windowFrame); // Crate MyToolWindow if not found
+
+            if (result == VSConstants.S_OK)                                                                           // Show MyToolWindow
+                ErrorHandler.ThrowOnFailure(windowFrame.Hide());
+        }
 
         private void OnEnterRunModeHandler(dbgEventReason Reason)
         {
