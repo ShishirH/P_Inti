@@ -101,6 +101,11 @@
     <Compile Include="SignalGlyphTag.cs" />
     <Compile Include="SignalGlyphTaggerProvider.cs" />
     <Compile Include="Taggers.cs" />
+    <Compile Include="ToolWindow1.cs" />
+    <Compile Include="ToolWindow1Command.cs" />
+    <Compile Include="ToolWindow1Control.xaml.cs">
+      <DependentUpon>ToolWindow1Control.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Utils.cs" />
   </ItemGroup>
   <ItemGroup>
@@ -227,6 +232,7 @@
     <Content Include="Resources\AddToCodeShift.png" />
     <Content Include="Resources\CodeControlAddExistingCode.png" />
     <Content Include="Resources\CodeControlAddExistingCodeContextMenu.png" />
+    <Content Include="Resources\ToolWindow1Command.png" />
     <Content Include="snapshot_blob.bin">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
       <IncludeInVSIX>true</IncludeInVSIX>
@@ -301,6 +307,10 @@
   </ItemGroup>
   <ItemGroup>
     <Page Include="MyWindowControl.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="ToolWindow1Control.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

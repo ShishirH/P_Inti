@@ -50,6 +50,7 @@
         public readonly static string debugLineEnd = "~**********";
 
         public readonly DTE dte = null;
+        public static DTE dteNew = null;
         private Events events;
         public readonly Debugger debugger = null;
         public readonly DebuggerEvents debuggerEvents = null;
@@ -121,6 +122,7 @@
             bs = theBrowser;
 
             dte = Package.GetGlobalService(typeof(SDTE)) as DTE;
+            dteNew = dte;
 
             //CodeControlInfo codeControlInfo1 = new CodeControlInfo(0, 2, Colors.Azure, Colors.Brown);
             //CodeControlInfo codeControlInfo2 = new CodeControlInfo(4, 7, Colors.Salmon, Colors.Brown);
