@@ -63,6 +63,7 @@ namespace P_Inti
             this.InitializeComponent();
             dte = Package.GetGlobalService(typeof(SDTE)) as DTE;
             theBrowser2.Address = "http://localhost:8383/Resources/codeunboxer.html";
+            bs = theBrowser2;
             jsHandler = new JsHandler(this, currentDispatcher);
             theBrowser2.JavascriptObjectRepository.Register("jsHandler", jsHandler, true);
             theBrowser2.IsBrowserInitializedChanged += ChromeBrowser_IsBrowserInitializedChanged;

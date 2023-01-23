@@ -49,6 +49,7 @@ namespace P_Inti
         public static string[] accessModifiers = { "public", "private", "protected", "internal" };
         public static string[] builtInTypes = { "bool", "byte", "sbyte", "char", "decimal", "double", "float", "int", "uint", "nint", "nuint", "long", "ulong", "short", "ushort", "string" };
         public static Dictionary<string, string> initializationValues = new Dictionary<string, string>();
+        private Timer timer1;
 
         public static string codeControlFilePath;
 
@@ -1792,9 +1793,19 @@ namespace P_Inti
 
         public void startCodeUnboxer(object arg)
         {
-            MyWindowControl.openCodeUnboxer(arg);
-        }
+            MyWindowControl.printInBrowserConsole("Count of positions is: " + windowControl.positions.Count());
 
+
+            if (windowControl.positions.Count() == 0)
+            {
+                addAllVariablesToLogging(null);
+                runCodeAnalyzer(arg);
+            }
+            MyWindowControl.printInBrowserConsole("2 - Count of positions is: " + windowControl.positions.Count());
+
+            MyWindowControl.openCodeUnboxer(arg);
+
+        }
         public void setCurrentLine(object arg)
         {
             MyWindowControl.printInBrowserConsole("Inside setCurrentLine");
@@ -2006,9 +2017,98 @@ namespace P_Inti
                 }
 
             }
+
+            _ = DoSomethingEveryTenSeconds();
             return lineInfoFileContent;
         }
 
+        public Dictionary<string, object> addAllVariablesToLogging(object arg)
+        {
+            Dictionary<string, object> response = new Dictionary<string, object>();
+
+            // Get a list of variable names, types, declared line and scope to, and file declared, all separated by _
+
+
+            windowControl.positions.Clear();
+            windowControl.trackedSymbolsIDs.Clear();
+            windowControl.fileNames.Clear();
+
+            windowControl.assembledSolution = CodeAnalyzer.assembleSearchableSolution(windowControl);
+
+            Dictionary<string, Document> allDocuments = new Dictionary<string, Document>();
+            Dictionary<string, string[]> allContents = new Dictionary<string, string[]>();
+            Dictionary<string, SemanticModel> semanticModels = new Dictionary<string, SemanticModel>();
+            CodeAnalyzer.getSourceDocuments(windowControl.assembledSolution, out allDocuments, out allContents, out semanticModels);
+
+            foreach (Document document in allDocuments.Values)
+            {
+                IEnumerable<VariableDeclarationSyntax> variablesList = document.GetSyntaxTreeAsync().Result.GetRoot().DescendantNodes().OfType<VariableDeclarationSyntax>();
+
+                foreach (VariableDeclarationSyntax variable in variablesList)
+                {
+                    string type = variable.Type.ToString();
+                    string declarationText = variable.GetReference().GetSyntax().ToFullString().Trim();
+                    var sourceSpan = variable.GetLocation().SourceSpan;
+                    MyWindowControl.printInBrowserConsole("type: " + type);
+                    MyWindowControl.printInBrowserConsole("declarationText: " + declarationText);
+                    MyWindowControl.printInBrowserConsole("sourceSpanStart: " + sourceSpan.Start);
+                    MyWindowControl.printInBrowserConsole("sourceSpanEnd: " + sourceSpan.End);
+                    MyWindowControl.printInBrowserConsole("sourceSpanLength: " + sourceSpan.Length);
+                    string[] variableValueArray = declarationText.Split('=');
+
+                    if (variableValueArray.Length == 1)
+                    {
+                        continue;
+                    }
+                    string variableId = Utils.generateID();
+                    string fileName = document.FilePath;
+                    string[] variableTypeArray = variableValueArray[0].Split(' ');
+                    string variableValue = variableValueArray[1];
+                    string variableType = variableTypeArray[0];
+                    string variableName = variableTypeArray[1];
+                    int caretPosition = sourceSpan.Start + variableType.Length + 1 + variableName.Length;
+
+                    SyntaxNode node = variable.GetReference().GetSyntax();
+
+                    int declareAtFrom = node.GetLocation().GetLineSpan().StartLinePosition.Line + 1;
+                    int declareAtTo = node.GetLocation().GetLineSpan().EndLinePosition.Line + 1;
+
+                    SyntaxNode parent = node.Ancestors().ElementAt(2);
+                    int scopeFrom = parent.GetLocation().GetLineSpan().StartLinePosition.Line + 1;
+                    int scopeTo = parent.GetLocation().GetLineSpan().EndLinePosition.Line + 1;
+
+
+                    windowControl.positions.Add(caretPosition);
+                    windowControl.trackedSymbolsIDs.Add(variableId);
+                    windowControl.fileNames.Add(fileName);
+
+
+                }
+
+            }
+
+            return response;
+        }
+
+        public async System.Threading.Tasks.Task DoSomethingEveryTenSeconds()
+        {
+            while (true)
+            {
+                var delayTask = System.Threading.Tasks.Task.Delay(1000);
+                MyWindowControl.printInBrowserConsole("IN AN INFINTIE LOOP!!!!!!! ");
+                EnvDTE.DTE dteOther = MyWindowControl.dteNew;
+                EnvDTE.TextSelection ts = dteOther.ActiveWindow.Selection as EnvDTE.TextSelection;
+                if (ts == null)
+                    ToolWindow1Control.printInBrowserConsole("NOTHING IS SELECTED!!!!! ");
+                else
+                {
+                    var activePoint = ((EnvDTE.TextSelection)dteOther.ActiveDocument.Selection).ActivePoint;
+                    ToolWindow1Control.printInBrowserConsole("SELECTED LINE IS: " + activePoint.Line);
+                    ToolWindow1Control.bs.EvaluateScriptAsync("highlightLine", activePoint.Line + 1);
+                }
+                await delayTask;
+            }
+        }
 
         public string[] getLineInfo(object arg)
         {
