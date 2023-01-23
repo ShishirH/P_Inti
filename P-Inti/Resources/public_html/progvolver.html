@@ -570,10 +570,12 @@
             iconClass: 'fa-square-o unboxButton',
             onClick: function () {
                 if (window.jsHandler) {
-                    window.jsHandler.startCodeUnboxer($("#tempCompiledDirectory").text()).then(function (response) {
+                    window.jsHandler.startCodeUnboxer({
+                        outputDir: ""
+                }).then(function (response) {
                         console.log("HERE IS THE COMPILED DIRECTORY!!!!!!");
                         console.log($("#tempCompiledDirectory").text());
-                    });  ;
+                    });
                 }
             }
         });
