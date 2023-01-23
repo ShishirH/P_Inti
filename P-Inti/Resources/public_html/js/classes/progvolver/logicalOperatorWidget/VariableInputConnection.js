@@ -120,6 +120,11 @@ var VariableInputConnection = iVoLVER.util.createClass(fabric.Rect, {
         } else {
             connectionAccepted = true;
         }
+        console.log(typeof this.operandValue);
+        if (isNaN(this.operandValue)){
+            showErrorMessage("This connection only accepts numbers", 1000);
+            connectionAccepted = false;
+        }
         return {
             connectionAccepted: connectionAccepted,
             processedValue: this.operandValue,
