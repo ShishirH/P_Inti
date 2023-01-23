@@ -413,8 +413,8 @@ class ArraySymbol {
                     }
 
                     let elementHeight = 50
-                    let maxHeight = 130;
-                    if (yPosition + elementHeight > maxHeight - 60) {
+                    let maxHeight = rows * 60 > 180 ? 180 : rows * 60;
+                    if (yPosition > maxHeight) {
                         opacity = 0;
                         arrayElement.setVisible(false);
                     }
@@ -480,7 +480,7 @@ class ArraySymbol {
             background.positionObjects();
         }
 
-        background.setValueForCurlyBrace = function(initialValue) {
+        background.setValueForCurlyBrace = function (initialValue) {
             let indexOfOpeningBrace = initialValue.indexOf('[');
             let indexOfClosingBrace = initialValue.indexOf(']');
 
@@ -504,25 +504,25 @@ class ArraySymbol {
                     for (let i = 0; i < rows; i++) {
                         background.arrayElementsArray[i][0].element = rowNumbers[i];
                     }
-                // } else {
-                //     let arrayElementStartIndex = 0;
-                //     let rowIndex = 0;
-                //     let elementString = innerContents;
-                //
-                //     while (elementString.substring(arrayElementStartIndex).indexOf('{') !== -1) {
-                //         elementString = innerContents.substring(arrayElementStartIndex);
-                //         let braceStartIndex = elementString.indexOf('{');
-                //         let braceEndIndex = elementString.indexOf('}');
-                //
-                //         let arrayRowNumbers = elementString.substring(braceStartIndex + 1, braceEndIndex).split(',').map(function (item) {
-                //             return item.trim();
-                //         });
-                //
-                //         // Only 2D arrays supported for now
-                //         defaultValue.push(arrayRowNumbers);
-                //         rowIndex++;
-                //         arrayElementStartIndex = braceEndIndex + 1 + innerContents.substring(braceEndIndex + 1).indexOf(',') + 1;
-                //     }
+                    // } else {
+                    //     let arrayElementStartIndex = 0;
+                    //     let rowIndex = 0;
+                    //     let elementString = innerContents;
+                    //
+                    //     while (elementString.substring(arrayElementStartIndex).indexOf('{') !== -1) {
+                    //         elementString = innerContents.substring(arrayElementStartIndex);
+                    //         let braceStartIndex = elementString.indexOf('{');
+                    //         let braceEndIndex = elementString.indexOf('}');
+                    //
+                    //         let arrayRowNumbers = elementString.substring(braceStartIndex + 1, braceEndIndex).split(',').map(function (item) {
+                    //             return item.trim();
+                    //         });
+                    //
+                    //         // Only 2D arrays supported for now
+                    //         defaultValue.push(arrayRowNumbers);
+                    //         rowIndex++;
+                    //         arrayElementStartIndex = braceEndIndex + 1 + innerContents.substring(braceEndIndex + 1).indexOf(',') + 1;
+                    //     }
 
                 }
 
@@ -839,6 +839,7 @@ class ArraySymbol {
         var lastVisibleRow = 0;
 
         background.addScrollY = function () {
+//            if (rows > 4){
             var topArrow = new fabric.Triangle({
                 height: 6,
                 width: 6,
@@ -856,13 +857,13 @@ class ArraySymbol {
                 hasBorders: false,
                 angle: 90
             });
-
+            var heightScrollY = rows > 4 ? 40 : 195;
             var scrollY = new fabric.Rect({
-                height: 40,
+                height: heightScrollY,
                 width: 6,
                 fill: darken(background.stroke),
                 hasControls: false,
-                hasBorders: false,
+                hasBorders: false
             });
             var originParent = {originX: 'right', originY: 'top'};
             var originChild = {originX: 'right', originY: 'top'};
@@ -969,7 +970,7 @@ class ArraySymbol {
                         console.log("First visible is now: " + background.firstVisibleRow);
                         indentation = (i - hiddenNumber - 1); // CHANGE FOR ORIENTATION
 
-                        let newYPosition = parseFloat((indentation * 50) + 30);
+                        let newYPosition = parseFloat((indentation * 40) + 30);
                         let elementHeight = arrayElementsArray[i - 1][j].height;
                         console.log("YPosition: " + newYPosition + " and index: " + (i - 1) + ", " + (j));
 
@@ -1049,7 +1050,7 @@ class ArraySymbol {
                         console.log("First visible is now: " + background.firstVisibleRow);
                         indentation = (i - hiddenNumber - 1); // CHANGE FOR ORIENTATION
 
-                        let newYPosition = parseFloat((indentation * 50) + 30);
+                        let newYPosition = parseFloat((indentation * 40) + 30);
                         let elementHeight = arrayElementsArray[i - 1][j].height;
                         console.log("YPosition: " + newYPosition + " and index: " + (i - 1) + ", " + (j));
 
@@ -1104,14 +1105,14 @@ class ArraySymbol {
                     }
                 }
                 background.positionObjects();
-//                if (areElementsOnTop) {
-//                    background.expandedOptions[background.leftBuffer.id].opacity = 1;
-//                    background.compressedOptions[background.leftBuffer.id].opacity = 1;
-//                } else {
-//                    background.expandedOptions[background.leftBuffer.id].opacity = 0;
-//                    background.compressedOptions[background.leftBuffer.id].opacity = 0;
-//
-//                }
+                //                if (areElementsOnTop) {
+                //                    background.expandedOptions[background.leftBuffer.id].opacity = 1;
+                //                    background.compressedOptions[background.leftBuffer.id].opacity = 1;
+                //                } else {
+                //                    background.expandedOptions[background.leftBuffer.id].opacity = 0;
+                //                    background.compressedOptions[background.leftBuffer.id].opacity = 0;
+                //
+                //                }
 
                 if (areElementsOnBottom) {
                     background.expandedOptions[background.rightBuffer.id].opacity = 1;
@@ -1144,7 +1145,7 @@ class ArraySymbol {
                         console.log("First visible is now: " + background.firstVisibleRow);
                         indentation = (i - hiddenNumber - 1); // CHANGE FOR ORIENTATION
 
-                        let newYPosition = parseFloat((indentation * 50) + 30);
+                        let newYPosition = parseFloat((indentation * 40) + 30);
                         let elementHeight = arrayElementsArray[i - 1][j].height;
                         console.log("YPosition: " + newYPosition + " and index: " + (i - 1) + ", " + (j));
 
@@ -1199,14 +1200,14 @@ class ArraySymbol {
                     }
                 }
                 background.positionObjects();
-//                if (areElementsOnTop) {
-//                    background.expandedOptions[background.leftBuffer.id].opacity = 1;
-//                    background.compressedOptions[background.leftBuffer.id].opacity = 1;
-//                } else {
-//                    background.expandedOptions[background.leftBuffer.id].opacity = 0;
-//                    background.compressedOptions[background.leftBuffer.id].opacity = 0;
-//
-//                }
+                //                if (areElementsOnTop) {
+                //                    background.expandedOptions[background.leftBuffer.id].opacity = 1;
+                //                    background.compressedOptions[background.leftBuffer.id].opacity = 1;
+                //                } else {
+                //                    background.expandedOptions[background.leftBuffer.id].opacity = 0;
+                //                    background.compressedOptions[background.leftBuffer.id].opacity = 0;
+                //
+                //                }
 
                 if (areElementsOnBottom) {
                     background.expandedOptions[background.rightBuffer.id].opacity = 1;
@@ -1243,6 +1244,7 @@ class ArraySymbol {
             scrollY.acceptConnection = function (connection, processedValue) {
                 console.log("Connection accepted!")
             }
+//            }
         }
 
         background.topHidden = 0;
@@ -1628,6 +1630,24 @@ class ArraySymbol {
             } else if (initialValue.substring(indexOfOpeningBrace + 1, indexOfClosingBrace).indexOf(',') !== -1) {
                 // 2D array with no initialization -> new int[3, 4]
                 let index = initialValue.indexOf(',');
+                let firstOpener = initialValue.indexOf('{');
+                let firstCloser = initialValue.lastIndexOf('}');
+                let innerContents = initialValue.substring(firstOpener + 1, firstCloser).trim();
+                innerContents = innerContents.replace(/ /g, '');
+                console.log("Inner contents of 2D array are: " + innerContents);
+                let individualRows = innerContents.split("},");
+                for (let i = 0; i < individualRows.length; i++){
+
+                    let innerContentsRow = individualRows[i].replace(/{/g, "").replace(/}/g, "").trim();
+                    console.log("innerContentsRow");
+                    console.log(innerContentsRow);
+                    let rowNumbers = innerContentsRow.split(',').map(function (item) {
+                        return item.trim();
+                    });
+                    defaultValue.push(rowNumbers);
+                    console.log(rowNumbers);
+                }
+
                 rows = parseInt(initialValue.substring(indexOfOpeningBrace + 1, index));
                 columns = parseInt(initialValue.substring(index + 1, indexOfClosingBrace));
             } else {
@@ -1638,7 +1658,7 @@ class ArraySymbol {
             console.log("Rows are: " + rows);
             console.log(columns);
             console.log(defaultValue);
-            return [rows, columns, defaultValue]
+            return [rows, columns, defaultValue];
         }
 
         return background;
