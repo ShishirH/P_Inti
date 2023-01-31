@@ -243,7 +243,7 @@ namespace ConsoleApp1 {
                 //parameters.Add(row);
                 parameters.Add(stringForFile);
 
-                logFile.WriteLine("stringForFile //////// " + stringForFile);
+                //logFile.WriteLine("stringForFile //////// " + stringForFile);
                 //logFile.WriteLine("arrayElementValue //////// " + arrayElementValue);
                 //logFile.WriteLine("column //////// " + column);
                 //logFile.WriteLine("row //////// " + row);

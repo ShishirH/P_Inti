@@ -429,7 +429,7 @@ function moveTimelineNext() {
     currentIndex = getNextTimeLineDataIndex(currentTime);
     currentTime = getNextTimeLineData(currentTime);
 
-    if (currentIndex == window.lineData.length || currentIndex == -1) {
+    if (currentIndex == (window.lineData.length + 1) || currentIndex == -1) {
         return;
     }
 
@@ -478,6 +478,8 @@ function getNextTimeLineData(currentTime) {
 function getNextTimeLineDataIndex(currentTime) {
     var dataItems = window.lineData.filter(item => item.time > currentTime);
 
+    console.log("dataItems");
+    console.log(dataItems);
     if (dataItems.length > 0) {
         return dataItems[0].index;
     } else {
