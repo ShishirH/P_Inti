@@ -307,6 +307,18 @@ namespace ConsoleApp1 {
                 {
                     initializationValue = initializationValueObject.ToString(Formatting.None);
                 }
+            } 
+            else if (is1DArray(o))
+            {
+                initializationValue = getArrayAsString(o as Array);
+            }
+            else if (is2DArray(o))
+            {
+                initializationValue = getMatrixAsString(o as Array);
+            }
+            else
+            {
+                initializationValue = Convert.ToString(o);
             }
 
             initializationFile.WriteLine(logString + "~" + initializationValue);

@@ -279,15 +279,22 @@ class ProgvolverSymbol extends ConnectableWidget {
                 //     }
                 // }
 
-                if (types[index] == "SimpleAssignmentExpression" || types[index] == "PostDecrementExpression" || types[index] == "PreDecrementExpression" || types[index] == "PostIncrementExpression") {
-                    if (background.value != values[index]) {
-                        background.timeOfChange = background.currentTime;
-                    }
-                    background.setValue(values[index]);
-                    background.setFile(dataItem.file);
-                    background.setLineNumber(dataItem.line);
-                    //background.setLabel(background.fileName + ' (' + background.lineNumber + ')');
+                if (background.value != values[index]) {
+                    background.timeOfChange = background.currentTime;
                 }
+                background.setValue(values[index]);
+                background.setFile(dataItem.file);
+                background.setLineNumber(dataItem.line);
+
+                // if (types[index] == "SimpleAssignmentExpression" || types[index] == "PostDecrementExpression" || types[index] == "PreDecrementExpression" || types[index] == "PostIncrementExpression") {
+                //     if (background.value != values[index]) {
+                //         background.timeOfChange = background.currentTime;
+                //     }
+                //     background.setValue(values[index]);
+                //     background.setFile(dataItem.file);
+                //     background.setLineNumber(dataItem.line);
+                //     //background.setLabel(background.fileName + ' (' + background.lineNumber + ')');
+                // }
 
                 //background.updateColorDecay();
             }

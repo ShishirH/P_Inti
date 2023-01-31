@@ -10840,7 +10840,8 @@ function processLogFiles(logFileContent, scopeFileContent, signalFileContent, li
                                     let symbolName = item.symbol;
 
                                     if (namedSymbols[symbolName]) {
-                                        namedSymbols[symbolName].setValue(item.value);
+                                        if (namedSymbols[symbolName].object)
+                                            namedSymbols[symbolName].setValue(item.value);
                                     } else {
                                         console.log("Not found?")
                                     }
