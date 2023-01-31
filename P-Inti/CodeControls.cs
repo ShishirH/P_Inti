@@ -245,7 +245,7 @@ namespace P_Inti
             }
 
             // Save current edited file
-            File.WriteAllText(@"C:\Users\shish\source\repos\ConsoleApp1\ConsoleApp1\Program.cs", documentContentsStr);
+            File.WriteAllText(Utils.programCS, documentContentsStr);
 
             MyWindowControl.printInBrowserConsole("Updating active branch to: " + variantNameStr);
             MyWindowControl.CurrentCodeControl.CurrrentActiveBranchName = variantNameStr;

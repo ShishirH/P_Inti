@@ -2527,7 +2527,7 @@ namespace P_Inti
             ITextViewLine activeDocumentContents = textViewLines[0];
             string documentContentsStr = activeDocumentContents.Snapshot.GetText();
 
-            File.WriteAllText(@"C:\Users\shish\source\repos\ConsoleApp1\ConsoleApp1\Program.cs", documentContentsStr);
+            File.WriteAllText(Utils.programCS, documentContentsStr);
             
             if (arg != null)
             {
