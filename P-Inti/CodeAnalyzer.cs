@@ -911,6 +911,7 @@ namespace TestingCodeAnalysis
                         var activePoint = ((EnvDTE.TextSelection)windowControl.dte.ActiveDocument.Selection).ActivePoint;
                         string lineText = activePoint.CreateEditPoint().GetLines(lineNumber, lineNumber + 1);
                         
+
                         if (!parentStatement.StartsWith("["))
                         {
                             lineContent = parentStatement;
@@ -944,9 +945,9 @@ namespace TestingCodeAnalysis
                             MyWindowControl.printInBrowserConsole("XXXXXX SymbolKind !!!: " + symbol.Kind);
                             MyWindowControl.printInBrowserConsole("XXXXXX SymbolContainingType !!!: " + symbol.ContainingType);
                             MyWindowControl.printInBrowserConsole("XXXXXX SymbolContainingSymbol !!!: " + symbol.ContainingSymbol);
-                            MyWindowControl.printInBrowserConsole("XXXXXX Parent statement is: ");
-                            MyWindowControl.printInBrowserConsole(parentStatement);
-                            MyWindowControl.printInBrowserConsole("XXXXXX Parent kind is: ");
+                            MyWindowControl.printInBrowserConsole("XXXXXX Parent statement is: " + parentStatement);
+                            MyWindowControl.printInBrowserConsole("XXXXXX Parent kind is: " + parent.Kind().ToString());
+                            MyWindowControl.printInBrowserConsole("XXXXXX Parent type is: " + parent.GetType().ToString());
 
                             if (symbolName == "int[]")
                             {
@@ -954,6 +955,14 @@ namespace TestingCodeAnalysis
                             }
 
                             if (parent.Kind().ToString() == "ArgumentList")
+                            {
+                                parentStatement = symbolName;
+                            }
+
+                            if (parent.Kind() == SyntaxKind.AddAssignmentExpression ||
+                                parent.Kind() == SyntaxKind.SubtractAssignmentExpression ||
+                                parent.Kind() == SyntaxKind.DivideAssignmentExpression ||
+                                parent.Kind() == SyntaxKind.MultiplyAssignmentExpression)
                             {
                                 parentStatement = symbolName;
                             }
