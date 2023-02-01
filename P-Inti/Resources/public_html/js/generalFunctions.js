@@ -210,6 +210,10 @@ function loadLogFiles(response, lineInfoFileContent, waitingDialog) {
     for (let i = 1; i < lineInfoFileContentArray.length; i++) {
         lineInfoFileContentArray[i] = i + "~" + lineInfoFileContentArray[i];
     }
+
+    // Duplicating the last line, as the last line in lineInfo will always have a smaller timestamp than the logData file. Hence, the last value normally won't be updated.
+    // The duplicate last line timestamp is updated later to infinity.
+    lineInfoFileContentArray.push(lineInfoFileContentArray[lineInfoFileContentArray.length - 1]);
     lineInfoFileContent = lineInfoFileContentArray.join("\n");
 
     logFileContent = preProcessLogFileForDuplicates(logFileContent);
@@ -10569,7 +10573,7 @@ function processLogFiles(logFileContent, scopeFileContent, signalFileContent, li
                     console.log(window.maxTime);
 
                     window.minTime = Math.min(window.minTime, window.minTimeLineData);
-                     window.maxTime = Math.max(window.maxTime, window.maxTimeLineData);
+                    window.maxTime = Math.max(window.maxTime, window.maxTimeLineData);
 
                      console.log("window.minTimeLineData");
                      console.log(window.minTimeLineData);
@@ -10600,6 +10604,7 @@ function processLogFiles(logFileContent, scopeFileContent, signalFileContent, li
 
             if (logData && logData.data && logData.data[0]) {
                 window.logData = logData.data;
+                window.lineData[window.lineData.length - 1].time = Math.max(window.logData[logData.data.length - 1].time, window.lineData[window.lineData.length - 1].time);
 
                 console.log("window.logData");
                 console.log(window.logData);

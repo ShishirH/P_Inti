@@ -1965,7 +1965,6 @@ function bindCanvasDefaultEvents(canvas) {
                                         file: response.fileName,
                                         fileName: fileName,
                                         lineNumber: response.declareAtFrom,
-                                        id: response.symbolID,
                                         declareAtFrom: response.declareAtFrom,
                                         declareAtTo: response.declareAtTo,
                                         scopeFrom: response.scopeFrom,
@@ -1990,6 +1989,7 @@ function bindCanvasDefaultEvents(canvas) {
                                         top: screenCoords.y,
                                         x: screenCoords.x,
                                         y: screenCoords.y,
+                                        id: response.symbolID,
                                         kind: response.Kind_String,
                                         type: response.dataType,
                                         name: response.Name,
@@ -2007,8 +2007,6 @@ function bindCanvasDefaultEvents(canvas) {
 
                                     allSymbols.push(theSymbol);
                                     namedSymbols[theSymbol.name] = theSymbol;
-
-                                    referenceWidgetsList.push(referenceWidget);
 
                                     canvas.add(referenceWidget);
                                     referenceWidget.expand();
