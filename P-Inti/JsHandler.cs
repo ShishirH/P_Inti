@@ -1971,6 +1971,26 @@ namespace P_Inti
             return result;
         }
 
+        public Dictionary<string, object> updateLineLogFileToIncludeIndex(object arg)
+        {
+            Dictionary<string, object> result = null;
+            IDictionary<string, object> input = (IDictionary<string, object>)arg;
+
+            input.TryGetValue("lineLogData", out object lineInfoDataObject);
+            string lineLogData = (string)lineInfoDataObject;
+
+            if (Directory.Exists(loggingFileOutputDirectory))
+            {
+                string lineLogPath = loggingFileOutputDirectory + "\\" + "run" + ".lineInfo";
+                System.IO.File.Move(lineLogPath, lineLogPath + "Old");
+
+                File.WriteAllText(lineLogPath, lineLogData);
+            }
+
+            return result;
+        }
+
+
         public string[] runCodeUnboxer(object arg)
         {
             string solutionDir = "";
