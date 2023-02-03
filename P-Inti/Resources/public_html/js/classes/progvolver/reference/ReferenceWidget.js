@@ -994,6 +994,8 @@ class ReferenceWidget {
 
         background.setHistory = function () {
             background.history = window.logData.filter(item => item.widgetsID.indexOf(background.id) != -1);
+
+            background.object.setHistory && background.object.setHistory();
         }
 
         this.progvolverType = "ReferenceWidget";
