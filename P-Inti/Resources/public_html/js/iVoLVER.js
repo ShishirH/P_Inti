@@ -1857,91 +1857,12 @@ var iVoLVER = {
             liStyle += " float: left;";
 
             var datatypesList = $("#" + sectionID);
+            window.codeMultiverseDiv = datatypesList;
 
-            let divMultiverses = $('    <div class="container-fluid" style="border: 5px; border-color:aquamarine; border-style:solid">\n' +
-                '        <div class="row" style="display:flex; border-width: 0 0 5px 0; border-color: green; border-style:solid">\n' +
-                '            <div class="col-8">\n' +
-                '                <p class="text-center" style="font-size: 1.2em">\n' +
-                '                    Code Multiverse Title\n' +
-                '                </p>\n' +
-                '            </div>\n' +
-                '            <div class="col-1">\n' +
-                '                 \n' +
-                '            <button type="button" class="btn btn-xs" style="margin-top:30px">\n' +
-                '                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-arrow-down" viewBox="0 0 16 16">\n' +
-                '                    <path fill-rule="evenodd" d="M8 1a.5.5 0 0 1 .5.5v11.793l3.146-3.147a.5.5 0 0 1 .708.708l-4 4a.5.5 0 0 1-.708 0l-4-4a.5.5 0 0 1 .708-.708L7.5 13.293V1.5A.5.5 0 0 1 8 1z"></path>\n' +
-                '                </svg>\n' +
-                '            </button>\n' +
-                '            </div>\n' +
-                '        </div>\n' +
-                '        <div class="row">\n' +
-                '            <div class="col-lg-12">\n' +
-                '                <ul class="list-group list-group-flush">\n' +
-                '                    <li class="list-group-item">\n' +
-                '                        <div class="row">\n' +
-                '                            <div class="col-1">\n' +
-                '                            </div>\n' +
-                '                            <div class="col-12">\n' +
-                '                                <input class="form-check-input" type="radio" name="flexRadioDefault" id="flexRadioDefault1">\n' +
-                '                                <label class="form-check-label" for="flexRadioDefault1">              \n' +
-                '                                    Variant name\n' +
-                '                                </label>\n' +
-                '                            </div>                \n' +
-                '                        </div>        \n' +
-                '                    </li>\n' +
-                '                    <li class="list-group-item">\n' +
-                '                        <div class="row">\n' +
-                '                            <div class="col-1">\n' +
-                '                            </div>\n' +
-                '                            <div class="col-12">\n' +
-                '                                <input class="form-check-input" type="radio" name="flexRadioDefault" id="flexRadioDefault1">\n' +
-                '                                <label class="form-check-label" for="flexRadioDefault1">              \n' +
-                '                                    Variant name\n' +
-                '                                </label>\n' +
-                '                            </div>                \n' +
-                '                \n' +
-                '                        </div>        \n' +
-                '                    </li>\n' +
-                '                    <!-- <li class="list-group-item">Morbi leo risus</li> -->\n' +
-                '                  </ul>                  \n' +
-                '            </div>\n' +
-                '        </div>\n' +
-                '        <div class="row" style="display:flex">\n' +
-                '            <div class="col-4">\n' +
-                '                 \n' +
-                '                <button type="button" class="btn ">\n' +
-                '                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-trash" viewBox="0 0 16 16">\n' +
-                '                        <path d="M5.5 5.5A.5.5 0 0 1 6 6v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5zm2.5 0a.5.5 0 0 1 .5.5v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5zm3 .5a.5.5 0 0 0-1 0v6a.5.5 0 0 0 1 0V6z"/>\n' +
-                '                        <path fill-rule="evenodd" d="M14.5 3a1 1 0 0 1-1 1H13v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V4h-.5a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1H6a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1h3.5a1 1 0 0 1 1 1v1zM4.118 4 4 4.059V13a1 1 0 0 0 1 1h6a1 1 0 0 0 1-1V4.059L11.882 4H4.118zM2.5 3V2h11v1h-11z"/>\n' +
-                '                    </svg>                      \n' +
-                '                </button>\n' +
-                '            </div>\n' +
-                '            <div class="col-4">\n' +
-                '                 \n' +
-                '                <button type="button" class="btn ">\n' +
-                '                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-arrow-clockwise" viewBox="0 0 16 16">\n' +
-                '                        <path fill-rule="evenodd" d="M8 3a5 5 0 1 0 4.546 2.914.5.5 0 0 1 .908-.417A6 6 0 1 1 8 2v1z"/>\n' +
-                '                        <path d="M8 4.466V.534a.25.25 0 0 1 .41-.192l2.36 1.966c.12.1.12.284 0 .384L8.41 4.658A.25.25 0 0 1 8 4.466z"/>\n' +
-                '                    </svg>  \n' +
-                '                </button>\n' +
-                '            </div>\n' +
-                '            <div class="col-4">\n' +
-                '                 \n' +
-                '                <button type="button" class="btn ">\n' +
-                '                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-plus-circle" viewBox="0 0 16 16">\n' +
-                '                        <path d="M8 15A7 7 0 1 1 8 1a7 7 0 0 1 0 14zm0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16z"/>\n' +
-                '                        <path d="M8 4a.5.5 0 0 1 .5.5v3h3a.5.5 0 0 1 0 1h-3v3a.5.5 0 0 1-1 0v-3h-3a.5.5 0 0 1 0-1h3v-3A.5.5 0 0 1 8 4z"/>\n' +
-                '                    </svg>                      \n' +
-                '                </button>\n' +
-                '            </div>\n' +
-                '        </div>\n' +
-                '    </div>\n');
+            let divContainer = $('<div id="addCodeMultiverseContainer" class="container" </div>');
 
-            let divContainer = $('<div class="container" </div>');
-
-            let divName = $('<div class="row" style="width: fit-content">' +
-                '<div class="col" style="width: 40%"><input type="text" value = "Name" size="10"> </input></div>' +
-                '<div class="col"><button type="button" class="btn btn-success" style="color: red" ><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-arrow-down" viewBox="0 0 16 16">\n' +
+            let divName = $('<div class="row" style="width:auto">' +
+                '<div class="col-12"><button id="addCodeMultiverseButton" type="button" class="btn" style="color:red; width:inherit" ><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-arrow-down" viewBox="0 0 16 16">\n' +
                 '  <path fill-rule="evenodd" d="M8 1a.5.5 0 0 1 .5.5v11.793l3.146-3.147a.5.5 0 0 1 .708.708l-4 4a.5.5 0 0 1-.708 0l-4-4a.5.5 0 0 1 .708-.708L7.5 13.293V1.5A.5.5 0 0 1 8 1z"/>\n' +
                 '</svg></button></div>' +
                 '</div>');
@@ -1959,11 +1880,11 @@ var iVoLVER = {
             // divName.append(nameElement);
             // divName.append(collapsibleButton);
             divContainer.append(divName);
-            divContainer.append(branchElements);
-            divContainer.append(codeMultiverse);
-            let liElement = $('<li id="' + elementID + '" draggable="true" class="description dragElement" style="' + liStyle + '">');
+            //divContainer.append(branchElements);
+            //divContainer.append(codeMultiverse);
+            let liElement = $('<li id="' + elementID + '" class="description" style="' + liStyle + '">');
 
-            liElement.append(divMultiverses);
+            liElement.append(divContainer);
             //datatypesList.append('<li id="' + elementID + '" draggable="true" class="description dragElement" style="' + liStyle + '"><a style="' + aStyle + '"><i class="' + iconClass + '" style="' + iStyle + '"></i></i></a></li>');
             datatypesList.append(liElement);
 
@@ -1979,19 +1900,8 @@ var iVoLVER = {
                 });
             }
 
-            $( "#addCodeVariant" ).click(function() {
-                let branchesDiv = $('#branchElements');
-
-                let rowDiv = $('<div class="row" style="width: 200px"</div>');
-                let nameTextArea = $('<div class="col" style="width: 20%"><input type="text" value = "Name" size="10"> </input></div>');
-                let updateButton = $('<div class="col"<button type="button" class="btn btn-success" style="color: red" >UPD</button></div>')
-                let deleteButton = $('<div class="col"<button type="button" class="btn btn-success" style="color: red" >DEL</button></div>')
-
-                rowDiv.append(nameTextArea);
-                rowDiv.append(updateButton);
-                rowDiv.append(deleteButton);
-
-                branchesDiv.append(rowDiv);
+            $( "#addCodeMultiverseButton" ).click(function() {
+                addCodeMultiverseToRightPane();
             });
 
             return elementID;

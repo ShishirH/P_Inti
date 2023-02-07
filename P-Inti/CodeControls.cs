@@ -213,39 +213,42 @@ namespace P_Inti
                 }
             }
 
-            int codeVariantIndex = 0;
-            for (int i = 0; i < beginIndexArray.Count; i++)
+            if (branchInfo != null)
             {
-                int startIndex = beginIndexArray[i];
-                int endIndex = endIndexArray[i];
-
-                ITextBuffer textBuffer = CodeControlEditorAdornment.view.TextBuffer;
-                SnapshotSpan span = new SnapshotSpan(CodeControlEditorAdornment.view.TextSnapshot, Span.FromBounds(startIndex, endIndex));
-
-                string contents = branchInfo.codeVariantContents[i].codeVariantFileContents[0];
-                MyWindowControl.currentDispatcher.Invoke(new Action(() =>
+                int codeVariantIndex = 0;
+                for (int i = 0; i < beginIndexArray.Count; i++)
                 {
-                    textBuffer.Replace(span, contents);
-                }));
+                    int startIndex = beginIndexArray[i];
+                    int endIndex = endIndexArray[i];
 
-            }
+                    ITextBuffer textBuffer = CodeControlEditorAdornment.view.TextBuffer;
+                    SnapshotSpan span = new SnapshotSpan(CodeControlEditorAdornment.view.TextSnapshot, Span.FromBounds(startIndex, endIndex));
 
-            MyWindowControl.printInBrowserConsole("Replacing " + currentCodeVariantName + " with " + variantNameStr);
-            documentContentsStr = CodeControlEditorAdornment.view.TextViewLines[0].Snapshot.GetText();
+                    string contents = branchInfo.codeVariantContents[i].codeVariantFileContents[0];
+                    MyWindowControl.currentDispatcher.Invoke(new Action(() =>
+                    {
+                        textBuffer.Replace(span, contents);
+                    }));
 
-            for (int index = documentContentsStr.IndexOf(currentCodeVariantName); index > -1; index = documentContentsStr.IndexOf(currentCodeVariantName, index + 1))
-            {
-                ITextBuffer textBuffer = CodeControlEditorAdornment.view.TextBuffer;
-                SnapshotSpan span = new SnapshotSpan(CodeControlEditorAdornment.view.TextSnapshot, Span.FromBounds(index, index + currentCodeVariantName.Length));
-                MyWindowControl.currentDispatcher.Invoke(new Action(() =>
-                {
-                    textBuffer.Replace(span, variantNameStr);
-                }));
+                }
+
+                MyWindowControl.printInBrowserConsole("Replacing " + currentCodeVariantName + " with " + variantNameStr);
                 documentContentsStr = CodeControlEditorAdornment.view.TextViewLines[0].Snapshot.GetText();
-            }
 
-            // Save current edited file
-            File.WriteAllText(Utils.programCS, documentContentsStr);
+                for (int index = documentContentsStr.IndexOf(currentCodeVariantName); index > -1; index = documentContentsStr.IndexOf(currentCodeVariantName, index + 1))
+                {
+                    ITextBuffer textBuffer = CodeControlEditorAdornment.view.TextBuffer;
+                    SnapshotSpan span = new SnapshotSpan(CodeControlEditorAdornment.view.TextSnapshot, Span.FromBounds(index, index + currentCodeVariantName.Length));
+                    MyWindowControl.currentDispatcher.Invoke(new Action(() =>
+                    {
+                        textBuffer.Replace(span, variantNameStr);
+                    }));
+                    documentContentsStr = CodeControlEditorAdornment.view.TextViewLines[0].Snapshot.GetText();
+                }
+
+                // Save current edited file
+                File.WriteAllText(Utils.programCS, documentContentsStr);
+            }
 
             MyWindowControl.printInBrowserConsole("Updating active branch to: " + variantNameStr);
             MyWindowControl.CurrentCodeControl.CurrrentActiveBranchName = variantNameStr;
