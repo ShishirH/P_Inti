@@ -37,6 +37,7 @@ input[type="radio"]:not(:focus){
 .rightPanel{
     float: right;
     margin-left: 0px;
+    max-width: 220px;
 }
 
 .canvasStyle {

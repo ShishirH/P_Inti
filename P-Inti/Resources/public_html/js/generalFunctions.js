@@ -75,14 +75,14 @@ function addCodeMultiverseToRightPane() {
     console.log("Saturated color is: " + saturatedColor);
     console.log("deSaturated color is: " + desaturatedColor);
 
-    let divMultiverses = $('    <div class="container-fluid" id="' + codeMultiverseId + '-container" style="border: 5px; border-color:' + saturatedColor + '; border-style:solid; " >\n' +
+    let divMultiverses = $('    <div class="container-fluid codeMultiverseContainer" id="' + codeMultiverseId + '-container" style="border: 5px; border-color:' + saturatedColor + '; border-style:solid; margin-bottom:8px" >\n' +
         '        <div class="row" style="display:flex; border-width: 0 0 5px 0; border-color:' + desaturatedColor + '; border-style:solid; padding-bottom:5px">\n' +
-        '            <div class="col-8">\n' +
-        '                <input class="form-control" id="' + codeMultiverseId + '-title" type="text" placeholder="Multiverse title" style="margin-top:8px">\n' +
+        '            <div class="col-10">\n' +
+        '                <input class="form-control codeMultiverseTitle" id="' + codeMultiverseId + '-title" type="text" placeholder="Multiverse title" style="margin-top:8px">\n' +
         '            </div>\n' +
-        '            <div class="col-1">\n' +
+        '            <div class="col-2">\n' +
         '                 \n' +
-        '            <button type="button" id="' + codeMultiverseId + '-collapse" data-bs-toggle="collapse" data-bs-target=".' + codeMultiverseId + '-collapseRows" class="btn btn-xs" style="margin-top:8px">\n' +
+        '            <button type="button" id="' + codeMultiverseId + '-collapse" data-bs-toggle="collapse" data-bs-target=".' + codeMultiverseId + '-collapseRows" class="glyphicon codeMultiverseCollapse" style="margin-top:8px">\n' +
         '                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-arrow-down" viewBox="0 0 16 16">\n' +
         '                    <path fill-rule="evenodd" d="M8 1a.5.5 0 0 1 .5.5v11.793l3.146-3.147a.5.5 0 0 1 .708.708l-4 4a.5.5 0 0 1-.708 0l-4-4a.5.5 0 0 1 .708-.708L7.5 13.293V1.5A.5.5 0 0 1 8 1z"></path>\n' +
         '                </svg>\n' +

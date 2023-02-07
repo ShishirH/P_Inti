@@ -1652,9 +1652,9 @@ var iVoLVER = {
             canvasVariable: 'Canvas variable',
             codeShift: 'Code Multiverses',
             codeNote: 'Code Note',
-            plots: 'Plots',
+            plots: 'Notes and Plots',
             signals: 'Signals',
-            logicalOperators: 'Logical Operators',
+            logicalOperators: 'Variables and Operators',
             multiverse: 'Code Multiverse'
         },
         getSectionByTitle: function (title) {
@@ -1765,7 +1765,7 @@ var iVoLVER = {
             iVoLVER.gui.add.draggableIcon({
                 sectionID: signalsSection,
                 iconClass: 'fa-exchange',
-                tooltip: 'When Widget',
+                tooltip: 'Affect Widget',
                 onMouseUp: function (x, y) {
                     var affectWidget = new AffectWidget({
                         fill: '#F02466',
@@ -1782,28 +1782,46 @@ var iVoLVER = {
                 }
             });
 
-            iVoLVER.gui.add.draggableIcon({
-                sectionID: signalsSection,
-                iconClass: 'fa-exchange',
-                tooltip: 'Snapshot Widget',
-                onMouseUp: function (x, y) {
-                    var snapshotWidget = new SnapshotWidget({
-                        fill: '#F02466',
-                        stroke: '#F02466',
-                        x: x,
-                        y: y,
-                        left: x,
-                        top: y
-                    });
-                    canvas.add(snapshotWidget);
-                    animateBirth(snapshotWidget, false, 1, 1);
-                }
-            });
+            // iVoLVER.gui.add.draggableIcon({
+            //     sectionID: signalsSection,
+            //     iconClass: 'fa-exchange',
+            //     tooltip: 'Snapshot Widget',
+            //     onMouseUp: function (x, y) {
+            //         var snapshotWidget = new SnapshotWidget({
+            //             fill: '#F02466',
+            //             stroke: '#F02466',
+            //             x: x,
+            //             y: y,
+            //             left: x,
+            //             top: y
+            //         });
+            //         canvas.add(snapshotWidget);
+            //         animateBirth(snapshotWidget, false, 1, 1);
+            //     }
+            // });
         },
 
         addPlotsSection: function () {
             var plotsSection = iVoLVER.gui.add.iconGroup({
                 title: iVoLVER.gui.progvolverSectionTitles.plots
+            });
+
+            iVoLVER.gui.add.draggableIcon({
+                sectionID: plotsSection,
+                iconClass: 'fa-exchange',
+                tooltip: 'Code Note',
+                onMouseUp: function (x, y) {
+                    var note = new CodeNote({
+                        x: x,
+                        y: y,
+                        width: 250,
+                        height: 250,
+                        programElementType: "N",
+                        drawIconSpace: true,
+                    });
+                    canvas.add(note);
+                    animateBirth(note, false, 1, 1);
+                }
             });
 
             iVoLVER.gui.add.draggableIcon({
@@ -1910,6 +1928,25 @@ var iVoLVER = {
         addLogicalOperatorsSection: function () {
             var logicalOperatorsSection = iVoLVER.gui.add.iconGroup({
                 title: iVoLVER.gui.progvolverSectionTitles.logicalOperators
+            });
+
+            iVoLVER.gui.add.draggableIcon({
+                sectionID: logicalOperatorsSection,
+                iconClass: 'fa-exchange',
+                tooltip: 'Canvas variable',
+                onMouseUp: function (x, y) {
+                    var canvasVariable = new CanvasVariable({
+                        type: "dataType",
+                        name: "name",
+                        left: x,
+                        top: y,
+                        x: x,
+                        y: y,
+                        value: ""
+                    });
+                    canvas.add(canvasVariable);
+                    animateBirth(canvasVariable, false, 1, 1);
+                }
             });
 
             iVoLVER.gui.add.draggableIcon({
@@ -3730,13 +3767,13 @@ var iVoLVER = {
 
         iVoLVER.gui._paletteSections = {};
         // Uncomment for rightpane
-        // iVoLVER.gui.addCanvasVariablesSection();
+        //iVoLVER.gui.addCanvasVariablesSection();
         // iVoLVER.gui.addCodeShiftSection();
-        // iVoLVER.gui.addCodeNoteSection();
-        // iVoLVER.gui.addSignalsSection();
-        // iVoLVER.gui.addLogicalOperatorsSection();
-        // iVoLVER.gui.addPlotsSection();
-         iVoLVER.gui.addcodeMultiverseSection();
+        //iVoLVER.gui.addCodeNoteSection();
+        iVoLVER.gui.addSignalsSection();
+        iVoLVER.gui.addLogicalOperatorsSection();
+        iVoLVER.gui.addPlotsSection();
+        iVoLVER.gui.addcodeMultiverseSection();
 
         iVoLVER._pendingConnections = null;
         iVoLVER._connectableElements = null;
