@@ -3,6 +3,197 @@ window.sliderDimension = "time";
 progvolver = {
     objects: {}
 };
+
+function highlightLine (object) {
+
+    console.log(object);
+    // $(".lineInfoDiv").css("border", "none");
+    if (object !== currentLine){
+        currentLine = object;
+        $(".lineInfoDiv").css("border", "1px solid black");
+
+    } else {
+        $(".lineInfo_" + object).css("border", "5px solid black");
+    }
+//    $(".lineInfo_" + object).hide();
+}
+
+function addVariantToMultiverse(codeMultiverseId) {
+    let variantRow = $('#' + codeMultiverseId + '-variantUL');
+    let variantId = 'v' + Math.random().toString(36).slice(2, 7);
+    let name = codeMultiverseId + "-variant";
+    let id = codeMultiverseId + "-" + variantId + "-variant";
+
+    let newVariant = $('<li class="list-group-item">\n' +
+        '                        <div class="row">\n' +
+        '                            <div class="col-12">\n' +
+        '                                <input class="form-check-input" value="' + id + '" type="radio" name="' + name + '" id="' + id + '" style="display:inline-grid;width:15px;margin-top:10px">\n' +
+        '                                <label class="form-check-label" for="' + id + '">              \n' +
+        '                                   <input class="form-control" style="width:105px" id="' + id + '-title" type="text" placeholder="Variant title" style="margin-top:8px">\n' +
+        '                                </label>\n' +
+        '                            </div>                \n' +
+        '                        </div>        \n' +
+        '                    </li>\n');
+
+    variantRow.append(newVariant);
+
+    $('#' + id + '-title').on("blur", function() {
+        console.log("Branch id is: " + id);
+        console.log("Branch name is: " + $(this).val());
+        if (window.jsHandler) {
+            if (window.jsHandler.createCodeControlBranch) {
+                window.jsHandler.createCodeControlBranch({
+                    id: codeMultiverseId,
+                    branchId: id,
+                    branchName: $(this).val()
+                }).then(function (response) {
+                });
+            }
+        }
+    });
+
+    let inputNameSelector = "input[name=" + name + "]";
+    $(inputNameSelector).change(function(e) {
+        e.stopImmediatePropagation();
+        let selectedRadioId = $(this).attr('id');
+        let branchName = $('#' + id + '-title').val();
+        if (window.jsHandler && window.jsHandler.updateSelectedCodeControl) {
+            console.log("Calling text thing")
+            window.jsHandler.updateSelectedCodeControl({
+                id: codeMultiverseId
+            })
+        }
+
+        if (window.jsHandler && window.jsHandler.goToControlBranch) {
+            window.jsHandler.goToControlBranch({
+                variantName: branchName,
+                variantId: id,
+                codeShiftId: codeMultiverseId,
+            });
+
+            console.log("went to branch: " + branchName);
+            getAssociatedVariablesForCodeVariants();
+
+        }
+    })
+}
+
+function addCodeMultiverseToRightPane() {
+
+    let codeMultiverseId = 'b' + Math.random().toString(36).slice(2, 7);
+    codeMultiverseIds.push(codeMultiverseId);
+
+    let saturatedColor = colorsArray[codeMultiverseIds.length - 1];
+    let desaturatedColor = actualDesaturatedColorsArray[codeMultiverseIds.length - 1];
+
+    console.log("Saturated color is: " + saturatedColor);
+    console.log("deSaturated color is: " + desaturatedColor);
+
+    let divMultiverses = $('    <div class="container-fluid codeMultiverseContainer" id="' + codeMultiverseId + '-container" style="border: 5px; border-color:' + saturatedColor + '; border-style:solid; margin-bottom:8px" >\n' +
+        '        <div class="row" style="display:flex; border-width: 0 0 5px 0; border-color:' + desaturatedColor + '; border-style:solid; padding-bottom:5px">\n' +
+        '            <div class="col-10">\n' +
+        '                <input class="form-control codeMultiverseTitle" id="' + codeMultiverseId + '-title" type="text" placeholder="Multiverse title" style="margin-top:8px">\n' +
+        '            </div>\n' +
+        '            <div class="col-2">\n' +
+        '                 \n' +
+        '            <button type="button" id="' + codeMultiverseId + '-collapse" data-bs-toggle="collapse" data-bs-target=".' + codeMultiverseId + '-collapseRows" class="glyphicon codeMultiverseCollapse" style="margin-top:8px">\n' +
+        '                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-arrow-down" viewBox="0 0 16 16">\n' +
+        '                    <path fill-rule="evenodd" d="M8 1a.5.5 0 0 1 .5.5v11.793l3.146-3.147a.5.5 0 0 1 .708.708l-4 4a.5.5 0 0 1-.708 0l-4-4a.5.5 0 0 1 .708-.708L7.5 13.293V1.5A.5.5 0 0 1 8 1z"></path>\n' +
+        '                </svg>\n' +
+        '            </button>\n' +
+        '            </div>\n' +
+        '        </div>\n' +
+        '        <div class="row ' + codeMultiverseId + '-collapseRows" id="' + codeMultiverseId + '-variantRow">\n' +
+        '            <div class="col-lg-12">\n' +
+        '                <ul class="list-group list-group-flush" id="' + codeMultiverseId + '-variantUL" style="margin-left:0">\n' +
+        '                    <!-- <li class="list-group-item">Morbi leo risus</li> -->\n' +
+        '                  </ul>                  \n' +
+        '            </div>\n' +
+        '        </div>\n' +
+        '        <div class="row ' + codeMultiverseId + '-collapseRows" style="display:flex">\n' +
+        '            <div class="col-4">\n' +
+        '                 \n' +
+        '                <button type="button" class="glyphicon" id="' + codeMultiverseId + '-addVariantButton">\n' +
+        '                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-plus-circle" viewBox="0 0 16 16">\n' +
+        '                        <path d="M8 15A7 7 0 1 1 8 1a7 7 0 0 1 0 14zm0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16z"/>\n' +
+        '                        <path d="M8 4a.5.5 0 0 1 .5.5v3h3a.5.5 0 0 1 0 1h-3v3a.5.5 0 0 1-1 0v-3h-3a.5.5 0 0 1 0-1h3v-3A.5.5 0 0 1 8 4z"/>\n' +
+        '                    </svg>                      \n' +
+        '                </button>\n' +
+        '            </div>\n' +
+        '            <div class="col-4">\n' +
+        '                 \n' +
+        '                <button type="button" class="glyphicon" id="' + codeMultiverseId + '-updateVariantButton">\n' +
+        '                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-arrow-clockwise" viewBox="0 0 16 16">\n' +
+        '                        <path fill-rule="evenodd" d="M8 3a5 5 0 1 0 4.546 2.914.5.5 0 0 1 .908-.417A6 6 0 1 1 8 2v1z"/>\n' +
+        '                        <path d="M8 4.466V.534a.25.25 0 0 1 .41-.192l2.36 1.966c.12.1.12.284 0 .384L8.41 4.658A.25.25 0 0 1 8 4.466z"/>\n' +
+        '                    </svg>  \n' +
+        '                </button>\n' +
+        '            </div>\n' +
+        '            <div class="col-4">\n' +
+        '                 \n' +
+        '                <button type="button" class="glyphicon" id="' + codeMultiverseId + '-deleteVariantButton">\n' +
+        '                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-trash" viewBox="0 0 16 16">\n' +
+        '                        <path d="M5.5 5.5A.5.5 0 0 1 6 6v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5zm2.5 0a.5.5 0 0 1 .5.5v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5zm3 .5a.5.5 0 0 0-1 0v6a.5.5 0 0 0 1 0V6z"/>\n' +
+        '                        <path fill-rule="evenodd" d="M14.5 3a1 1 0 0 1-1 1H13v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V4h-.5a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1H6a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1h3.5a1 1 0 0 1 1 1v1zM4.118 4 4 4.059V13a1 1 0 0 0 1 1h6a1 1 0 0 0 1-1V4.059L11.882 4H4.118zM2.5 3V2h11v1h-11z"/>\n' +
+        '                    </svg>                      \n' +
+        '                </button>\n' +
+        '            </div>\n' +
+        '        </div>\n' +
+        '    </div>\n');
+
+
+        let multiverseContainer = $('#addCodeMultiverseContainer');
+        divMultiverses.insertBefore(multiverseContainer);
+        codeMultiverseRightPaneElements.push(divMultiverses);;
+
+        if (window.jsHandler && window.jsHandler.initializeCodeControl) {
+            window.jsHandler.initializeCodeControl({
+                name: "CODE_MULTIVERSE",
+                id: codeMultiverseId,
+                saturatedColor: colorsArray[codeMultiverseRightPaneElements.length - 1],
+                unsaturatedColor: colorsArray[codeMultiverseRightPaneElements.length - 1]
+            });
+        }
+
+    $(document).ready(function() {
+            $('#' + codeMultiverseId + '-collapse').click( function (e) {
+                let rows = $('.' + codeMultiverseId + '-collapseRows');
+                rows.toggle();
+            });
+
+            $('#' + codeMultiverseId + '-addVariantButton').click( function (e) {
+                addVariantToMultiverse(codeMultiverseId);
+            });
+
+            $('#' + codeMultiverseId + '-updateVariantButton').click( function (e) {
+                let name = codeMultiverseId + "-variant";
+                let querySelector = "input[name='" + name + "']:checked";
+                let activeBranch = $(querySelector).val();
+                let branchName = $('#' + name + '-title').val();
+
+                if (window.jsHandler && window.jsHandler.updateControlBranch) {
+                    console.log("Updating control branch")
+                    window.jsHandler.updateControlBranch({
+                        variantName: branchName,
+                        variantId: activeBranch,
+                        codeShiftId: codeMultiverseId
+                    });
+                }
+            });
+
+        $('#' + codeMultiverseId + '-title').on('blur', function () {
+                if (window.jsHandler && window.jsHandler.updateCodeControlName) {
+                    window.jsHandler.updateCodeControlName({
+                        id: codeMultiverseId,
+                        name: $(this).val()
+                    });
+                }
+            });
+
+        });
+
+}
+
 function createObjectMemberWidgets(objectMembers, response, screenCoords) {
     var objectMembersDict = {};
     var fileName = response.fileName.split('\\').pop().split('/').pop();
@@ -173,9 +364,11 @@ function setBottomButtonsVisibility() {
 
 function getCombinedHashOfVariants() {
     let appendedActiveBranches = "";
-    for (let i = 0; i < codeControlsOnCanvas.length; i++) {
-        let codeControl = codeControlsOnCanvas[i];
-        let activeBranch = codeControl.selectedBranch;
+    for (let i = 0; i < codeMultiverseIds.length; i++) {
+        let codeMultiverseId = codeMultiverseIds[i];
+        let name = codeMultiverseId + "-variant";
+        let querySelector = "input[name='" + name + "']:checked";
+        let activeBranch = $(querySelector).val();
         appendedActiveBranches += activeBranch;
     }
 
@@ -424,6 +617,7 @@ function getAssociatedVariablesForCodeVariants(variantCombinationString)
 }
 
 function moveTimelineNext() {
+    console.log("This was called!");
     let currentTime = window.presentTime;
     let currentIndex = 0;
 
@@ -443,6 +637,13 @@ function moveTimelineNext() {
 
     if (currentIndex == (window.lineData.length + 1) || currentIndex == -1) {
         return;
+    }
+
+    // Reset shooting stars
+    for (const [key, value] of Object.entries(namedSymbols)) {
+        if (value.beforeShootingStarRender) {
+            value.render = value.beforeShootingStarRender;
+        }
     }
 
     console.log("Next time is: ");
@@ -519,6 +720,13 @@ function moveTimelinePrevious() {
 
     if (currentIndex == -1) {
         return;
+    }
+
+    // Reset shooting stars
+    for (const [key, value] of Object.entries(namedSymbols)) {
+        if (value.beforeShootingStarRender) {
+            value.render = value.beforeShootingStarRender;
+        }
     }
 
     console.log("Previous time is: ");
@@ -713,7 +921,7 @@ function scaleCoordinates(coordsArray, percentage) {
     return scaledCoords;
 }
 
-function chevronShootingStars(source, target) {
+function generateChevronShootingStars(source, target) {
     var theConnector = source;
 
     let chevron = [
@@ -749,7 +957,7 @@ function chevronShootingStars(source, target) {
         var deltaY = y2 - y1;
 
         var angle = Math.atan(deltaY / deltaX);
-        if (theConnector.x1 > theConnector.x2) {
+        if (x1 > x2) {
             angle += fabric.util.degreesToRadians(180);
         }
 
@@ -826,20 +1034,20 @@ function drawCirclesAlongLine(ctx, points) {
 function drawCirclesAlongCurve(ctx, points) {
     //ctx.save();
     let shootingStarsCircles = [];
+    let chevronSvg = "M4.646 1.646a.5.5 0 0 1 .708 0l6 6a.5.5 0 0 1 0 .708l-6 6a.5.5 0 0 1-.708-.708L10.293 8 4.646 2.354a.5.5 0 0 1 0-.708z";
     let radius = 12;
     let opacity = 0.5;
     for (var t = 0; t < 101; t += 5) {
         var point = getQuadraticBezierXYatT(points[0], points[1], points[2], t / 100);
-        var shootingStarCircle = new fabric.Circle({
-            radius: radius,
+        var shootingStarCircle = new fabric.Path(chevronSvg, {
             top: point.y,
             left: point.x,
-            fill: rgba(255, 255, 0, opacity),
-            centerX: "center",
-            centerY: "center",
-            opacity: opacity,
+            fill: rgba(255, 255, 0, 1),
+            opacity: 1,
             eventable: false,
-            selectable: false
+            selectable: false,
+            width: radius,
+            height: radius,
         });
 
         canvas.add(shootingStarCircle);
@@ -854,6 +1062,8 @@ function drawCirclesAlongCurve(ctx, points) {
         //opacity = opacity - 0.015;
     }
 
+    console.log("Shooting stars circles");
+    console.log(shootingStarsCircles);
     return shootingStarsCircles;
     //ctx.restore();
 }
@@ -914,6 +1124,9 @@ function shootingStarsDecay(widget1, widget2) {
     }
 }
 
+function generatChevronShootingStars(widget1, widget2) {
+
+}
 function generateShootingStars(widget1, widget2) {
     let ctx = canvas.getContext();
     var shootingStarEnd = widget1.getPointByOrigin('center', 'center');
@@ -954,7 +1167,9 @@ function generateShootingStars(widget1, widget2) {
     console.log(widget1.shootingStarsDict);
 }
 
-function parseShootingStarsSource(parentStatement, widget) {
+function parseShootingStarsTarget(parentStatement, widget) {
+    console.log("!@#Parent staetment is: " + parentStatement);
+    console.log("!@#Widget name is: " + widget.name);
     if (parentStatement.includes("=")) {
         let leftHalf = parentStatement.split("=")[0].trim();
         let rightHalf = parentStatement.split("=")[1].trim();
@@ -5454,7 +5669,7 @@ function drawFilledPolygon(shape, ctx) {
     ctx.restore();
 }
 
-function drawFilledChevron(shape, ctx) {
+function  drawFilledChevron(shape, ctx) {
     ctx.save();
     ctx.beginPath();
     ctx.moveTo(shape[0][0], shape[0][1]);
@@ -10283,22 +10498,22 @@ function playSlider() {
 
     var playing = playButton.data('playing');
     var theSlider = $("#theSlider").data("ionRangeSlider");
-    var interval = 200;
+    var interval = 500;
 
     if (playing) {
         clearInterval(sliderTimer);
     } else {
         sliderTimer = setInterval(function () {
-
-            theSlider.update({from: (theSlider.result.from + 1) % theSlider.result.max});
-
-            sliderMarksElement.append(sliderMarksElements);
-
-            var selectedSymbol = canvas.getActiveObject();
-
-            if (selectedSymbol && selectedSymbol.showSliderMarks) {
-                selectedSymbol.showSliderMarks();
-            }
+            moveTimelineNext();
+            // theSlider.update({from: (theSlider.result.from + 1) % theSlider.result.max});
+            //
+            // sliderMarksElement.append(sliderMarksElements);
+            //
+            // var selectedSymbol = canvas.getActiveObject();
+            //
+            // if (selectedSymbol && selectedSymbol.showSliderMarks) {
+            //     selectedSymbol.showSliderMarks();
+            // }
 
         }, interval);
     }
@@ -10313,22 +10528,23 @@ function playSliderLineData() {
 
     var playing = playButton.data('playing');
     var theSlider = $("#theSlider").data("ionRangeSlider");
-    var interval = 2;
+    var interval = 500;
 
     if (playing) {
         clearInterval(sliderTimer);
     } else {
         sliderTimer = setInterval(function () {
+            moveTimelineNext();
 
-            theSlider.update({from: (theSlider.result.from + 1) % theSlider.result.max});
-
-            sliderMarksElement.append(sliderMarksElements);
-
-            var selectedSymbol = canvas.getActiveObject();
-
-            if (selectedSymbol && selectedSymbol.showSliderMarks) {
-                selectedSymbol.showSliderMarks();
-            }
+            // theSlider.update({from: (theSlider.result.from + 1) % theSlider.result.max});
+            //
+            // sliderMarksElement.append(sliderMarksElements);
+            //
+            // var selectedSymbol = canvas.getActiveObject();
+            //
+            // if (selectedSymbol && selectedSymbol.showSliderMarks) {
+            //     selectedSymbol.showSliderMarks();
+            // }
 
         }, interval);
     }

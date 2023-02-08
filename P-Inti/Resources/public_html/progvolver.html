@@ -48,8 +48,6 @@
         <link rel="stylesheet" type="text/css" href="./css/rangeGenerator.css" />
         <link rel="stylesheet" type="text/css" href="./css/collectiveOperators.css" />
         <link rel="stylesheet" type="text/css" href="./css/customDataTypes.css" />
-        <link rel="stylesheet" type="text/css" href="./css/fonts/fontawesome/css/font-awesome.css" media="all" />
-        <link rel="stylesheet" type="text/css" href="./css/fonts/font-awesome-4.4.0/css/font-awesome.css" media="all" />
         <link rel="stylesheet" type="text/css" href="./css/alertify.core.css" />
         <link rel="stylesheet" type="text/css" href="./css/alertify.default.css" />
         <link rel="stylesheet" type="text/css" href="./css/tooltipster.bundle.css" />
@@ -59,11 +57,13 @@
         <!--        <link rel="stylesheet" type="text/css" href="./css/spectrum.css" />-->
         <link rel="stylesheet" type="text/css" href="./css/jquery.dialog.css" />
         <link rel="stylesheet" type="text/css" href="./css/ion.rangeSlider.min.css" />
-        <link rel="stylesheet" type="text/css" href="./css/drawingCanvas.css" />
+<!--        <link rel="stylesheet" type="text/css" href="./css/drawingCanvas.css" />-->
+        <link rel="stylesheet" type="text/css" href="./css/fontawesome.min.css" />
+        <link rel="stylesheet" type="text/css" href="./css/fonts/fontawesome/css/font-awesome.css" media="all" />
+        <link rel="stylesheet" type="text/css" href="./css/fonts/font-awesome-4.4.0/css/font-awesome.css" media="all" />
         <link rel="stylesheet" type="text/css" href="./js/contextMenu/jquery.contextMenu.min.css" />
 
-
-
+        <script defer src="./js/v4-shims.min.js"></script>
 
         <script type="text/javascript" src="./js/jquery-1.10.2.js"></script>
         <script type="text/javascript" src="./js/jquery.ajaxfileupload.js"></script>
@@ -122,7 +122,7 @@
         <script type="text/javascript" src="./js/contextMenu/jquery.contextMenu.js"></script>
         <script type="text/javascript" src="./js/contextMenu/jquery.ui.position.min.js"></script>
 
-<!--        <script type="text/javascript" src="./bootstrap-5.2.3-dist/js/bootstrap.bundle.min.js"></script>-->
+        <script type="text/javascript" src="./bootstrap-5.2.3-dist/js/bootstrap.bundle.min.js"></script>
 
         <script type="text/javascript" src="./js/progvolver.js"></script>
         <script type="text/javascript" src="./js/classes/types/Value.js"></script>
@@ -295,9 +295,9 @@
 
             <div style="margin: 0px 0px; padding: 0px 0px; width: 100%; min-height: 60px; height: auto; border-top: #6f6f6f 1px solid; width:100%; position:absolute; bottom:0; left:0;">
 
-                <div style="position: relative; margin-bottom: -30px; z-index: 22222222222; text-align:center;">
-                    <button class="large" onclick="toggleExtendedTimeline()" style="position: relative; top: -15px; border-radius: 15px; width: 30px; height: 30px; padding: 0px; margin: 0px; "><i id="extendedTimelineButtonIcon" style=" position: relative; top: -2px; font-size: 18px; color: black;" class="fa fa-chevron-down"></i></button>
-                </div>
+<!--                <div style="position: relative; margin-bottom: -30px; z-index: 22222222222; text-align:center;">-->
+<!--                    <button class="large" onclick="toggleExtendedTimeline()" style="position: relative; top: -15px; border-radius: 15px; width: 30px; height: 30px; padding: 0px; margin: 0px; "><i id="extendedTimelineButtonIcon" style=" position: relative; top: -2px; font-size: 18px; color: black;" class="fa fa-chevron-down"></i></button>-->
+<!--                </div>-->
 
                 <div style=" height:60px; width:248px; border-right: #6f6f6f 1px solid; float:left; ">
                     <ul class="menu nonSelection">
@@ -1443,7 +1443,26 @@
         // });
         //
 
+        toggleExtendedTimeline();
+
     </script>
+    <style>
+        .codeMultiverseContainer {
+        }
+
+        .codeMultiverseTitle {
+            font-size: 14px;
+            font-family: "Helvetica",serif;
+            background: rgba(0, 0, 0, 0);
+            border: 1px solid rgba(0,0,0,0)
+        }
+
+        .codeMultiverseCollapse{
+            all: unset;
+            padding-top:5px
+        }
+
+    </style>
 </body>
 </html>
 

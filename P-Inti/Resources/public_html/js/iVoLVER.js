@@ -1652,9 +1652,9 @@ var iVoLVER = {
             canvasVariable: 'Canvas variable',
             codeShift: 'Code Multiverses',
             codeNote: 'Code Note',
-            plots: 'Plots',
+            plots: 'Notes and Plots',
             signals: 'Signals',
-            logicalOperators: 'Logical Operators',
+            logicalOperators: 'Variables and Operators',
             multiverse: 'Code Multiverse'
         },
         getSectionByTitle: function (title) {
@@ -1765,7 +1765,7 @@ var iVoLVER = {
             iVoLVER.gui.add.draggableIcon({
                 sectionID: signalsSection,
                 iconClass: 'fa-exchange',
-                tooltip: 'When Widget',
+                tooltip: 'Affect Widget',
                 onMouseUp: function (x, y) {
                     var affectWidget = new AffectWidget({
                         fill: '#F02466',
@@ -1782,28 +1782,46 @@ var iVoLVER = {
                 }
             });
 
-            iVoLVER.gui.add.draggableIcon({
-                sectionID: signalsSection,
-                iconClass: 'fa-exchange',
-                tooltip: 'Snapshot Widget',
-                onMouseUp: function (x, y) {
-                    var snapshotWidget = new SnapshotWidget({
-                        fill: '#F02466',
-                        stroke: '#F02466',
-                        x: x,
-                        y: y,
-                        left: x,
-                        top: y
-                    });
-                    canvas.add(snapshotWidget);
-                    animateBirth(snapshotWidget, false, 1, 1);
-                }
-            });
+            // iVoLVER.gui.add.draggableIcon({
+            //     sectionID: signalsSection,
+            //     iconClass: 'fa-exchange',
+            //     tooltip: 'Snapshot Widget',
+            //     onMouseUp: function (x, y) {
+            //         var snapshotWidget = new SnapshotWidget({
+            //             fill: '#F02466',
+            //             stroke: '#F02466',
+            //             x: x,
+            //             y: y,
+            //             left: x,
+            //             top: y
+            //         });
+            //         canvas.add(snapshotWidget);
+            //         animateBirth(snapshotWidget, false, 1, 1);
+            //     }
+            // });
         },
 
         addPlotsSection: function () {
             var plotsSection = iVoLVER.gui.add.iconGroup({
                 title: iVoLVER.gui.progvolverSectionTitles.plots
+            });
+
+            iVoLVER.gui.add.draggableIcon({
+                sectionID: plotsSection,
+                iconClass: 'fa-exchange',
+                tooltip: 'Code Note',
+                onMouseUp: function (x, y) {
+                    var note = new CodeNote({
+                        x: x,
+                        y: y,
+                        width: 250,
+                        height: 250,
+                        programElementType: "N",
+                        drawIconSpace: true,
+                    });
+                    canvas.add(note);
+                    animateBirth(note, false, 1, 1);
+                }
             });
 
             iVoLVER.gui.add.draggableIcon({
@@ -1850,19 +1868,19 @@ var iVoLVER = {
 
             var sectionID = parameters;
             var elementID = ('section_element_' + iVoLVER.util.generateID());
-            var liStyle = iVoLVER.util.isUndefined(parameters.liStyle) || iVoLVER.util.isNull(parameters.liStyle) ? "margin-top: 2px; margin-right: 1%; margin-left: 1%; min-width: 22%; max-width: 22%; width: 22%; margin-bottom: 2px;" : parameters.liStyle;
+            var liStyle = iVoLVER.util.isUndefined(parameters.liStyle) || iVoLVER.util.isNull(parameters.liStyle) ? "margin-top: 2px; margin-right: 1%; margin-left: 1%; min-width: 100%; max-width: 100%; width: 100%; margin-bottom: 2px;" : parameters.liStyle;
             var aStyle = iVoLVER.util.isUndefined(parameters.aStyle) || iVoLVER.util.isNull(parameters.aStyle) ? 'text-align: center;' : parameters.aStyle;
             var iStyle = iVoLVER.util.isUndefined(parameters.iStyle) || iVoLVER.util.isNull(parameters.iStyle) ? 'text-align: center; font-size: 25px;' : parameters.iStyle;
 
             liStyle += " float: left;";
 
             var datatypesList = $("#" + sectionID);
+            window.codeMultiverseDiv = datatypesList;
 
-            let divContainer = $('<div class="container" </div>');
+            let divContainer = $('<div id="addCodeMultiverseContainer" class="container" </div>');
 
-            let divName = $('<div class="row" style="width: fit-content">' +
-                '<div class="col" style="width: 40%"><input type="text" value = "Name" size="10"> </input></div>' +
-                '<div class="col"><button type="button" class="btn btn-success" style="color: red" ><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-arrow-down" viewBox="0 0 16 16">\n' +
+            let divName = $('<div class="row" style="width:auto">' +
+                '<div class="col-12"><button id="addCodeMultiverseButton" type="button" class="btn" style="color:red; width:inherit" ><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-arrow-down" viewBox="0 0 16 16">\n' +
                 '  <path fill-rule="evenodd" d="M8 1a.5.5 0 0 1 .5.5v11.793l3.146-3.147a.5.5 0 0 1 .708.708l-4 4a.5.5 0 0 1-.708 0l-4-4a.5.5 0 0 1 .708-.708L7.5 13.293V1.5A.5.5 0 0 1 8 1z"/>\n' +
                 '</svg></button></div>' +
                 '</div>');
@@ -1880,9 +1898,9 @@ var iVoLVER = {
             // divName.append(nameElement);
             // divName.append(collapsibleButton);
             divContainer.append(divName);
-            divContainer.append(branchElements);
-            divContainer.append(codeMultiverse);
-            let liElement = $('<li id="' + elementID + '" draggable="true" class="description dragElement" style="' + liStyle + '">');
+            //divContainer.append(branchElements);
+            //divContainer.append(codeMultiverse);
+            let liElement = $('<li id="' + elementID + '" class="description" style="' + liStyle + '">');
 
             liElement.append(divContainer);
             //datatypesList.append('<li id="' + elementID + '" draggable="true" class="description dragElement" style="' + liStyle + '"><a style="' + aStyle + '"><i class="' + iconClass + '" style="' + iStyle + '"></i></i></a></li>');
@@ -1900,19 +1918,8 @@ var iVoLVER = {
                 });
             }
 
-            $( "#addCodeVariant" ).click(function() {
-                let branchesDiv = $('#branchElements');
-
-                let rowDiv = $('<div class="row" style="width: 200px"</div>');
-                let nameTextArea = $('<div class="col" style="width: 20%"><input type="text" value = "Name" size="10"> </input></div>');
-                let updateButton = $('<div class="col"<button type="button" class="btn btn-success" style="color: red" >UPD</button></div>')
-                let deleteButton = $('<div class="col"<button type="button" class="btn btn-success" style="color: red" >DEL</button></div>')
-
-                rowDiv.append(nameTextArea);
-                rowDiv.append(updateButton);
-                rowDiv.append(deleteButton);
-
-                branchesDiv.append(rowDiv);
+            $( "#addCodeMultiverseButton" ).click(function() {
+                addCodeMultiverseToRightPane();
             });
 
             return elementID;
@@ -1921,6 +1928,25 @@ var iVoLVER = {
         addLogicalOperatorsSection: function () {
             var logicalOperatorsSection = iVoLVER.gui.add.iconGroup({
                 title: iVoLVER.gui.progvolverSectionTitles.logicalOperators
+            });
+
+            iVoLVER.gui.add.draggableIcon({
+                sectionID: logicalOperatorsSection,
+                iconClass: 'fa-rectangle-xmark',
+                tooltip: 'Canvas variable',
+                onMouseUp: function (x, y) {
+                    var canvasVariable = new CanvasVariable({
+                        type: "dataType",
+                        name: "name",
+                        left: x,
+                        top: y,
+                        x: x,
+                        y: y,
+                        value: ""
+                    });
+                    canvas.add(canvasVariable);
+                    animateBirth(canvasVariable, false, 1, 1);
+                }
             });
 
             iVoLVER.gui.add.draggableIcon({
@@ -3741,13 +3767,13 @@ var iVoLVER = {
 
         iVoLVER.gui._paletteSections = {};
         // Uncomment for rightpane
-        // iVoLVER.gui.addCanvasVariablesSection();
+        //iVoLVER.gui.addCanvasVariablesSection();
         // iVoLVER.gui.addCodeShiftSection();
-        // iVoLVER.gui.addCodeNoteSection();
-        // iVoLVER.gui.addSignalsSection();
-        // iVoLVER.gui.addLogicalOperatorsSection();
-        // iVoLVER.gui.addPlotsSection();
-        // iVoLVER.gui.addcodeMultiverseSection();
+        //iVoLVER.gui.addCodeNoteSection();
+        iVoLVER.gui.addSignalsSection();
+        iVoLVER.gui.addLogicalOperatorsSection();
+        iVoLVER.gui.addPlotsSection();
+        iVoLVER.gui.addcodeMultiverseSection();
 
         iVoLVER._pendingConnections = null;
         iVoLVER._connectableElements = null;

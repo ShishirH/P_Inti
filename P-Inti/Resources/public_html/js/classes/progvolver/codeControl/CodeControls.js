@@ -26,7 +26,7 @@ class CodeControls {
 
         background.addName = function () {
             let labelObjectText = "CONTROL_NAME";
-            if (background.name != "") {
+            if (background.name !== "") {
                 labelObjectText = background.name;
             }
 
@@ -264,7 +264,6 @@ class CodeControls {
         }
 
         if (window.jsHandler && window.jsHandler.updateSelectedCodeControl) {
-            console.log("Calling text thing")
             window.jsHandler.updateSelectedCodeControl({
                 id: background.id
             })
