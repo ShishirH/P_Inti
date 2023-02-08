@@ -609,6 +609,7 @@ function getAssociatedVariablesForCodeVariants(variantCombinationString)
 }
 
 function moveTimelineNext() {
+    console.log("This was called!");
     let currentTime = window.presentTime;
     let currentIndex = 0;
 
@@ -10468,22 +10469,22 @@ function playSlider() {
 
     var playing = playButton.data('playing');
     var theSlider = $("#theSlider").data("ionRangeSlider");
-    var interval = 200;
+    var interval = 500;
 
     if (playing) {
         clearInterval(sliderTimer);
     } else {
         sliderTimer = setInterval(function () {
-
-            theSlider.update({from: (theSlider.result.from + 1) % theSlider.result.max});
-
-            sliderMarksElement.append(sliderMarksElements);
-
-            var selectedSymbol = canvas.getActiveObject();
-
-            if (selectedSymbol && selectedSymbol.showSliderMarks) {
-                selectedSymbol.showSliderMarks();
-            }
+            moveTimelineNext();
+            // theSlider.update({from: (theSlider.result.from + 1) % theSlider.result.max});
+            //
+            // sliderMarksElement.append(sliderMarksElements);
+            //
+            // var selectedSymbol = canvas.getActiveObject();
+            //
+            // if (selectedSymbol && selectedSymbol.showSliderMarks) {
+            //     selectedSymbol.showSliderMarks();
+            // }
 
         }, interval);
     }
@@ -10498,22 +10499,23 @@ function playSliderLineData() {
 
     var playing = playButton.data('playing');
     var theSlider = $("#theSlider").data("ionRangeSlider");
-    var interval = 2;
+    var interval = 500;
 
     if (playing) {
         clearInterval(sliderTimer);
     } else {
         sliderTimer = setInterval(function () {
+            moveTimelineNext();
 
-            theSlider.update({from: (theSlider.result.from + 1) % theSlider.result.max});
-
-            sliderMarksElement.append(sliderMarksElements);
-
-            var selectedSymbol = canvas.getActiveObject();
-
-            if (selectedSymbol && selectedSymbol.showSliderMarks) {
-                selectedSymbol.showSliderMarks();
-            }
+            // theSlider.update({from: (theSlider.result.from + 1) % theSlider.result.max});
+            //
+            // sliderMarksElement.append(sliderMarksElements);
+            //
+            // var selectedSymbol = canvas.getActiveObject();
+            //
+            // if (selectedSymbol && selectedSymbol.showSliderMarks) {
+            //     selectedSymbol.showSliderMarks();
+            // }
 
         }, interval);
     }
