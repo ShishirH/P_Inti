@@ -955,8 +955,24 @@ class LollipopPlot extends ConnectableWidget {
             });
 
             inputPort.acceptConnection = function (theConnector, value) {
-                var connectedHistory = theConnector.source.background.history;
-                var symbolName = connectedHistory[0].symbols;
+                let variableHistory = theConnector.source.background.history;
+                var symbolName = variableHistory[0].symbols;
+
+                // Remove duplicates from the log file. TODO investigate why the log file is generating duplicates.
+                let connectedHistory = [];
+                connectedHistory.push(variableHistory[0]);
+
+                let elementToCompareIndex = 0;
+                variableHistory.forEach(function (element, index) {
+                    if (index !== 0) {
+                       if (element.values !== connectedHistory[elementToCompareIndex].values) {
+                           // Not a duplicate value, so append to connectedHistory
+                           elementToCompareIndex++;
+                           element.index = elementToCompareIndex;
+                           connectedHistory.push(element);
+                       }
+                    }
+                });
 
                 console.log("connectedHistory BEFORE: ");
                 console.log(connectedHistory);
@@ -979,12 +995,16 @@ class LollipopPlot extends ConnectableWidget {
                     background.setUpD3(background.plottingDiv, connectedHistory, background.svg, background.plottingDiv.width(), background.plottingDiv.height(), background.currentXCoord);
                 }
 
-//                console.log("background.histories:");
-//                console.log(background.histories);
+               console.log("@@@@background.histories:");
+               console.log(background.histories);
 
+                console.log("@@@@background.currentData before concat: ")
+                console.log(background.currentData);
 
                 // this must be an array
                 background.currentData = background.currentData.concat(connectedHistory);
+                console.log("@@@@background.currentData after concat: ")
+                console.log(background.currentData);
 
                 let newWidth = (background.getScaledWidth() - background.hMargin * 2 - background.strokeWidth);
                 let newHeight = (background.getScaledHeight() - background.vMargin - background.hMargin - background.strokeWidth);

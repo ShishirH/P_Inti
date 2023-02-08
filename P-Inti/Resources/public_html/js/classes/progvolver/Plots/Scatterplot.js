@@ -736,8 +736,24 @@ class ScatterPlot extends ConnectableWidget {
             });
 
             inputPortY.acceptConnection = function (theConnector, value) {
-                var connectedHistory = theConnector.source.background.history;
-                var symbolName = connectedHistory[0].symbols;
+                let variableHistory = theConnector.source.background.history;
+                var symbolName = variableHistory[0].symbols;
+
+                // Remove duplicates from the log file. TODO investigate why the log file is generating duplicates.
+                let connectedHistory = [];
+                connectedHistory.push(variableHistory[0]);
+
+                let elementToCompareIndex = 0;
+                variableHistory.forEach(function (element, index) {
+                    if (index !== 0) {
+                        if (element.values !== connectedHistory[elementToCompareIndex].values) {
+                            // Not a duplicate value, so append to connectedHistory
+                            elementToCompareIndex++;
+                            element.index = elementToCompareIndex;
+                            connectedHistory.push(element);
+                        }
+                    }
+                });
 
                 isYAxisConnected = true;
 
@@ -777,8 +793,24 @@ class ScatterPlot extends ConnectableWidget {
             }
 
             inputPortX.acceptConnection = function (theConnector, value) {
-                var connectedHistory = theConnector.source.background.history;
-                var symbolName = connectedHistory[0].symbols;
+                let variableHistory = theConnector.source.background.history;
+                var symbolName = variableHistory[0].symbols;
+
+                // Remove duplicates from the log file. TODO investigate why the log file is generating duplicates.
+                let connectedHistory = [];
+                connectedHistory.push(variableHistory[0]);
+
+                let elementToCompareIndex = 0;
+                variableHistory.forEach(function (element, index) {
+                    if (index !== 0) {
+                        if (element.values !== connectedHistory[elementToCompareIndex].values) {
+                            // Not a duplicate value, so append to connectedHistory
+                            elementToCompareIndex++;
+                            element.index = elementToCompareIndex;
+                            connectedHistory.push(element);
+                        }
+                    }
+                });
 
                 isXAxisConnected = true;
                 console.log("connectedHistory BEFORE: ");
