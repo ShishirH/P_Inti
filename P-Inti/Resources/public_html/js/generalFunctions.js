@@ -4,6 +4,20 @@ progvolver = {
     objects: {}
 };
 
+function highlightLine (object) {
+
+    console.log(object);
+    // $(".lineInfoDiv").css("border", "none");
+    if (object !== currentLine){
+        currentLine = object;
+        $(".lineInfoDiv").css("border", "1px solid black");
+
+    } else {
+        $(".lineInfo_" + object).css("border", "5px solid black");
+    }
+//    $(".lineInfo_" + object).hide();
+}
+
 function addVariantToMultiverse(codeMultiverseId) {
     let variantRow = $('#' + codeMultiverseId + '-variantUL');
     let variantId = 'v' + Math.random().toString(36).slice(2, 7);
