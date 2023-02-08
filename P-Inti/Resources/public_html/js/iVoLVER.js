@@ -1932,7 +1932,7 @@ var iVoLVER = {
 
             iVoLVER.gui.add.draggableIcon({
                 sectionID: logicalOperatorsSection,
-                iconClass: 'fa-exchange',
+                iconClass: 'fa-rectangle-xmark',
                 tooltip: 'Canvas variable',
                 onMouseUp: function (x, y) {
                     var canvasVariable = new CanvasVariable({
