@@ -631,6 +631,13 @@ function moveTimelineNext() {
         return;
     }
 
+    // Reset shooting stars
+    for (const [key, value] of Object.entries(namedSymbols)) {
+        if (value.beforeShootingStarRender) {
+            value.render = value.beforeShootingStarRender;
+        }
+    }
+
     console.log("Next time is: ");
     console.log(currentTime);
 
@@ -705,6 +712,13 @@ function moveTimelinePrevious() {
 
     if (currentIndex == -1) {
         return;
+    }
+
+    // Reset shooting stars
+    for (const [key, value] of Object.entries(namedSymbols)) {
+        if (value.beforeShootingStarRender) {
+            value.render = value.beforeShootingStarRender;
+        }
     }
 
     console.log("Previous time is: ");
@@ -899,7 +913,7 @@ function scaleCoordinates(coordsArray, percentage) {
     return scaledCoords;
 }
 
-function chevronShootingStars(source, target) {
+function generateChevronShootingStars(source, target) {
     var theConnector = source;
 
     let chevron = [
@@ -935,7 +949,7 @@ function chevronShootingStars(source, target) {
         var deltaY = y2 - y1;
 
         var angle = Math.atan(deltaY / deltaX);
-        if (theConnector.x1 > theConnector.x2) {
+        if (x1 > x2) {
             angle += fabric.util.degreesToRadians(180);
         }
 
@@ -1012,20 +1026,20 @@ function drawCirclesAlongLine(ctx, points) {
 function drawCirclesAlongCurve(ctx, points) {
     //ctx.save();
     let shootingStarsCircles = [];
+    let chevronSvg = "M4.646 1.646a.5.5 0 0 1 .708 0l6 6a.5.5 0 0 1 0 .708l-6 6a.5.5 0 0 1-.708-.708L10.293 8 4.646 2.354a.5.5 0 0 1 0-.708z";
     let radius = 12;
     let opacity = 0.5;
     for (var t = 0; t < 101; t += 5) {
         var point = getQuadraticBezierXYatT(points[0], points[1], points[2], t / 100);
-        var shootingStarCircle = new fabric.Circle({
-            radius: radius,
+        var shootingStarCircle = new fabric.Path(chevronSvg, {
             top: point.y,
             left: point.x,
-            fill: rgba(255, 255, 0, opacity),
-            centerX: "center",
-            centerY: "center",
-            opacity: opacity,
+            fill: rgba(255, 255, 0, 1),
+            opacity: 1,
             eventable: false,
-            selectable: false
+            selectable: false,
+            width: radius,
+            height: radius,
         });
 
         canvas.add(shootingStarCircle);
@@ -1040,6 +1054,8 @@ function drawCirclesAlongCurve(ctx, points) {
         //opacity = opacity - 0.015;
     }
 
+    console.log("Shooting stars circles");
+    console.log(shootingStarsCircles);
     return shootingStarsCircles;
     //ctx.restore();
 }
@@ -1100,6 +1116,9 @@ function shootingStarsDecay(widget1, widget2) {
     }
 }
 
+function generatChevronShootingStars(widget1, widget2) {
+
+}
 function generateShootingStars(widget1, widget2) {
     let ctx = canvas.getContext();
     var shootingStarEnd = widget1.getPointByOrigin('center', 'center');
@@ -1140,7 +1159,9 @@ function generateShootingStars(widget1, widget2) {
     console.log(widget1.shootingStarsDict);
 }
 
-function parseShootingStarsSource(parentStatement, widget) {
+function parseShootingStarsTarget(parentStatement, widget) {
+    console.log("!@#Parent staetment is: " + parentStatement);
+    console.log("!@#Widget name is: " + widget.name);
     if (parentStatement.includes("=")) {
         let leftHalf = parentStatement.split("=")[0].trim();
         let rightHalf = parentStatement.split("=")[1].trim();
@@ -5640,7 +5661,7 @@ function drawFilledPolygon(shape, ctx) {
     ctx.restore();
 }
 
-function drawFilledChevron(shape, ctx) {
+function  drawFilledChevron(shape, ctx) {
     ctx.save();
     ctx.beginPath();
     ctx.moveTo(shape[0][0], shape[0][1]);
