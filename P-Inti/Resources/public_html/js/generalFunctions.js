@@ -413,6 +413,7 @@ function loadLogFiles(response, lineInfoFileContent, waitingDialog) {
     console.log("Log file content after removing duplicates");
     console.log(logFileContent);
     updateLoggingFileToRemoveDuplicates(logFileContent);
+    updateLineLogFileToIncludeIndex(lineInfoFileContent);
     processMethodParameters(logFileContent);
     processLogFiles(logFileContent, scopeFileContent, signalFileContent, lineInfoFileContent, initFileContent);
     window.snapshotWidget && window.snapshotWidget.parseMemberValues();
@@ -426,6 +427,11 @@ function loadLogFiles(response, lineInfoFileContent, waitingDialog) {
             }, 2000);
         }
     }
+}
+function updateLineLogFileToIncludeIndex(lineLogData) {
+    window.jsHandler && window.jsHandler.updateLineLogFileToIncludeIndex({
+        lineLogData: lineLogData
+    });
 }
 
 function highlightLine (object) {

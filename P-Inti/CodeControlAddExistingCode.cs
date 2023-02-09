@@ -1,4 +1,5 @@
-﻿using Microsoft.VisualStudio.Shell;
+﻿using EnvDTE;
+using Microsoft.VisualStudio.Shell;
 using Microsoft.VisualStudio.Shell.Interop;
 using System;
 using System.ComponentModel.Design;
@@ -95,17 +96,27 @@ namespace P_Inti
             EnvDTE.DTE dte = (EnvDTE.DTE)serviceProvider.GetService(typeof(EnvDTE.DTE));
             EnvDTE.TextSelection ts = dte.ActiveWindow.Selection as EnvDTE.TextSelection;
 
-            string codeControlText = CodeControls.AddExistingCodeToCodeControl(ts.Text);
+            MyWindowControl.printInBrowserConsole("ts.TextRanges.ToString()");
+            MyWindowControl.printInBrowserConsole(ts.TextRanges.ToString());
 
-            MyWindowControl.printInBrowserConsole("CodeControlText is: ");
-            MyWindowControl.printInBrowserConsole(codeControlText);
+            foreach(TextRange textRange in ts.TextRanges)
+            {
+                MyWindowControl.printInBrowserConsole(textRange.ToString());
+                MyWindowControl.printInBrowserConsole(textRange.StartPoint.Line);
+                MyWindowControl.printInBrowserConsole(textRange.EndPoint.Line);
+            }
 
-            ts.Text = codeControlText;
+            //string codeControlText = CodeControls.AddExistingCodeToCodeControl(ts.Text);
 
-            MyWindowControl.printInBrowserConsole("ts.Text is: ");
-            MyWindowControl.printInBrowserConsole(ts.Text);
+            //MyWindowControl.printInBrowserConsole("CodeControlText is: ");
+            //MyWindowControl.printInBrowserConsole(codeControlText);
 
-            CodeControlEditorAdornment.wereLinesUpdated = true;
+            //ts.Text = codeControlText;
+
+            //MyWindowControl.printInBrowserConsole("ts.Text is: ");
+            //MyWindowControl.printInBrowserConsole(ts.Text);
+
+            //CodeControlEditorAdornment.wereLinesUpdated = true;
             //CodeControlEditorAdornment.CreateEditorVisuals(null);
         }
     }

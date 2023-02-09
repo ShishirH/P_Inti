@@ -172,12 +172,12 @@
 </div>
 <script type="text/javascript">
     var addIterText = function (line, lineNum, loopsDict ){
-        if (line.includes(" " + "for" + " ") && loopsDict["for_" + lineNum] && loopsDict["for_" + lineNum] [0]){
+        if (line && line.includes && line.includes(" " + "for" + " ") && loopsDict["for_" + lineNum] && loopsDict["for_" + lineNum] [0]){
 
             line = "      iter " +  loopsDict["for_" + lineNum] [0] ['iter'] + " " + line.slice (6, line.length - 1) ;
             loopsDict["for_" + lineNum].shift();
         }
-        if (line.includes(" " + "while" + " ") && loopsDict["for_" + lineNum] && loopsDict["while_" + lineNum] [0]){
+        if (line && line.includes && line.includes(" " + "while" + " ") && loopsDict["for_" + lineNum] && loopsDict["while_" + lineNum] [0]){
 
             line = "      iter " +  loopsDict["while_" + lineNum] [0] ['iter'] + " " + line.slice (6, line.length - 1) ;
             loopsDict["while_" + lineNum].shift();
@@ -203,6 +203,9 @@
                     dynamicTyping: true,
                     complete: function (logData) {
                         window.jsHandler.getLineInfo(null).then(function (response) {
+                            console.log(logData);
+
+                            console.log("logData is: ");
                             console.log(logData);
                             var fileContent = "";
                             var i;
@@ -254,7 +257,7 @@
                                     console.log(valuesData)
 
                                     for (i = 0; i < logData['data'].length; i++){
-                                        if (logData['data'][i]['lineContent'] && logData['data'][i]['lineContent'].includes(" " + "for" + " " )){
+                                        if (logData['data'][i]['lineContent'] && logData['data'][i]['lineContent'].includes && logData['data'][i]['lineContent'].includes(" " + "for" + " " )){
                                             lineNum = logData['data'][i]['line'] + 1;
                                             if ( !loopsDictionary.hasOwnProperty( "for_" + lineNum ) ){
 
@@ -264,7 +267,7 @@
                                             }
                                         }
 
-                                        if (logData['data'][i]['lineContent'] && logData['data'][i]['lineContent'].includes(" " + "while" + " " )){
+                                        if (logData['data'][i]['lineContent'] && logData['data'][i]['lineContent'].includes && logData['data'][i]['lineContent'].includes(" " + "while" + " " )){
                                             lineNum = logData['data'][i]['line'] + 1;
                                             if ( !loopsDictionary.hasOwnProperty( "while_" + lineNum ) ){
                                                 loopsDictionary["while_" + lineNum] = [{"loop": "while", "line": lineNum, "iter": 0 }]
@@ -285,7 +288,7 @@
                                             for (k = 0; k < allSymbols.length; k++){
 
                                                 if ((logData['data'][i]['line'] +1 ) == valuesDictionary [allSymbols[k]] [0]["line"]  &&
-                                                    logData['data'][i]['lineContent'].includes(" " +  allSymbols[k] + " ")    ){
+                                                    logData['data'][i]['lineContent'].includes && logData['data'][i]['lineContent'].includes(" " +  allSymbols[k] + " ")    ){
 
 
                                                     startAndEnd = getStartEnd(logData['data'][i]['lineContent'], " " +  allSymbols[k] + " ");
@@ -298,7 +301,7 @@
                                                 }
                                                 if (  valuesDictionary [allSymbols[k]] [1] &&
                                                     (logData['data'][i]['line'] +1 ) == valuesDictionary [allSymbols[k]] [1]["line"]  &&
-                                                    logData['data'][i]['lineContent'].includes(" " +  allSymbols[k] + " ")    ){
+                                                    logData['data'][i]['lineContent'].includes && logData['data'][i]['lineContent'].includes(" " +  allSymbols[k] + " ")    ){
 
 
                                                     startAndEnd = getStartEnd(logData['data'][i]['lineContent'], " " +  allSymbols[k] + " ");
