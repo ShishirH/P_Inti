@@ -565,11 +565,33 @@ namespace P_Inti
                         var sourceSpan = variable.GetLocation().SourceSpan;
 
                         MyWindowControl.printInBrowserConsole("Bommarillu type: " + type);
-                        MyWindowControl.printInBrowserConsole("Bommarillu declarationText: " + declarationText);
+                        MyWindowControl.printInBrowserConsole("Ante declarationText: " + declarationText);
                         MyWindowControl.printInBrowserConsole("Bommarillu sourceSpanStart: " + sourceSpan.Start);
                         MyWindowControl.printInBrowserConsole("Bommarillu sourceSpanEnd: " + sourceSpan.End);
                         MyWindowControl.printInBrowserConsole("Bommarillu sourceSpanLength: " + sourceSpan.Length);
 
+
+                        if (declarationText.Contains("//"))
+                        {
+                            declarationText = declarationText.Trim();
+                            string[] declarationTextArray = declarationText.Split(Environment.NewLine.ToCharArray());
+
+                            foreach (string decText in declarationTextArray)
+                            {
+                                if (decText.Trim().Length != 0)
+                                {
+                                    MyWindowControl.printInBrowserConsole("Ante decText: " + decText);
+                                    if (!decText.Contains("//"))
+                                    {
+                                        declarationText = decText.Trim();
+                                        break;
+                                    }
+                                }
+                            }
+
+                        }
+
+                        MyWindowControl.printInBrowserConsole("Ante declarationText: " + declarationText);
 
                         // int numberOfMonths = 25;
                         // TODO Refine logic for multiple statements in the same line case.

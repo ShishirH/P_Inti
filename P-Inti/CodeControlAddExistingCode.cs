@@ -96,28 +96,70 @@ namespace P_Inti
             EnvDTE.DTE dte = (EnvDTE.DTE)serviceProvider.GetService(typeof(EnvDTE.DTE));
             EnvDTE.TextSelection ts = dte.ActiveWindow.Selection as EnvDTE.TextSelection;
 
-            MyWindowControl.printInBrowserConsole("ts.TextRanges.ToString()");
-            MyWindowControl.printInBrowserConsole(ts.TextRanges.ToString());
+            int startLine = -1;
+            int endLine = -1;
 
+            EditPoint startPoint = null;
+            EditPoint endPoint = null;
             foreach(TextRange textRange in ts.TextRanges)
             {
-                MyWindowControl.printInBrowserConsole(textRange.ToString());
-                MyWindowControl.printInBrowserConsole(textRange.StartPoint.Line);
-                MyWindowControl.printInBrowserConsole(textRange.EndPoint.Line);
+                if (startLine == -1)
+                {
+                    startLine = textRange.StartPoint.Line;
+                    startPoint = textRange.StartPoint;
+                }
+
+                endLine = textRange.EndPoint.Line;
+                endPoint = textRange.EndPoint;
+                //MyWindowControl.printInBrowserConsole("startPoint" + textRange.StartPoint.Line);
+                //MyWindowControl.printInBrowserConsole("endPoint" + textRange.EndPoint.Line);
             }
 
+            if (!ts.Text.EndsWith("\n") && !ts.Text.EndsWith("\r\n"))
+            {
+                MyWindowControl.printInBrowserConsole("End of line not selected. Adding 1");
+                endLine = endLine + 1;
+            } else
+            {
+                MyWindowControl.printInBrowserConsole("End of line selected. Not adding 1");
+
+            }
+
+            var activePoint = ((EnvDTE.TextSelection)dte.ActiveDocument.Selection).ActivePoint;
+            string text = activePoint.CreateEditPoint().GetLines(startLine, endLine);
+
+            MyWindowControl.printInBrowserConsole("Text found is: ");
+            MyWindowControl.printInBrowserConsole(text);
+
+            string codeControlText = CodeControls.AddExistingCodeToCodeControl(text);
             //string codeControlText = CodeControls.AddExistingCodeToCodeControl(ts.Text);
 
-            //MyWindowControl.printInBrowserConsole("CodeControlText is: ");
-            //MyWindowControl.printInBrowserConsole(codeControlText);
+            MyWindowControl.printInBrowserConsole("CodeControlText is: ");
+            MyWindowControl.printInBrowserConsole(codeControlText);
 
             //ts.Text = codeControlText;
+            //string textToBeReplaced = "";
+
+            //for (int i = startLine; i <= endLine; i++)
+            //{
+            //    textToBeReplaced += "\n";
+            //}
+            //ts.Text = textToBeReplaced;
+
+            MyWindowControl.printInBrowserConsole("text.Length: ");
+            MyWindowControl.printInBrowserConsole(activePoint.CreateEditPoint().GetText(text.Length));
+            
+            MyWindowControl.printInBrowserConsole("endLine - startLine + 1: ");
+            MyWindowControl.printInBrowserConsole(activePoint.CreateEditPoint().GetText(endLine - startLine + 1));
+
+            MyWindowControl.printInBrowserConsole("Text found is: ");
+            startPoint.CreateEditPoint().ReplaceText(endPoint, codeControlText, (int)vsEPReplaceTextOptions.vsEPReplaceTextAutoformat);
 
             //MyWindowControl.printInBrowserConsole("ts.Text is: ");
             //MyWindowControl.printInBrowserConsole(ts.Text);
 
-            //CodeControlEditorAdornment.wereLinesUpdated = true;
-            //CodeControlEditorAdornment.CreateEditorVisuals(null);
+            CodeControlEditorAdornment.wereLinesUpdated = true;
+            CodeControlEditorAdornment.CreateEditorVisuals(null);
         }
     }
 }

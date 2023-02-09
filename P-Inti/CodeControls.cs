@@ -140,6 +140,11 @@ namespace P_Inti
             string codeShiftName = MyWindowControl.CurrentCodeControl.Name;
             string codeVariantName = MyWindowControl.CurrentCodeControl.CurrrentActiveBranchName;
 
+            if (!text.EndsWith("\n") && !text.EndsWith("\r\n"))
+            {
+                text = text + "\n";
+            }
+
             string codeControlText = @"//BEGIN " + codeShiftName + ":" + codeVariantName + "\n"
                 + text + @"//END " + codeShiftName + ":" + codeVariantName + "\n";
 
