@@ -608,13 +608,13 @@ namespace P_Inti
                         string variableName = variableTypeArray[1];
 
                         int caretPosition = sourceSpan.Start + variableType.Length + 1 + variableName.Length;
-                        MyWindowControl.printInBrowserConsole("Bommarillu sourceSpanWithType: " + (sourceSpan.Start + variableType.Length));
-                        MyWindowControl.printInBrowserConsole("Bommarillu sourceSpanWithTypeName: " + (sourceSpan.Start + variableType.Length + 1 + variableName.Length));
+                        //MyWindowControl.printInBrowserConsole("Bommarillu sourceSpanWithType: " + (sourceSpan.Start + variableType.Length));
+                        //MyWindowControl.printInBrowserConsole("Bommarillu sourceSpanWithTypeName: " + (sourceSpan.Start + variableType.Length + 1 + variableName.Length));
 
-                        MyWindowControl.printInBrowserConsole("!@!@ variableName: " + variableName);
-                        MyWindowControl.printInBrowserConsole("!@!@ variableType: " + variableType);
-                        MyWindowControl.printInBrowserConsole("!@!@ variablevalue: " + variableValue);
-                        MyWindowControl.printInBrowserConsole("!@!@ document.FilePath: " + document.FilePath);
+                        //MyWindowControl.printInBrowserConsole("!@!@ variableName: " + variableName);
+                        //MyWindowControl.printInBrowserConsole("!@!@ variableType: " + variableType);
+                        //MyWindowControl.printInBrowserConsole("!@!@ variablevalue: " + variableValue);
+                        //MyWindowControl.printInBrowserConsole("!@!@ document.FilePath: " + document.FilePath);
 
                         int foundIndex = Array.IndexOf(variableNamesArray, variableName);
                         MyWindowControl.printInBrowserConsole("!@!@ foundIndex: " + foundIndex);
@@ -630,11 +630,11 @@ namespace P_Inti
 
                             fileName = fileName.Replace("/", "\\");
 
-                            MyWindowControl.printInBrowserConsole("!@!@ dataType: " + dataType);
-                            MyWindowControl.printInBrowserConsole("!@!@ declaredLine: " + declaredLine);
-                            MyWindowControl.printInBrowserConsole("!@!@ scopedLine: " + scopedLine);
-                            MyWindowControl.printInBrowserConsole("!@!@ fileName: " + fileName);
-                            MyWindowControl.printInBrowserConsole("!@!@ document.FilePath: " + document.FilePath);
+                            //MyWindowControl.printInBrowserConsole("!@!@ dataType: " + dataType);
+                            //MyWindowControl.printInBrowserConsole("!@!@ declaredLine: " + declaredLine);
+                            //MyWindowControl.printInBrowserConsole("!@!@ scopedLine: " + scopedLine);
+                            //MyWindowControl.printInBrowserConsole("!@!@ fileName: " + fileName);
+                            //MyWindowControl.printInBrowserConsole("!@!@ document.FilePath: " + document.FilePath);
 
 
                             if (document.FilePath.Equals(fileName) || document.Name.Equals(fileName))
@@ -652,10 +652,10 @@ namespace P_Inti
                                     int scopeFrom = parent.GetLocation().GetLineSpan().StartLinePosition.Line + 1;
                                     int scopeTo = parent.GetLocation().GetLineSpan().EndLinePosition.Line + 1;
 
-                                    MyWindowControl.printInBrowserConsole("!@!@ declareAtFrom: " + declareAtFrom);
-                                    MyWindowControl.printInBrowserConsole("!@!@ declareAtTo: " + declareAtTo);
-                                    MyWindowControl.printInBrowserConsole("!@!@ scopeFrom: " + scopeFrom);
-                                    MyWindowControl.printInBrowserConsole("!@!@ scopeTo: " + scopeTo);
+                                    //MyWindowControl.printInBrowserConsole("!@!@ declareAtFrom: " + declareAtFrom);
+                                    //MyWindowControl.printInBrowserConsole("!@!@ declareAtTo: " + declareAtTo);
+                                    //MyWindowControl.printInBrowserConsole("!@!@ scopeFrom: " + scopeFrom);
+                                    //MyWindowControl.printInBrowserConsole("!@!@ scopeTo: " + scopeTo);
 
                                     // TODO Confirm validations
                                     if (Int32.Parse(declaredLine) <= scopeTo) // TODO SCOPE FROM
@@ -674,9 +674,9 @@ namespace P_Inti
                                         windowControl.positions.Add(caretPosition);
                                         windowControl.trackedSymbolsIDs.Add(variableId);
                                         windowControl.fileNames.Add(fileName);
-                                        MyWindowControl.printInBrowserConsole("Bommarillu variableName: " + variableName);
-                                        MyWindowControl.printInBrowserConsole("Bommarillu caretPosition: " + caretPosition);
-                                        MyWindowControl.printInBrowserConsole("Bommarillu variableId: " + variableId);
+                                        //MyWindowControl.printInBrowserConsole("Bommarillu variableName: " + variableName);
+                                        //MyWindowControl.printInBrowserConsole("Bommarillu caretPosition: " + caretPosition);
+                                        //MyWindowControl.printInBrowserConsole("Bommarillu variableId: " + variableId);
 
                                     }
                                 }

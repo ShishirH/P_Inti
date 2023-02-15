@@ -1744,7 +1744,7 @@ var iVoLVER = {
 
             iVoLVER.gui.add.draggableIcon({
                 sectionID: signalsSection,
-                iconClass: 'fa-exchange',
+                iconClass: 'fa-solid fa-wave-square',
                 tooltip: 'When Widget',
                 onMouseUp: function (x, y) {
                     var whenWidget = new WhenWidget({
@@ -1764,7 +1764,7 @@ var iVoLVER = {
 
             iVoLVER.gui.add.draggableIcon({
                 sectionID: signalsSection,
-                iconClass: 'fa-exchange',
+                iconClass: 'fa-solid fa-arrow-right-long',
                 tooltip: 'Affect Widget',
                 onMouseUp: function (x, y) {
                     var affectWidget = new AffectWidget({
@@ -1808,7 +1808,7 @@ var iVoLVER = {
 
             iVoLVER.gui.add.draggableIcon({
                 sectionID: plotsSection,
-                iconClass: 'fa-exchange',
+                iconClass: 'fa-solid fa-note-sticky',
                 tooltip: 'Code Note',
                 onMouseUp: function (x, y) {
                     var note = new CodeNote({
@@ -1826,7 +1826,7 @@ var iVoLVER = {
 
             iVoLVER.gui.add.draggableIcon({
                 sectionID: plotsSection,
-                iconClass: 'fa-exchange',
+                iconClass: 'fa-solid fa-chart-line',
                 tooltip: 'Lollipop plot',
                 onMouseUp: function (x, y) {
                     var plotter = new LollipopPlot({
@@ -1844,7 +1844,7 @@ var iVoLVER = {
 
             iVoLVER.gui.add.draggableIcon({
                 sectionID: plotsSection,
-                iconClass: 'fa-exchange',
+                iconClass: 'fa-solid fa-chart-column',
                 tooltip: 'Scatter plot',
                 onMouseUp: function (x, y) {
                     var plotter = new ScatterPlot({
@@ -1880,9 +1880,9 @@ var iVoLVER = {
             let divContainer = $('<div id="addCodeMultiverseContainer" class="container" </div>');
 
             let divName = $('<div class="row" style="width:auto">' +
-                '<div class="col-12"><button id="addCodeMultiverseButton" type="button" class="btn" style="color:red; width:inherit" ><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-arrow-down" viewBox="0 0 16 16">\n' +
-                '  <path fill-rule="evenodd" d="M8 1a.5.5 0 0 1 .5.5v11.793l3.146-3.147a.5.5 0 0 1 .708.708l-4 4a.5.5 0 0 1-.708 0l-4-4a.5.5 0 0 1 .708-.708L7.5 13.293V1.5A.5.5 0 0 1 8 1z"/>\n' +
-                '</svg></button></div>' +
+                '<div class="col-12"><button id="addCodeMultiverseButton" type="button" class="btn" style="color:#666; width:inherit" ><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-plus" viewBox="0 0 16 16">' + "\n" +
+                '<path d="M8 4a.5.5 0 0 1 .5.5v3h3a.5.5 0 0 1 0 1h-3v3a.5.5 0 0 1-1 0v-3h-3a.5.5 0 0 1 0-1h3v-3A.5.5 0 0 1 8 4z"/>' + "\n" +
+                '</svg></button></div>' + "\n" +
                 '</div>');
             // let nameElement = $('');
             // let collapsibleButton = $('')
@@ -1932,7 +1932,7 @@ var iVoLVER = {
 
             iVoLVER.gui.add.draggableIcon({
                 sectionID: logicalOperatorsSection,
-                iconClass: 'fa-rectangle-xmark',
+                iconClass: 'fa-solid fa-rectangle-xmark',
                 tooltip: 'Canvas variable',
                 onMouseUp: function (x, y) {
                     var canvasVariable = new CanvasVariable({
@@ -1951,7 +1951,7 @@ var iVoLVER = {
 
             iVoLVER.gui.add.draggableIcon({
                 sectionID: logicalOperatorsSection,
-                iconClass: 'fa-exchange',
+                iconClass: 'fa-solid fa-less-than-equal',
                 tooltip: 'Comparison operator',
                 onMouseUp: function (x, y) {
                     var comparisonOperator = new ComparisonOperators({
@@ -1965,7 +1965,7 @@ var iVoLVER = {
 
             iVoLVER.gui.add.draggableIcon({
                 sectionID: logicalOperatorsSection,
-                iconClass: 'fa-exchange',
+                iconClass: 'fa-solid fa-grip-lines-vertical',
                 tooltip: 'Logical operator',
                 onMouseUp: function (x, y) {
                     var logicalOperator = new LogicalOperators({
@@ -1979,7 +1979,7 @@ var iVoLVER = {
 
             iVoLVER.gui.add.draggableIcon({
                 sectionID: logicalOperatorsSection,
-                iconClass: 'fa-exchange',
+                iconClass: 'fa-solid fa-plus-minus',
                 tooltip: 'Arithmetic operator',
                 onMouseUp: function (x, y) {
                     var arithmeticOperator = new ArithmeticOperators({
@@ -1993,7 +1993,7 @@ var iVoLVER = {
 
             iVoLVER.gui.add.draggableIcon({
                 sectionID: logicalOperatorsSection,
-                iconClass: 'fa-exchange',
+                iconClass: 'fa-solid fa-equals',
                 tooltip: 'Result Widget',
                 onMouseUp: function (x, y) {
                     var resultWidget = new ResultWidget({

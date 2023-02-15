@@ -24,12 +24,12 @@ function addVariantToMultiverse(codeMultiverseId) {
     let name = codeMultiverseId + "-variant";
     let id = codeMultiverseId + "-" + variantId + "-variant";
 
-    let newVariant = $('<li class="list-group-item">\n' +
-        '                        <div class="row">\n' +
+    let newVariant = $('<li class="list-group-item codeVariantLi" style="padding-top:8px; padding-bottom:1px; padding-left:0px; padding-right:0px;margin-top:0px">\n' +
+        '                        <div class="row codeVariantRow">\n' +
         '                            <div class="col-12">\n' +
-        '                                <input class="form-check-input" value="' + id + '" type="radio" name="' + name + '" id="' + id + '" style="display:inline-grid;width:15px;margin-top:10px">\n' +
-        '                                <label class="form-check-label" for="' + id + '">              \n' +
-        '                                   <input class="form-control" style="width:105px" id="' + id + '-title" type="text" placeholder="Variant title" style="margin-top:8px">\n' +
+        '                                <input class="form-check-input" value="' + id + '" type="radio" name="' + name + '" id="' + id + '" style="display:inherit;width:15px;margin-top:10px;margin-left:8px">\n' +
+        '                                <label class="form-check-label codeVariantLabel" style="margin-top:-32px" for="' + id + '">              \n' +
+        '                                   <input class="form-control variantTextInput" style="width:140px;margin-left:20px" id="' + id + '-title" type="text" placeholder="Variant title" style="margin-top:8px">\n' +
         '                                </label>\n' +
         '                            </div>                \n' +
         '                        </div>        \n' +
@@ -86,11 +86,17 @@ function addCodeMultiverseToRightPane() {
     let saturatedColor = colorsArray[codeMultiverseIds.length - 1];
     let desaturatedColor = actualDesaturatedColorsArray[codeMultiverseIds.length - 1];
 
+    let dimmedColor = hexToRGB(desaturatedColor);
+    dimmedColor["a"] = 0.5;
+    let dimmedColorString = "rgba(" + dimmedColor.r + "," + dimmedColor.g + "," + dimmedColor.b + "," + 0.8 + ")";
+
+    let lightenSaturatedColor = lighten(saturatedColor, 13);
+
     console.log("Saturated color is: " + saturatedColor);
     console.log("deSaturated color is: " + desaturatedColor);
 
     let divMultiverses = $('    <div class="container-fluid codeMultiverseContainer" id="' + codeMultiverseId + '-container" style="border: 5px; border-color:' + saturatedColor + '; border-style:solid; margin-bottom:8px" >\n' +
-        '        <div class="row" style="display:flex; border-width: 0 0 5px 0; border-color:' + desaturatedColor + '; border-style:solid; padding-bottom:5px">\n' +
+        '        <div class="row" style="display:flex; border-width: 0 0 1px 0; background-color: ' + dimmedColorString + '; border-color:' + saturatedColor + '; border-style:solid; padding-bottom:5px">\n' +
         '            <div class="col-10">\n' +
         '                <input class="form-control codeMultiverseTitle" id="' + codeMultiverseId + '-title" type="text" placeholder="Multiverse title" style="margin-top:8px">\n' +
         '            </div>\n' +
@@ -104,34 +110,34 @@ function addCodeMultiverseToRightPane() {
         '            </div>\n' +
         '        </div>\n' +
         '        <div class="row ' + codeMultiverseId + '-collapseRows" id="' + codeMultiverseId + '-variantRow">\n' +
-        '            <div class="col-lg-12">\n' +
-        '                <ul class="list-group list-group-flush" id="' + codeMultiverseId + '-variantUL" style="margin-left:0">\n' +
+        '            <div class="col-lg-12" style="padding:inherit">\n' +
+        '                <ul class="list-group list-group-flush codeMultiverseVariantUL" id="' + codeMultiverseId + '-variantUL" style="margin-left:0">\n' +
         '                    <!-- <li class="list-group-item">Morbi leo risus</li> -->\n' +
         '                  </ul>                  \n' +
         '            </div>\n' +
         '        </div>\n' +
-        '        <div class="row ' + codeMultiverseId + '-collapseRows" style="display:flex">\n' +
-        '            <div class="col-4">\n' +
+        '        <div class="row ' + codeMultiverseId + '-collapseRows codeMultiverseButtonRow" style="display:flex; border-color:' + saturatedColor + '">\n' +
+        '            <div class="col-4 buttonCol">\n' +
         '                 \n' +
-        '                <button type="button" class="glyphicon" id="' + codeMultiverseId + '-addVariantButton">\n' +
+        '                <button type="button" class="glyphicon codeMultiverseBottomButtons" style="background: ' + lightenSaturatedColor + '" id="' + codeMultiverseId + '-addVariantButton">\n' +
         '                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-plus-circle" viewBox="0 0 16 16">\n' +
         '                        <path d="M8 15A7 7 0 1 1 8 1a7 7 0 0 1 0 14zm0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16z"/>\n' +
         '                        <path d="M8 4a.5.5 0 0 1 .5.5v3h3a.5.5 0 0 1 0 1h-3v3a.5.5 0 0 1-1 0v-3h-3a.5.5 0 0 1 0-1h3v-3A.5.5 0 0 1 8 4z"/>\n' +
         '                    </svg>                      \n' +
         '                </button>\n' +
         '            </div>\n' +
-        '            <div class="col-4">\n' +
+        '            <div class="col-4 buttonCol">\n' +
         '                 \n' +
-        '                <button type="button" class="glyphicon" id="' + codeMultiverseId + '-updateVariantButton">\n' +
+        '                <button type="button" class="glyphicon codeMultiverseBottomButtons" style="background: ' + lightenSaturatedColor + '" id="' + codeMultiverseId + '-updateVariantButton">\n' +
         '                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-arrow-clockwise" viewBox="0 0 16 16">\n' +
         '                        <path fill-rule="evenodd" d="M8 3a5 5 0 1 0 4.546 2.914.5.5 0 0 1 .908-.417A6 6 0 1 1 8 2v1z"/>\n' +
         '                        <path d="M8 4.466V.534a.25.25 0 0 1 .41-.192l2.36 1.966c.12.1.12.284 0 .384L8.41 4.658A.25.25 0 0 1 8 4.466z"/>\n' +
         '                    </svg>  \n' +
         '                </button>\n' +
         '            </div>\n' +
-        '            <div class="col-4">\n' +
+        '            <div class="col-4 buttonCol">\n' +
         '                 \n' +
-        '                <button type="button" class="glyphicon" id="' + codeMultiverseId + '-deleteVariantButton">\n' +
+        '                <button type="button" class="glyphicon codeMultiverseBottomButtons" style="background: ' + lightenSaturatedColor + '" id="' + codeMultiverseId + '-deleteVariantButton">\n' +
         '                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-trash" viewBox="0 0 16 16">\n' +
         '                        <path d="M5.5 5.5A.5.5 0 0 1 6 6v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5zm2.5 0a.5.5 0 0 1 .5.5v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5zm3 .5a.5.5 0 0 0-1 0v6a.5.5 0 0 0 1 0V6z"/>\n' +
         '                        <path fill-rule="evenodd" d="M14.5 3a1 1 0 0 1-1 1H13v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V4h-.5a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1H6a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1h3.5a1 1 0 0 1 1 1v1zM4.118 4 4 4.059V13a1 1 0 0 0 1 1h6a1 1 0 0 0 1-1V4.059L11.882 4H4.118zM2.5 3V2h11v1h-11z"/>\n' +

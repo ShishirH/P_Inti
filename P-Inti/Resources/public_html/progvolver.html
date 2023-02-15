@@ -58,12 +58,15 @@
         <link rel="stylesheet" type="text/css" href="./css/jquery.dialog.css" />
         <link rel="stylesheet" type="text/css" href="./css/ion.rangeSlider.min.css" />
 <!--        <link rel="stylesheet" type="text/css" href="./css/drawingCanvas.css" />-->
-        <link rel="stylesheet" type="text/css" href="./css/fontawesome.min.css" />
-        <link rel="stylesheet" type="text/css" href="./css/fonts/fontawesome/css/font-awesome.css" media="all" />
-        <link rel="stylesheet" type="text/css" href="./css/fonts/font-awesome-4.4.0/css/font-awesome.css" media="all" />
         <link rel="stylesheet" type="text/css" href="./js/contextMenu/jquery.contextMenu.min.css" />
 
-        <script defer src="./js/v4-shims.min.js"></script>
+<!--        <script defer src="./js/v4-shims.min.js"></script>-->
+<!--        <script type="text/javascript" src="./js/fontAwesomeSix/js/all.js"></script>-->
+        <link rel="stylesheet" type="text/css" href="./js/fontAwesomeSix/css/all.css" />
+        <link rel="stylesheet" type="text/css" href="./js/fontAwesomeSix/css/fontawesome.css" />
+
+        <link rel="stylesheet" type="text/css" href="./css/fonts/fontawesome/css/font-awesome.css" media="all" />
+        <link rel="stylesheet" type="text/css" href="./css/fonts/font-awesome-4.4.0/css/font-awesome.css" media="all" />
 
         <script type="text/javascript" src="./js/jquery-1.10.2.js"></script>
         <script type="text/javascript" src="./js/jquery.ajaxfileupload.js"></script>
@@ -249,8 +252,8 @@
 
             <!-- DRAGGING & PANNING MODES -->
             <li id="panningModeButton" onmousedown='modeButtonClicked(this);' draggable="false" class="mode"><a><i class="fa fa-hand-paper-o fa-2x"> </i> </a></li>
-            <li class="verticalLeftDivider mode" id="disconnectingModeButton" onmousedown='modeButtonClicked(this);' draggable="false"><a><i class="fa fa-unlink fa-2x"> </i> </a></li>
-            <li class="verticalLeftDivider verticalRightDivider verticalRightDivider2 mode" id="squaredSelectionButton" onmousedown='modeButtonClicked(this);' draggable="false"><a><i class="fa fa-object-group fa-2x"> </i> </a></li>
+<!--            <li class="verticalLeftDivider mode" id="disconnectingModeButton" onmousedown='modeButtonClicked(this);' draggable="false"><a><i class="fa fa-unlink fa-2x"> </i> </a></li>-->
+<!--            <li class="verticalLeftDivider verticalRightDivider verticalRightDivider2 mode" id="squaredSelectionButton" onmousedown='modeButtonClicked(this);' draggable="false"><a><i class="fa fa-object-group fa-2x"> </i> </a></li>-->
 
             <!-- OPERATIONS ON OBJECTS -->
             <!--            <li class="mode verticalLeftDivider" onmousedown='duplicateObject();' draggable="false"><a><i class="fa fa-clone fa-flip-horizontal  clicMenu"> </i> </a></li>
@@ -260,22 +263,22 @@
                         <li class="verticalLeftDivider verticalRightDivider verticalRightDivider2"><a href="javascript:void(0);" onclick="deleteAllObjects();"><i class="fa fa-trash-o "></i></a></li>-->
 
             <!-- FILE MENU -->
-            <li id="fileMenu" onclick="showMenu(this);" class="verticalRightDivider verticalRightDivider2">
-                <a>
-                    <i class="fa fa-file-o "></i>
-                </a>
-                <ul id="fileMenuUL">
-                    <li><a href="javascript:void(0);" onclick="saveProject();"><i id="saveProjectElement" class="fa-save icon-large"></i> Save project</a></li>
-                    <li><a href="javascript:loadiVoLVERProject();"><i class="fa-folder-open-o icon-large"></i> Open project</a></li>
-                    <li> <input type="file" accept="application/xml" id="dataprojectFileInput" name="someProjectfile" onchange="handleDatafiles(this.files)" style="visibility:hidden;position:absolute;top:-50;left:-50"/></li>
-                    <li class="divider"><a href="javascript:void(0);"><i class="fa-download icon-large"></i> Export canvas</a>
-                        <ul>
-                            <li><a href="javascript:void(0);" onclick="saveCanvas();"><i id="saveCanvasElement" class="fa-file-code-o icon-large"></i> As SVG</a></li>
-                            <li><a href="javascript:void(0);" onclick="saveCanvas();"><i id="saveCanvasElement" class="fa-file-image-o icon-large"></i> As PNG</a></li>
-                        </ul>
-                    </li>
-                </ul>
-            </li>
+<!--            <li id="fileMenu" onclick="showMenu(this);" class="verticalRightDivider verticalRightDivider2">-->
+<!--                <a>-->
+<!--                    <i class="fa fa-file-o "></i>-->
+<!--                </a>-->
+<!--                <ul id="fileMenuUL">-->
+<!--                    <li><a href="javascript:void(0);" onclick="saveProject();"><i id="saveProjectElement" class="fa-save icon-large"></i> Save project</a></li>-->
+<!--                    <li><a href="javascript:loadiVoLVERProject();"><i class="fa-folder-open-o icon-large"></i> Open project</a></li>-->
+<!--                    <li> <input type="file" accept="application/xml" id="dataprojectFileInput" name="someProjectfile" onchange="handleDatafiles(this.files)" style="visibility:hidden;position:absolute;top:-50;left:-50"/></li>-->
+<!--                    <li class="divider"><a href="javascript:void(0);"><i class="fa-download icon-large"></i> Export canvas</a>-->
+<!--                        <ul>-->
+<!--                            <li><a href="javascript:void(0);" onclick="saveCanvas();"><i id="saveCanvasElement" class="fa-file-code-o icon-large"></i> As SVG</a></li>-->
+<!--                            <li><a href="javascript:void(0);" onclick="saveCanvas();"><i id="saveCanvasElement" class="fa-file-image-o icon-large"></i> As PNG</a></li>-->
+<!--                        </ul>-->
+<!--                    </li>-->
+<!--                </ul>-->
+<!--            </li>-->
 
             <!-- RIGHT PANEL HANDLER -->
             <li class="verticalLeftDivider2" style="float: right;"><a id="toggleAdditionalToolsVisibility" href="javascript:void(0);" onclick="togglePanelVisibility('rightPanel');"><i class="fa fa-chevron-right "></i></a></li>
@@ -580,18 +583,18 @@
             }
         });
 
-        iVoLVER.gui.add.button({
-            sectionID: iVoLVER.gui.toolbar, // variable storing the id of the top toolbar
-            tooltip: 'Dev tools',
-            iconClass: 'workshop-raceTrack',
-            onClick: function () {
-                if (window.jsHandler && window.jsHandler.showDevTools) {
-                    window.jsHandler.showDevTools(null).then(function (response) {
-
-                    });
-                }
-            }
-        });
+        // iVoLVER.gui.add.button({
+        //     sectionID: iVoLVER.gui.toolbar, // variable storing the id of the top toolbar
+        //     tooltip: 'Dev tools',
+        //     iconClass: 'workshop-raceTrack',
+        //     onClick: function () {
+        //         if (window.jsHandler && window.jsHandler.showDevTools) {
+        //             window.jsHandler.showDevTools(null).then(function (response) {
+        //
+        //             });
+        //         }
+        //     }
+        // });
         /*iVoLVER.gui.add.button({
          sectionID: iVoLVER.gui.toolbar, // variable storing the id of the top toolbar
          tooltip: 'insert',
@@ -1454,12 +1457,51 @@
             font-size: 14px;
             font-family: "Helvetica",serif;
             background: rgba(0, 0, 0, 0);
-            border: 1px solid rgba(0,0,0,0)
+            border: 1px solid rgba(0,0,0,0);
+            border-radius: 0px;
+            font-weight: bold;
         }
 
         .codeMultiverseCollapse{
             all: unset;
             padding-top:5px
+        }
+
+        .variantTextInput {
+            font-size: 14px;
+            font-family: "Helvetica",serif;
+            background: rgba(0, 0, 0, 0);
+            border: 1px none rgba(0,0,0,0);
+            border-radius: 0px;
+        }
+
+
+        .codeMultiverseBottomButtons {
+            border-radius: 300px;
+        }
+
+        .codeMultiverseButtonRow {
+            background-color:white;
+            padding-top: 4px;
+            padding-bottom: 4px;
+            border-width: 1px 0 0 0;
+            border-style:solid;
+        }
+
+        .codeVariantRow {
+            margin-bottom: -5px;
+            padding-bottom:8px;
+        }
+
+        .codeVariantLi {
+            margin-bottom: -5px !important;
+        }
+
+        .codeMultiverseVariantUL {
+        }
+
+        .buttonCol {
+            width: 31%;
         }
 
     </style>

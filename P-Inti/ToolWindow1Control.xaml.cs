@@ -128,7 +128,7 @@ namespace P_Inti
 
         private void ChromeBrowser_IsBrowserInitializedChanged(object sender, DependencyPropertyChangedEventArgs e)
         {
-            theBrowser2.ShowDevTools();
+            //theBrowser2.ShowDevTools();
         }
 
         [SuppressMessage("Microsoft.Globalization", "CA1300:SpecifyMessageBoxOptions", Justification = "Sample code")]
