@@ -954,6 +954,27 @@ class LollipopPlot extends ConnectableWidget {
                 background.fire('deselected');
             });
 
+            inputPort.processConnectionRequest = function (connection) {
+                var connectionAccepted = false;
+
+                if (hasCodeBeenCompiled) {
+                    console.log("Accepting connection to plot");
+                    connectionAccepted = true;
+                } else {
+                    connectionAccepted = true;
+                }
+                if (!hasCodeBeenCompiled){
+                    showErrorMessage("The plotter widget requires compilation of the program", 1000);
+                    connectionAccepted = false;
+                }
+                return {
+                    connectionAccepted: connectionAccepted,
+                    processedValue: connection,
+                    message: "Please compile the program before connecting"
+                };
+            };
+
+
             inputPort.acceptConnection = function (theConnector, value) {
                 let variableHistory = theConnector.source.background.history;
                 var symbolName = variableHistory[0].symbols;
