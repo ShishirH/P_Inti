@@ -162,6 +162,11 @@ class ReferenceWidget {
                 } else {
                     lineEndCoords = background.getPointByOrigin('right', 'center');
                 }
+
+                if (background.minimizeButton.sign == " ") {
+                    lineEndCoords.x += 10;
+                }
+
                 lineStartCoords = background.referencePointer.getPointByOrigin('center', 'center');
                 lineStartCoords.y -= 1.5;
 
@@ -207,8 +212,10 @@ class ReferenceWidget {
 
                 //ctx.restore();
                 // background.isMember || background.minimizeButton.sign === '-')??
-                if (!background.isCompressed) {
+                if (!background.isCompressed && !background.minimizeEnabled) {
                     drawFilledPolygon(translateShape(rotateShape(theConnector.triangle, angle), line.x2 + (line.strokeWidth / 2), line.y2 + (line.strokeWidth / 2)), ctx);
+                } else if (background.minimizeEnabled) {
+                    //drawFilledPolygon(translateShape(rotateShape(theConnector.triangle, background.arrowEndAngle), background.arrowEndCoords.x + (line.strokeWidth / 2), background.arrowEndCoords.y + (line.strokeWidth / 2)), ctx);
                 }
             };
 
@@ -398,7 +405,7 @@ class ReferenceWidget {
 
         background.minimizeButtonMouseup = function() {
             console.log("I am being clicked");
-            if (!background.object || background.minimizeButton.sign == "++") {
+            if (!background.object || background.minimizeButton.sign === " ") {
                 return;
             }
 
@@ -954,19 +961,28 @@ class ReferenceWidget {
                                     console.log("Line no found, drawing the line")
                                     console.log("drawing line from: " + background.name + " to " + referenceWidgetsList[i].name)
                                     console.log(background);
+
+                                    background.triangle = [
+                                        [3, 0],
+                                        [-10, -6],
+                                        [-10, 6]
+                                    ];
+
                                     background.render = function (ctx) {
                                         background.oldRender(ctx);
+                                        ctx.save();
+                                        ctx.lineWidth = 3;
                                         let lineEndCoords;
                                         let lineStartCoords;
 
                                         if (referenceWidgetsList[i].minimizeButton) {
                                             lineEndCoords = referenceWidgetsList[i].minimizeButton.getPointByOrigin('center', 'center');
-                                            lineEndCoords.x -= 4;
+                                            //lineEndCoords.x -= 4;
                                         } else {
                                             lineEndCoords = referenceWidgetsList[i].getPointByOrigin('right', 'center');
                                         }
                                         lineStartCoords = background.minimizeButton.getPointByOrigin('center', 'center');
-                                        lineStartCoords.y -= 1.5;
+                                        //lineStartCoords.y -= 1.5;
 
                                         ctx.beginPath();
                                         ctx.moveTo(lineStartCoords.x, lineStartCoords.y);
@@ -974,13 +990,48 @@ class ReferenceWidget {
 
                                         if ((referenceWidgetsList[i].minimizeButton && referenceWidgetsList[i].minimizeButton.sign === "+")
                                             || (background.minimizeButton && background.minimizeButton.sign === "+")) {
-                                            ctx.setLineDash([10, 10]);
+                                            //ctx.setLineDash([10, 10]);
+                                            ctx.setLineDash([]);
                                         } else {
                                             ctx.setLineDash([]);
                                         }
                                         ctx.stroke();
+
+                                        let x1, x2, y1, y2;
+
+                                        x1 = lineStartCoords.x;
+                                        x2 = lineEndCoords.x;
+                                        y1 = lineStartCoords.y;
+                                        y2 = lineEndCoords.y;
+
+                                        var deltaX = x2 - x1;
+                                        var deltaY = y2 - y1;
+
+                                        var angle = Math.atan(deltaY / deltaX);
+                                        if (x1 > x2) {
+                                            angle += fabric.util.degreesToRadians(180);
+                                        }
+
+                                        let p1 = {};
+                                        p1.x = x1;
+                                        p1.y = y1;
+
+                                        let p2 = {};
+                                        p2.x = x2;
+                                        p2.y = y2;
+
+                                        let linePoint = {};
+                                        linePoint.p1 = p1;
+                                        linePoint.p2 = p2;
+
+                                        let lineLength = computeLength(linePoint);
+                                        let point = getPointAlongLine(linePoint, lineLength - 8);
+                                        //drawFilledPolygon(translateShape(rotateShape(background.triangle, angle), point.x + (3 / 2), point.y + (3 / 2)), ctx);
+
+                                        ctx.restore();
                                         // background.isMember || background.minimizeButton.sign === '-')??
                                     };
+                                    background.bringToFront();
                                     referenceWidgetsSameMemoryLines.add(currentMemAddress + otherMemAddress);
                                 }
                             } else {

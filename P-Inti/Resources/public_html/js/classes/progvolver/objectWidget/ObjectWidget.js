@@ -19,7 +19,7 @@ class ObjectWidget {
         background.childrenOnTop = [];
         background.innerReferences = [];
 
-        background.expandedHeight = (((Object.keys(options.objectMembers).length - 1) * 60) + 32) || 300;
+        background.expandedHeight = (((Object.keys(options.objectMembers).length - 1) * 60) + 20) || 300;
         background.expandedWidth = 120;
 
         background.onChangeCompressing = function (currentValue) {
@@ -82,7 +82,7 @@ class ObjectWidget {
             var originChild = {originX: 'left', originY: 'top'};
             let index = 0;
 
-            background.elementHeight = 45;
+            background.elementHeight = 33;
             background.gap = 5;
             for (const [key, objectMember] of Object.entries(background.objectMembersDict)) {
 

@@ -620,14 +620,49 @@ function getAssociatedVariablesForCodeVariants(variantCombinationString)
 
 }
 
+function getPositionAlongLineBetweenPoints(lineStartCoords, lineEndCoords) {
+    let x1, x2, y1, y2;
+
+    x1 = lineStartCoords.x;
+    x2 = lineEndCoords.x;
+    y1 = lineStartCoords.y;
+    y2 = lineEndCoords.y;
+
+    var deltaX = x2 - x1;
+    var deltaY = y2 - y1;
+
+    var angle = Math.atan(deltaY / deltaX);
+    if (x1 > x2) {
+        angle += fabric.util.degreesToRadians(180);
+    }
+
+    let p1 = {};
+    p1.x = x1;
+    p1.y = y1;
+
+    let p2 = {};
+    p2.x = x2;
+    p2.y = y2;
+
+    let linePoint = {};
+    linePoint.p1 = p1;
+    linePoint.p2 = p2;
+
+    let lineLength = computeLength(linePoint);
+    let point = getPointAlongLine(linePoint, lineLength - 8);
+
+    return [angle, point];
+    //drawFilledPolygon(translateShape(rotateShape(background.triangle, angle), point.x + (3 / 2), point.y + (3 / 2)), ctx);
+
+}
 function updateMinimizeButton() {
     for (let i = 0; i < referenceWidgetsList.length; i++) {
         let background = referenceWidgetsList[i];
         let additionalLogging = false;
 
-        if (rootObject.object.objectMembersDict["next"].object.objectMembersDict["next"] === background) {
-            additionalLogging = true;
-        }
+        // if (rootObject.object.objectMembersDict["next"].object.objectMembersDict["next"] === background) {
+        //     additionalLogging = true;
+        // }
 
         additionalLogging && console.log("Currently, minimizeButton is: " + background.minimizeButton.sign);
 
@@ -638,24 +673,42 @@ function updateMinimizeButton() {
                 // To track if the object with the same memory address is this object
 
                 let isThereAnotherExistingObjectWithSameMemAddr = false;
-
-                for (let i = 0; i < referenceWidgetsList.length; i++) {
-                    if (referenceWidgetsList[i] !== background
-                        && referenceWidgetsList[i].object
-                        && referenceWidgetsList[i].object.memoryAddress === background.object.memoryAddress
-                        && !referenceWidgetsList[i].object.isCompressed) {
+                let anotherObject = null;
+                for (let j = 0; j < referenceWidgetsList.length; j++) {
+                    if (referenceWidgetsList[j] !== background
+                        && referenceWidgetsList[j].object
+                        && referenceWidgetsList[j].object.memoryAddress === background.object.memoryAddress
+                        && !referenceWidgetsList[j].object.isCompressed) {
                         // There exists another object with the same memory address which is not compressed
                         isThereAnotherExistingObjectWithSameMemAddr = true;
+                        anotherObject = referenceWidgetsList[j];
                     }
                 }
 
                 if (isThereAnotherExistingObjectWithSameMemAddr) {
-                    background.minimizeButton.sign = "++";
+                    background.minimizeButton.sign = " ";
+                    let lineStartCoords = background.minimizeButton.getPointByOrigin('center', 'center');
+                    let lineEndCoords = anotherObject.minimizeButton.getPointByOrigin('center', 'center');
+
+                    let posData = getPositionAlongLineBetweenPoints(lineStartCoords, lineEndCoords);
+                    console.log("posData: ");
+                    console.log(posData);
+                    background.arrowEndAngle = posData[0];
+                    background.arrowEndCoords = anotherObject.minimizeButton.getPointByOrigin('center', 'center');
+                    background.minimizeEnabled = true;
+                    background.minimizeButton.set('fill', '#FED9A6');
+                    background.minimizeButton.set('strokeDashArray', [3,3]);
                 } else {
                     if (background.object.isCompressed) {
                         background.minimizeButton.sign = "+";
+                        background.minimizeEnabled = false;
+                        background.minimizeButton.set('fill', '#FED9A6');
+                        background.minimizeButton.set('strokeDashArray', []);
                     } else {
-                        background.minimizeButton.sign = "-";
+                        background.minimizeButton.sign = "–";
+                        background.minimizeEnabled = false;
+                        background.minimizeButton.set('fill', '#FED9A6');
+                        background.minimizeButton.set('strokeDashArray', []);
                     }
                 }
             }
