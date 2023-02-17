@@ -620,6 +620,53 @@ function getAssociatedVariablesForCodeVariants(variantCombinationString)
 
 }
 
+function updateMinimizeButton() {
+    for (let i = 0; i < referenceWidgetsList.length; i++) {
+        let background = referenceWidgetsList[i];
+        let additionalLogging = false;
+
+        if (rootObject.object.objectMembersDict["next"].object.objectMembersDict["next"] === background) {
+            additionalLogging = true;
+        }
+
+        additionalLogging && console.log("Currently, minimizeButton is: " + background.minimizeButton.sign);
+
+        if (background.object) {
+            if(objectsOnCanvasMemoryAddress.has(background.object.memoryAddress)) {
+                additionalLogging && console.log("objectsOnCanvasMemoryAddress.has(background.object.memoryAddress)");
+
+                // To track if the object with the same memory address is this object
+
+                let isThereAnotherExistingObjectWithSameMemAddr = false;
+
+                for (let i = 0; i < referenceWidgetsList.length; i++) {
+                    if (referenceWidgetsList[i] !== background
+                        && referenceWidgetsList[i].object
+                        && referenceWidgetsList[i].object.memoryAddress === background.object.memoryAddress
+                        && !referenceWidgetsList[i].object.isCompressed) {
+                        // There exists another object with the same memory address which is not compressed
+                        isThereAnotherExistingObjectWithSameMemAddr = true;
+                    }
+                }
+
+                if (isThereAnotherExistingObjectWithSameMemAddr) {
+                    background.minimizeButton.sign = "++";
+                } else {
+                    if (background.object.isCompressed) {
+                        background.minimizeButton.sign = "+";
+                    } else {
+                        background.minimizeButton.sign = "-";
+                    }
+                }
+            }
+
+        } else {
+            background.minimizeButton.sign = "X";
+        }
+
+    }
+}
+
 function moveTimelineNext() {
     console.log("This was called!");
     let currentTime = window.presentTime;
@@ -666,13 +713,14 @@ function moveTimelineNext() {
     referenceWidgetsSameMemoryLines.clear();
     objectsOnCanvasMemoryAddress.clear();
     referenceWidgetObjectMemoryAddress.clear();
-    
+
     ids.forEach(function (id) {
         var object = progvolver.objects[id];
         console.log("Running object: " + object.name);
         object.setProgramTime && object.setProgramTime(currentTime);
     });
 
+    updateMinimizeButton();
 
     console.log("Appending marks")
     sliderMarksElement.append(sliderMarksElements);

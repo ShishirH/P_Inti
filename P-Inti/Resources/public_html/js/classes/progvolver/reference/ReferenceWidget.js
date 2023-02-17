@@ -891,28 +891,6 @@ class ReferenceWidget {
                 }
                 background.object.setValue(newValue);
             }
-
-            if (background.object) {
-                if(objectsOnCanvasMemoryAddress.has(background.object.memoryAddress)) {
-                    // To track if the object with the same memory address is this object
-                    if (referenceWidgetObjectMemoryAddress.has(background.object.memoryAddress)) {
-                        background.minimizeButton.sign = "++";
-                    } else {
-                        referenceWidgetObjectMemoryAddress.add(background.object.memoryAddress);
-                        if (background.object.isCompressed) {
-                            background.minimizeButton.sign = "+";
-                        } else {
-                            background.minimizeButton.sign = "-";
-                        }
-                    }
-                } else {
-                    if (background.object.isCompressed) {
-                        background.minimizeButton.sign = "+";
-                    } else {
-                        background.minimizeButton.sign = "-";
-                    }
-                }
-            }
         }
 
         background.setProgramTime = function (time) {
