@@ -2,8 +2,8 @@ class ArraySymbol {
     constructor(options) {
         var symbolFont = '20px Helvetica';
 
-        options.height = options.height || 1;
-        options.width = options.width || 1;
+        options.height = options.height || 0;
+        options.width = options.width || 0;
         options.rx = options.rx || 0;
         options.ry = options.ry || 0;
         options.label = options.label || options.fileName && options.lineNumber ? options.fileName + ' (' + options.lineNumber + ')' : options.fileName || '';
