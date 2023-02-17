@@ -402,6 +402,7 @@ class ObjectWidget {
 
                     if (key === "memoryAddress") {
                         background.memoryAddress = memberValue;
+                        objectsOnCanvasMemoryAddress.add(background.memoryAddress);
                     } else {
                         background.objectWidgetsDict[key].setValue(memberValue);
                     }

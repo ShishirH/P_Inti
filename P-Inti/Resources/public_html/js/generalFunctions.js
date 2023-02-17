@@ -664,6 +664,9 @@ function moveTimelineNext() {
 
     var ids = Object.keys(progvolver.objects);
     referenceWidgetsSameMemoryLines.clear();
+    objectsOnCanvasMemoryAddress.clear();
+    referenceWidgetObjectMemoryAddress.clear();
+    
     ids.forEach(function (id) {
         var object = progvolver.objects[id];
         console.log("Running object: " + object.name);

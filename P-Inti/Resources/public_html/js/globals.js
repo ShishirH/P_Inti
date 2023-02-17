@@ -288,6 +288,8 @@ var hasCodeBeenCompiled = false;
 var objectInfo = {};
 var referenceWidgetsList = [];
 var referenceWidgetsSameMemoryLines = new Set();
+var objectsOnCanvasMemoryAddress = new Set();
+var referenceWidgetObjectMemoryAddress = new Set();
 
 var codeMultiverseIds = [];
 var codeMultiverseRightPaneElements = [];
