@@ -39,6 +39,8 @@ class ReferenceWidget {
         background.expandedHeight = background.height;
         background.expandedWidth = background.width;
 
+        var firstMinimizeButton = null;
+
         background.onChangeCompressing = function (currentValue) {
             background.set('width', (background.expandedWidth * currentValue) + 50);
             background.set('height', (background.expandedHeight * currentValue) + 50);
@@ -149,6 +151,8 @@ class ReferenceWidget {
                 [-10, -6],
                 [-10, 6]
             ];
+
+            background.triangle = line.triangle;
             line.oldRender = line.render;
             line.render = function (ctx) {
                 line.oldRender(ctx);
@@ -157,19 +161,23 @@ class ReferenceWidget {
                 let lineStartCoords = null;
 
                 if (background.minimizeButton) {
-                    lineEndCoords = background.minimizeButton.getPointByOrigin('left', 'center');
-                    lineEndCoords.x -= 4;
+                    lineEndCoords = background.minimizeButton.getPointByOrigin('center', 'center');
+                    //lineEndCoords.x -= 10;
                 } else {
                     lineEndCoords = background.getPointByOrigin('right', 'center');
                 }
 
                 if (background.minimizeButton.sign == " ") {
-                    lineEndCoords.x += 10;
+                    //lineEndCoords.x += 10;
                 }
+
+                let referencePointerCoords = background.referencePointer.getPointByOrigin('center', 'center');
 
                 lineStartCoords = background.referencePointer.getPointByOrigin('center', 'center');
                 lineStartCoords.y -= 1.5;
+                lineStartCoords.x -= 1.5;
 
+                lineEndCoords = getPositionAlongLineBetweenPoints(lineStartCoords, lineEndCoords)[1];
                 background.arrowLine.set('x2', lineEndCoords.x);
                 background.arrowLine.set('y2', lineEndCoords.y);
                 background.arrowLine.set('x1', lineStartCoords.x);
@@ -404,6 +412,10 @@ class ReferenceWidget {
             background.minimizeButton = minimizeButton;
             background.children.push(background.minimizeButton);
             background.childrenOnTop.push(background.minimizeButton);
+
+            if (!firstMinimizeButton) {
+                firstMinimizeButton = minimizeButton;
+            }
         }
 
         background.minimizeButtonMouseup = function(clickedButton) {
@@ -491,6 +503,12 @@ class ReferenceWidget {
                 minimizeButton.state = "minimize"
                 minimizeButton.sign = "+";
                 background.positionObjects();
+
+
+                setTimeout(function() {
+                    minimizeButton.bringToFront();
+                    minimizeButton.setCoords();
+                }, 100);
             }
         }
 
@@ -517,11 +535,12 @@ class ReferenceWidget {
 
             background.object.parent = background;
             background.object.referenceWidget = background;
+            background.object.minimizeButton = background.minimizeButton;
             canvas.add(background.object);
             background.children.push(background.object);
 
-            background.object.registerListener('moving', function () {
-                adjustReferenceObjectPosition(background);
+            background.object.registerListener('moving', function (e) {
+                adjustReferenceObjectPosition(e.target);
             });
         }
 
@@ -571,124 +590,124 @@ class ReferenceWidget {
             }
         }
 
-        background.drawTransluscentBlockToObjectAtSameMemory = function () {
-            console.log("drawTransluscentBlockToObjectAtSameMemory")   ;
-
-            for (let sameMemoryObject of background.otherReferencedObjects) {
-                console.log("Same memory object: ");
-                console.log(sameMemoryObject);
-                var sc = getScreenCoordinates(background.getPointByOrigin('left', 'center'));
-                var rightSc = getScreenCoordinates(background.getPointByOrigin('right', 'center'));
-
-                var originParent, originChild;
-                var xPosition, yPosition;
-
-                points = [sc.x, sc.y, rightSc.x - 10, sc.y];
-                xPosition = 5;
-                yPosition = 0;
-                originParent = {originX: 'left', originY: 'center'};
-                originChild = {originX: 'left', originY: 'center'};
-
-
-                var line = new fabric.Line(points, {
-                    strokeWidth: 3,
-                    stroke: 'black',
-                    fill: 'black',
-                    hasControls: false,
-                    hasBorders: false,
-                    hasRotatingPoint: false,
-                    hoverCursor: 'default',
-                    selectable: false
-                });
-
-                line.triangle = [
-                    [3, 0],
-                    [-10, -6],
-                    [-10, 6]
-                ];
-                line.oldRender = line.render;
-                line.render = function (ctx) {
-                    line.oldRender(ctx);
-                    //ctx.save();
-                    let lineEndCoords = null;
-                    let lineStartCoords = null;
-
-                    if (background.minimizeButton) {
-                        lineEndCoords = sameMemoryObject.referenceWidget.minimizeButton.getPointByOrigin('left', 'center');
-                        lineEndCoords.x -= 4;
-                    } else {
-                        lineEndCoords = sameMemoryObject.referenceWidget.getPointByOrigin('right', 'center');
-                    }
-                    lineStartCoords = background.referencePointer.getPointByOrigin('center', 'center');
-                    lineStartCoords.y -= 1.5;
-
-                    line.set('x2', lineEndCoords.x);
-                    line.set('y2', lineEndCoords.y);
-                    line.set('x1', lineStartCoords.x);
-                    line.set('y1', lineStartCoords.y);
-
-                    ctx.fillStyle = 'black';
-                    let theConnector = line;
-
-                    var x1 = -theConnector.width / 2 + lineStartCoords.x;
-                    var y1 = theConnector.height / 2 + lineStartCoords.y;
-                    var x2 = theConnector.width / 2 + lineStartCoords.x;
-                    var y2 = -theConnector.height / 2 + lineStartCoords.y;
-
-                    if (line.y1 < line.y2) {
-                        y1 = -theConnector.height / 2;
-                        y2 = theConnector.height / 2;
-                    }
-
-                    if (line.x1 > line.x2) {
-                        x1 = theConnector.width / 2;
-                        x2 = -theConnector.width / 2;
-                    }
-
-                    var deltaX = x2 - x1;
-                    var deltaY = y2 - y1;
-
-                    var angle = Math.atan(deltaY / deltaX);
-                    if (line.x1 > line.x2) {
-                        angle += fabric.util.degreesToRadians(180);
-                    }
-
-                    var p1 = {x: x1, y: y1};
-                    var p2 = {x: x2, y: y2};
-                    var l = {p1: p1, p2: p2};
-                    var length = computeLength(l);
-
-                    var point = getPointAlongLine(l, length - 20);
-                    var x = point.x;
-                    var y = point.y;
-
-                    //ctx.restore();
-                    if (!background.isCompressed)
-                        drawFilledPolygon(translateShape(rotateShape(theConnector.triangle, angle), line.x2 + (line.strokeWidth / 2), line.y2 + (line.strokeWidth / 2)), ctx);
-                };
-
-                background.addChild(line, {
-                    whenCompressed: {
-                        x: xPosition, y: yPosition,
-                        originParent: originParent,
-                        originChild: originChild
-                    },
-                    whenExpanded: {
-                        x: xPosition, y: yPosition,
-                        originParent: originParent,
-                        originChild: originChild
-                    },
-                    movable: false
-                });
-
-                canvas.add(line);
-
-                background.otherReferencedObjectsArrows.push(line);
-                //background.children.push(line);
-                //background.childrenOnTop.push(line);
-            }
-
-        }
+        // background.drawTransluscentBlockToObjectAtSameMemory = function () {
+        //     console.log("drawTransluscentBlockToObjectAtSameMemory")   ;
+        //
+        //     for (let sameMemoryObject of background.otherReferencedObjects) {
+        //         console.log("Same memory object: ");
+        //         console.log(sameMemoryObject);
+        //         var sc = getScreenCoordinates(background.getPointByOrigin('left', 'center'));
+        //         var rightSc = getScreenCoordinates(background.getPointByOrigin('right', 'center'));
+        //
+        //         var originParent, originChild;
+        //         var xPosition, yPosition;
+        //
+        //         points = [sc.x, sc.y, rightSc.x - 10, sc.y];
+        //         xPosition = 5;
+        //         yPosition = 0;
+        //         originParent = {originX: 'left', originY: 'center'};
+        //         originChild = {originX: 'left', originY: 'center'};
+        //
+        //
+        //         var line = new fabric.Line(points, {
+        //             strokeWidth: 3,
+        //             stroke: 'black',
+        //             fill: 'black',
+        //             hasControls: false,
+        //             hasBorders: false,
+        //             hasRotatingPoint: false,
+        //             hoverCursor: 'default',
+        //             selectable: false
+        //         });
+        //
+        //         line.triangle = [
+        //             [3, 0],
+        //             [-10, -6],
+        //             [-10, 6]
+        //         ];
+        //         line.oldRender = line.render;
+        //         line.render = function (ctx) {
+        //             line.oldRender(ctx);
+        //             //ctx.save();
+        //             let lineEndCoords = null;
+        //             let lineStartCoords = null;
+        //
+        //             if (background.minimizeButton) {
+        //                 lineEndCoords = sameMemoryObject.referenceWidget.minimizeButton.getPointByOrigin('left', 'center');
+        //                 lineEndCoords.x -= 4;
+        //             } else {
+        //                 lineEndCoords = sameMemoryObject.referenceWidget.getPointByOrigin('right', 'center');
+        //             }
+        //             lineStartCoords = background.referencePointer.getPointByOrigin('center', 'center');
+        //             lineStartCoords.y -= 1.5;
+        //
+        //             line.set('x2', lineEndCoords.x);
+        //             line.set('y2', lineEndCoords.y);
+        //             line.set('x1', lineStartCoords.x);
+        //             line.set('y1', lineStartCoords.y);
+        //
+        //             ctx.fillStyle = 'black';
+        //             let theConnector = line;
+        //
+        //             var x1 = -theConnector.width / 2 + lineStartCoords.x;
+        //             var y1 = theConnector.height / 2 + lineStartCoords.y;
+        //             var x2 = theConnector.width / 2 + lineStartCoords.x;
+        //             var y2 = -theConnector.height / 2 + lineStartCoords.y;
+        //
+        //             if (line.y1 < line.y2) {
+        //                 y1 = -theConnector.height / 2;
+        //                 y2 = theConnector.height / 2;
+        //             }
+        //
+        //             if (line.x1 > line.x2) {
+        //                 x1 = theConnector.width / 2;
+        //                 x2 = -theConnector.width / 2;
+        //             }
+        //
+        //             var deltaX = x2 - x1;
+        //             var deltaY = y2 - y1;
+        //
+        //             var angle = Math.atan(deltaY / deltaX);
+        //             if (line.x1 > line.x2) {
+        //                 angle += fabric.util.degreesToRadians(180);
+        //             }
+        //
+        //             var p1 = {x: x1, y: y1};
+        //             var p2 = {x: x2, y: y2};
+        //             var l = {p1: p1, p2: p2};
+        //             var length = computeLength(l);
+        //
+        //             var point = getPointAlongLine(l, length - 20);
+        //             var x = point.x;
+        //             var y = point.y;
+        //
+        //             //ctx.restore();
+        //             if (!background.isCompressed)
+        //                 drawFilledPolygon(translateShape(rotateShape(theConnector.triangle, angle), line.x2 + (line.strokeWidth / 2), line.y2 + (line.strokeWidth / 2)), ctx);
+        //         };
+        //
+        //         background.addChild(line, {
+        //             whenCompressed: {
+        //                 x: xPosition, y: yPosition,
+        //                 originParent: originParent,
+        //                 originChild: originChild
+        //             },
+        //             whenExpanded: {
+        //                 x: xPosition, y: yPosition,
+        //                 originParent: originParent,
+        //                 originChild: originChild
+        //             },
+        //             movable: false
+        //         });
+        //
+        //         canvas.add(line);
+        //
+        //         background.otherReferencedObjectsArrows.push(line);
+        //         //background.children.push(line);
+        //         //background.childrenOnTop.push(line);
+        //     }
+        //
+        // }
 
         background.drawArrowToObjectsAtSameMemory = function () {
             console.log("drawArrowToObjectsAtSameMemory");
@@ -944,7 +963,12 @@ class ReferenceWidget {
                     background.children = background.children.filter(item => item !== background.minimizeButton);
                     background.childrenOnTop = background.childrenOnTop.filter(item => item !== background.minimizeButton);
 
+                    console.log("Minimizeee button was: ")
+                    console.log(background.minimizeButton);
                     addMinimizeButton();
+
+                    console.log("Minimizeee button is: ")
+                    console.log(background.minimizeButton);
 
                     let xOffset = 310;
                     let yOffset = 380;
