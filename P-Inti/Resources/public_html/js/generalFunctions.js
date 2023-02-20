@@ -8390,17 +8390,8 @@ function newConnectionReleasedOnCanvas(connection, coordX, coordY) {
     // First, we have to check if this is a collection
     if ($.isArray(theValue)) {
 
-        destination = new iVoLVER.obj.Collection({
-            left: coordX,
-            top: coordY,
-            value: theValue,
-            animateBirth: true
-        });
-
-        canvas.add(destination);
-
-        destination._addIncomingConnection(connection);
-        connection.setDestination(destination, true);
+        connection.contract();
+        return;
 
     } else if (connection.source.type === "ArrayColorWidgetOutput") {
         console.log("Connection here is: ")
@@ -8439,16 +8430,19 @@ function newConnectionReleasedOnCanvas(connection, coordX, coordY) {
 //        destination.left = coordX;
 //        canvas.add(destination);
 
-        console.log("Value");
-        console.log(theValue);
+        // console.log("Value");
+        // console.log(theValue);
+        //
+        // destination = new NumericData({
+        //     value: theValue,
+        //     top: coordY,
+        //     left: coordX,
+        //     destinationCompulsory: true,
+        //     showLabel: true
+        // });
 
-        destination = new NumericData({
-            value: theValue,
-            top: coordY,
-            left: coordX,
-            destinationCompulsory: true,
-            showLabel: true
-        });
+        connection.contract();
+        return;
 
 //        destination = new iVoLVER.model.ValueHolder({
 //            value: theValue,

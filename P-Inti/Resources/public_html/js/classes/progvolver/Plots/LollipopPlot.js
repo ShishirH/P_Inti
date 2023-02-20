@@ -661,7 +661,7 @@ class LollipopPlot extends ConnectableWidget {
             var hexColorString = "#" + hexColor.toHex();
 
             var items = {};
-            
+
             items.xAxisSubMenu = {
                 name: "x Axis",
                 items: {
