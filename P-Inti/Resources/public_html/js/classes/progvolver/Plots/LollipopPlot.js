@@ -661,52 +661,7 @@ class LollipopPlot extends ConnectableWidget {
             var hexColorString = "#" + hexColor.toHex();
 
             var items = {};
-
-
-
-            items.showSubMenu = {
-                name: "Show...",
-                items: {}
-            };
-
-
-            background.symbols.forEach(function (symbol) {
-                items.showSubMenu.items[symbol] = {
-                    name: symbol,
-                    type: 'checkbox',
-//                    selected: symbol == 'symbol1', // TMP
-                    selected: true, // TMP
-                    events: {
-                        click: function (e) {
-
-                            var symbolName = replaceAll(e.target.name, "context-menu-input-", "");
-
-//                            let newWidth = (background.getScaledWidth() - background.hMargin * 2 - background.strokeWidth);
-//                            let newHeight = (background.getScaledHeight() - background.vMargin - background.hMargin - background.strokeWidth);
-
-                            var size = background.getAwailablePlottingDimensions();
-                            let newWidth = size.w;
-                            let newHeight = size.h;
-
-                            if (!e.target.checked) {
-                                // we need to remove the data of this symbol
-                                background.currentData = background.currentData.filter(item => item.symbolName != symbolName);
-                            } else {
-
-//                                var symbolData = plotterData.filter(item => item.symbolName == symbolName);
-                                var symbolData = background.getDataOfSymbol(symbolName);
-                                // we need to add the data of this symbol
-                                background.currentData = background.currentData.concat(symbolData);
-                            }
-
-                            background.updatePlot(background.svg, background.currentData, newWidth, newHeight, false, background.currentXCoord);
-
-                        }
-                    }
-                };
-            });
-            items.sep2 = "---------";
-
+            
             items.xAxisSubMenu = {
                 name: "x Axis",
                 items: {
