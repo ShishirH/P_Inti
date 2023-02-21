@@ -109,6 +109,7 @@ class ObjectWidget {
                 background.objectMembers.push(objectMember);
                 background.objectWidgetsDict[key] = objectMember;
                 background.children.push(objectMember);
+                background.childrenOnTop.push(objectMember);
 
                 if (objectMember.isReference) {
                     background.innerReferences.push(objectMember);

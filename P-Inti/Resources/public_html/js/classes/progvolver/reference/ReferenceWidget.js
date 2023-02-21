@@ -913,35 +913,55 @@ class ReferenceWidget {
         }
 
         let firstTimeValueChangePos = true;
+        let additionalLogging = false;
         background.setValue = function (newValue, currentMemoryAddress) {
-            console.log("New value is: ");
-            console.log(newValue);
+            additionalLogging = false;
+
+            // if (auxObject && auxObject.object && auxObject.object.objectWidgetsDict["next"]) {
+            //     if (background && background.object && background.object.objectWidgetsDict["data"].value == "9")
+            //         additionalLogging = true;
+            // }
+
+            additionalLogging && console.log("New value is: ");
+            additionalLogging && console.log(newValue);
 
             if (newValue === undefined || newValue === "undefined") {
+                additionalLogging && console.log("newValue was undefined: ");
                 background.minimizeButtonMouseup();
                 background.object = undefined;
                 background.minimizeButton.sign = "?";
             } else if (newValue === null || newValue === "null") {
+                additionalLogging && console.log("newValue was null: ");
                 background.minimizeButtonMouseup();
                 background.object = undefined;
                 background.minimizeButton.sign = "X";
             } else if (newValue) {
                 // A valid value was passed. For example: [3;40;60;100000000;0;0;0;0;0]
+                additionalLogging && console.log("New value is: ");
+                additionalLogging && console.log(newValue);
 
-                console.log("Currently Background object is: ");
-                console.log(background.object);
+                additionalLogging && console.log("Currently Background object is: ");
+                additionalLogging && console.log(background.object);
+                //additionalLogging && background.object && console.log("Currently Background object memoryAddress: " + background.object.memoryAddress);
+
+                if (!currentMemoryAddress) {
+                    let response = JSON.parse(newValue);
+                    currentMemoryAddress = response["memoryAddress"];
+                }
+                additionalLogging && console.log("Currently currentMemoryAddress: " + currentMemoryAddress);
 
                 // if currently background.object is undefined or null, have to create background.object widget
                 if (!background.object) {
-                    console.log("NEW AVLUE IS: ")
-                    console.log(newValue);
+                    additionalLogging && console.log("Currently Background object is null ");
                     var rightSc = getScreenCoordinates(background.getPointByOrigin('right', 'center'));
                     background.object = createObjectMemberWidgetsWithoutResponse(objectInfo[background.type], rightSc, background.fileName, background.name)
 
                     console.log("Background object is: ");
                     console.log(background.object);
                     addReferencedObject();
-                } else if (background.object && currentMemoryAddress && background.object.memoryAddress != currentMemoryAddress) {
+                } else if (background.object && currentMemoryAddress && background.object.memoryAddress && background.object.memoryAddress != currentMemoryAddress) {
+                    additionalLogging && console.log("Currently Background object memoryAddress: " + background.object.memoryAddress);
+                    additionalLogging && console.log("Currently currentMemoryAddress: " + currentMemoryAddress);
                     var rightSc = getScreenCoordinates(background.object.getPointByOrigin('center', 'center'));
 
                     rightSc.x += 100;
@@ -965,28 +985,29 @@ class ReferenceWidget {
 
                     console.log("Minimizeee button was: ")
                     console.log(background.minimizeButton);
+                    orphanedObjects.push(background.minimizeButton);
                     addMinimizeButton();
 
                     console.log("Minimizeee button is: ")
                     console.log(background.minimizeButton);
 
-                    let xOffset = 310;
-                    let yOffset = 380;
+                    let xOffset = 0;
+                    let yOffset = 130;
 
                     if (!firstTimeValueChangePos) {
                         xOffset = 0;
                         yOffset = 130;
                     }
 
+                    console.log("compressedX")
+                    console.log(minimizeButtonCompressed);
+                    console.log("expandedX")
+                    console.log(minimizeButtonExpanded);
                     background.compressedOptions[background.minimizeButton.id].x = compressedX + xOffset;
                     background.compressedOptions[background.minimizeButton.id].y = compressedY + yOffset;
-                    background.compressedOptions[background.minimizeButton.id].left = compressedX + xOffset;
-                    background.compressedOptions[background.minimizeButton.id].top = compressedY + yOffset;
 
                     background.expandedOptions[background.minimizeButton.id].x = expandedX + xOffset;
                     background.expandedOptions[background.minimizeButton.id].y = expandedY + yOffset;
-                    background.expandedOptions[background.minimizeButton.id].left = expandedX + xOffset;
-                    background.expandedOptions[background.minimizeButton.id].top = expandedY + yOffset;
 
                     if (firstTimeValueChangePos) {
                         firstTimeValueChangePos = false;
@@ -998,10 +1019,15 @@ class ReferenceWidget {
                     setTimeout(function() {
                         background.minimizeButton.object = background.object;
                         background.minimizeButtonMouseup();
+                        console.log("sync check 1")
                     }, 150);
+
                     //background.minimizeButtonMouseup();
                 }
                 background.object.setValue(newValue);
+                setTimeout(function() {
+                    background.drawArrowToSameMemLocationFinal();
+                }, 1000);
             }
         }
 
@@ -1029,7 +1055,6 @@ class ReferenceWidget {
                             let memoryAddress = null;
                             if (valueObj && valueObj.constructor == Object) {
                                 // confirmed that value is a dictionary
-                                console.log("Value is a dict")
                                 console.log("valueObj");
                                 console.log(valueObj);
                                 memoryAddress = valueObj["memoryAddress"];
@@ -1041,6 +1066,10 @@ class ReferenceWidget {
                                 background.object.setValue(this.values[i].array);
                             } else if (background.object) {
                                 // Pointing to new memory location now. Create new reference.
+                                console.log("!!!Creating new background object")
+                                console.log(this.values[i].array);
+                                console.log("!!!Existing object: ");
+                                console.log(background.object);
                                 background.setValue(this.values[i].array, memoryAddress);
                             }
                             break;
@@ -1048,121 +1077,201 @@ class ReferenceWidget {
                     }
                 }
 
+                console.log("sync check 2")
                 console.log("referenceWidgetsList.length " + referenceWidgetsList.length)
                 console.log(referenceWidgetsList)
                 background.render = background.oldRender;
+                background.drawArrowToSameMemLocationFinal();
+            }
+        }
 
-                for (let i = 0; i < referenceWidgetsList.length; i++) {
+        background.drawArrowToSameMemLocationFinal = function() {
+            let additionalLogging = false;
 
-                    if (referenceWidgetsList[i] === background){
-                        continue;
-                    }
+            if (background.object && background.object.objectWidgetsDict["data"].value == 5) {
+                additionalLogging = true;
+            }
 
-                    if (!background.object || !background.object.memoryAddress) {
-                        break;
-                    } else if (!referenceWidgetsList[i].object || !referenceWidgetsList[i].object.memoryAddress) {
-                        continue;
-                    }
+            additionalLogging && console.log("going through referencewidgets")
+            // for (let i = 0; i < referenceWidgetsList.length; i++) {
+            //
+            //     if (referenceWidgetsList[i] === background) {
+            //         additionalLogging && console.log("continuing");
+            //         continue;
+            //     }
+            //
+            //     if (!background.object || !background.object.memoryAddress) {
+            //         additionalLogging && console.log("breaking");
+            //         console.log(background.object);
+            //         break;
+            //     } else if (!referenceWidgetsList[i].object || !referenceWidgetsList[i].object.memoryAddress) {
+            //         additionalLogging && console.log("continuing");
+            //         continue;
+            //     }
+            //
+            //     let currentMemAddress = background.object.memoryAddress;
+            //     let otherMemAddress = referenceWidgetsList[i].object.memoryAddress;
+            //
+            //     additionalLogging && console.log("XXY memoryAddress of object is: " + background.object.memoryAddress)
+            //     additionalLogging && console.log("XXY memoryAddress of comparing object is: " + referenceWidgetsList[i].object.memoryAddress)
+            //     additionalLogging && console.log("XXY The objects are: " + background.name + " and " + referenceWidgetsList[i].name)
+            //     if (otherMemAddress === currentMemAddress) {
+            //         console.log("XXY Found two same memory addresses: ")
+            //         if (referenceWidgetsList[i] !== background) {
+            //             additionalLogging && console.log("XXY Both objects are different ");
+            //             additionalLogging && console.log("The objects are: " + background.name + " and " + referenceWidgetsList[i].name)
+            //
+            //             if (!referenceWidgetsSameMemoryLines.has(otherMemAddress + currentMemAddress)
+            //                 && !referenceWidgetsSameMemoryLines.has(currentMemAddress + otherMemAddress)) {
+            //                 if (!background.isCompressed && !referenceWidgetsList[i].isCompressed) {
+            //                     additionalLogging && console.log("Line no found, drawing the line")
+            //                     additionalLogging && console.log("drawing line from: " + background.name + " to " + referenceWidgetsList[i].name)
+            //                     additionalLogging && console.log(background);
+            //
+            //                     background.triangle = [
+            //                         [3, 0],
+            //                         [-10, -6],
+            //                         [-10, 6]
+            //                     ];
+            //
+            //                     background.render = function (ctx) {
+            //                         background.oldRender(ctx);
+            //                         ctx.save();
+            //                         ctx.lineWidth = 3;
+            //                         let lineEndCoords;
+            //                         let lineStartCoords;
+            //
+            //                         if (referenceWidgetsList[i].minimizeButton) {
+            //                             lineEndCoords = referenceWidgetsList[i].minimizeButton.getPointByOrigin('center', 'center');
+            //                             //lineEndCoords.x -= 4;
+            //                         } else {
+            //                             lineEndCoords = referenceWidgetsList[i].getPointByOrigin('right', 'center');
+            //                         }
+            //                         lineStartCoords = background.minimizeButton.getPointByOrigin('center', 'center');
+            //                         //lineStartCoords.y -= 1.5;
+            //
+            //                         ctx.beginPath();
+            //                         ctx.moveTo(lineStartCoords.x, lineStartCoords.y);
+            //                         ctx.lineTo(lineEndCoords.x, lineEndCoords.y);
+            //
+            //                         if ((referenceWidgetsList[i].minimizeButton && referenceWidgetsList[i].minimizeButton.sign === "+")
+            //                             || (background.minimizeButton && background.minimizeButton.sign === "+")) {
+            //                             //ctx.setLineDash([10, 10]);
+            //                             ctx.setLineDash([]);
+            //                         } else {
+            //                             ctx.setLineDash([]);
+            //                         }
+            //                         ctx.stroke();
+            //                         ctx.restore();
+            //                         // background.isMember || background.minimizeButton.sign === '-')??
+            //                     };
+            //                     background.bringToFront();
+            //                     referenceWidgetsSameMemoryLines.add(currentMemAddress + otherMemAddress);
+            //                 }
+            //             } else {
+            //                 additionalLogging && console.log("Line found. Not drawing the line");
+            //                 additionalLogging && console.log("not drawing line from: " + background.name + " to " + referenceWidgetsList[i].name)
+            //                 additionalLogging && console.log(background);
+            //             }
+            //         }
+            //     }
+            // }
 
-                    let currentMemAddress = background.object.memoryAddress;
-                    let otherMemAddress = referenceWidgetsList[i].object.memoryAddress;
+            additionalLogging && console.log("going through orphanedObjects")
+            for (let i = 0; i < orphanedObjects.length; i++) {
 
-                    console.log("XXY memoryAddress of object is: " + background.object.memoryAddress)
-                    console.log("XXY The objects are: " + background.name + " and " + referenceWidgetsList[i].name)
-                    if (otherMemAddress === currentMemAddress) {
-                        console.log("XXY Found two same memory addresses: ")
-                        if (referenceWidgetsList[i] !== background) {
-                            console.log("XXY Both objects are different ");
-                            console.log("The objects are: " + background.name + " and " + referenceWidgetsList[i].name)
+                if (orphanedObjects[i].object === background.object) {
+                    additionalLogging && console.log("orphanedObjects continuing");
+                    continue;
+                }
 
-                            if (!referenceWidgetsSameMemoryLines.has(otherMemAddress + currentMemAddress)
+                if (!background.object || !background.object.memoryAddress) {
+                    additionalLogging && console.log("orphanedObjects breaking");
+                    console.log(background.object);
+                    break;
+                } else if (!orphanedObjects[i].object || !orphanedObjects[i].object.memoryAddress) {
+                    additionalLogging && console.log("orphanedObjects continuing");
+                    continue;
+                }
+
+                let currentMemAddress = background.object.memoryAddress;
+                let otherMemAddress = orphanedObjects[i].object.memoryAddress;
+
+                additionalLogging && console.log("orphanedObjectsXXY memoryAddress of object is: " + background.object.memoryAddress)
+                additionalLogging && console.log("orphanedObjectsXXY memoryAddress of comparing object is: " + orphanedObjects[i].object.memoryAddress)
+                additionalLogging && console.log("orphanedObjectsXXY The objects are: " + background.name + " and " + orphanedObjects[i].object.name)
+                if (otherMemAddress === currentMemAddress) {
+                    console.log("orphanedObjectsXXY Found two same memory addresses: ")
+                    if (orphanedObjects[i].object !== background.object) {
+                        additionalLogging && console.log("orphanedObjectsXXY Both objects are different ");
+                        additionalLogging && console.log("orphanedObjectsThe objects are: " + background.name + " and " + orphanedObjects[i].object.name)
+
+                        if (!referenceWidgetsSameMemoryLines.has(otherMemAddress + currentMemAddress)
                             && !referenceWidgetsSameMemoryLines.has(currentMemAddress + otherMemAddress)) {
-                                if (!background.isCompressed && !referenceWidgetsList[i].isCompressed) {
-                                    console.log("Line no found, drawing the line")
-                                    console.log("drawing line from: " + background.name + " to " + referenceWidgetsList[i].name)
-                                    console.log(background);
+                            additionalLogging && console.log("orphanedObjectsThe referenceWidgetsSameMemoryLines: " + background.name + " and " + orphanedObjects[i].object.name)
+                            additionalLogging && console.log("orphanedObjectsThe !background.isCompressed: " + !background.isCompressed)
+                            additionalLogging && console.log("orphanedObjectsThe !orphanedObjects[i].object.isCompressed: " + !orphanedObjects[i].object.isCompressed)
+                            if (!background.isCompressed && !orphanedObjects[i].object.isCompressed) {
+                                additionalLogging && console.log("orphanedObjectsLine no found, drawing the line")
+                                additionalLogging && console.log("orphanedObjectsdrawing line from: " + background.name + " to " + orphanedObjects[i].object.name)
+                                additionalLogging && console.log(background);
 
-                                    background.triangle = [
-                                        [3, 0],
-                                        [-10, -6],
-                                        [-10, 6]
-                                    ];
+                                background.triangle = [
+                                    [3, 0],
+                                    [-10, -6],
+                                    [-10, 6]
+                                ];
 
-                                    background.render = function (ctx) {
-                                        background.oldRender(ctx);
-                                        ctx.save();
-                                        ctx.lineWidth = 3;
-                                        let lineEndCoords;
-                                        let lineStartCoords;
+                                // background.render = function (ctx) {
+                                //     background.oldRender(ctx);
+                                //     ctx.save();
+                                //     ctx.lineWidth = 3;
+                                //     let lineEndCoords;
+                                //     let lineStartCoords;
+                                //
+                                //     if (orphanedObjects[i]) {
+                                //         lineEndCoords = orphanedObjects[i].getPointByOrigin('center', 'center');
+                                //         //lineEndCoords.x -= 4;
+                                //     } else {
+                                //         lineEndCoords = orphanedObjects[i].getPointByOrigin('right', 'center');
+                                //     }
+                                //     lineStartCoords = background.minimizeButton.getPointByOrigin('center', 'center');
+                                //     //lineStartCoords.y -= 1.5;
+                                //
+                                //     ctx.beginPath();
+                                //     ctx.moveTo(lineStartCoords.x, lineStartCoords.y);
+                                //     ctx.lineTo(lineEndCoords.x, lineEndCoords.y);
+                                //
+                                //     if ((orphanedObjects[i] && orphanedObjects[i].sign === "+")
+                                //         || (background.minimizeButton && background.minimizeButton.sign === "+")) {
+                                //         //ctx.setLineDash([10, 10]);
+                                //         ctx.setLineDash([]);
+                                //     } else {
+                                //         ctx.setLineDash([]);
+                                //     }
+                                //     ctx.stroke();
+                                //     ctx.restore();
+                                //     // background.isMember || background.minimizeButton.sign === '-')??
+                                // };
+                                // background.bringToFront();
 
-                                        if (referenceWidgetsList[i].minimizeButton) {
-                                            lineEndCoords = referenceWidgetsList[i].minimizeButton.getPointByOrigin('center', 'center');
-                                            //lineEndCoords.x -= 4;
-                                        } else {
-                                            lineEndCoords = referenceWidgetsList[i].getPointByOrigin('right', 'center');
-                                        }
-                                        lineStartCoords = background.minimizeButton.getPointByOrigin('center', 'center');
-                                        //lineStartCoords.y -= 1.5;
+                                background.minimizeButton.set('fill', 'transparent');
+                                canvas.remove(background.minimizeButton);
+                                background.object = orphanedObjects[i].object;
+                                background.minimizeButton = orphanedObjects[i];
 
-                                        ctx.beginPath();
-                                        ctx.moveTo(lineStartCoords.x, lineStartCoords.y);
-                                        ctx.lineTo(lineEndCoords.x, lineEndCoords.y);
-
-                                        if ((referenceWidgetsList[i].minimizeButton && referenceWidgetsList[i].minimizeButton.sign === "+")
-                                            || (background.minimizeButton && background.minimizeButton.sign === "+")) {
-                                            //ctx.setLineDash([10, 10]);
-                                            ctx.setLineDash([]);
-                                        } else {
-                                            ctx.setLineDash([]);
-                                        }
-                                        ctx.stroke();
-
-                                        let x1, x2, y1, y2;
-
-                                        x1 = lineStartCoords.x;
-                                        x2 = lineEndCoords.x;
-                                        y1 = lineStartCoords.y;
-                                        y2 = lineEndCoords.y;
-
-                                        var deltaX = x2 - x1;
-                                        var deltaY = y2 - y1;
-
-                                        var angle = Math.atan(deltaY / deltaX);
-                                        if (x1 > x2) {
-                                            angle += fabric.util.degreesToRadians(180);
-                                        }
-
-                                        let p1 = {};
-                                        p1.x = x1;
-                                        p1.y = y1;
-
-                                        let p2 = {};
-                                        p2.x = x2;
-                                        p2.y = y2;
-
-                                        let linePoint = {};
-                                        linePoint.p1 = p1;
-                                        linePoint.p2 = p2;
-
-                                        let lineLength = computeLength(linePoint);
-                                        let point = getPointAlongLine(linePoint, lineLength - 8);
-                                        //drawFilledPolygon(translateShape(rotateShape(background.triangle, angle), point.x + (3 / 2), point.y + (3 / 2)), ctx);
-
-                                        ctx.restore();
-                                        // background.isMember || background.minimizeButton.sign === '-')??
-                                    };
-                                    background.bringToFront();
-                                    referenceWidgetsSameMemoryLines.add(currentMemAddress + otherMemAddress);
-                                }
-                            } else {
-                                console.log("Line found. Not drawing the line");
-                                console.log("not drawing line from: " + background.name + " to " + referenceWidgetsList[i].name)
-                                console.log(background);
+                                orphanedObjects = orphanedObjects.filter(item => item != background.minimizeButton);
+                                referenceWidgetsSameMemoryLines.add(currentMemAddress + otherMemAddress);
                             }
+                        } else {
+                            additionalLogging && console.log("orphanedObjectsLine found. Not drawing the line");
+                            additionalLogging && console.log("orphanedObjectsnot drawing line from: " + background.name + " to " + orphanedObjects[i].object.name)
+                            additionalLogging && console.log(background);
                         }
                     }
                 }
             }
+
         }
 
         background.setHistory = function () {
@@ -1183,6 +1292,7 @@ class ReferenceWidget {
         window.nodeObject = background;
         return background;
     }
+
 
     static fromJson(json) {
         let isArray = false;

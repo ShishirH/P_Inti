@@ -677,7 +677,8 @@ function updateMinimizeButton() {
                     if (referenceWidgetsList[j] !== background
                         && referenceWidgetsList[j].object
                         && referenceWidgetsList[j].object.memoryAddress === background.object.memoryAddress
-                        && !referenceWidgetsList[j].object.isCompressed) {
+                        && !referenceWidgetsList[j].object.isCompressed
+                        && referenceWidgetsList[j].minimizeButton !== background.minimizeButton) {
                         // There exists another object with the same memory address which is not compressed
                         isThereAnotherExistingObjectWithSameMemAddr = true;
                         anotherObject = referenceWidgetsList[j];
@@ -689,6 +690,12 @@ function updateMinimizeButton() {
                     background.minimizeEnabled = true;
 
                     background.anotherRender = background.render;
+
+                    console.log("background.anotherRender");
+                    console.log(background)
+                    console.log("anotherObject");
+                    console.log(anotherObject);
+                    console.log(background.name)
 
                     background.render = function(ctx) {
                         background.anotherRender(ctx);
@@ -706,16 +713,19 @@ function updateMinimizeButton() {
 
                     background.minimizeButton.set('fill', 'transparent');
                     background.minimizeButton.set('strokeDashArray', [3,3]);
-                    background.minimizeButton.set('strokeStyle', 'transparent');
+                    background.minimizeButton.set('stroke', 'transparent');
 
                     background.object = anotherObject.object;
                     background.minimizeButton = anotherObject.minimizeButton;
+
+                    orphanedObjects = orphanedObjects.filter(item => item != background.minimizeButton);
                     anotherObject.object.sendToBack();
                 } else {
                     if (background.object.isCompressed) {
                         background.minimizeButton.sign = "+";
                         background.minimizeEnabled = false;
                         background.minimizeButton.set('fill', '#FED9A6');
+                        background.minimizeButton.set('stroke', darken('#FED9A6'));
                         background.minimizeButton.set('strokeDashArray', []);
                         background.minimizeButton.bringToFront();
                         background.minimizeButton.setCoords();
@@ -723,6 +733,7 @@ function updateMinimizeButton() {
                         background.minimizeButton.sign = "–";
                         background.minimizeEnabled = false;
                         background.minimizeButton.set('fill', '#FED9A6');
+                        background.minimizeButton.set('stroke', darken('#FED9A6'));
                         background.minimizeButton.set('strokeDashArray', []);
                         background.minimizeButton.bringToFront();
                         background.minimizeButton.setCoords();
