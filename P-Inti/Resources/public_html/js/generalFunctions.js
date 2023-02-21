@@ -435,7 +435,7 @@ function loadLogFiles(response, lineInfoFileContent, waitingDialog) {
                     expressions: null
                 }).then(function (response) {
                 });
-            }, 2000);
+            }, 1000);
         }
     }
 }
@@ -10472,18 +10472,6 @@ function onSliderChanged(data) {
 
     console.log("Data is: ");
     console.log(data);
-
-    // if (window.signalData) {
-    //     var currentTime = changeRange(data.from, data.min, data.max, window.minTime, window.maxTime);
-    //
-    //     window.presentTime = currentTime;
-    //     // currentTime -= window.sliderDelta;
-    //     var ids = Object.keys(progvolver.objects);
-    //     ids.forEach(function (id) {
-    //         var object = progvolver.objects[id];
-    //         object.setProgramTime && object.setProgramTime(currentTime);
-    //     });
-    // }
 
     if (window.logData && window.scopeData) {
 

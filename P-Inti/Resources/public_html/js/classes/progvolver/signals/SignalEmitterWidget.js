@@ -30,8 +30,18 @@ var SignalEmitterWidget = iVoLVER.util.createClass(fabric.Triangle, {
 
         this.setProgramTime = function (time) {
             if (this.signals) {
+                time = window.presentTime;
+                console.log("!!Time is: " + time);
+                console.log("!!this.signals")
+                console.log(this.signals);
+                console.log("!!this.values")
+                console.log(this.values)
                 this.values = this.signals.filter(item => item.time <= time);
+                console.log("!!this.values")
+                console.log(this.values)
                 if (this.values.length) {
+                    console.log("!!this.values.length")
+                    console.log(this.values.length)
                     this.onValuesUpdated && this.onValuesUpdated(this.values.length);
                 }
             }
