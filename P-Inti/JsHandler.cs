@@ -1517,6 +1517,8 @@ namespace P_Inti
                                 }
                             }
 
+                            codeAdornment.RemoveVisuals();
+
 
                         }
                         else
@@ -1528,8 +1530,6 @@ namespace P_Inti
                             double seconds = 0.5;
                             timer.Interval = TimeSpan.FromSeconds(seconds / totalSteps);
                             int currentStep = 1;
-
-
 
                             timer.Tick += (ss, ee) => {
                                 if (currentStep >= totalSteps)
@@ -1547,6 +1547,7 @@ namespace P_Inti
                                             codeAdornment.CreateVisuals(wpfTextViewLine);
                                         }
                                     }
+                                    codeAdornment.RemoveVisuals();
                                 }
                                 else
                                 {
@@ -1559,6 +1560,21 @@ namespace P_Inti
                             };
                             timer.Start();
 
+                            DispatcherTimer endTimer = new DispatcherTimer();
+                            endTimer.Interval = TimeSpan.FromSeconds(seconds / totalSteps);
+                            currentStep = 1;
+                            endTimer.Tick += (ss, ee) => {
+                                if (currentStep >= totalSteps)
+                                {
+                                    codeAdornment.RemoveVisuals();
+                                    endTimer.Stop();
+                                }
+                                else
+                                {
+                                    currentStep++;
+                                }
+                            };
+                            endTimer.Start();
                         }
 
                         //MyWindowControl.printInBrowserConsole("difference: " + difference);
@@ -1609,13 +1625,14 @@ namespace P_Inti
                                 snapshotPoint = snapshotLine.Start;
                                 wpfTextViewLine = wpfTextView.GetTextViewLineContainingBufferPosition(snapshotPoint);
                                 codeAdornment.CreateVisuals(wpfTextViewLine);
-
                             }
+
                             else
                             {
                                 MyWindowControl.printInBrowserConsole("NULL line " + i);
                             }
                         }
+                        codeAdornment.RemoveVisuals();
 
 
                     }
@@ -1643,6 +1660,8 @@ namespace P_Inti
                                         wpfTextViewLine = wpfTextView.GetTextViewLineContainingBufferPosition(snapshotPoint);
                                         codeAdornment.CreateVisuals(wpfTextViewLine);
                                     }
+                                    codeAdornment.RemoveVisuals();
+
                                 }
                             }
                             else
@@ -1656,6 +1675,21 @@ namespace P_Inti
                         };
                         timer.Start();
 
+                        DispatcherTimer endTimer = new DispatcherTimer();
+                        endTimer.Interval = TimeSpan.FromSeconds(seconds / totalSteps);
+                        currentStep = 1;
+                        endTimer.Tick += (ss, ee) => {
+                            if (currentStep >= totalSteps)
+                            {
+                                codeAdornment.RemoveVisuals();
+                                endTimer.Stop();
+                            }
+                            else
+                            {
+                                currentStep++;
+                            }
+                        };
+                        endTimer.Start();
                     }
 
                     MyWindowControl.printInBrowserConsole("difference: " + difference);

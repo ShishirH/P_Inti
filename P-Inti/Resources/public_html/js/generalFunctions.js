@@ -429,6 +429,12 @@ function loadLogFiles(response, lineInfoFileContent, waitingDialog) {
         if (response.success) {
             setTimeout(function () {
                 waitingDialog.dialog('hide');
+                window.jsHandler.setCurrentLine({
+                    lineNumber: window.lineData[0].line,
+                    filePath: window.lineData[0].filePath,
+                    expressions: null
+                }).then(function (response) {
+                });
             }, 2000);
         }
     }
@@ -478,14 +484,18 @@ function clickRunCodeButton() {
         }
     }
 
-    var theSlider = $("#theSlider").data("ionRangeSlider");
-    if (priorSliderFromPercentage > 0) {
-        console.log("Log files loaded")
-        while(theSlider.result.from_percent < priorSliderFromPercentage) {
-            console.log(theSlider.result.from_percent)
-            moveTimelineNext();
-        }
-    }
+    console.log("I might be here!")
+
+    // var theSlider = $("#theSlider").data("ionRangeSlider");
+    // if (priorSliderFromPercentage > 0) {
+    //     console.log("Log files loaded")
+    //     while(theSlider.result.from_percent < priorSliderFromPercentage) {
+    //         console.log(theSlider.result.from_percent)
+    //         moveTimelineNext();
+    //     }
+    // }
+
+    console.log("ASD lineNumberDetails");
 }
 
 function goToLineInFile() {
@@ -10512,31 +10522,31 @@ function onSliderChanged(data) {
             let evaluatedLine = lastRecord.line - 1;
 
 
-            window.jsHandler.setEvaluatedLine({
-                lineNumber: evaluatedLine,
-                expressions: lastRecord.expressions,
-                values: lastRecord.values,
-                types: lastRecord.types
-            }).then(function (response) {
-                //console.log(response);
-
-//                var args = {
-//                    opacity: 0.75,
-//                    mainColor: '#add8e6',
-//                    startLine: evaluatedLine,
-//                    endLine: evaluatedLine,
-//                    file: lastRecord.file,
-//                    lineNumber: evaluatedLine,
-//                    animate: false,
-//                    newDispatcher: true,
-//                    id: ''
-//                };
-//                console.log(args);
-////                window.jsHandler.goTo(args);
-//                window.jsHandler.paintLinesInEditor(args);
-
-
-            });
+//             window.jsHandler.setEvaluatedLine({
+//                 lineNumber: evaluatedLine,
+//                 expressions: lastRecord.expressions,
+//                 values: lastRecord.values,
+//                 types: lastRecord.types
+//             }).then(function (response) {
+//                 //console.log(response);
+//
+// //                var args = {
+// //                    opacity: 0.75,
+// //                    mainColor: '#add8e6',
+// //                    startLine: evaluatedLine,
+// //                    endLine: evaluatedLine,
+// //                    file: lastRecord.file,
+// //                    lineNumber: evaluatedLine,
+// //                    animate: false,
+// //                    newDispatcher: true,
+// //                    id: ''
+// //                };
+// //                console.log(args);
+// ////                window.jsHandler.goTo(args);
+// //                window.jsHandler.paintLinesInEditor(args);
+//
+//
+//             });
 
 
             console.log(result);
