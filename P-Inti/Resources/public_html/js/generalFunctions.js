@@ -648,7 +648,7 @@ function getPositionAlongLineBetweenPoints(lineStartCoords, lineEndCoords) {
     linePoint.p2 = p2;
 
     let lineLength = computeLength(linePoint);
-    let point = getPointAlongLine(linePoint, lineLength - 8);
+    let point = getPointAlongLine(linePoint, lineLength - 11);
 
     return [angle, point];
     //drawFilledPolygon(translateShape(rotateShape(background.triangle, angle), point.x + (3 / 2), point.y + (3 / 2)), ctx);
@@ -686,28 +686,46 @@ function updateMinimizeButton() {
 
                 if (isThereAnotherExistingObjectWithSameMemAddr) {
                     background.minimizeButton.sign = " ";
-                    let lineStartCoords = background.minimizeButton.getPointByOrigin('center', 'center');
-                    let lineEndCoords = anotherObject.minimizeButton.getPointByOrigin('center', 'center');
-
-                    let posData = getPositionAlongLineBetweenPoints(lineStartCoords, lineEndCoords);
-                    console.log("posData: ");
-                    console.log(posData);
-                    background.arrowEndAngle = posData[0];
-                    background.arrowEndCoords = anotherObject.minimizeButton.getPointByOrigin('center', 'center');
                     background.minimizeEnabled = true;
-                    background.minimizeButton.set('fill', '#FED9A6');
+
+                    background.anotherRender = background.render;
+
+                    background.render = function(ctx) {
+                        background.anotherRender(ctx);
+                        if (!background.isCompressed)
+                        {
+                            let lineStartCoords = background.referencePointer.getPointByOrigin('center', 'center');
+                            let lineEndCoords = anotherObject.minimizeButton.getPointByOrigin('center', 'center');
+                            let posData = getPositionAlongLineBetweenPoints(lineStartCoords, lineEndCoords);
+
+                            let angle = posData[0];
+                            let coords = posData[1];
+                            drawFilledPolygon(translateShape(rotateShape(background.triangle, angle), coords.x + (2 / 2), coords.y + (2 / 2)), ctx);
+                        }
+                    };
+
+                    background.minimizeButton.set('fill', 'transparent');
                     background.minimizeButton.set('strokeDashArray', [3,3]);
+                    background.minimizeButton.set('strokeStyle', 'transparent');
+
+                    background.object = anotherObject.object;
+                    background.minimizeButton = anotherObject.minimizeButton;
+                    anotherObject.object.sendToBack();
                 } else {
                     if (background.object.isCompressed) {
                         background.minimizeButton.sign = "+";
                         background.minimizeEnabled = false;
                         background.minimizeButton.set('fill', '#FED9A6');
                         background.minimizeButton.set('strokeDashArray', []);
+                        background.minimizeButton.bringToFront();
+                        background.minimizeButton.setCoords();
                     } else {
                         background.minimizeButton.sign = "–";
                         background.minimizeEnabled = false;
                         background.minimizeButton.set('fill', '#FED9A6');
                         background.minimizeButton.set('strokeDashArray', []);
+                        background.minimizeButton.bringToFront();
+                        background.minimizeButton.setCoords();
                     }
                 }
             }
@@ -1432,17 +1450,18 @@ function redoCanvas() {
     }
 }
 
-function adjustReferenceObjectPosition(background) {
-    if (!background.object.isCompressed) {
-        var position = (background.object.getPointByOrigin('left', 'center'));
+function adjustReferenceObjectPosition(object) {
+    if (!object.isCompressed) {
+        var position = (object.getPointByOrigin('left', 'center'));
+        let minimizeButton = object.minimizeButton;
 
         let yPosition = parseFloat(position.y)
         let xPosition = parseFloat(position.x) - 15
-        background.minimizeButton.x = xPosition;
-        background.minimizeButton.y = yPosition;
-        background.minimizeButton.left = xPosition;
-        background.minimizeButton.top = yPosition;
-        background.minimizeButton.setCoords();
+        minimizeButton.x = xPosition;
+        minimizeButton.y = yPosition;
+        minimizeButton.left = xPosition;
+        minimizeButton.top = yPosition;
+        minimizeButton.setCoords();
     }
 }
 
@@ -8370,17 +8389,8 @@ function newConnectionReleasedOnCanvas(connection, coordX, coordY) {
     // First, we have to check if this is a collection
     if ($.isArray(theValue)) {
 
-        destination = new iVoLVER.obj.Collection({
-            left: coordX,
-            top: coordY,
-            value: theValue,
-            animateBirth: true
-        });
-
-        canvas.add(destination);
-
-        destination._addIncomingConnection(connection);
-        connection.setDestination(destination, true);
+        connection.contract();
+        return;
 
     } else if (connection.source.type === "ArrayColorWidgetOutput") {
         console.log("Connection here is: ")
@@ -8419,16 +8429,19 @@ function newConnectionReleasedOnCanvas(connection, coordX, coordY) {
 //        destination.left = coordX;
 //        canvas.add(destination);
 
-        console.log("Value");
-        console.log(theValue);
+        // console.log("Value");
+        // console.log(theValue);
+        //
+        // destination = new NumericData({
+        //     value: theValue,
+        //     top: coordY,
+        //     left: coordX,
+        //     destinationCompulsory: true,
+        //     showLabel: true
+        // });
 
-        destination = new NumericData({
-            value: theValue,
-            top: coordY,
-            left: coordX,
-            destinationCompulsory: true,
-            showLabel: true
-        });
+        connection.contract();
+        return;
 
 //        destination = new iVoLVER.model.ValueHolder({
 //            value: theValue,

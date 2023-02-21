@@ -1,8 +1,8 @@
 class ObjectSelectionPane {
     constructor(options) {
         var symbolFont = '20px Helvetica';
-        options.height = options.height || 1;
-        options.width = options.width || 1;
+        options.height = 1//options.height || 1;
+        options.width = 1//options.width || 1;
         options.rx = options.rx || 0;
         options.ry = options.ry || 0;
         options.fill = options.fill || "#B3CDE3";

@@ -39,6 +39,8 @@ class ReferenceWidget {
         background.expandedHeight = background.height;
         background.expandedWidth = background.width;
 
+        var firstMinimizeButton = null;
+
         background.onChangeCompressing = function (currentValue) {
             background.set('width', (background.expandedWidth * currentValue) + 50);
             background.set('height', (background.expandedHeight * currentValue) + 50);
@@ -149,6 +151,8 @@ class ReferenceWidget {
                 [-10, -6],
                 [-10, 6]
             ];
+
+            background.triangle = line.triangle;
             line.oldRender = line.render;
             line.render = function (ctx) {
                 line.oldRender(ctx);
@@ -157,19 +161,23 @@ class ReferenceWidget {
                 let lineStartCoords = null;
 
                 if (background.minimizeButton) {
-                    lineEndCoords = background.minimizeButton.getPointByOrigin('left', 'center');
-                    lineEndCoords.x -= 4;
+                    lineEndCoords = background.minimizeButton.getPointByOrigin('center', 'center');
+                    //lineEndCoords.x -= 10;
                 } else {
                     lineEndCoords = background.getPointByOrigin('right', 'center');
                 }
 
                 if (background.minimizeButton.sign == " ") {
-                    lineEndCoords.x += 10;
+                    //lineEndCoords.x += 10;
                 }
+
+                let referencePointerCoords = background.referencePointer.getPointByOrigin('center', 'center');
 
                 lineStartCoords = background.referencePointer.getPointByOrigin('center', 'center');
                 lineStartCoords.y -= 1.5;
+                lineStartCoords.x -= 1.5;
 
+                lineEndCoords = getPositionAlongLineBetweenPoints(lineStartCoords, lineEndCoords)[1];
                 background.arrowLine.set('x2', lineEndCoords.x);
                 background.arrowLine.set('y2', lineEndCoords.y);
                 background.arrowLine.set('x1', lineStartCoords.x);
@@ -394,85 +402,113 @@ class ReferenceWidget {
 
             if (background.object) {
                 background.object.referenceWidget = background;
-                minimizeButton.registerListener('mouseup', background.minimizeButtonMouseup);
+                minimizeButton.registerListener('mouseup', function(event) {
+                    let clickedButton = event.target;
+                    background.minimizeButtonMouseup((clickedButton));
+                });
             }
 
             canvas.add(minimizeButton);
             background.minimizeButton = minimizeButton;
             background.children.push(background.minimizeButton);
             background.childrenOnTop.push(background.minimizeButton);
+
+            if (!firstMinimizeButton) {
+                firstMinimizeButton = minimizeButton;
+            }
         }
 
-        background.minimizeButtonMouseup = function() {
-            console.log("I am being clicked");
-            if (!background.object || background.minimizeButton.sign === " ") {
+        background.minimizeButtonMouseup = function(clickedButton) {
+            let button = null;
+            let objectToMinimize = null;
+
+
+            if (clickedButton) {
+                button = clickedButton;
+            } else {
+                button = background.minimizeButton;
+            }
+
+            if (button.object) {
+                objectToMinimize = button.object;
+            } else {
+                objectToMinimize = background.object;
+            }
+
+            if (!background.object || button.sign === " ") {
                 return;
             }
 
-            let minimizeButton = background.minimizeButton;
-            let screenCoords = background.minimizeButton.getPointByOrigin('right', 'center');
-            let xPosition = screenCoords.x + (background.object.expandedWidth / 2) + 2;
+            let minimizeButton = button;
+            let screenCoords = button.getPointByOrigin('right', 'center');
+            let xPosition = screenCoords.x + (objectToMinimize.expandedWidth / 2) + 2;
             let yPosition = screenCoords.y;
 
 
             let minimizeButtonXPos;
             let minimizeButtonYPos;
             if (background.isMember) {
-                xPosition = screenCoords.x + (background.object.expandedWidth) + 20;
+                xPosition = screenCoords.x + (objectToMinimize.expandedWidth) + 20;
                 yPosition = yPosition + 3;
-                minimizeButtonXPos = screenCoords.x + (background.object.expandedWidth) + 20;
+                minimizeButtonXPos = screenCoords.x + (objectToMinimize.expandedWidth) + 20;
             } else {
                 minimizeButtonXPos = background.minimizeButtonOriginalXPos;
             }
 
-            background.object.x = xPosition;
-            background.object.left = xPosition;
+            objectToMinimize.x = xPosition;
+            objectToMinimize.left = xPosition;
 
             if (background.isMember) {
-                background.object.x = xPosition - 20;
-                background.object.left = xPosition - 20;
+                objectToMinimize.x = xPosition - 20;
+                objectToMinimize.left = xPosition - 20;
             }
 
-            background.object.y = yPosition;
-            background.object.top = yPosition;
+            objectToMinimize.y = yPosition;
+            objectToMinimize.top = yPosition;
 
             // display class that it is reference of, and hide the button
             if (minimizeButton.state == "minimize") {
                 console.log("I am in here");
                 console.log(background);
-                if (background.object.addAll)
-                    background.object.addAll();
+                if (objectToMinimize.addAll)
+                    objectToMinimize.addAll();
                 else
-                    canvas.add(background.object);
+                    canvas.add(objectToMinimize);
 
                 minimizeButton.state = "maximize"
                 minimizeButton.sign = "–";
 
 
                 if (background.isMember) {
-                    var position = (background.object.getPointByOrigin('left', 'center'));
+                    var position = (objectToMinimize.getPointByOrigin('left', 'center'));
 
                     let yPosition = parseFloat(position.y) - 3
                     let xPosition = parseFloat(position.x) - 67;
-                    background.minimizeButton.x = xPosition;
-                    background.minimizeButton.y = yPosition;
-                    background.minimizeButton.left = xPosition;
-                    background.minimizeButton.top = yPosition;
+                    button.x = xPosition;
+                    button.y = yPosition;
+                    button.left = xPosition;
+                    button.top = yPosition;
                 }
             } else {
                 if (background.isMember) {
-                    background.compressedOptions[background.minimizeButton.id].x = background.minimizeButtonOriginalXPos;
-                    background.expandedOptions[background.minimizeButton.id].x = background.minimizeButtonOriginalXPos;
+                    background.compressedOptions[button.id].x = background.minimizeButtonOriginalXPos;
+                    background.expandedOptions[button.id].x = background.minimizeButtonOriginalXPos;
                 }
 
-                if (background.object.removeAll)
-                    background.object.removeAll();
+                if (objectToMinimize.removeAll)
+                    objectToMinimize.removeAll();
                 else
-                    canvas.remove(background.object);
+                    canvas.remove(objectToMinimize);
 
                 minimizeButton.state = "minimize"
                 minimizeButton.sign = "+";
                 background.positionObjects();
+
+
+                setTimeout(function() {
+                    minimizeButton.bringToFront();
+                    minimizeButton.setCoords();
+                }, 100);
             }
         }
 
@@ -486,7 +522,10 @@ class ReferenceWidget {
             } else if (background.minimizeButton.sign == "?" || background.minimizeButton.sign == "X" || background.minimizeButton.sign === '/') {
                 background.minimizeButton.sign = "+";
                 background.object.referenceWidget = background;
-                background.minimizeButton.registerListener('mouseup', background.minimizeButtonMouseup);
+                background.minimizeButton.registerListener('mouseup', function(event) {
+                    let clickedButton = event.target;
+                    background.minimizeButtonMouseup((clickedButton));
+                });
             }
 
             var rightSc = getScreenCoordinates(background.getPointByOrigin('right', 'center'));
@@ -495,11 +534,13 @@ class ReferenceWidget {
             background.object.top = rightSc.y - 35;
 
             background.object.parent = background;
+            background.object.referenceWidget = background;
+            background.object.minimizeButton = background.minimizeButton;
             canvas.add(background.object);
             background.children.push(background.object);
 
-            background.object.registerListener('moving', function () {
-                adjustReferenceObjectPosition(background);
+            background.object.registerListener('moving', function (e) {
+                adjustReferenceObjectPosition(e.target);
             });
         }
 
@@ -549,124 +590,124 @@ class ReferenceWidget {
             }
         }
 
-        background.drawTransluscentBlockToObjectAtSameMemory = function () {
-            console.log("drawTransluscentBlockToObjectAtSameMemory")   ;
-
-            for (let sameMemoryObject of background.otherReferencedObjects) {
-                console.log("Same memory object: ");
-                console.log(sameMemoryObject);
-                var sc = getScreenCoordinates(background.getPointByOrigin('left', 'center'));
-                var rightSc = getScreenCoordinates(background.getPointByOrigin('right', 'center'));
-
-                var originParent, originChild;
-                var xPosition, yPosition;
-
-                points = [sc.x, sc.y, rightSc.x - 10, sc.y];
-                xPosition = 5;
-                yPosition = 0;
-                originParent = {originX: 'left', originY: 'center'};
-                originChild = {originX: 'left', originY: 'center'};
-
-
-                var line = new fabric.Line(points, {
-                    strokeWidth: 3,
-                    stroke: 'black',
-                    fill: 'black',
-                    hasControls: false,
-                    hasBorders: false,
-                    hasRotatingPoint: false,
-                    hoverCursor: 'default',
-                    selectable: false
-                });
-
-                line.triangle = [
-                    [3, 0],
-                    [-10, -6],
-                    [-10, 6]
-                ];
-                line.oldRender = line.render;
-                line.render = function (ctx) {
-                    line.oldRender(ctx);
-                    //ctx.save();
-                    let lineEndCoords = null;
-                    let lineStartCoords = null;
-
-                    if (background.minimizeButton) {
-                        lineEndCoords = sameMemoryObject.referenceWidget.minimizeButton.getPointByOrigin('left', 'center');
-                        lineEndCoords.x -= 4;
-                    } else {
-                        lineEndCoords = sameMemoryObject.referenceWidget.getPointByOrigin('right', 'center');
-                    }
-                    lineStartCoords = background.referencePointer.getPointByOrigin('center', 'center');
-                    lineStartCoords.y -= 1.5;
-
-                    line.set('x2', lineEndCoords.x);
-                    line.set('y2', lineEndCoords.y);
-                    line.set('x1', lineStartCoords.x);
-                    line.set('y1', lineStartCoords.y);
-
-                    ctx.fillStyle = 'black';
-                    let theConnector = line;
-
-                    var x1 = -theConnector.width / 2 + lineStartCoords.x;
-                    var y1 = theConnector.height / 2 + lineStartCoords.y;
-                    var x2 = theConnector.width / 2 + lineStartCoords.x;
-                    var y2 = -theConnector.height / 2 + lineStartCoords.y;
-
-                    if (line.y1 < line.y2) {
-                        y1 = -theConnector.height / 2;
-                        y2 = theConnector.height / 2;
-                    }
-
-                    if (line.x1 > line.x2) {
-                        x1 = theConnector.width / 2;
-                        x2 = -theConnector.width / 2;
-                    }
-
-                    var deltaX = x2 - x1;
-                    var deltaY = y2 - y1;
-
-                    var angle = Math.atan(deltaY / deltaX);
-                    if (line.x1 > line.x2) {
-                        angle += fabric.util.degreesToRadians(180);
-                    }
-
-                    var p1 = {x: x1, y: y1};
-                    var p2 = {x: x2, y: y2};
-                    var l = {p1: p1, p2: p2};
-                    var length = computeLength(l);
-
-                    var point = getPointAlongLine(l, length - 20);
-                    var x = point.x;
-                    var y = point.y;
-
-                    //ctx.restore();
-                    if (!background.isCompressed)
-                        drawFilledPolygon(translateShape(rotateShape(theConnector.triangle, angle), line.x2 + (line.strokeWidth / 2), line.y2 + (line.strokeWidth / 2)), ctx);
-                };
-
-                background.addChild(line, {
-                    whenCompressed: {
-                        x: xPosition, y: yPosition,
-                        originParent: originParent,
-                        originChild: originChild
-                    },
-                    whenExpanded: {
-                        x: xPosition, y: yPosition,
-                        originParent: originParent,
-                        originChild: originChild
-                    },
-                    movable: false
-                });
-
-                canvas.add(line);
-
-                background.otherReferencedObjectsArrows.push(line);
-                //background.children.push(line);
-                //background.childrenOnTop.push(line);
-            }
-
-        }
+        // background.drawTransluscentBlockToObjectAtSameMemory = function () {
+        //     console.log("drawTransluscentBlockToObjectAtSameMemory")   ;
+        //
+        //     for (let sameMemoryObject of background.otherReferencedObjects) {
+        //         console.log("Same memory object: ");
+        //         console.log(sameMemoryObject);
+        //         var sc = getScreenCoordinates(background.getPointByOrigin('left', 'center'));
+        //         var rightSc = getScreenCoordinates(background.getPointByOrigin('right', 'center'));
+        //
+        //         var originParent, originChild;
+        //         var xPosition, yPosition;
+        //
+        //         points = [sc.x, sc.y, rightSc.x - 10, sc.y];
+        //         xPosition = 5;
+        //         yPosition = 0;
+        //         originParent = {originX: 'left', originY: 'center'};
+        //         originChild = {originX: 'left', originY: 'center'};
+        //
+        //
+        //         var line = new fabric.Line(points, {
+        //             strokeWidth: 3,
+        //             stroke: 'black',
+        //             fill: 'black',
+        //             hasControls: false,
+        //             hasBorders: false,
+        //             hasRotatingPoint: false,
+        //             hoverCursor: 'default',
+        //             selectable: false
+        //         });
+        //
+        //         line.triangle = [
+        //             [3, 0],
+        //             [-10, -6],
+        //             [-10, 6]
+        //         ];
+        //         line.oldRender = line.render;
+        //         line.render = function (ctx) {
+        //             line.oldRender(ctx);
+        //             //ctx.save();
+        //             let lineEndCoords = null;
+        //             let lineStartCoords = null;
+        //
+        //             if (background.minimizeButton) {
+        //                 lineEndCoords = sameMemoryObject.referenceWidget.minimizeButton.getPointByOrigin('left', 'center');
+        //                 lineEndCoords.x -= 4;
+        //             } else {
+        //                 lineEndCoords = sameMemoryObject.referenceWidget.getPointByOrigin('right', 'center');
+        //             }
+        //             lineStartCoords = background.referencePointer.getPointByOrigin('center', 'center');
+        //             lineStartCoords.y -= 1.5;
+        //
+        //             line.set('x2', lineEndCoords.x);
+        //             line.set('y2', lineEndCoords.y);
+        //             line.set('x1', lineStartCoords.x);
+        //             line.set('y1', lineStartCoords.y);
+        //
+        //             ctx.fillStyle = 'black';
+        //             let theConnector = line;
+        //
+        //             var x1 = -theConnector.width / 2 + lineStartCoords.x;
+        //             var y1 = theConnector.height / 2 + lineStartCoords.y;
+        //             var x2 = theConnector.width / 2 + lineStartCoords.x;
+        //             var y2 = -theConnector.height / 2 + lineStartCoords.y;
+        //
+        //             if (line.y1 < line.y2) {
+        //                 y1 = -theConnector.height / 2;
+        //                 y2 = theConnector.height / 2;
+        //             }
+        //
+        //             if (line.x1 > line.x2) {
+        //                 x1 = theConnector.width / 2;
+        //                 x2 = -theConnector.width / 2;
+        //             }
+        //
+        //             var deltaX = x2 - x1;
+        //             var deltaY = y2 - y1;
+        //
+        //             var angle = Math.atan(deltaY / deltaX);
+        //             if (line.x1 > line.x2) {
+        //                 angle += fabric.util.degreesToRadians(180);
+        //             }
+        //
+        //             var p1 = {x: x1, y: y1};
+        //             var p2 = {x: x2, y: y2};
+        //             var l = {p1: p1, p2: p2};
+        //             var length = computeLength(l);
+        //
+        //             var point = getPointAlongLine(l, length - 20);
+        //             var x = point.x;
+        //             var y = point.y;
+        //
+        //             //ctx.restore();
+        //             if (!background.isCompressed)
+        //                 drawFilledPolygon(translateShape(rotateShape(theConnector.triangle, angle), line.x2 + (line.strokeWidth / 2), line.y2 + (line.strokeWidth / 2)), ctx);
+        //         };
+        //
+        //         background.addChild(line, {
+        //             whenCompressed: {
+        //                 x: xPosition, y: yPosition,
+        //                 originParent: originParent,
+        //                 originChild: originChild
+        //             },
+        //             whenExpanded: {
+        //                 x: xPosition, y: yPosition,
+        //                 originParent: originParent,
+        //                 originChild: originChild
+        //             },
+        //             movable: false
+        //         });
+        //
+        //         canvas.add(line);
+        //
+        //         background.otherReferencedObjectsArrows.push(line);
+        //         //background.children.push(line);
+        //         //background.childrenOnTop.push(line);
+        //     }
+        //
+        // }
 
         background.drawArrowToObjectsAtSameMemory = function () {
             console.log("drawArrowToObjectsAtSameMemory");
@@ -863,11 +904,16 @@ class ReferenceWidget {
         }
 
         background.reInitializeObject = function () {
-            background.minimizeButton.registerListener('mouseup', background.minimizeButtonMouseup);
+            background.minimizeButton.registerListener('mouseup', function(event) {
+                let clickedButton = event.target;
+                background.minimizeButtonMouseup((clickedButton));
+            });
             addReferencedObject();
             background.object.referenceWidget = background;
         }
-        background.setValue = function (newValue) {
+
+        let firstTimeValueChangePos = true;
+        background.setValue = function (newValue, currentMemoryAddress) {
             console.log("New value is: ");
             console.log(newValue);
 
@@ -895,6 +941,65 @@ class ReferenceWidget {
                     console.log("Background object is: ");
                     console.log(background.object);
                     addReferencedObject();
+                } else if (background.object && currentMemoryAddress && background.object.memoryAddress != currentMemoryAddress) {
+                    var rightSc = getScreenCoordinates(background.object.getPointByOrigin('center', 'center'));
+
+                    rightSc.x += 100;
+                    rightSc.y += 100;
+
+                    background.minimizeButton.object = background.object;
+                    background.object = createObjectMemberWidgetsWithoutResponse(objectInfo[background.type], rightSc, background.fileName, background.name)
+
+                    var minimizeButtonCompressed = background.compressedOptions[background.minimizeButton.id];
+                    var minimizeButtonExpanded = background.expandedOptions[background.minimizeButton.id];
+
+                    let compressedX = minimizeButtonCompressed.x;
+                    let compressedY = minimizeButtonCompressed.y;
+
+                    let expandedX = minimizeButtonExpanded.x;
+                    let expandedY = minimizeButtonExpanded.y;
+
+                    // Removing current minimizeButton from children and childrenOnTop
+                    background.children = background.children.filter(item => item !== background.minimizeButton);
+                    background.childrenOnTop = background.childrenOnTop.filter(item => item !== background.minimizeButton);
+
+                    console.log("Minimizeee button was: ")
+                    console.log(background.minimizeButton);
+                    addMinimizeButton();
+
+                    console.log("Minimizeee button is: ")
+                    console.log(background.minimizeButton);
+
+                    let xOffset = 310;
+                    let yOffset = 380;
+
+                    if (!firstTimeValueChangePos) {
+                        xOffset = 0;
+                        yOffset = 130;
+                    }
+
+                    background.compressedOptions[background.minimizeButton.id].x = compressedX + xOffset;
+                    background.compressedOptions[background.minimizeButton.id].y = compressedY + yOffset;
+                    background.compressedOptions[background.minimizeButton.id].left = compressedX + xOffset;
+                    background.compressedOptions[background.minimizeButton.id].top = compressedY + yOffset;
+
+                    background.expandedOptions[background.minimizeButton.id].x = expandedX + xOffset;
+                    background.expandedOptions[background.minimizeButton.id].y = expandedY + yOffset;
+                    background.expandedOptions[background.minimizeButton.id].left = expandedX + xOffset;
+                    background.expandedOptions[background.minimizeButton.id].top = expandedY + yOffset;
+
+                    if (firstTimeValueChangePos) {
+                        firstTimeValueChangePos = false;
+                    }
+
+                    background.positionObject(background.minimizeButton);
+                    addReferencedObject();
+
+                    setTimeout(function() {
+                        background.minimizeButton.object = background.object;
+                        background.minimizeButtonMouseup();
+                    }, 150);
+                    //background.minimizeButtonMouseup();
                 }
                 background.object.setValue(newValue);
             }
@@ -919,9 +1024,24 @@ class ReferenceWidget {
                         if (this.values[i].array && this.values[i].symbols.indexOf(background.name) != -1) {
                             console.log("this.values[i].array")
                             console.log(this.values[i].array)
-                            if (background.object) {
+                            const valueObj = JSON.parse(this.values[i].array);
+
+                            let memoryAddress = null;
+                            if (valueObj && valueObj.constructor == Object) {
+                                // confirmed that value is a dictionary
+                                console.log("Value is a dict")
+                                console.log("valueObj");
+                                console.log(valueObj);
+                                memoryAddress = valueObj["memoryAddress"];
+                            }
+
+                            // Current object value has been updated.
+                            if (background.object && background.object.memoryAddress == memoryAddress) {
                                 console.log("Setting value");
                                 background.object.setValue(this.values[i].array);
+                            } else if (background.object) {
+                                // Pointing to new memory location now. Create new reference.
+                                background.setValue(this.values[i].array, memoryAddress);
                             }
                             break;
                         }

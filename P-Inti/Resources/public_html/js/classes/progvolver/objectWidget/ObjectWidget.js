@@ -312,6 +312,7 @@ class ObjectWidget {
                 x: 150,
                 y: 150,
                 parent: background,
+                eventable: false,
                 objectMembers: objectMembersSelect
             });
 
