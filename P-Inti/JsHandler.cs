@@ -501,8 +501,10 @@ namespace P_Inti
             MyWindowControl.printInBrowserConsole("\n\n\n");
         }
 
+        public static List<string> foundVariables = new List<string>();
         public Dictionary<string, object> searchVariableAcrossVariants(object arg)
         {
+            foundVariables = new List<string>();
             Dictionary<string, object> response = new Dictionary<string, object>();
 
             // Get a list of variable names, types, declared line and scope to, and file declared, all separated by _
@@ -671,6 +673,8 @@ namespace P_Inti
                                             foundVariableNames += "_" + variableName;
                                             foundVariableValues += "_" + variableValue;
                                         }
+
+                                        foundVariables.Add(variableName);
                                         windowControl.positions.Add(caretPosition);
                                         windowControl.trackedSymbolsIDs.Add(variableId);
                                         windowControl.fileNames.Add(fileName);
@@ -1923,19 +1927,21 @@ namespace P_Inti
                 if (hashOfCombinedBranchId != "")
                 {
 
-                        solutionDir.Replace("\"", string.Empty);
-                        string rootDir = solutionDir + @"\" + "codeShifts";
-                        rootDir = rootDir + @"\" + "logs";
-                        string codeControlDir = rootDir + @"\" + hashOfCombinedBranchId;
+                    solutionDir.Replace("\"", string.Empty);
+                    string rootDir = solutionDir + @"\" + "codeShifts";
+                    rootDir = rootDir + @"\" + "logs";
+                    string codeControlDir = rootDir + @"\" + hashOfCombinedBranchId;
 
-                        MyWindowControl.printInBrowserConsole("OutputDir for compilation: " + codeControlDir);
-                        if (!Directory.Exists(codeControlDir))
-                        {
-                            Directory.CreateDirectory(codeControlDir);
-                        }
+                    MyWindowControl.printInBrowserConsole("OutputDir for compilation: " + codeControlDir);
+                    if (!Directory.Exists(codeControlDir))
+                    {
+                        Directory.CreateDirectory(codeControlDir);
+                    }
 
-                        outputDir = codeControlDir;
-                    
+                    outputDir = codeControlDir;
+                    loggingFileOutputDirectory = outputDir;
+
+
                 }
 
                 if (!Directory.Exists(progvolverDir))

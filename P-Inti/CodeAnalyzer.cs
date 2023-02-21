@@ -1392,6 +1392,11 @@ namespace TestingCodeAnalysis
             // log initializations
             foreach(string key in JsHandler.initializationValues.Keys)
             {
+                if (!JsHandler.foundVariables.Contains(JsHandler.initializationValues[key]))
+                {
+                    // Variable wasn't found in current code variant.
+                    continue;
+                }
                 string filePath = key.Split('~')[0];
                 int lineNumber = int.Parse(key.Split('~')[1]);
 
