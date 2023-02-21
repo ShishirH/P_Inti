@@ -1050,6 +1050,11 @@ class ReferenceWidget {
                         if (this.values[i].array && this.values[i].symbols.indexOf(background.name) != -1) {
                             console.log("this.values[i].array")
                             console.log(this.values[i].array)
+
+                            if (background.object && background.object.kind == "ArraySymbol") {
+                                background.object.setValue(this.values[i].array);
+                                break;
+                            }
                             const valueObj = JSON.parse(this.values[i].array);
 
                             let memoryAddress = null;
@@ -1087,10 +1092,6 @@ class ReferenceWidget {
 
         background.drawArrowToSameMemLocationFinal = function() {
             let additionalLogging = false;
-
-            if (background.object && background.object.objectWidgetsDict["data"].value == 5) {
-                additionalLogging = true;
-            }
 
             additionalLogging && console.log("going through referencewidgets")
             // for (let i = 0; i < referenceWidgetsList.length; i++) {
