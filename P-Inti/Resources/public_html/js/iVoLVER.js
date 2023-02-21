@@ -1808,7 +1808,7 @@ var iVoLVER = {
 
             iVoLVER.gui.add.draggableIcon({
                 sectionID: plotsSection,
-                iconClass: 'fa-solid fa-note-sticky',
+                iconClass: 'fa-regular fa-note-sticky',
                 tooltip: 'Code Note',
                 onMouseUp: function (x, y) {
                     var note = new CodeNote({

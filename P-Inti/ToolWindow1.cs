@@ -23,7 +23,7 @@ namespace P_Inti
         /// </summary>
         public ToolWindow1() : base(null)
         {
-            this.Caption = "Code Unboxer";
+            this.Caption = "Code Unraveller";
 
             // This is the user control hosted by the tool window; Note that, even if this class implements IDisposable,
             // we are not calling Dispose on this object. This is because ToolWindowPane calls Dispose on

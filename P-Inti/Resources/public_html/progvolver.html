@@ -251,7 +251,7 @@
             <li class="verticalLeftDivider verticalRightDivider verticalRightDivider2"><a onclick="zoomOut()"><i class="icon-zoom-out "></i></a></li>
 
             <!-- DRAGGING & PANNING MODES -->
-            <li id="panningModeButton" onmousedown='modeButtonClicked(this);' draggable="false" class="mode"><a><i class="fa fa-hand-paper-o fa-2x"> </i> </a></li>
+            <li id="panningModeButton" onmousedown='modeButtonClicked(this);' draggable="false" class="mode"><a><i class="fa fa-hand-paper-o"> </i> </a></li>
 <!--            <li class="verticalLeftDivider mode" id="disconnectingModeButton" onmousedown='modeButtonClicked(this);' draggable="false"><a><i class="fa fa-unlink fa-2x"> </i> </a></li>-->
 <!--            <li class="verticalLeftDivider verticalRightDivider verticalRightDivider2 mode" id="squaredSelectionButton" onmousedown='modeButtonClicked(this);' draggable="false"><a><i class="fa fa-object-group fa-2x"> </i> </a></li>-->
 
@@ -569,8 +569,8 @@
 
         iVoLVER.gui.add.button({
             sectionID: iVoLVER.gui.toolbar, // variable storing the id of the top toolbar
-            tooltip: 'Unbox',
-            iconClass: 'fa-square-o unboxButton',
+            tooltip: 'Code Unraveller',
+            iconClass: 'fa-solid fa-scroll',
             onClick: function () {
                 if (window.jsHandler) {
                     window.jsHandler.startCodeUnboxer({
