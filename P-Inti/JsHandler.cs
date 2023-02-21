@@ -56,6 +56,8 @@ namespace P_Inti
         private ToolWindow1Control toolWindow1Control;
         private Dispatcher currentDispatcher;
 
+        public static List<string> foundVariables = new List<string>();
+
         public JsHandler(MyWindowControl windowControl, Dispatcher dispatcher)
         {
             this.theDispatcher = dispatcher;
@@ -501,7 +503,6 @@ namespace P_Inti
             MyWindowControl.printInBrowserConsole("\n\n\n");
         }
 
-        public static List<string> foundVariables = new List<string>();
         public Dictionary<string, object> searchVariableAcrossVariants(object arg)
         {
             foundVariables = new List<string>();
@@ -1020,6 +1021,7 @@ namespace P_Inti
                             MyWindowControl.printInBrowserConsole("INIT: Key- " + filePath + "~" + declarationLineNumber);
                             MyWindowControl.printInBrowserConsole("INIT: Value- " + symbol.Name);
                             initializationValues.Add(filePath + "~" + declarationLineNumber, symbol.Name);
+                            foundVariables.Add(symbol.Name);
                         }
 
 

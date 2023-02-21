@@ -34,7 +34,7 @@ class ObjectSelectionPane {
                 let type = nameArray[0];
                 let varName = nameArray[1];
                 var height = 40;
-                var width = background.width - (background.strokeWidth * 2);
+                var width = 120;
 
                 if (i == 0) {
                     strokeDashArray = [(2 * width + height), (height)];
