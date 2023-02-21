@@ -967,6 +967,54 @@ class LollipopPlot extends ConnectableWidget {
 
                 background.histories[symbolName] = connectedHistory;
 
+                console.log("here ho")
+                console.log(background.histories)
+
+                // More than 1 symbol, update indexes
+                let localIndex = 0;
+                let historyOfSymbol = [];
+                let nameOfSymbol = [];
+                if (Object.keys(background.histories).length > 1) {
+                    console.log("Entering this state")
+                    for (const[key, value] of Object.entries(background.histories)) {
+                        console.log("key is: " + key);
+                        if (key && value) {
+                            historyOfSymbol.push(value);
+                            nameOfSymbol.push(key);
+                        }
+                    }
+
+                    console.log("historyOfSymbol is now: ")
+                    console.log(historyOfSymbol)
+                    let i = 0, j = 0;
+
+                    while (i < historyOfSymbol[0].length && j < historyOfSymbol[1].length) {
+                        if (historyOfSymbol[0][i].time < historyOfSymbol[1][j].time) {
+                            historyOfSymbol[0][i++].localIndex = localIndex++;
+                            console.log("i is now: " + i);
+                        } else {
+                            historyOfSymbol[1][j++].localIndex = localIndex++;
+                            console.log("j is now: " + j);
+                        }
+                    }
+
+                    console.log("historyOfSymbol")
+                    console.log(historyOfSymbol)
+                    while (i < historyOfSymbol[0].length) {
+                        historyOfSymbol[0][i++].localIndex = localIndex++;
+                        console.log("i is now: " + i);
+                    }
+                    while (j < historyOfSymbol[1].length) {
+                        historyOfSymbol[1][j++].localIndex = localIndex++;
+                        console.log("j is now: " + j);
+
+                    }
+                }
+
+                background.histories[nameOfSymbol[0]] = historyOfSymbol[0];
+                background.histories[nameOfSymbol[1]] = historyOfSymbol[1];
+
+                console.log(background.histories);
                 if (!xScale || background.symbols.length == 1) {
                     background.setUpD3(background.plottingDiv, connectedHistory, background.svg, background.plottingDiv.width(), background.plottingDiv.height(), background.currentXCoord);
                 }
@@ -1029,11 +1077,13 @@ class LollipopPlot extends ConnectableWidget {
             var valuesToPlot = new Array();
 
             symbolNames.forEach(function (symbolName) {
-                var symbolHistory = background.histories[symbolName];
-                var currentValues = symbolHistory.filter(item => item.time <= time);
-                valuesToPlot = valuesToPlot.concat(symbolHistory);
+                if (symbolName && symbolName != "undefined") {
+                    var symbolHistory = background.histories[symbolName];
+                    var currentValues = symbolHistory.filter(item => item.time <= time);
+                    valuesToPlot = valuesToPlot.concat(symbolHistory);
 
-                background.grayOutIndex[symbolName] = currentValues.length + 1;
+                    background.grayOutIndex[symbolName] = currentValues.length + 1;
+                }
             });
 
             // we need to modify (i.e., filter) the values of what we are showing at this point)
