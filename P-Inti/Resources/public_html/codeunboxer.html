@@ -256,14 +256,21 @@
                                     console.log("valuesData: ");
                                     console.log(valuesData)
 
+                                    console.log("allSymbols");
+                                    console.log(allSymbols);
+
+                                    let numberOfIterationsFor = 0;
+                                    let numberOfIterationsWhile = 0;
                                     for (i = 0; i < logData['data'].length; i++){
                                         if (logData['data'][i]['lineContent'] && logData['data'][i]['lineContent'].includes && logData['data'][i]['lineContent'].includes(" " + "for" + " " )){
                                             lineNum = logData['data'][i]['line'] + 1;
                                             if ( !loopsDictionary.hasOwnProperty( "for_" + lineNum ) ){
 
                                                 loopsDictionary["for_" + lineNum] = [{"loop": "for", "line": lineNum, "iter": 0 }]
+                                                numberOfIterationsFor++;
                                             } else {
                                                 loopsDictionary["for_" + lineNum].push({"loop": "for", "line": lineNum, "iter": loopsDictionary["for_" + lineNum].length})
+                                                numberOfIterationsFor++;
                                             }
                                         }
 
@@ -271,13 +278,19 @@
                                             lineNum = logData['data'][i]['line'] + 1;
                                             if ( !loopsDictionary.hasOwnProperty( "while_" + lineNum ) ){
                                                 loopsDictionary["while_" + lineNum] = [{"loop": "while", "line": lineNum, "iter": 0 }]
+                                                numberOfIterationsWhile++;
                                             } else {
                                                 loopsDictionary["while_" + lineNum].push({"loop": "while", "line": lineNum, "iter": loopsDictionary["while_" + lineNum].length})
+                                                numberOfIterationsWhile++;
                                             }
                                         }
                                     }
                                     console.log(valuesDictionary)
                                     console.log(loopsDictionary);
+
+                                    let minusEqualsAdjustmentFirstLine = false;
+                                    let oldPreValue;
+                                    let oldPostValue;
                                     for (i = 0; i < logData['data'].length; i++){
                                         logData['data'][i]['lineContent'] = addIterText(logData['data'][i]['lineContent'],logData['data'][i]['line'] +1,loopsDictionary );
                                         evaluatedLinePre = "";
@@ -296,6 +309,27 @@
                                                     for (n = 0; n < logData['data'][i]['lineContent'].length; n++){
                                                         tempStr =tempStr + " ";
                                                     }
+
+                                                    let lineContent = logData['data'][i]['lineContent'];
+
+                                                    if (lineContent.indexOf("++") != -1) {
+                                                        valuesDictionary [allSymbols[k]][0]["value"];
+                                                    }
+
+                                                    if (lineContent.indexOf("-=") != -1) {
+                                                        if (!minusEqualsAdjustmentFirstLine)
+                                                            valuesDictionary [allSymbols[k]][0]["value"]++;
+                                                        minusEqualsAdjustmentFirstLine = true;
+                                                    }
+
+                                                    if (lineContent.indexOf("--") != -1) {
+                                                        valuesDictionary [allSymbols[k]][0]["value"]++;
+                                                    }
+
+                                                    if (lineContent.indexOf("+=") != -1) {
+                                                        valuesDictionary [allSymbols[k]][0]["value"]--;
+                                                    }
+
                                                     tempStr =  tempStr.replaceAt(startAndEnd[0] + 1, valuesDictionary [allSymbols[k]][0]["value"]);
                                                     preLine = tempStr;
                                                 }
@@ -309,12 +343,67 @@
                                                     for (n = 0; n < logData['data'][i]['lineContent'].length; n++){
                                                         tempStr =tempStr + " ";
                                                     }
-                                                    tempStr =  tempStr.replaceAt(startAndEnd[0] + 1, valuesDictionary [allSymbols[k]][1]["value"]);
-                                                    postLine = tempStr;
-                                                    valuesDictionary [allSymbols[k]].shift()
 
+                                                    let lineContent = logData['data'][i]['lineContent'];
+
+                                                    if (lineContent.indexOf("++") != -1) {
+                                                        valuesDictionary [allSymbols[k]][1]["value"]--;
+                                                    }
+
+                                                    if (lineContent.indexOf("-=") != -1) {
+                                                        valuesDictionary [allSymbols[k]][1]["value"]++;
+                                                    }
+
+                                                    if (lineContent.indexOf("--") != -1) {
+                                                        valuesDictionary [allSymbols[k]][1]["value"]++;
+                                                    }
+
+                                                    if (lineContent.indexOf("+=") != -1) {
+                                                        valuesDictionary [allSymbols[k]][1]["value"]--;
+                                                    }
+
+
+                                                    console.log("Number of iterations is: " + numberOfIterationsFor);
+                                                    console.log("PostValue is: ");
+                                                    console.log(oldPostValue);
+                                                    if (false) {
+                                                        // lineContent.indexOf("iter " + (numberOfIterationsFor - 1)) !== -1
+                                                        let oldValue = oldPostValue[1]["value"];
+
+                                                        if (lineContent.indexOf("++") != -1) {
+                                                            oldValue++;
+                                                        }
+
+                                                        if (lineContent.indexOf("-=") != -1) {
+                                                            oldValue--;
+                                                        }
+
+                                                        if (lineContent.indexOf("--") != -1) {
+                                                            oldValue--;
+                                                        }
+
+                                                        if (lineContent.indexOf("+=") != -1) {
+                                                            oldValue++;
+                                                        }
+
+                                                        tempStr =  tempStr.replaceAt(startAndEnd[0] + 1, oldValue);
+                                                        postLine = tempStr;
+                                                    } else {
+                                                        tempStr =  tempStr.replaceAt(startAndEnd[0] + 1, valuesDictionary [allSymbols[k]][1]["value"]);
+                                                        postLine = tempStr;
+                                                    }
+                                                    oldPostValue = valuesDictionary [allSymbols[k]].shift()
                                                 }
                                             }
+
+                                            // postprocessing because of one off errors
+                                            let lineContent = logData['data'][i]['lineContent'];
+
+                                            if (lineContent.indexOf("iter 0") != -1) {
+                                                // preLine = "";
+                                                 postLine = "";
+                                            }
+
                                             $("#unpackedCode").append(
                                                 '<div style="width: 100%;  font-size: 12px; height: 55px; border: 1px solid" class="lineInfoDiv lineInfo_' + (logData['data'][i]['line'] +1 ) +'">' +
 
