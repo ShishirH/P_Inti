@@ -58,9 +58,9 @@ var SignalReceiverWidget = iVoLVER.util.createClass(fabric.Circle, {
         console.log("Signal received!");
         console.log("Operation is: " + operation);
         if (operation == "increase") {
-            this.signalsReceived = parseInt(this.signalsReceived) + 1;
+            this.signalsReceived = 2;
         } else if (operation == "decrease") {
-            this.signalsReceived = parseInt(this.signalsReceived) - 1;
+            this.signalsReceived = 1;
         } else if (operation == "reset") {
             this.signalsReceived = 0;
         }

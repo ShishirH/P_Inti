@@ -54,7 +54,7 @@ var SignalEmitterWidget = iVoLVER.util.createClass(fabric.Triangle, {
 
         this.onValuesUpdated = function (numberOfSignals) {
             if (this.numberOfSignalsEmitted < numberOfSignals) {
-                this.emitSignal(numberOfSignals);
+                this.emitSignal(this.numberOfSignalsEmitted);
                 this.numberOfSignalsEmitted += 1;
             }
         };

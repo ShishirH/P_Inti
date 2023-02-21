@@ -286,6 +286,10 @@ class CanvasVariable {
             background.compress();
             background.positionObjects();
             background.positionHtmlObjects();
+
+            if (!window.canvasVariable) {
+                window.canvasVariable = background;
+            }
         })
         background.clone = function () {
             return new ProgvolverSymbol({
