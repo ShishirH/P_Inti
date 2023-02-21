@@ -4,18 +4,17 @@ progvolver = {
     objects: {}
 };
 
+let currentLineHighlighted = null;
+
 function highlightLine (object) {
-
-    console.log(object);
-    // $(".lineInfoDiv").css("border", "none");
-    if (object !== currentLine){
-        currentLine = object;
-        $(".lineInfoDiv").css("border", "1px solid black");
-
+    console.log("here is the line number: " + (object -1) );
+    console.log("here is the currentLineHighlighted: " + currentLineHighlighted);
+    if (object - 1 !== currentLineHighlighted  ){
+        currentLineHighlighted = object -1 ;        
+        $(".lineInfoDiv").css("border", "1px solid black");  
     } else {
-        $(".lineInfo_" + object).css("border", "5px solid black");
+        $(".lineInfo_" + (object - 1)).css("border", "5px solid black");
     }
-//    $(".lineInfo_" + object).hide();
 }
 
 function addVariantToMultiverse(codeMultiverseId) {
@@ -440,13 +439,13 @@ function updateLineLogFileToIncludeIndex(lineLogData) {
     });
 }
 
-function highlightLine (object) {
+// function highlightLine (object) {
 
-    console.log(object);
-    $(".lineInfo").css("border", "none");
-    $(".lineInfo_" + object).css("border", "2 px solid red");
-//    $(".lineInfo_" + object).hide();
-}
+//     console.log(object);
+//     $(".lineInfo").css("border", "none");
+//     $(".lineInfo_" + object).css("border", "2 px solid red");
+// //    $(".lineInfo_" + object).hide();
+// }
 
 function clickRunCodeButton() {
 
