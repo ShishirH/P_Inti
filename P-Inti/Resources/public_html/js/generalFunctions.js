@@ -36,21 +36,6 @@ function addVariantToMultiverse(codeMultiverseId) {
 
     variantRow.append(newVariant);
 
-    $('#' + id + '-title').on("blur", function() {
-        console.log("Branch id is: " + id);
-        console.log("Branch name is: " + $(this).val());
-        if (window.jsHandler) {
-            if (window.jsHandler.createCodeControlBranch) {
-                window.jsHandler.createCodeControlBranch({
-                    id: codeMultiverseId,
-                    branchId: id,
-                    branchName: $(this).val()
-                }).then(function (response) {
-                });
-            }
-        }
-    });
-
     let inputNameSelector = "input[name=" + name + "]";
     $(inputNameSelector).change(function(e) {
         e.stopImmediatePropagation();
@@ -74,7 +59,48 @@ function addVariantToMultiverse(codeMultiverseId) {
             getAssociatedVariablesForCodeVariants();
 
         }
-    })
+    });
+
+    $('#' + id + '-title').on("blur", function() {
+        console.log("Branch id is: " + id);
+        console.log("Branch name is: " + $(this).val());
+
+        if (window.jsHandler) {
+            if (window.jsHandler.createCodeControlBranch) {
+                window.jsHandler.createCodeControlBranch({
+                    id: codeMultiverseId,
+                    branchId: id,
+                    branchName: $(this).val()
+                }).then(function (response) {
+                });
+            }
+        }
+
+        console.log("SSSid is: " + id);
+        console.log($('#' + id));
+        $('#' + id).prop('checked', true);
+        let branchName = $('#' + id + '-title').val();
+        if (window.jsHandler && window.jsHandler.updateSelectedCodeControl) {
+            console.log("Calling text thing")
+            window.jsHandler.updateSelectedCodeControl({
+                id: codeMultiverseId
+            })
+        }
+
+        if (window.jsHandler && window.jsHandler.goToControlBranch) {
+            window.jsHandler.goToControlBranch({
+                variantName: branchName,
+                variantId: id,
+                codeShiftId: codeMultiverseId,
+            });
+
+            console.log("went to branch: " + branchName);
+            getAssociatedVariablesForCodeVariants();
+
+        }
+    });
+
+    $('#' + id + '-title').focus();
 }
 
 function addCodeMultiverseToRightPane() {
