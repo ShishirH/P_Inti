@@ -1413,7 +1413,17 @@ namespace TestingCodeAnalysis
                 string file = tuple.Item1;
                 int pos = tuple.Item2;
 
-                allContents[file][pos] += $" Logger.logSignal(@\"{file}~{pos}~{key}\");";
+                string logSignalString = $" Logger.logSignal(@\"{file}~{pos}~{key}\");";
+
+                if (allContents[file][pos].Contains("{") && 
+                    (allContents[file][pos].Contains("for") ||
+                    allContents[file][pos].Contains("while")))
+                {
+                    allContents[file][pos] = string.Concat(allContents[file][pos], logSignalString);
+                } else
+                {
+                    allContents[file][pos] = string.Concat(logSignalString, allContents[file][pos]);
+                }
             }
 
 

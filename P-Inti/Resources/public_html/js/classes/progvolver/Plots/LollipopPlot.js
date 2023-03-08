@@ -148,7 +148,7 @@ class LollipopPlot extends ConnectableWidget {
         }
 
         background.giveFillForLine = function (element) {
-            if (Object.keys(background.grayOutIndex).length === 0 || element.index < background.grayOutIndex[element.symbols]) {
+            if (Object.keys(background.grayOutIndex).length === 0 || (element.index) < background.grayOutIndex[element.symbols]) {
                 return colorScale(element.symbols);
             } else {
                 return "gray";
@@ -156,7 +156,7 @@ class LollipopPlot extends ConnectableWidget {
         }
 
         background.giveOpacityForLine = function (element) {
-            if (Object.keys(background.grayOutIndex).length === 0 || element.index < background.grayOutIndex[element.symbols]) {
+            if (Object.keys(background.grayOutIndex).length === 0 || (element.index) < background.grayOutIndex[element.symbols]) {
                 return 1;
             } else {
                 return 0.3;
@@ -164,7 +164,7 @@ class LollipopPlot extends ConnectableWidget {
         }
 
         background.giveStrokeWidthForLine = function (element) {
-            if (Object.keys(background.grayOutIndex).length === 0 || element.index < background.grayOutIndex[element.symbols]) {
+            if (Object.keys(background.grayOutIndex).length === 0 || (element.index) < background.grayOutIndex[element.symbols]) {
                 return 1;
             } else {
                 return 0.5;
@@ -625,9 +625,9 @@ class LollipopPlot extends ConnectableWidget {
             this.childrenOnTop.push(titleObject);
             if (this.enterEditing) {
                 titleObject.on('added', function (options) {
-                    titleObject.selectionStart = 0;
-                    titleObject.selectionEnd = titleObject.text.length;
-                    titleObject.enterEditing();
+                    // titleObject.selectionStart = 0;
+                    // titleObject.selectionEnd = titleObject.text.length;
+                    // titleObject.enterEditing();
                 });
             }
 
@@ -958,6 +958,10 @@ class LollipopPlot extends ConnectableWidget {
                 connectedHistory.forEach(function (element, index) {
                     element.localIndex = index;
                     element.localTime = element.time / 1000;
+
+                    if (index == 0) {
+                        element.index = 0;
+                    }
                 });
 
                 console.log("connectedHistory AFTER: ");
@@ -1076,13 +1080,27 @@ class LollipopPlot extends ConnectableWidget {
 
             var valuesToPlot = new Array();
 
+            console.log("!!@Time is: " + time);
             symbolNames.forEach(function (symbolName) {
                 if (symbolName && symbolName != "undefined") {
                     var symbolHistory = background.histories[symbolName];
                     var currentValues = symbolHistory.filter(item => item.time <= time);
                     valuesToPlot = valuesToPlot.concat(symbolHistory);
+                    console.log("!!@symbolName is: " + symbolName);
+                    console.log("!!@SymbolHistory is: ");
+                    console.log(symbolHistory);
+                    console.log("!!@currentValues is: ");
+                    console.log(currentValues);
 
-                    background.grayOutIndex[symbolName] = currentValues.length + 1;
+                    background.grayOutIndex[symbolName] = 0;
+
+                    if (currentValues.length == 0) {
+                        background.grayOutIndex[symbolName] = currentValues.length + 1;
+                    } else {
+                        background.grayOutIndex[symbolName] = currentValues.length;
+                    }
+
+                    console.log("!!@background.grayOutIndex: " + background.grayOutIndex[symbolName]);
                 }
             });
 

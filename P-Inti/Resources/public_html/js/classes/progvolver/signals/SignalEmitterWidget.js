@@ -68,15 +68,15 @@ var SignalEmitterWidget = iVoLVER.util.createClass(fabric.Triangle, {
     },
     processConnectionRequest: function (connection) {
         var source = connection.source;
-        var connectionAccepted = (source.isCircle && (source.getInConnections().length + source.getOutConnections().length) === 1) || (source.isTriangle && (source.getInConnections().length >= 2));
+        var connectionAccepted = false;//(source.isCircle && (source.getInConnections().length + source.getOutConnections().length) === 1) || (source.isTriangle && (source.getInConnections().length >= 2));
         var message = '';
         if (!connectionAccepted) {
             if (source.isCircle) {
-                message = 'Sorry, I only accept unconnected Circles.';
+                message = 'Cannot connect to a signal emitter';
             } else if (source.isTriangle) {
-                message = 'Sorry, I only accept Triangles with at least two incoming connections.';
+                message = 'Cannot connect to a signal emitter';
             } else {
-                message = 'Sorry, I don\'t accept connections from Squares.';
+                message = 'Cannot connect to a signal emitter';
             }
         }
         return {

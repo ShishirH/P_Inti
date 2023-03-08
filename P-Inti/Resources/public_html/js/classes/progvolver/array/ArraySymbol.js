@@ -246,7 +246,9 @@ class ArraySymbol {
                 //background.addBuffers();
                 background.addInitialArrayElements(background.initialValue);
                 background.addLabelObject();
-                background.addRotationButton();
+
+                if (columns > 1)
+                    background.addRotationButton();
                 background.addScrollX();
 
                 background.addScrollY();

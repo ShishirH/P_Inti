@@ -1839,6 +1839,13 @@ var iVoLVER = {
                     });
                     canvas.add(plotter);
                     animateBirth(plotter, false, 1, 1);
+
+                    window.plotter = plotter;
+
+                    setTimeout(function() {
+                        plotter.positionHtmlObjects();
+                        plotter.positionObjects();
+                    }, 750);
                 }
             });
 

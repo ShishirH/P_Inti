@@ -178,7 +178,7 @@ function addCodeMultiverseToRightPane() {
 
         if (window.jsHandler && window.jsHandler.initializeCodeControl) {
             window.jsHandler.initializeCodeControl({
-                name: "CODE_MULTIVERSE",
+                name: "CODE_MULTIVERSE_" + codeMultiverseRightPaneElements.length,
                 id: codeMultiverseId,
                 saturatedColor: colorsArray[codeMultiverseRightPaneElements.length - 1],
                 unsaturatedColor: colorsArray[codeMultiverseRightPaneElements.length - 1]
@@ -186,30 +186,33 @@ function addCodeMultiverseToRightPane() {
         }
 
     $(document).ready(function() {
-            $('#' + codeMultiverseId + '-collapse').click( function (e) {
-                let rows = $('.' + codeMultiverseId + '-collapseRows');
-                rows.toggle();
-            });
 
-            $('#' + codeMultiverseId + '-addVariantButton').click( function (e) {
-                addVariantToMultiverse(codeMultiverseId);
-            });
+        $('#' + codeMultiverseId + '-title').val("CODE_MULTIVERSE_" + codeMultiverseRightPaneElements.length);
 
-            $('#' + codeMultiverseId + '-updateVariantButton').click( function (e) {
-                let name = codeMultiverseId + "-variant";
-                let querySelector = "input[name='" + name + "']:checked";
-                let activeBranch = $(querySelector).val();
-                let branchName = $('#' + name + '-title').val();
+        $('#' + codeMultiverseId + '-collapse').click( function (e) {
+            let rows = $('.' + codeMultiverseId + '-collapseRows');
+            rows.toggle();
+        });
 
-                if (window.jsHandler && window.jsHandler.updateControlBranch) {
-                    console.log("Updating control branch")
-                    window.jsHandler.updateControlBranch({
-                        variantName: branchName,
-                        variantId: activeBranch,
-                        codeShiftId: codeMultiverseId
-                    });
-                }
-            });
+        $('#' + codeMultiverseId + '-addVariantButton').click( function (e) {
+            addVariantToMultiverse(codeMultiverseId);
+        });
+
+        $('#' + codeMultiverseId + '-updateVariantButton').click( function (e) {
+            let name = codeMultiverseId + "-variant";
+            let querySelector = "input[name='" + name + "']:checked";
+            let activeBranch = $(querySelector).val();
+            let branchName = $('#' + name + '-title').val();
+
+            if (window.jsHandler && window.jsHandler.updateControlBranch) {
+                console.log("Updating control branch")
+                window.jsHandler.updateControlBranch({
+                    variantName: branchName,
+                    variantId: activeBranch,
+                    codeShiftId: codeMultiverseId
+                });
+            }
+        });
 
         $('#' + codeMultiverseId + '-title').on('blur', function () {
                 if (window.jsHandler && window.jsHandler.updateCodeControlName) {
