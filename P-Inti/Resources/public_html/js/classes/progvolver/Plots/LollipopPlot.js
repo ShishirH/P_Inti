@@ -934,21 +934,49 @@ class LollipopPlot extends ConnectableWidget {
                 let variableHistory = theConnector.source.background.history;
                 var symbolName = variableHistory[0].symbols;
 
+                if (symbolName.indexOf(',') != -1) {
+                    symbolName = symbolName.split(',')[1];
+                }
+
                 // Remove duplicates from the log file. TODO investigate why the log file is generating duplicates.
                 let connectedHistory = [];
-                connectedHistory.push(variableHistory[0]);
 
                 let elementToCompareIndex = 0;
-                variableHistory.forEach(function (element, index) {
-                    if (index !== 0) {
-                       if (element.values !== connectedHistory[elementToCompareIndex].values) {
-                           // Not a duplicate value, so append to connectedHistory
-                           elementToCompareIndex++;
-                           element.index = elementToCompareIndex;
-                           connectedHistory.push(element);
-                       }
+                let startIndex = 0;
+                if (variableHistory[0].symbols.indexOf(',') == -1) {
+                    connectedHistory.push(variableHistory[0]);
+                } else {
+                    for (let i = 0; i < variableHistory.length; i++) {
+                        let element = variableHistory[i];
+
+                        if (element.symbols.indexOf(',') == -1) {
+                            connectedHistory.push(element);
+                            startIndex = i;
+                            break;
+                        }
                     }
-                });
+                }
+
+                for (let index = startIndex + 1; index < variableHistory.length; index ++) {
+                    let element = variableHistory[index];
+                    if (element.values == 'True' || element.values == 'true') {
+                        element.values = '1';
+                    } else if (element.values == 'False' || element.values == 'false') {
+                        element.values = '0';
+                    }
+
+                    if (element.symbols.indexOf(',') == -1 ) {
+                        console.log("Element values: " + element.values)
+                        console.log("connectedHistory[elementToCompareIndex].values: " + connectedHistory[elementToCompareIndex].values)
+                        if (element.values !== connectedHistory[elementToCompareIndex].values) {
+                            // Not a duplicate value, so append to connectedHistory
+                            elementToCompareIndex++;
+                            element.index = elementToCompareIndex;
+                            connectedHistory.push(element);
+                        }
+                    }
+
+                };
 
                 console.log("connectedHistory BEFORE: ");
                 console.log(connectedHistory);
@@ -1112,6 +1140,7 @@ class LollipopPlot extends ConnectableWidget {
             background.updatePlot(background.svg, background.currentData, newWidth, newHeight, true, background.currentXCoord);
         }
 
+        plotsOnCanvas.push(this);
         return this;
     }
 

@@ -8794,9 +8794,9 @@ fabric.ElementsParser = function(elements, callback, options, reviver, parsingOp
       for (i = 0, len = objects.length; i < len; i++) {
         obj = objects[i];
         fontFamily = obj.fontFamily;
-        if (obj.type.indexOf('text') === -1 || fontList[fontFamily] || !fontPaths[fontFamily]) {
-          continue;
-        }
+//        if (obj && obj.type && obj.type.indexOf('text') === -1 || fontList[fontFamily] || !fontPaths[fontFamily]) {
+//          continue;
+//        }
         fontList[fontFamily] = true;
         if (!obj.styles) {
           continue;

@@ -154,10 +154,10 @@ function addCodeMultiverseToRightPane() {
         '            <div class="col-4 buttonCol">\n' +
         '                 \n' +
         '                <button type="button" class="glyphicon codeMultiverseBottomButtons" style="background: ' + lightenSaturatedColor + '" id="' + codeMultiverseId + '-updateVariantButton">\n' +
-        '                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" className="bi bi-pencil" viewBox="0 0 16 16">\n' +
-        '                       <path d="M12.146.146a.5.5 0 0 1 .708 0l3 3a.5.5 0 0 1 0 .708l-10 10a.5.5 0 0 1-.168.11l-5 2a.5.5 0 0 1-.65-.65l2-5a.5.5 0 0 1 .11-.168l10-10zM11.207 2.5 13.5 4.793 14.793 3.5 12.5 1.207 11.207 2.5zm1.586 3L10.5 3.207 4 9.707V10h.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.5h.293l6.5-6.5zm-9.761 5.175-.106.106-1.528 3.821 3.821-1.528.106-.106A.5.5 0 0 1 5 12.5V12h-.5a.5.5 0 0 1-.5-.5V11h-.5a.5.5 0 0 1-.468-.325z"/>' +
-        '                    </svg>\n' +
-        '                </button>\n' +
+        '                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-save" viewBox="0 0 16 16">' +
+        '                          <path d="M2 1a1 1 0 0 0-1 1v12a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1V2a1 1 0 0 0-1-1H9.5a1 1 0 0 0-1 1v7.293l2.646-2.647a.5.5 0 0 1 .708.708l-3.5 3.5a.5.5 0 0 1-.708 0l-3.5-3.5a.5.5 0 1 1 .708-.708L7.5 9.293V2a2 2 0 0 1 2-2H14a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2V2a2 2 0 0 1 2-2h2.5a.5.5 0 0 1 0 1H2z"/>' +
+        '                          </svg>        ' +
+        '        </button>\n' +
         '            </div>\n' +
         '            <div class="col-4 buttonCol">\n' +
         '                 \n' +
@@ -383,10 +383,10 @@ function setBottomButtonsVisibility() {
     let timeLinePrevious = document.getElementById("timelinePrevious");
     console.log(timeLinePrevious);
     if (!hasCodeBeenCompiled) {
-        document.getElementById("timelinePreviousContainer").classList.add('bottomRowButtonsDisabled');
-        document.getElementById("playButtonContainer").classList.add('bottomRowButtonsDisabled');
-        document.getElementById("timelineNextContainer").classList.add('bottomRowButtonsDisabled');
-        document.getElementById("theSliderContainer").classList.add('bottomRowButtonsDisabled');
+//        document.getElementById("timelinePreviousContainer").classList.add('bottomRowButtonsDisabled');
+//        document.getElementById("playButtonContainer").classList.add('bottomRowButtonsDisabled');
+//        document.getElementById("timelineNextContainer").classList.add('bottomRowButtonsDisabled');
+//        document.getElementById("theSliderContainer").classList.add('bottomRowButtonsDisabled');
     } else {
         document.getElementById("timelinePreviousContainer").classList.remove('bottomRowButtonsDisabled');
         document.getElementById("playButtonContainer").classList.remove('bottomRowButtonsDisabled');
@@ -814,6 +814,10 @@ function moveTimelineNext() {
         if (value.beforeShootingStarRender) {
             value.render = value.beforeShootingStarRender;
         }
+
+        if (value.currentDataItemIndex !== undefined) {
+            value.currentDataItemIndex = -1;
+        }
     }
 
     console.log("Next time is: ");
@@ -901,6 +905,10 @@ function moveTimelinePrevious() {
         if (value.beforeShootingStarRender) {
             value.render = value.beforeShootingStarRender;
         }
+
+        if (value.currentDataItemIndex !== undefined) {
+            value.currentDataItemIndex = -1;
+        }
     }
 
     console.log("Previous time is: ");
@@ -908,13 +916,21 @@ function moveTimelinePrevious() {
 
     console.log("Previous index is: ");
     console.log(currentIndex);
+
+    window.presentTime = currentTime;
+
+    theSlider.update({from: ((currentIndex * 100) / window.lineData.length)});
+
+    referenceWidgetsSameMemoryLines.clear();
+    objectsOnCanvasMemoryAddress.clear();
+    referenceWidgetObjectMemoryAddress.clear();
+
     var ids = Object.keys(progvolver.objects);
     ids.forEach(function (id) {
         var object = progvolver.objects[id];
         object.setProgramTime && object.setProgramTime(currentTime);
     });
 
-    theSlider.update({from: ((currentIndex * 100) / window.lineData.length)});
 
     sliderMarksElement.append(sliderMarksElements);
 
@@ -924,7 +940,6 @@ function moveTimelinePrevious() {
         selectedSymbol.showSliderMarks();
     }
 
-    window.presentTime = currentTime;
 }
 
 function getPreviousTimeLineData(currentTime) {

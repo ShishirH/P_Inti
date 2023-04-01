@@ -1,7 +1,7 @@
 class ProgvolverSymbol extends ConnectableWidget {
     constructor(options) {
 
-        var symbolFont = '20px Helvetica';
+        var symbolFont = '20px Consolas';
         var symbolKinds = {
             Alias: '#B3CDE3',
             ArrayType: '#FED9A6',
@@ -234,7 +234,7 @@ class ProgvolverSymbol extends ConnectableWidget {
 
         background.beforeShootingStarRender = background.render;
 
-        let currentDataItemIndex = -1;
+        background.currentDataItemIndex = -1;
         background.onValuesUpdated = function (dataItem) {
             if (dataItem) {
 
@@ -255,7 +255,7 @@ class ProgvolverSymbol extends ConnectableWidget {
                 //     }
                 // }
 
-                if (currentDataItemIndex !== dataItem.index) {
+                if (background.currentDataItemIndex !== dataItem.index) {
                     console.log("Variable is: " + background.name)
                     let shootingStarsTarget;
                     shootingStarsTarget = parseShootingStarsTarget(dataItem.parentStatement, background);
@@ -290,7 +290,7 @@ class ProgvolverSymbol extends ConnectableWidget {
                 //background.updateColorDecay();
             }
 
-            currentDataItemIndex = dataItem.index;
+            background.currentDataItemIndex = dataItem.index;
 
 //            if (dataItem) {
 //                background.setValue(dataItem.value);
@@ -543,7 +543,7 @@ class ProgvolverSymbol extends ConnectableWidget {
             }
 
             var nameObject = new fabric.Text(this.dataType + " " + this.name, {
-                fontFamily: 'Helvetica',
+                fontFamily: 'Consolas',
                 fill: '#333',
                 padding: 3,
                 fontSize: 16,
@@ -620,7 +620,7 @@ class ProgvolverSymbol extends ConnectableWidget {
 
 
             var kindObject = new fabric.IText(text, {
-                fontFamily: 'Helvetica',
+                fontFamily: 'Consolas',
                 fill: '#777',
                 padding: 3,
                 fontSize: 14,
@@ -682,7 +682,7 @@ class ProgvolverSymbol extends ConnectableWidget {
             }
 
             var typeObject = new fabric.Text(background.type, {
-                fontFamily: 'Helvetica',
+                fontFamily: 'Consolas',
                 fill: '#333',
                 padding: 3,
                 fontSize: 16,
@@ -718,7 +718,7 @@ class ProgvolverSymbol extends ConnectableWidget {
             });
 
             var nameObject = new fabric.Text(background.name, {
-                fontFamily: 'Helvetica',
+                fontFamily: 'Consolas',
                 fill: '#333',
                 padding: 3,
                 fontSize: 16,

@@ -203,6 +203,15 @@ class ArithmeticOperators {
             background.outputPort.updateOutput();
         };
 
+        background.modifyWidth = function (newWidthDifference) {
+            let leftWidth = background.inputPortLeft.width;
+            let rightWidth = background.inputPortRight.width;
+
+            background.set('width', leftWidth + rightWidth + 70);
+            background.positionObjects();
+            background.positionHtmlObjects();
+        }
+
         background.registerListener('added', function (options) {
             canvas.add(background.inputPortLeft);
             canvas.add(background.inputPortRight);

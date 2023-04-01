@@ -11,6 +11,7 @@ var CanvasVariableConnectionPort = iVoLVER.util.createClass(fabric.Circle, {
         this.value = 0;
 
         this.parent = options.parent;
+        
     },
 
     processConnectionRequest: function (connection) {

@@ -26,8 +26,12 @@ var LogicalOutputConnection = iVoLVER.util.createClass(fabric.Circle, {
             console.log("Parent is: ");
             console.log(this.parent);
 
-            this.parent.setUpdatedValue(value);
-        }
+            if (this.parent.setUpdatedValue) {
+                this.parent.setUpdatedValue(value);
+            } else if (this.parent.setValue) {
+                this.parent.setValue(value);
+            }
+        },
         this.updateOutput = function () {
             console.log("I am being called");
             console.log("isLeft is: " + this.isLeft);

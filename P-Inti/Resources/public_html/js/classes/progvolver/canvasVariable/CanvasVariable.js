@@ -41,9 +41,9 @@ class CanvasVariable {
             background.value = newValue;
             background.textField.text = newValue;
             background.connectionPort.value = newValue;
-            console.log("Connection port is: ");
-            console.log(background.connectionPort);
-            background.connectionPort.setOperandValue(newValue);
+            background.connectionPortRight.value = newValue;
+            background.connectionPort.setOperandValue && background.connectionPort.setOperandValue(newValue);
+            background.connectionPortRight.setOperandValue && background.connectionPort.setOperandValue(newValue);
             background.set('width', getValueWidth(newValue, symbolFont) + 10 > 40 ? getValueWidth(newValue, symbolFont) + 10 : 40);
             background.expandedWidth = background.width;
 
@@ -154,6 +154,61 @@ class CanvasVariable {
             var originChild;
 
             var x = 0, y = 0;
+            originParent = {originX: 'left', originY: 'center'};
+            originChild = {originX: 'right', originY: 'center'};
+            x = -(background.strokeWidth + 1);
+
+
+            var thePort = new CanvasVariableConnectionPort({
+                fill: background.fill,
+                stroke: darken(background.stroke),
+                strokeWidth: 1,
+                opacity: 0,
+                background: background,
+                hasBorders: false,
+                hasControls: false,
+                parent: background
+            });
+
+            thePort.registerListener('connectionover', function (options) {
+                background.fire('selected');
+            });
+
+            thePort.registerListener('connectionout', function (options) {
+                background.fire('deselected');
+            });
+
+            thePort.registerListener('selected', function (options) {
+                background.fire('selected');
+            });
+
+            thePort.registerListener('deselected', function (options) {
+                background.fire('deselected');
+            });
+
+            background.addChild(thePort, {
+                whenCompressed: {
+                    x: 0, y: y,
+                    originParent: originParent,
+                    originChild: originChild
+                },
+                whenExpanded: {
+                    x: +x, y: y,
+                    originParent: originParent,
+                    originChild: originChild
+                },
+                movable: false
+            });
+
+            canvas.add(thePort);
+            background.connectionPort = thePort;
+        }
+
+        background.addConnectionPortRight = function () {
+            var originParent;
+            var originChild;
+
+            var x = 0, y = 0;
             originParent = {originX: 'right', originY: 'center'};
             originChild = {originX: 'left', originY: 'center'};
             x = (background.strokeWidth + 1);
@@ -201,7 +256,7 @@ class CanvasVariable {
             });
 
             canvas.add(thePort);
-            background.connectionPort = thePort;
+            background.connectionPortRight = thePort;
         }
 
         background.addTextField = function () {
@@ -259,6 +314,7 @@ class CanvasVariable {
         }
 
         background.addConnectionPort();
+        background.addConnectionPortRight();
         background.addTextField();
 
         if (!background.value)

@@ -39,10 +39,11 @@ var SignalEmitterWidget = iVoLVER.util.createClass(fabric.Triangle, {
                 this.values = this.signals.filter(item => item.time <= time);
                 console.log("!!this.values")
                 console.log(this.values)
+                this.onValuesUpdated && this.onValuesUpdated(this.values.length);
                 if (this.values.length) {
                     console.log("!!this.values.length")
                     console.log(this.values.length)
-                    this.onValuesUpdated && this.onValuesUpdated(this.values.length);
+                    //this.onValuesUpdated && this.onValuesUpdated(this.values.length);
                 }
             }
         };
@@ -53,9 +54,10 @@ var SignalEmitterWidget = iVoLVER.util.createClass(fabric.Triangle, {
         };
 
         this.onValuesUpdated = function (numberOfSignals) {
-            if (this.numberOfSignalsEmitted < numberOfSignals) {
+            console.log("!!Number of signals passed is: " + numberOfSignals);
+            if (this.numberOfSignalsEmitted != numberOfSignals) {
                 this.emitSignal(this.numberOfSignalsEmitted);
-                this.numberOfSignalsEmitted += 1;
+                this.numberOfSignalsEmitted = numberOfSignals;
             }
         };
 

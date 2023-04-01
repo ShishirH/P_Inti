@@ -312,7 +312,7 @@
                     </ul>
                 </div>
 
-                <div id="theSliderContainer" style=" width:auto; height:60px; overflow:hidden;">
+                <div id="theSliderContainer" style=" width:auto; height:60px; overflow:hidden; background-color: #FAFAFA">
                     <input style="width: available;" type="text" id="theSlider" name="theSlider" value="" />
                 </div>
 
@@ -848,18 +848,67 @@
 
 
 
-        /*var variable333 = new ProgvolverSymbol({
-         fileName: 'aFile.cs',
-         id: "26_October_2020___16_35_50_921___b944aafd-78ab-4caf-ab1b-a639d3420281___7840",
-         type: 'int',
-         value: "Dos",
-         kind: "Local",
-         name: "xPos",
-         x: 100, y: 250,
-         lineNumber: 10
-         });
-         canvas.add(variable333);*/
+//        var variable333 = new ProgvolverSymbol({
+//         fileName: 'Program.cs',
+//         id: "26_October_2020___16_35_50_921___b944aafd-78ab-4caf-ab1b-a639d3420281___7840",
+//         type: 'int',
+//         value: "1",
+//         kind: "Local",
+//         name: "len",
+//         x: 100, y: 250,
+//         lineNumber: 10,
+//         connectionPortLocations: ['right']
+//         });
+//         canvas.add(variable333);
 
+            let response = {};
+            response.Kind_String = "Local";
+            response.dataType = "Node";
+            response.Name = "root";
+            response.fileName = 'C:\Users\shish\source\repos\ConsoleApp1\ConsoleApp1\Program.cs';
+            response.xPos = 100;
+            response.yPos = 100;
+            response.lineNumber = 10;
+            let screenCoords = {};
+            screenCoords.x = 100;
+            screenCoords.y = 100;
+            response.initialValue = "new Node(3, null)";
+            response.members = {"Type":"Node","Name":"root","Members":["{\"access_modifier\":\"public\",\"type\":\"int\",\"name\":\"data\"}","{\"access_modifier\":\"public\",\"type\":\"Node\",\"name\":\"next\"}"]};
+            var objectMembers = response.members
+            console.log("Hello");
+            console.log(response.members);
+                                            var fileName = response.fileName.split('\\').pop().split('/').pop();
+
+            var objectMembersDict = createObjectMemberWidgets(objectMembers, response, screenCoords, fileName);
+
+            var objectWidget = new ObjectWidget({
+                value: '',
+                kind: response.Kind_String,
+                type: response.dataType,
+                name: response.Name,
+                file: response.file,
+                fileName: response.file,
+                x: screenCoords.x, y: screenCoords.y,
+                lineNumber: response.lineNumber,
+                declareAtFrom: response.lineNumber,
+                declareAtTo: 13,
+//                scopeFrom: response.scopeFrom,
+//                scopeTo: response.scopeTo,
+                initialValue: response.initialValue,
+                objectMembers: objectMembersDict,
+            });
+
+            var referenceWidget = new ReferenceWidget({
+                x: screenCoords.x,
+                y: screenCoords.y,
+                kind: response.Kind_String,
+                type: response.dataType,
+                name: response.Name,
+                fileName: fileName
+                 // ID copied to referenceWidget instead of objectWidget
+            }, objectWidget);
+            //canvas.add(referenceWidget);
+            //referenceWidget.expand();
 
         $.contextMenu({
             selector: '.context-menu-one',
@@ -1019,7 +1068,7 @@
 
 
 
-//            var array1 = new ArraySymbol({value: [1, 2, 3], kind: 'Field', type: 'int', name: 'age', file: 'Program.cs (34)', y: 400, x: 100, id: '23_May_2020___22_49_58_341___0695e0f7-c7ae-408a-871b-5c705e1bc7d2___9981'});
+//            var array1 = new ArraySymbol({value: [1, 2, 3, 4], kind: 'Field', type: 'int', name: 'age', file: 'Program.cs (34)', y: 400, x: 100, id: '23_May_2020___22_49_58_341___0695e0f7-c7ae-408a-871b-5c705e1bc7d2___9981'});
 //            canvas.add(array1);
 
         // DOM element where the Timeline will be attached
