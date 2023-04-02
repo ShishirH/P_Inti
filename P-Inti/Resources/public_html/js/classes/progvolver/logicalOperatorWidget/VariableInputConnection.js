@@ -148,6 +148,7 @@ var VariableInputConnection = iVoLVER.util.createClass(fabric.Rect, {
         console.log(inConnection);
         this.operandValue = Number(inConnection.source.value);
         this.value = Number(inConnection.source.value);
+        this.parent.value = this.value;
     }
 });
 iVoLVER.util.extends(VariableInputConnection.prototype, iVoLVER.model.Connectable);

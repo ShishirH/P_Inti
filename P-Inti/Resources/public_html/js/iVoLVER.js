@@ -1681,6 +1681,7 @@ var iVoLVER = {
                     var canvasVariable;
 
                     if (operatorsOnCanvas.length > 0) {
+                        console.log("Result widget created")
                         canvasVariable = new ResultWidget({
                             type: "dataType",
                             name: "name",
@@ -1691,6 +1692,7 @@ var iVoLVER = {
                             value: ""
                         });
                     } else {
+                        console.log("Canvas variable created")
                         canvasVariable = new CanvasVariable({
                             type: "dataType",
                             name: "name",
@@ -1956,15 +1958,30 @@ var iVoLVER = {
                 iconClass: 'fa-regular fa-rectangle-xmark',
                 tooltip: 'Canvas variable',
                 onMouseUp: function (x, y) {
-                    var canvasVariable = new CanvasVariable({
-                        type: "dataType",
-                        name: "name",
-                        left: x,
-                        top: y,
-                        x: x,
-                        y: y,
-                        value: ""
-                    });
+                    let canvasVariable;
+                    if (operatorsOnCanvas.length > 0) {
+                        console.log("Result widget created")
+                        canvasVariable = new ResultWidget({
+                            type: "dataType",
+                            name: "name",
+                            left: x,
+                            top: y,
+                            x: x,
+                            y: y,
+                            value: ""
+                        });
+                    } else {
+                        console.log("Canvas variable created")
+                        canvasVariable = new CanvasVariable({
+                            type: "dataType",
+                            name: "name",
+                            left: x,
+                            top: y,
+                            x: x,
+                            y: y,
+                            value: ""
+                        });
+                    }
                     canvas.add(canvasVariable);
                     animateBirth(canvasVariable, false, 1, 1);
                 }
