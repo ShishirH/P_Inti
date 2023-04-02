@@ -836,6 +836,7 @@ function moveTimelineNext() {
 
     let currentLineNumber = window.lineData[currentIndex - 1].line;
     updatePrimitivesInitialValue(currentLineNumber);
+    updateReferenceWidgetsInitialValue(currentLineNumber);
     ids.forEach(function (id) {
         var object = progvolver.objects[id];
         console.log("Running object: " + object.name);
@@ -11261,6 +11262,7 @@ function processLogFiles(logFileContent, scopeFileContent, signalFileContent, li
 
                     let currentLine = window.lineData[0].line;
                     updatePrimitivesInitialValue(currentLine);
+                    updateReferenceWidgetsInitialValue(currentLine);
                 }
             }
         }
@@ -11283,6 +11285,19 @@ function updatePrimitivesInitialValue(currentLine) {
     }
 }
 
+function updateReferenceWidgetsInitialValue(currentLine) {
+    for (let i = 0; i < referenceWidgetsList.length; i++) {
+        if (referenceWidgetsList[i].declareAtTo == currentLine) {
+            let symbolName = referenceWidgetsList[i].name;
+
+            for (let j = 0; j < window.initData.length; j++) {
+                if (window.initData[j].symbol == symbolName) {
+                    referenceWidgetsList[i].minimizeButton.sign = '+';
+                }
+            }
+        }
+    }
+}
 /*function processLogFileContent(logFileContent) {
  Papa.parse(logFileContent.trim(), {
  delimiter: "~",

@@ -41,8 +41,8 @@ namespace P_Inti
             DrawingBrush drawingBrush = new DrawingBrush(signalDrawing);
             Ellipse ellipse = new Ellipse();
             ellipse.Fill = drawingBrush;
-            ellipse.StrokeThickness = 2;
-            ellipse.Stroke = Brushes.DarkBlue;
+            //ellipse.StrokeThickness = 2;
+            //ellipse.Stroke = Brushes.DarkBlue;
             ellipse.Height = m_glyphSize;
             ellipse.Width = m_glyphSize;
 

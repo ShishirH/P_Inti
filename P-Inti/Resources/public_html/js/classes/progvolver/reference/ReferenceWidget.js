@@ -24,7 +24,9 @@ class ReferenceWidget {
         background.name = options.name;
         background.type = options.type;
         background.isReference = true;
+        background.declareAtTo = options.declareAtTo;
         background.fileName = options.fileName;
+        background.label = options.label || options.fileName && options.lineNumber ? options.fileName + ' (' + options.lineNumber + ')' : options.fileName || '';
         background.children = [];
         background.isArrayElement = options.isArrayElement || false;
         background.isArray = options.isArray || false;
@@ -346,6 +348,46 @@ class ReferenceWidget {
             background.children.push(background.nameObject);
             background.children.push(background.typeObject);
         }
+
+        background.addLabelObject = function () {
+            var labelObject = new fabric.Text(background.label, {
+                fontFamily: 'Arial',
+                fill: '#0366d6',
+                fontSize: 14,
+                hasControls: false,
+                hasBorders: false,
+                textAlign: 'center',
+                fontWeight: '100',
+                hoverCursor: "pointer"
+            });
+            var originParent = {originX: 'left', originY: 'bottom'};
+            var originChild = {originX: 'center', originY: 'top'};
+
+            let scaleX, scaleY, opacity;
+            scaleX = 0;
+            scaleY = 0;
+            opacity = 0;
+
+            background.addChild(labelObject, {
+                whenCompressed: {
+                    x: 0, y: -12,
+                    scaleX: scaleX, scaleY: scaleY, opacity: opacity,
+                    originParent: originParent,
+                    originChild: originChild
+                },
+                whenExpanded: {
+                    x: 0, y: -12,
+                    originParent: originParent,
+                    originChild: originChild
+                },
+                movable: false
+            });
+
+            background.labelObject = labelObject;
+            canvas.add(background.labelObject);
+        }
+
+        background.addLabelObject();
 
         function addMinimizeButton() {
             var minimizeButton = new MinimizeButton({
@@ -1291,6 +1333,8 @@ class ReferenceWidget {
         referenceWidgetsList.push(background);
 
         window.nodeObject = background;
+        if (background.declareAtTo)
+            background.minimizeButton.sign = '?'; // Make it a + when timeline enters line of declaration
         return background;
     }
 

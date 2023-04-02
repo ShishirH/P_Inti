@@ -1989,12 +1989,15 @@ function bindCanvasDefaultEvents(canvas) {
                                         top: screenCoords.y,
                                         x: screenCoords.x,
                                         y: screenCoords.y,
+                                        fileName: fileName,
+                                        lineNumber: response.declareAtFrom,
                                         id: response.symbolID,
                                         kind: response.Kind_String,
                                         type: response.dataType,
                                         name: response.Name,
                                         referencedObjectId: response.symbolID,
                                         referencedObjectDetails: response,
+                                        declareAtTo: response.declareAtTo,
                                         isArray: true
                                     }, theSymbol);
 
@@ -2051,6 +2054,7 @@ function bindCanvasDefaultEvents(canvas) {
                                         type: response.dataType,
                                         name: response.Name,
                                         fileName: fileName,
+                                        lineNumber: response.declareAtFrom,
                                         id: response.symbolID // ID copied to referenceWidget instead of objectWidget
                                     }, objectWidget);
                                     canvas.add(referenceWidget);

@@ -1858,7 +1858,7 @@ namespace P_Inti
             MyWindowControl.printInBrowserConsole("Count of positions is: " + windowControl.positions.Count());
 
 
-            if (windowControl.positions.Count() == 0)
+            if (true)
             {
                 addAllVariablesToLogging(null);
                 runCodeAnalyzer(arg);
@@ -2177,11 +2177,12 @@ namespace P_Inti
             while (true)
             {
                 var delayTask = System.Threading.Tasks.Task.Delay(1000);
-                MyWindowControl.printInBrowserConsole("IN AN INFINTIE LOOP!!!!!!! ");
                 EnvDTE.DTE dteOther = MyWindowControl.dteNew;
                 EnvDTE.TextSelection ts = dteOther.ActiveWindow.Selection as EnvDTE.TextSelection;
                 if (ts == null)
-                    ToolWindow1Control.printInBrowserConsole("NOTHING IS SELECTED!!!!! ");
+                {
+
+                }
                 else
                 {
                     var activePoint = ((EnvDTE.TextSelection)dteOther.ActiveDocument.Selection).ActivePoint;

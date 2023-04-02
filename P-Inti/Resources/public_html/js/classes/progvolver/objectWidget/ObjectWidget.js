@@ -345,45 +345,6 @@ class ObjectWidget {
 
         this.addSelect();
 
-        background.addLabelObject = function () {
-            var labelObject = new fabric.Text(background.label, {
-                fontFamily: 'Arial',
-                fill: '#0366d6',
-                fontSize: 14,
-                hasControls: false,
-                hasBorders: false,
-                textAlign: 'center',
-                fontWeight: '100',
-                hoverCursor: "pointer"
-            });
-            var originParent = {originX: 'center', originY: 'bottom'};
-            var originChild = {originX: 'center', originY: 'top'};
-
-            let scaleX, scaleY, opacity;
-            scaleX = 0;
-            scaleY = 0;
-            opacity = 0;
-
-            background.addChild(labelObject, {
-                whenCompressed: {
-                    x: 0, y: 2,
-                    scaleX: scaleX, scaleY: scaleY, opacity: opacity,
-                    originParent: originParent,
-                    originChild: originChild
-                },
-                whenExpanded: {
-                    x: 0, y: 2,
-                    originParent: originParent,
-                    originChild: originChild
-                },
-                movable: false
-            });
-
-            background.labelObject = labelObject;
-            canvas.add(background.labelObject);
-        }
-
-        background.addLabelObject();
         window.rightPane = background.rightPane;
 
         background.addAll = this.addAll;
