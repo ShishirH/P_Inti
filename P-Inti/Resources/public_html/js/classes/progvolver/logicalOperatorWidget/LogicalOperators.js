@@ -233,6 +233,7 @@ class LogicalOperators {
         registerProgvolverObject(background);
 
         window.logicalOperator = background;
+        operatorsOnCanvas.push(background);
         return this.background;
     }
 }

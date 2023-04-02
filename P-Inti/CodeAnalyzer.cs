@@ -1384,7 +1384,15 @@ namespace TestingCodeAnalysis
                     {
                         continue;
                     }
-                    allContents[documentFilePath][Int32.Parse(lineNumber)] += $" Logger.logLineInfo(@\"{documentFilePath}~{lineNumber}~{line}\");";
+
+                    if (false)
+                    {
+                        allContents[documentFilePath][Int32.Parse(lineNumber)] = $" Logger.logLineInfo(@\"{documentFilePath}~{lineNumber}~{line}\");" + allContents[documentFilePath][Int32.Parse(lineNumber)];
+                    }
+                    else
+                    {
+                        allContents[documentFilePath][Int32.Parse(lineNumber)] += $" Logger.logLineInfo(@\"{documentFilePath}~{lineNumber}~{line}\");";
+                    }
                 }
             }
 

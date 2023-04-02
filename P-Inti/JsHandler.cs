@@ -1858,7 +1858,7 @@ namespace P_Inti
             MyWindowControl.printInBrowserConsole("Count of positions is: " + windowControl.positions.Count());
 
 
-            if (true)
+            if (windowControl.positions.Count() == 0)
             {
                 addAllVariablesToLogging(null);
                 runCodeAnalyzer(arg);
@@ -2088,7 +2088,7 @@ namespace P_Inti
                 }
 
 
-
+                MyWindowControl.printInBrowserConsole("highDir lineInfo: " + highDir);
                 string signalFilePath = highDir + "\\" + "run" + ".lineinfo";
 
                 FileInfo signalFileInfo = new FileInfo(signalFilePath);
@@ -2228,7 +2228,7 @@ namespace P_Inti
                 }
 
 
-
+                MyWindowControl.printInBrowserConsole("highDir lineInfo: " + highDir);
                 string signalFilePath = highDir + "\\" + "run" + ".log";
 
                 FileInfo signalFileInfo = new FileInfo(signalFilePath);

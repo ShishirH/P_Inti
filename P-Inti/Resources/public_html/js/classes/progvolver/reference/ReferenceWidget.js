@@ -1333,8 +1333,8 @@ class ReferenceWidget {
         referenceWidgetsList.push(background);
 
         window.nodeObject = background;
-        if (background.declareAtTo)
-            background.minimizeButton.sign = '?'; // Make it a + when timeline enters line of declaration
+        // if (background.declareAtTo)
+        //     background.minimizeButton.sign = '?'; // Make it a + when timeline enters line of declaration
         return background;
     }
 

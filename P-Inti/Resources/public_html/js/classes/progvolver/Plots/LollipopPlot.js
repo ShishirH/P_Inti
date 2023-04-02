@@ -3,6 +3,7 @@ class LollipopPlot extends ConnectableWidget {
 
         options.doNotAddConnectionPorts = true;
         options.cornerSize = 9;
+        options.fill = '#2094E9';
         options.label = options.label || options.fileName ? options.fileName + " (" + (options.startLine + 1) + " - " + (options.endLine + 1) + ")" : '';
         var background = super(fabric.Rect, options);
         var theWidget = background.widget;
@@ -133,7 +134,7 @@ class LollipopPlot extends ConnectableWidget {
 
             colorScale = d3.scaleOrdinal()
                 .domain(background.symbols)
-                .range(d3.schemeCategory10);
+                .range(d3.schemeTableau10);
 
             console.log("color scale is: ");
             console.log(colorScale);
@@ -932,7 +933,7 @@ class LollipopPlot extends ConnectableWidget {
 
             inputPort.acceptConnection = function (theConnector, value) {
                 let variableHistory = theConnector.source.background.history;
-                var symbolName = variableHistory[0].symbols;
+                var symbolName = theConnector.source.background.name;
 
                 if (symbolName.indexOf(',') != -1) {
                     symbolName = symbolName.split(',')[1];
@@ -943,19 +944,44 @@ class LollipopPlot extends ConnectableWidget {
 
                 let elementToCompareIndex = 0;
                 let startIndex = 0;
-                if (variableHistory[0].symbols.indexOf(',') == -1) {
+                if (variableHistory[0].symbols.indexOf(',') == -1 &&
+                    variableHistory[0].symbols.indexOf(symbolName) != -1
+                    && variableHistory[0].values != undefined) {
                     connectedHistory.push(variableHistory[0]);
                 } else {
                     for (let i = 0; i < variableHistory.length; i++) {
                         let element = variableHistory[i];
 
-                        if (element.symbols.indexOf(',') == -1) {
-                            connectedHistory.push(element);
-                            startIndex = i;
-                            break;
+                        if (element.symbols.indexOf(symbolName) != -1 && element.values != undefined
+                        && (!element.grandParentStatement || element.grandParentStatement.split('[').length < 3)
+                        && !(element.expressions == element.parentStatement && element.expressions == element.grandParentStatement)) {
+                            if (element.symbols.indexOf(',') == -1 && (!element.values.indexOf ||
+                                element.values.indexOf(',') == -1)) {
+                                connectedHistory.push(element);
+                                startIndex = i;
+                                break;
+                            } else {
+                                let elementSymbolsArray = element.symbols.split(',');
+                                let index = elementSymbolsArray.indexOf(symbolName);
+                                if (element.values != undefined) {
+                                    let values = element.values.split(',');
+                                    if (values.length == elementSymbolsArray.length) {
+                                        let clonedElement = JSON.parse(JSON.stringify(element));
+                                        let value = values[index];
+                                        clonedElement.symbols = symbolName;
+                                        clonedElement.values = value;
+                                        connectedHistory.push(clonedElement);
+                                        startIndex = i;
+                                        break;
+                                    }
+                                }
+                            }
                         }
                     }
                 }
+
+                console.log("!@# Connected history is now: ")
+                console.log(connectedHistory);
 
                 for (let index = startIndex + 1; index < variableHistory.length; index ++) {
                     let element = variableHistory[index];
@@ -965,14 +991,30 @@ class LollipopPlot extends ConnectableWidget {
                         element.values = '0';
                     }
 
-                    if (element.symbols.indexOf(',') == -1 ) {
-                        console.log("Element values: " + element.values)
-                        console.log("connectedHistory[elementToCompareIndex].values: " + connectedHistory[elementToCompareIndex].values)
-                        if (element.values !== connectedHistory[elementToCompareIndex].values) {
-                            // Not a duplicate value, so append to connectedHistory
-                            elementToCompareIndex++;
-                            element.index = elementToCompareIndex;
-                            connectedHistory.push(element);
+                    if (element.symbols.indexOf(symbolName) != -1 && element.values != undefined
+                    && (!element.grandParentStatement || element.grandParentStatement.split('[').length < 3)
+                    && !(element.expressions == element.parentStatement && element.expressions == element.grandParentStatement)) {
+                        if (element.symbols.indexOf(',') == -1) {
+                            if (element.values != connectedHistory[elementToCompareIndex].values) {
+                                // Not a duplicate value, so append to connectedHistory
+                                elementToCompareIndex++;
+                                element.index = elementToCompareIndex;
+                                connectedHistory.push(element);
+                            }
+                        } else {
+                            let elementSymbolsArray = element.symbols.split(',');
+                            let index = elementSymbolsArray.indexOf(symbolName);
+                            let value = element.values.split(',')[index];
+
+                            let clonedElement = JSON.parse(JSON.stringify(element));
+                            clonedElement.symbols = symbolName;
+                            clonedElement.values = value;
+                            if (clonedElement.values != connectedHistory[elementToCompareIndex].values) {
+                                // Not a duplicate value, so append to connectedHistory
+                                elementToCompareIndex++;
+                                clonedElement.index = elementToCompareIndex;
+                                connectedHistory.push(clonedElement);
+                            }
                         }
                     }
 

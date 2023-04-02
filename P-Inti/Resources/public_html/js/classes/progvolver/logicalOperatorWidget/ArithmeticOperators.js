@@ -225,6 +225,7 @@ class ArithmeticOperators {
         registerProgvolverObject(background);
 
         window.logicalOperator = background;
+        operatorsOnCanvas.push(background);
         return this.background;
     }
 }

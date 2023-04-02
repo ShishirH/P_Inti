@@ -11,7 +11,6 @@ class ArraySymbol {
         options.stroke = options.stroke || darken("#DFE3B3");
         options.strokeWidth = options.strokeWidth || 2;
         options.objectCaching = true;
-        options.connectionPortLocations = ['right'];
 
         options.nonResizable = false;
         options.hasControls = true;
@@ -34,6 +33,7 @@ class ArraySymbol {
         background.compressed = true;
         background.isMember = options.isMember;
         background.referenceWidget = null;
+        background.connectionPortLocations = ['right'];
 //        background.compressedProperties = {
 //            width: 10,
 //            height: 10,
@@ -1218,6 +1218,98 @@ class ArraySymbol {
         background.lastVisible = 0;
         background.firstVisibleRow = 1;
         background.hiddenX = 0;
+
+        background.addConnectionPorts = function() {
+            var theWidget = background;
+            let connectionPortLocations = background.connectionPortLocations;
+
+            theWidget.thePorts = new Array();
+            theWidget.ports = {};
+
+            var originParent;
+            var originChild;
+            var name;
+
+            for (var i = 0; i < 4; i++) {
+                var x = 0, y = 0;
+                switch (i) {
+                    case 0:
+                        originParent = {originX: 'left', originY: 'center'};
+                        originChild = {originX: 'right', originY: 'center'};
+                        name = 'left';
+                        x = -(background.strokeWidth + 1);
+                        break;
+                    case 1:
+                        originParent = {originX: 'center', originY: 'top'};
+                        originChild = {originX: 'center', originY: 'bottom'};
+                        name = 'top';
+                        y = -(background.strokeWidth + 1);
+                        break;
+                    case 2:
+                        originParent = {originX: 'right', originY: 'center'};
+                        originChild = {originX: 'left', originY: 'center'};
+                        name = 'right';
+                        x = (background.strokeWidth + 1);
+                        break;
+                    case 3:
+                        originParent = {originX: 'center', originY: 'bottom'};
+                        originChild = {originX: 'center', originY: 'top'};
+                        name = 'bottom';
+//                    y = this.label != '' ? (background.strokeWidth + 1) + 22 : (background.strokeWidth + 1);
+                        y = this.label != '' ? (background.strokeWidth + 1) + 15 : (background.strokeWidth + 1);
+                        break;
+                }
+
+                if (connectionPortLocations && !connectionPortLocations.includes(name))
+                    continue;
+
+                var thePort = new ConnectionPort({
+                    fill: background.fill,
+                    stroke: darken(background.stroke),
+                    strokeWidth: 1,
+                    opacity: 0,
+                    background: background,
+                    hasBorders: false,
+                    hasControls: false,
+                    widget: background
+                });
+
+                thePort.registerListener('connectionover', function (options) {
+                    background.fire('selected');
+                });
+
+                thePort.registerListener('connectionout', function (options) {
+                    background.fire('deselected');
+                });
+
+                thePort.registerListener('selected', function (options) {
+                    background.fire('selected');
+                });
+
+                thePort.registerListener('deselected', function (options) {
+                    background.fire('deselected');
+                });
+
+                background.addChild(thePort, {
+                    whenCompressed: {
+                        x: 0, y: y,
+                        originParent: originParent,
+                        originChild: originChild
+                    },
+                    whenExpanded: {
+                        x: x, y: y,
+                        originParent: originParent,
+                        originChild: originChild
+                    },
+                    movable: false
+                });
+                theWidget.thePorts.push(thePort);
+                theWidget.ports[name] = thePort;
+                canvas.add(thePort);
+            }
+        }
+
+        background.addConnectionPorts();
 
         background.addScrollX = function () {
             let leftArrow = new fabric.Triangle({

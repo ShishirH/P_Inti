@@ -11,9 +11,9 @@ function highlightLine (object) {
     console.log("here is the currentLineHighlighted: " + currentLineHighlighted);
     if (object - 1 !== currentLineHighlighted  ){
         currentLineHighlighted = object -1 ;        
-        $(".lineInfoDiv").css("border", "1px solid black");  
+        $(".lineInfoDiv").css("border", "0.6px solid black");
     } else {
-        $(".lineInfo_" + (object - 1)).css("border", "5px solid black");
+        $(".lineInfo_" + (object - 1)).css("border-width", "2px 3px 2px 3px");
     }
 }
 
@@ -468,6 +468,7 @@ function loadLogFiles(response, lineInfoFileContent, waitingDialog) {
     }
 }
 function updateLineLogFileToIncludeIndex(lineLogData) {
+    console.log("Updating index here!");
     window.jsHandler && window.jsHandler.updateLineLogFileToIncludeIndex({
         lineLogData: lineLogData
     });
@@ -496,7 +497,7 @@ function clickRunCodeButton() {
 
     if (window.jsHandler) {
         var lineInfoFileContent;
-        // console.log("addIndexToLineLogFile");
+        console.log("addIndexToLineLogFile");
         // window.jsHandler.addIndexToLineLogFile(null).then(function (response) {
         //     console.log(response);
         //     lineInfoFileContent = response.lineInfoFileContent;
@@ -11278,7 +11279,7 @@ function updatePrimitivesInitialValue(currentLine) {
 
             for (let j = 0; j < window.initData.length; j++) {
                 if (window.initData[j].symbol == symbolName) {
-                    primitivesOnCanvas[i].value = window.initData[j].value + '';
+                    primitivesOnCanvas[i].setValue(window.initData[j].value + '');
                 }
             }
         }

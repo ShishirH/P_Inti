@@ -296,3 +296,4 @@ var codeMultiverseIds = [];
 var codeMultiverseRightPaneElements = [];
 var plotsOnCanvas = [];
 var primitivesOnCanvas = [];
+var operatorsOnCanvas = [];

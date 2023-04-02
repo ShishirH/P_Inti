@@ -1678,15 +1678,29 @@ var iVoLVER = {
                 iconClass: 'fa-exchange',
                 tooltip: 'Canvas variable',
                 onMouseUp: function (x, y) {
-                    var canvasVariable = new CanvasVariable({
-                        type: "dataType",
-                        name: "name",
-                        left: x,
-                        top: y,
-                        x: x,
-                        y: y,
-                        value: ""
-                    });
+                    var canvasVariable;
+
+                    if (operatorsOnCanvas.length > 0) {
+                        canvasVariable = new ResultWidget({
+                            type: "dataType",
+                            name: "name",
+                            left: x,
+                            top: y,
+                            x: x,
+                            y: y,
+                            value: ""
+                        });
+                    } else {
+                        canvasVariable = new CanvasVariable({
+                            type: "dataType",
+                            name: "name",
+                            left: x,
+                            top: y,
+                            x: x,
+                            y: y,
+                            value: ""
+                        });
+                    }
                     canvas.add(canvasVariable);
                     animateBirth(canvasVariable, false, 1, 1);
                 }

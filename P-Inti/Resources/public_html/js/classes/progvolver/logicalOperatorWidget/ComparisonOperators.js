@@ -262,7 +262,7 @@ class ComparisonOperators {
 
         console.log("Background is: ");
         console.log(background);
-
+        operatorsOnCanvas.push(background);
         return this.background;
     }
 }
