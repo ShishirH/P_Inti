@@ -295,3 +295,4 @@ var orphanedObjects = [];
 var codeMultiverseIds = [];
 var codeMultiverseRightPaneElements = [];
 var plotsOnCanvas = [];
+var primitivesOnCanvas = [];

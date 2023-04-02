@@ -40,6 +40,18 @@ class ProgvolverSymbol extends ConnectableWidget {
 
         var theWidget = background.widget;
 
+        var checkAlphaBetRegex = /[a-zA-Z]/g;
+
+        if (checkAlphaBetRegex.test(options.value)) {
+            // alphanumeric. Check if string
+            if (options.value.indexOf('"') == -1) {
+                // Not a string, so a value is initialized to another variable. For instance, int temp = a;
+                options.value = '';
+            }
+        }
+
+        //All variables initial values are blank until they come to init line
+        options.value = '';
         this.values = options.values;
         this.name = options.name;
         this.dataType = options.type;
@@ -55,6 +67,7 @@ class ProgvolverSymbol extends ConnectableWidget {
         background.file = options.file;
         background.fileName = options.fileName;
         background.kind = options.kind;
+        background.declareAtTo = options.declareAtTo - 1;
         background.doNotAddLabelObject = options.doNotAddLabelObject;
         background.fontColor = 'rgba(65, 65, 65, 1)';
 
@@ -543,7 +556,7 @@ class ProgvolverSymbol extends ConnectableWidget {
             }
 
             var nameObject = new fabric.Text(this.dataType + " " + this.name, {
-                fontFamily: 'Consolas',
+                fontFamily: 'Helvetica',
                 fill: '#333',
                 padding: 3,
                 fontSize: 16,
@@ -620,7 +633,7 @@ class ProgvolverSymbol extends ConnectableWidget {
 
 
             var kindObject = new fabric.IText(text, {
-                fontFamily: 'Consolas',
+                fontFamily: 'Helvetica',
                 fill: '#777',
                 padding: 3,
                 fontSize: 14,
@@ -682,7 +695,7 @@ class ProgvolverSymbol extends ConnectableWidget {
             }
 
             var typeObject = new fabric.Text(background.type, {
-                fontFamily: 'Consolas',
+                fontFamily: 'Helvetica',
                 fill: '#333',
                 padding: 3,
                 fontSize: 16,
@@ -718,7 +731,7 @@ class ProgvolverSymbol extends ConnectableWidget {
             });
 
             var nameObject = new fabric.Text(background.name, {
-                fontFamily: 'Consolas',
+                fontFamily: 'Helvetica',
                 fill: '#333',
                 padding: 3,
                 fontSize: 16,
@@ -848,6 +861,7 @@ class ProgvolverSymbol extends ConnectableWidget {
         } else {
             window.target = background;
         }
+        primitivesOnCanvas.push(background);
         return background;
     }
 

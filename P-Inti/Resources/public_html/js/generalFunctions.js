@@ -512,7 +512,6 @@ function clickRunCodeButton() {
         }
     }
 
-    console.log("I might be here!")
 
     // var theSlider = $("#theSlider").data("ionRangeSlider");
     // if (priorSliderFromPercentage > 0) {
@@ -522,8 +521,6 @@ function clickRunCodeButton() {
     //         moveTimelineNext();
     //     }
     // }
-
-    console.log("ASD lineNumberDetails");
 }
 
 function goToLineInFile() {
@@ -837,6 +834,8 @@ function moveTimelineNext() {
     objectsOnCanvasMemoryAddress.clear();
     referenceWidgetObjectMemoryAddress.clear();
 
+    let currentLineNumber = window.lineData[currentIndex - 1].line;
+    updatePrimitivesInitialValue(currentLineNumber);
     ids.forEach(function (id) {
         var object = progvolver.objects[id];
         console.log("Running object: " + object.name);
@@ -11259,6 +11258,9 @@ function processLogFiles(logFileContent, scopeFileContent, signalFileContent, li
                     //getAssociatedVariablesForCodeVariants();
                     console.log("Window minTime: " + window.minTime);
                     console.log("Window maxTime: " + window.maxTime);
+
+                    let currentLine = window.lineData[0].line;
+                    updatePrimitivesInitialValue(currentLine);
                 }
             }
         }
@@ -11267,6 +11269,19 @@ function processLogFiles(logFileContent, scopeFileContent, signalFileContent, li
 
 }
 
+function updatePrimitivesInitialValue(currentLine) {
+    for (let i = 0; i < primitivesOnCanvas.length; i++) {
+        if (primitivesOnCanvas[i].declareAtTo == currentLine) {
+            let symbolName = primitivesOnCanvas[i].name;
+
+            for (let j = 0; j < window.initData.length; j++) {
+                if (window.initData[j].symbol == symbolName) {
+                    primitivesOnCanvas[i].value = window.initData[j].value + '';
+                }
+            }
+        }
+    }
+}
 
 /*function processLogFileContent(logFileContent) {
  Papa.parse(logFileContent.trim(), {
