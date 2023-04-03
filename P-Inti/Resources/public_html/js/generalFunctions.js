@@ -17,6 +17,9 @@ function highlightLine (object) {
     }
 }
 
+var multiverseVariantsTextFields = {};
+var multiverseColors = {};
+
 function addVariantToMultiverse(codeMultiverseId) {
     let variantRow = $('#' + codeMultiverseId + '-variantUL');
     let variantId = 'v' + Math.random().toString(36).slice(2, 7);
@@ -28,7 +31,7 @@ function addVariantToMultiverse(codeMultiverseId) {
         '                            <div class="col-12">\n' +
         '                                <input class="form-check-input" value="' + id + '" type="radio" name="' + name + '" id="' + id + '" style="display:inherit;width:15px;margin-top:10px;margin-left:8px">\n' +
         '                                <label class="form-check-label codeVariantLabel" style="margin-top:-32px" for="' + id + '">              \n' +
-        '                                   <input class="form-control variantTextInput" style="width:140px;margin-left:20px" id="' + id + '-title" type="text" placeholder="Variant title" style="margin-top:8px">\n' +
+        '                                   <input class="form-control variantTextInput" style="width:140px;margin-left:20px; box-shadow: none; border: 1px solid #666666" id="' + id + '-title" type="text" placeholder="Variant title" style="margin-top:8px">\n' +
         '                                </label>\n' +
         '                            </div>                \n' +
         '                        </div>        \n' +
@@ -36,13 +39,16 @@ function addVariantToMultiverse(codeMultiverseId) {
 
     variantRow.append(newVariant);
 
+    if (!multiverseVariantsTextFields[codeMultiverseId]) {
+        multiverseVariantsTextFields[codeMultiverseId] = [];
+    }
+    multiverseVariantsTextFields[codeMultiverseId].push(id + '-title');
     let inputNameSelector = "input[name=" + name + "]";
     $(inputNameSelector).change(function(e) {
         e.stopImmediatePropagation();
         let selectedRadioId = $(this).attr('id');
         let branchName = $('#' + id + '-title').val();
         if (window.jsHandler && window.jsHandler.updateSelectedCodeControl) {
-            console.log("Calling text thing")
             window.jsHandler.updateSelectedCodeControl({
                 id: codeMultiverseId
             })
@@ -54,6 +60,12 @@ function addVariantToMultiverse(codeMultiverseId) {
                 variantId: id,
                 codeShiftId: codeMultiverseId,
             });
+
+            // Resetting all colors
+            for (let i = 0; i < multiverseVariantsTextFields[codeMultiverseId].length; i++) {
+                $('#' + multiverseVariantsTextFields[codeMultiverseId][i]).css('background-color', 'white');
+            }
+            $('#' + id + '-title').css('background-color', multiverseColors[codeMultiverseId])
 
             console.log("went to branch: " + branchName);
             getAssociatedVariablesForCodeVariants();
@@ -100,6 +112,12 @@ function addVariantToMultiverse(codeMultiverseId) {
         }
     });
 
+    // Resetting all colors
+    for (let i = 0; i < multiverseVariantsTextFields[codeMultiverseId].length; i++) {
+        $('#' + multiverseVariantsTextFields[codeMultiverseId][i]).css('background-color', 'white');
+    }
+    $('#' + id + '-title').css('background-color', multiverseColors[codeMultiverseId])
+
     $('#' + id + '-title').focus();
 }
 
@@ -115,6 +133,8 @@ function addCodeMultiverseToRightPane() {
     dimmedColor["a"] = 0.5;
     let dimmedColorString = "rgba(" + dimmedColor.r + "," + dimmedColor.g + "," + dimmedColor.b + "," + 0.8 + ")";
 
+    multiverseColors[codeMultiverseId] = dimmedColorString;
+
     let lightenSaturatedColor = lighten(saturatedColor, 13);
 
     console.log("Saturated color is: " + saturatedColor);
@@ -122,16 +142,13 @@ function addCodeMultiverseToRightPane() {
 
     let divMultiverses = $('    <div class="container-fluid codeMultiverseContainer" id="' + codeMultiverseId + '-container" style="border: 5px; border-color:' + saturatedColor + '; border-style:solid; margin-bottom:8px" >\n' +
         '        <div class="row" style="display:flex; border-width: 0 0 1px 0; background-color: ' + dimmedColorString + '; border-color:' + saturatedColor + '; border-style:solid; padding-bottom:5px">\n' +
-        '            <div class="col-10">\n' +
-        '                <input class="form-control codeMultiverseTitle" id="' + codeMultiverseId + '-title" type="text" placeholder="Multiverse title" style="margin-top:8px">\n' +
+        '            <div class="col-10" style="padding-left: 1px">\n' +
+        '                <input class="form-control codeMultiverseTitle" id="' + codeMultiverseId + '-title" type="text" placeholder="Multiverse title" style="margin-top:8px; padding-left: 0px; box-shadow: none">\n' +
         '            </div>\n' +
         '            <div class="col-2">\n' +
         '                 \n' +
-        '            <button type="button" id="' + codeMultiverseId + '-collapse" data-bs-toggle="collapse" data-bs-target=".' + codeMultiverseId + '-collapseRows" class="glyphicon codeMultiverseCollapse" style="margin-top:8px">\n' +
-        '                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-arrow-down" viewBox="0 0 16 16">\n' +
-        '                    <path fill-rule="evenodd" d="M8 1a.5.5 0 0 1 .5.5v11.793l3.146-3.147a.5.5 0 0 1 .708.708l-4 4a.5.5 0 0 1-.708 0l-4-4a.5.5 0 0 1 .708-.708L7.5 13.293V1.5A.5.5 0 0 1 8 1z"></path>\n' +
-        '                </svg>\n' +
-        '            </button>\n' +
+        '            <button type="button" id="' + codeMultiverseId + '-collapse" data-bs-toggle="collapse" data-bs-target=".' + codeMultiverseId + '-collapseRows" class="glyphicon codeMultiverseCollapse" style="margin-top:8px; font-weight: bold; font-size: 15px; color: #444">\n' +
+        '            ></button>\n' +
         '            </div>\n' +
         '        </div>\n' +
         '        <div class="row ' + codeMultiverseId + '-collapseRows" id="' + codeMultiverseId + '-variantRow">\n' +
@@ -178,7 +195,7 @@ function addCodeMultiverseToRightPane() {
 
         if (window.jsHandler && window.jsHandler.initializeCodeControl) {
             window.jsHandler.initializeCodeControl({
-                name: "CODE_MULTIVERSE_" + codeMultiverseRightPaneElements.length,
+                name: "multiverse" + codeMultiverseRightPaneElements.length,
                 id: codeMultiverseId,
                 saturatedColor: colorsArray[codeMultiverseRightPaneElements.length - 1],
                 unsaturatedColor: colorsArray[codeMultiverseRightPaneElements.length - 1]
@@ -187,7 +204,7 @@ function addCodeMultiverseToRightPane() {
 
     $(document).ready(function() {
 
-        $('#' + codeMultiverseId + '-title').val("CODE_MULTIVERSE_" + codeMultiverseRightPaneElements.length);
+        $('#' + codeMultiverseId + '-title').val("multiverse" + codeMultiverseRightPaneElements.length);
 
         $('#' + codeMultiverseId + '-collapse').click( function (e) {
             let rows = $('.' + codeMultiverseId + '-collapseRows');
