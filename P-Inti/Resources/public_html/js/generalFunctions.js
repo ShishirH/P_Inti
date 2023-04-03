@@ -690,10 +690,12 @@ function getPositionAlongLineBetweenPoints(lineStartCoords, lineEndCoords) {
     //drawFilledPolygon(translateShape(rotateShape(background.triangle, angle), point.x + (3 / 2), point.y + (3 / 2)), ctx);
 
 }
+let hasCounterBeenTwoBefore = 0;
 function updateMinimizeButton() {
+    let counter = 0;
     for (let i = 0; i < referenceWidgetsList.length; i++) {
         let background = referenceWidgetsList[i];
-        let additionalLogging = false;
+        let additionalLogging = true;
 
         // if (rootObject.object.objectMembersDict["next"].object.objectMembersDict["next"] === background) {
         //     additionalLogging = true;
@@ -728,10 +730,7 @@ function updateMinimizeButton() {
                     background.anotherRender = background.render;
 
                     console.log("background.anotherRender");
-                    console.log(background)
-                    console.log("anotherObject");
-                    console.log(anotherObject);
-                    console.log(background.name)
+
 
                     background.render = function(ctx) {
                         background.anotherRender(ctx);
@@ -743,7 +742,13 @@ function updateMinimizeButton() {
 
                             let angle = posData[0];
                             let coords = posData[1];
-                            drawFilledPolygon(translateShape(rotateShape(background.triangle, angle), coords.x + (2 / 2), coords.y + (2 / 2)), ctx);
+                            if (counter != 2) {
+                                drawFilledPolygon(translateShape(rotateShape(background.triangle, angle), coords.x + (2 / 2), coords.y + (2 / 2)), ctx);
+                            } else {
+                                if (hasCounterBeenTwoBefore != 2) {
+                                    drawFilledPolygon(translateShape(rotateShape(background.triangle, angle), coords.x + (2 / 2), coords.y + (2 / 2)), ctx);
+                                }
+                            }
                         }
                     };
 
@@ -756,6 +761,12 @@ function updateMinimizeButton() {
 
                     orphanedObjects = orphanedObjects.filter(item => item != background.minimizeButton);
                     anotherObject.object.sendToBack();
+                    counter++;
+
+                    if (counter == 2) {
+                        hasCounterBeenTwoBefore++;
+                    }
+
                 } else {
                     if (background.object.isCompressed) {
                         background.minimizeButton.sign = "+";
@@ -1521,12 +1532,29 @@ function adjustReferenceObjectPosition(object) {
         let minimizeButton = object.minimizeButton;
 
         let yPosition = parseFloat(position.y)
-        let xPosition = parseFloat(position.x) - 15
+        let xPosition = parseFloat(position.x) - 8
         minimizeButton.x = xPosition;
         minimizeButton.y = yPosition;
         minimizeButton.left = xPosition;
         minimizeButton.top = yPosition;
         minimizeButton.setCoords();
+
+        let background = object.referenceWidget;
+
+        let backgroundCoords = background.getPointByOrigin('right', 'center');
+        let xCoords = backgroundCoords.x;
+        let yCoords = backgroundCoords.y;
+
+        let compressedOptions = background.compressedOptions[object.minimizeButton.id];
+        let expandedOptions = background.expandedOptions[object.minimizeButton.id];
+
+        if (compressedOptions) {
+            compressedOptions.x = xPosition - xCoords;
+            compressedOptions.y = yPosition - yCoords;
+
+            expandedOptions.x = xPosition - xCoords;
+            expandedOptions.y = yPosition - yCoords;
+        }
     }
 }
 

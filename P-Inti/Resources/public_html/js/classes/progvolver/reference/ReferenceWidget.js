@@ -533,8 +533,13 @@ class ReferenceWidget {
                 }
             } else {
                 if (background.isMember) {
-                    background.compressedOptions[button.id].x = background.minimizeButtonOriginalXPos;
-                    background.expandedOptions[button.id].x = background.minimizeButtonOriginalXPos;
+                    if (background.compressedOptions[button.id]) {
+                        background.compressedOptions[button.id].x = background.minimizeButtonOriginalXPos;
+                        background.expandedOptions[button.id].x = background.minimizeButtonOriginalXPos;
+                    } else {
+                        button.left = background.minimizeButtonOriginalXPos;
+                        button.top = background.minimizeButtonOriginalXPos;
+                    }
                 }
 
                 if (objectToMinimize.removeAll)
@@ -958,6 +963,12 @@ class ReferenceWidget {
         let additionalLogging = false;
         background.setValue = function (newValue, currentMemoryAddress) {
             additionalLogging = false;
+            var minimizeButtonCompressed = [];
+            var minimizeButtonExpanded = [];
+
+            if (newValue === null || newValue === "null") {
+                additionalLogging = true;
+            }
 
             // if (auxObject && auxObject.object && auxObject.object.objectWidgetsDict["next"]) {
             //     if (background && background.object && background.object.objectWidgetsDict["data"].value == "9")
@@ -972,11 +983,17 @@ class ReferenceWidget {
                 background.minimizeButtonMouseup();
                 background.object = undefined;
                 background.minimizeButton.sign = "?";
-            } else if (newValue === null || newValue === "null") {
+            } else if (newValue === "null") {
                 additionalLogging && console.log("newValue was null: ");
+                //addMinimizeButton();
                 background.minimizeButtonMouseup();
                 background.object = undefined;
                 background.minimizeButton.sign = "X";
+            }  else if (newValue === "nullPointer") {
+                addMinimizeButton();
+                background.object = undefined;
+                background.minimizeButton.sign = "X";
+
             } else if (newValue) {
                 // A valid value was passed. For example: [3;40;60;100000000;0;0;0;0;0]
                 additionalLogging && console.log("New value is: ");
@@ -1004,22 +1021,40 @@ class ReferenceWidget {
                 } else if (background.object && currentMemoryAddress && background.object.memoryAddress && background.object.memoryAddress != currentMemoryAddress) {
                     additionalLogging && console.log("Currently Background object memoryAddress: " + background.object.memoryAddress);
                     additionalLogging && console.log("Currently currentMemoryAddress: " + currentMemoryAddress);
-                    var rightSc = getScreenCoordinates(background.object.getPointByOrigin('center', 'center'));
+                    var rightSc = (background.object.getPointByOrigin('center', 'center'));
 
                     rightSc.x += 100;
                     rightSc.y += 100;
 
+                    console.log("!!! background");
+                    console.log(background);
                     background.minimizeButton.object = background.object;
                     background.object = createObjectMemberWidgetsWithoutResponse(objectInfo[background.type], rightSc, background.fileName, background.name)
 
-                    var minimizeButtonCompressed = background.compressedOptions[background.minimizeButton.id];
-                    var minimizeButtonExpanded = background.expandedOptions[background.minimizeButton.id];
+                    console.log("!!! background object");
+                    console.log(background.object);
 
-                    let compressedX = minimizeButtonCompressed.x;
-                    let compressedY = minimizeButtonCompressed.y;
+                    minimizeButtonCompressed = background.compressedOptions[background.minimizeButton.id];
+                    minimizeButtonExpanded = background.expandedOptions[background.minimizeButton.id];
+                    let compressedX, compressedY;
 
-                    let expandedX = minimizeButtonExpanded.x;
-                    let expandedY = minimizeButtonExpanded.y;
+                    if (!minimizeButtonCompressed) {
+                        compressedX = background.minimizeButton.object.getPointByOrigin('center', 'center').x - background.getPointByOrigin('center', 'center').x;
+                        compressedY = background.minimizeButton.object.getPointByOrigin('center', 'center').y - background.getPointByOrigin('center', 'center').y;
+                    } else {
+                        compressedX = minimizeButtonCompressed.x;
+                        compressedY = minimizeButtonCompressed.y;
+                    }
+
+                    let expandedX, expandedY;
+
+                    if (!minimizeButtonExpanded) {
+                        expandedX = background.minimizeButton.object.getPointByOrigin('center', 'center').x;
+                        expandedY = background.minimizeButton.object.getPointByOrigin('center', 'center').y;
+                    } else {
+                        expandedX = minimizeButtonExpanded.x;
+                        expandedY = minimizeButtonExpanded.y;
+                    }
 
                     // Removing current minimizeButton from children and childrenOnTop
                     background.children = background.children.filter(item => item !== background.minimizeButton);
@@ -1045,11 +1080,25 @@ class ReferenceWidget {
                     console.log(minimizeButtonCompressed);
                     console.log("expandedX")
                     console.log(minimizeButtonExpanded);
-                    background.compressedOptions[background.minimizeButton.id].x = compressedX + xOffset;
-                    background.compressedOptions[background.minimizeButton.id].y = compressedY + yOffset;
 
-                    background.expandedOptions[background.minimizeButton.id].x = expandedX + xOffset;
-                    background.expandedOptions[background.minimizeButton.id].y = expandedY + yOffset;
+
+                    if (minimizeButtonExpanded) {
+                        background.compressedOptions[background.minimizeButton.id].x = compressedX + xOffset;
+                        background.compressedOptions[background.minimizeButton.id].y = compressedY + yOffset;
+
+                        background.expandedOptions[background.minimizeButton.id].x = expandedX + xOffset;
+                        background.expandedOptions[background.minimizeButton.id].y = expandedY + yOffset;
+                    } else {
+                        let xPos = 200;
+                        let yPos = 150;
+                        yOffset = 0;
+
+                        background.compressedOptions[background.minimizeButton.id].x = compressedX + xOffset;
+                        background.compressedOptions[background.minimizeButton.id].y = compressedY + yOffset;
+
+                        background.expandedOptions[background.minimizeButton.id].x = expandedX + xOffset;
+                        background.expandedOptions[background.minimizeButton.id].y = expandedY + yOffset;
+                    }
 
                     if (firstTimeValueChangePos) {
                         firstTimeValueChangePos = false;
@@ -1061,6 +1110,21 @@ class ReferenceWidget {
                     setTimeout(function() {
                         background.minimizeButton.object = background.object;
                         background.minimizeButtonMouseup();
+
+                        if (!minimizeButtonCompressed) {
+                            background.minimizeButtonMouseup();
+                            background.object.positionObjects();
+                            //background.positionObjects();
+
+                            background.object.left = (rightSc.x + 75) * canvas.getZoom();
+                            background.object.top = (rightSc.y + 30) * canvas.getZoom();
+
+                            let backgroundLeftCoords = background.object.getPointByOrigin('left', 'center');
+                            background.minimizeButton.left = backgroundLeftCoords.x - 10;
+                            background.minimizeButton.top = backgroundLeftCoords.y;
+
+                            background.object.positionObjects();
+                        }
                         console.log("sync check 1")
                     }, 150);
 
@@ -1069,7 +1133,12 @@ class ReferenceWidget {
                 background.object.setValue(newValue);
                 setTimeout(function() {
                     background.drawArrowToSameMemLocationFinal();
-                }, 1000);
+                    if (!minimizeButtonCompressed && minimizeButtonCompressed) {
+                        background.positionObjects()
+                        background.object.positionObjects();
+                        background.minimizeButtonMouseup();
+                    }
+                    }, 1000);
             }
         }
 
@@ -1097,27 +1166,32 @@ class ReferenceWidget {
                                 background.object.setValue(this.values[i].array);
                                 break;
                             }
-                            const valueObj = JSON.parse(this.values[i].array);
 
-                            let memoryAddress = null;
-                            if (valueObj && valueObj.constructor == Object) {
-                                // confirmed that value is a dictionary
-                                console.log("valueObj");
-                                console.log(valueObj);
-                                memoryAddress = valueObj["memoryAddress"];
-                            }
+                            if (this.values[i].array === "nullPointer") {
+                                background.setValue(this.values[i].array, -1);
+                            } else {
+                                const valueObj = JSON.parse(this.values[i].array);
 
-                            // Current object value has been updated.
-                            if (background.object && background.object.memoryAddress == memoryAddress) {
-                                console.log("Setting value");
-                                background.object.setValue(this.values[i].array);
-                            } else if (background.object) {
-                                // Pointing to new memory location now. Create new reference.
-                                console.log("!!!Creating new background object")
-                                console.log(this.values[i].array);
-                                console.log("!!!Existing object: ");
-                                console.log(background.object);
-                                background.setValue(this.values[i].array, memoryAddress);
+                                let memoryAddress = null;
+                                if (valueObj && valueObj.constructor == Object) {
+                                    // confirmed that value is a dictionary
+                                    console.log("valueObj");
+                                    console.log(valueObj);
+                                    memoryAddress = valueObj["memoryAddress"];
+                                }
+
+                                // Current object value has been updated.
+                                if (background.object && background.object.memoryAddress == memoryAddress) {
+                                    console.log("Setting value");
+                                    background.object.setValue(this.values[i].array);
+                                } else if (background.object) {
+                                    // Pointing to new memory location now. Create new reference.
+                                    console.log("!!!Creating new background object")
+                                    console.log(this.values[i].array);
+                                    console.log("!!!Existing object: ");
+                                    console.log(background.object);
+                                    background.setValue(this.values[i].array, memoryAddress);
+                                }
                             }
                             break;
                         }

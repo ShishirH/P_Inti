@@ -162,6 +162,11 @@ namespace ConsoleApp1 {
 
         public static bool isCustomClass(object o)
         {
+            if (o == null)
+            {
+                return true;
+            }
+
             string result = "";
             result = o.GetType() + " ~   " + o.GetType().Assembly.GetName().Name;
             if (o.GetType().Assembly.GetName().Name != "mscorlib")
@@ -191,7 +196,8 @@ namespace ConsoleApp1 {
                     if (Char.IsLetter(fieldValue[index + 1]))
                     {
                         // Object member is also an object. Call it recursively
-                        fieldValue = getFieldsForClass(field.GetValue(o)).ToString(Formatting.None);
+                        JObject jObject = getFieldsForClass(field.GetValue(o));
+                        fieldValue = jObject.ToString(Formatting.None);
                     }
                 }
                 fieldsObject.Add(fieldName, fieldValue);
@@ -209,6 +215,10 @@ namespace ConsoleApp1 {
             string values = "";
             List<string> parameters = new List<string>();
 
+            if (parentExpressions == null)
+            {
+                return;
+            }
             object parameter = parentExpressions[0];
             bool isMatrix = is2DArray(parameter);
             bool isArray = is1DArray(parameter);
@@ -217,7 +227,16 @@ namespace ConsoleApp1 {
             if (isClass) {
                 // DO THE SAME FOR PROPERTIES
                 JObject fieldValues = new JObject();
-                stringForFile = getFieldsForClass(parameter).ToString(Formatting.None);
+                JObject jObject = getFieldsForClass(parameter);
+
+                if (parameter == null)
+                {
+                    stringForFile = "nullPointer";
+                }
+                else 
+                {
+                    stringForFile = jObject.ToString(Formatting.None);
+                } 
                 //parameters.Add(stringForFile);
                 parameters.Add(stringForFile + "ASDASD");
 
@@ -283,9 +302,13 @@ namespace ConsoleApp1 {
             StringBuilder sb = new StringBuilder();
             sb.AppendFormat(logString, tmpSB.ToString());
             //logFile.WriteLine("$$$$$$$$$$$$$$$\t" + isClass);
-            logFile.WriteLine((logIndex++) + "~" + sb.ToString() + "~" + (nanoTime() - dt1) + "~" + column + "~" + row + "~" + stringForFile + "~" + parentExpressions[0].GetHashCode());
-
-        }        
+            int hashCode = -1;
+            if (parentExpressions[0] != null)
+            {
+                hashCode = parentExpressions[0].GetHashCode();
+            }
+            logFile.WriteLine((logIndex++) + "~" + sb.ToString() + "~" + (nanoTime() - dt1) + "~" + column + "~" + row + "~" + stringForFile + "~" + hashCode);
+        }
 
         public static bool logReference(String logString, object o) {
             StringBuilder sb = new StringBuilder();

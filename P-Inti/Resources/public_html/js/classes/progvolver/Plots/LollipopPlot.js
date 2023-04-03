@@ -1113,6 +1113,7 @@ class LollipopPlot extends ConnectableWidget {
 //                console.log("value");
 //                console.log(value);
 
+                background.setProgramTime(window.presentTime);
             }
 
             canvas.add(inputPort);
