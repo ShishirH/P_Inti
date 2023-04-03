@@ -95,8 +95,16 @@ class LollipopPlot extends ConnectableWidget {
                 .attr("transform",
                     "translate(" + margin.left + "," + margin.top + ")");
 
-            let minX = d3.min(data, d => d[xCoord]);
-            let maxX = d3.max(data, d => d[xCoord]);
+            let minX, maxX;
+
+
+            if (data.length > 0) {
+                minX = d3.min(data, d => d[xCoord]);
+                maxX = d3.max(data, d => d[xCoord]);
+            } else {
+                minX = 0;
+                maxX = 0;
+            }
 
             xScale = d3.scaleLinear()
                 .range([0, width])
@@ -120,8 +128,15 @@ class LollipopPlot extends ConnectableWidget {
                 .style("font-size", "14px")
                 .text("Time");
 
-            var minValue = d3.min(data, d => d.values);
-            var maxValue = d3.max(data, d => d.values);
+            var minValue, maxValue;
+
+            if (data.length > 0) {
+                minValue = d3.min(data, d => d.values);
+                maxValue = d3.max(data, d => d.values);
+            } else {
+                minValue = 0;
+                maxValue = 0;
+            }
 
             yScale = d3.scaleLinear()
                 .domain([minValue, maxValue])
@@ -133,8 +148,9 @@ class LollipopPlot extends ConnectableWidget {
                 .call(yAxisGenerator);
 
             colorScale = d3.scaleOrdinal()
-                .domain(background.symbols)
-                .range(d3.schemeTableau10);
+                .domain([1, 2])
+                .range(["#4e79a7", "#f28e2c"]);
+                //.range(d3.schemeTableau10);
 
             console.log("color scale is: ");
             console.log(colorScale);
@@ -514,6 +530,7 @@ class LollipopPlot extends ConnectableWidget {
 
         }
 
+        var hasD3BeenSetup = false;
         this.addPlottingArea = function (options) {
 
             var background = this;
@@ -855,8 +872,206 @@ class LollipopPlot extends ConnectableWidget {
         };
 
 
+        background.addVariableToPlot = function(variable, background) {
+            let variableHistory = variable.history;
+            var symbolName = variable.name;
 
 
+            if (symbolName.indexOf(',') != -1) {
+                symbolName = symbolName.split(',')[1];
+            }
+
+            // Remove duplicates from the log file. TODO investigate why the log file is generating duplicates.
+            let connectedHistory = [];
+
+            let elementToCompareIndex = 0;
+            let startIndex = 0;
+            if (variableHistory[0].symbols.indexOf(',') == -1 &&
+                variableHistory[0].symbols.indexOf(symbolName) != -1
+                && variableHistory[0].values != undefined) {
+                connectedHistory.push(variableHistory[0]);
+            } else {
+                for (let i = 0; i < variableHistory.length; i++) {
+                    let element = variableHistory[i];
+
+                    if (element.symbols.indexOf(symbolName) != -1 && element.values != undefined
+                        && (!element.grandParentStatement || element.grandParentStatement.split('[').length < 3)
+                        && !(element.expressions == element.parentStatement && element.expressions == element.grandParentStatement)) {
+                        if (element.symbols.indexOf(',') == -1 && (!element.values.indexOf ||
+                            element.values.indexOf(',') == -1)) {
+                            connectedHistory.push(element);
+                            startIndex = i;
+                            break;
+                        } else {
+                            let elementSymbolsArray = element.symbols.split(',');
+                            let index = elementSymbolsArray.indexOf(symbolName);
+                            if (element.values != undefined) {
+                                let values = element.values.split(',');
+                                if (values.length == elementSymbolsArray.length) {
+                                    let clonedElement = JSON.parse(JSON.stringify(element));
+                                    let value = values[index];
+                                    clonedElement.symbols = symbolName;
+                                    clonedElement.values = value;
+                                    connectedHistory.push(clonedElement);
+                                    startIndex = i;
+                                    break;
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+
+            console.log("!@# Connected history is now: ")
+            console.log(connectedHistory);
+
+            for (let index = startIndex + 1; index < variableHistory.length; index++) {
+                let element = variableHistory[index];
+                if (element.values == 'True' || element.values == 'true') {
+                    element.values = '1';
+                } else if (element.values == 'False' || element.values == 'false') {
+                    element.values = '0';
+                }
+
+                if (element.symbols.indexOf(symbolName) != -1 && element.values != undefined
+                    && (!element.grandParentStatement || element.grandParentStatement.split('[').length < 3)
+                    && !(element.expressions == element.parentStatement && element.expressions == element.grandParentStatement)) {
+                    if (element.symbols.indexOf(',') == -1) {
+                        if (element.values != connectedHistory[elementToCompareIndex].values) {
+                            // Not a duplicate value, so append to connectedHistory
+                            elementToCompareIndex++;
+                            element.index = elementToCompareIndex;
+                            connectedHistory.push(element);
+                        }
+                    } else {
+                        let elementSymbolsArray = element.symbols.split(',');
+                        let index = elementSymbolsArray.indexOf(symbolName);
+                        let value = element.values.split(',')[index];
+
+                        let clonedElement = JSON.parse(JSON.stringify(element));
+                        clonedElement.symbols = symbolName;
+                        clonedElement.values = value;
+                        if (clonedElement.values != connectedHistory[elementToCompareIndex].values) {
+                            // Not a duplicate value, so append to connectedHistory
+                            elementToCompareIndex++;
+                            clonedElement.index = elementToCompareIndex;
+                            connectedHistory.push(clonedElement);
+                        }
+                    }
+                }
+
+            }
+            ;
+
+            console.log("connectedHistory BEFORE: ");
+            console.log(connectedHistory);
+
+
+            // Assigning the local index variable
+            connectedHistory.forEach(function (element, index) {
+                element.localIndex = index;
+                element.localTime = element.time / 1000;
+
+                if (index == 0) {
+                    element.index = 0;
+                }
+            });
+
+            console.log("connectedHistory AFTER: ");
+            console.log(connectedHistory);
+
+            background.symbols.push(symbolName);
+
+            background.histories[symbolName] = connectedHistory;
+
+            console.log("here ho")
+            console.log(background.histories)
+
+            // More than 1 symbol, update indexes
+            let localIndex = 0;
+            let historyOfSymbol = [];
+            let nameOfSymbol = [];
+            if (Object.keys(background.histories).length > 1) {
+                console.log("Entering this state")
+                for (const [key, value] of Object.entries(background.histories)) {
+                    console.log("key is: " + key);
+                    if (key && value) {
+                        historyOfSymbol.push(value);
+                        nameOfSymbol.push(key);
+                    }
+                }
+
+                console.log("historyOfSymbol is now: ")
+                console.log(historyOfSymbol)
+
+                if (historyOfSymbol.length > 1) {
+                    let i = 0, j = 0;
+
+                    while (i < historyOfSymbol[0].length && j < historyOfSymbol[1].length) {
+                        if (historyOfSymbol[0][i].time < historyOfSymbol[1][j].time) {
+                            historyOfSymbol[0][i++].localIndex = localIndex++;
+                        } else {
+                            historyOfSymbol[1][j++].localIndex = localIndex++;
+                        }
+                    }
+
+                    console.log("historyOfSymbol")
+                    console.log(historyOfSymbol)
+                    while (i < historyOfSymbol[0].length) {
+                        historyOfSymbol[0][i++].localIndex = localIndex++;
+                        console.log("i is now: " + i);
+                    }
+                    while (j < historyOfSymbol[1].length) {
+                        historyOfSymbol[1][j++].localIndex = localIndex++;
+                        console.log("j is now: " + j);
+                    }
+                    background.histories[nameOfSymbol[1]] = historyOfSymbol[1];
+                }
+            }
+
+            background.histories[nameOfSymbol[0]] = historyOfSymbol[0];
+
+            console.log(background.histories);
+            if (!hasD3BeenSetup || !xScale || background.symbols.length == 1) {
+                background.setUpD3(background.plottingDiv, connectedHistory, background.svg, background.plottingDiv.width(), background.plottingDiv.height(), background.currentXCoord);
+                hasD3BeenSetup = true;
+            }
+
+            console.log("@@@@background.histories:");
+            console.log(background.histories);
+
+            console.log("@@@@background.currentData before concat: ")
+            console.log(background.currentData);
+
+            // this must be an array
+            background.currentData = background.currentData.concat(connectedHistory);
+            console.log("@@@@background.currentData after concat: ")
+            console.log(background.currentData);
+
+            let newWidth = (background.getScaledWidth() - background.hMargin * 2 - background.strokeWidth);
+            let newHeight = (background.getScaledHeight() - background.vMargin - background.hMargin - background.strokeWidth);
+            background.updatePlot(background.svg, background.currentData, newWidth, newHeight, false, background.currentXCoord);
+
+//                console.log("theConnector.source.values");
+//                console.log(theConnector.source.values);
+//                console.log("value");
+//                console.log(value);
+
+            background.setProgramTime(window.presentTime);
+        }
+
+        background.clearPlot = function() {
+            let newWidth = (background.getScaledWidth() - background.hMargin * 2 - background.strokeWidth);
+            let newHeight = (background.getScaledHeight() - background.vMargin - background.hMargin - background.strokeWidth);
+            //background.setUpD3(background.plottingDiv, [], background.svg, background.plottingDiv.width(), background.plottingDiv.height(), background.currentXCoord);
+            d3.selectAll("#" + background.selector).remove();
+            background.addPlottingArea();
+            background.positionHtmlObjects();
+            hasD3BeenSetup = false;
+            background.updatePlot(background.svg, [], newWidth, newHeight, false, background.currentXCoord);
+        }
+
+        let variablesConnected = [];
         this.addInputPort = function () {
 
 
@@ -932,188 +1147,16 @@ class LollipopPlot extends ConnectableWidget {
 
 
             inputPort.acceptConnection = function (theConnector, value) {
-                let variableHistory = theConnector.source.background.history;
-                var symbolName = theConnector.source.background.name;
+                let variable = theConnector.source.background;
+                variablesConnected.push(theConnector.source.background);
 
-                if (symbolName.indexOf(',') != -1) {
-                    symbolName = symbolName.split(',')[1];
-                }
-
-                // Remove duplicates from the log file. TODO investigate why the log file is generating duplicates.
-                let connectedHistory = [];
-
-                let elementToCompareIndex = 0;
-                let startIndex = 0;
-                if (variableHistory[0].symbols.indexOf(',') == -1 &&
-                    variableHistory[0].symbols.indexOf(symbolName) != -1
-                    && variableHistory[0].values != undefined) {
-                    connectedHistory.push(variableHistory[0]);
+                if (variablesConnected.length == 1) {
+                    variable.widget.thePorts[0].set('fill', "#4e79a7");
                 } else {
-                    for (let i = 0; i < variableHistory.length; i++) {
-                        let element = variableHistory[i];
-
-                        if (element.symbols.indexOf(symbolName) != -1 && element.values != undefined
-                        && (!element.grandParentStatement || element.grandParentStatement.split('[').length < 3)
-                        && !(element.expressions == element.parentStatement && element.expressions == element.grandParentStatement)) {
-                            if (element.symbols.indexOf(',') == -1 && (!element.values.indexOf ||
-                                element.values.indexOf(',') == -1)) {
-                                connectedHistory.push(element);
-                                startIndex = i;
-                                break;
-                            } else {
-                                let elementSymbolsArray = element.symbols.split(',');
-                                let index = elementSymbolsArray.indexOf(symbolName);
-                                if (element.values != undefined) {
-                                    let values = element.values.split(',');
-                                    if (values.length == elementSymbolsArray.length) {
-                                        let clonedElement = JSON.parse(JSON.stringify(element));
-                                        let value = values[index];
-                                        clonedElement.symbols = symbolName;
-                                        clonedElement.values = value;
-                                        connectedHistory.push(clonedElement);
-                                        startIndex = i;
-                                        break;
-                                    }
-                                }
-                            }
-                        }
-                    }
+                    variable.widget.thePorts[0].set('fill', "#f28e2c");
                 }
 
-                console.log("!@# Connected history is now: ")
-                console.log(connectedHistory);
-
-                for (let index = startIndex + 1; index < variableHistory.length; index ++) {
-                    let element = variableHistory[index];
-                    if (element.values == 'True' || element.values == 'true') {
-                        element.values = '1';
-                    } else if (element.values == 'False' || element.values == 'false') {
-                        element.values = '0';
-                    }
-
-                    if (element.symbols.indexOf(symbolName) != -1 && element.values != undefined
-                    && (!element.grandParentStatement || element.grandParentStatement.split('[').length < 3)
-                    && !(element.expressions == element.parentStatement && element.expressions == element.grandParentStatement)) {
-                        if (element.symbols.indexOf(',') == -1) {
-                            if (element.values != connectedHistory[elementToCompareIndex].values) {
-                                // Not a duplicate value, so append to connectedHistory
-                                elementToCompareIndex++;
-                                element.index = elementToCompareIndex;
-                                connectedHistory.push(element);
-                            }
-                        } else {
-                            let elementSymbolsArray = element.symbols.split(',');
-                            let index = elementSymbolsArray.indexOf(symbolName);
-                            let value = element.values.split(',')[index];
-
-                            let clonedElement = JSON.parse(JSON.stringify(element));
-                            clonedElement.symbols = symbolName;
-                            clonedElement.values = value;
-                            if (clonedElement.values != connectedHistory[elementToCompareIndex].values) {
-                                // Not a duplicate value, so append to connectedHistory
-                                elementToCompareIndex++;
-                                clonedElement.index = elementToCompareIndex;
-                                connectedHistory.push(clonedElement);
-                            }
-                        }
-                    }
-
-                };
-
-                console.log("connectedHistory BEFORE: ");
-                console.log(connectedHistory);
-
-
-                // Assigning the local index variable
-                connectedHistory.forEach(function (element, index) {
-                    element.localIndex = index;
-                    element.localTime = element.time / 1000;
-
-                    if (index == 0) {
-                        element.index = 0;
-                    }
-                });
-
-                console.log("connectedHistory AFTER: ");
-                console.log(connectedHistory);
-
-                background.symbols.push(symbolName);
-
-                background.histories[symbolName] = connectedHistory;
-
-                console.log("here ho")
-                console.log(background.histories)
-
-                // More than 1 symbol, update indexes
-                let localIndex = 0;
-                let historyOfSymbol = [];
-                let nameOfSymbol = [];
-                if (Object.keys(background.histories).length > 1) {
-                    console.log("Entering this state")
-                    for (const[key, value] of Object.entries(background.histories)) {
-                        console.log("key is: " + key);
-                        if (key && value) {
-                            historyOfSymbol.push(value);
-                            nameOfSymbol.push(key);
-                        }
-                    }
-
-                    console.log("historyOfSymbol is now: ")
-                    console.log(historyOfSymbol)
-                    let i = 0, j = 0;
-
-                    while (i < historyOfSymbol[0].length && j < historyOfSymbol[1].length) {
-                        if (historyOfSymbol[0][i].time < historyOfSymbol[1][j].time) {
-                            historyOfSymbol[0][i++].localIndex = localIndex++;
-                            console.log("i is now: " + i);
-                        } else {
-                            historyOfSymbol[1][j++].localIndex = localIndex++;
-                            console.log("j is now: " + j);
-                        }
-                    }
-
-                    console.log("historyOfSymbol")
-                    console.log(historyOfSymbol)
-                    while (i < historyOfSymbol[0].length) {
-                        historyOfSymbol[0][i++].localIndex = localIndex++;
-                        console.log("i is now: " + i);
-                    }
-                    while (j < historyOfSymbol[1].length) {
-                        historyOfSymbol[1][j++].localIndex = localIndex++;
-                        console.log("j is now: " + j);
-
-                    }
-                }
-
-                background.histories[nameOfSymbol[0]] = historyOfSymbol[0];
-                background.histories[nameOfSymbol[1]] = historyOfSymbol[1];
-
-                console.log(background.histories);
-                if (!xScale || background.symbols.length == 1) {
-                    background.setUpD3(background.plottingDiv, connectedHistory, background.svg, background.plottingDiv.width(), background.plottingDiv.height(), background.currentXCoord);
-                }
-
-               console.log("@@@@background.histories:");
-               console.log(background.histories);
-
-                console.log("@@@@background.currentData before concat: ")
-                console.log(background.currentData);
-
-                // this must be an array
-                background.currentData = background.currentData.concat(connectedHistory);
-                console.log("@@@@background.currentData after concat: ")
-                console.log(background.currentData);
-
-                let newWidth = (background.getScaledWidth() - background.hMargin * 2 - background.strokeWidth);
-                let newHeight = (background.getScaledHeight() - background.vMargin - background.hMargin - background.strokeWidth);
-                background.updatePlot(background.svg, background.currentData, newWidth, newHeight, false, background.currentXCoord);
-
-//                console.log("theConnector.source.values");
-//                console.log(theConnector.source.values);
-//                console.log("value");
-//                console.log(value);
-
-                background.setProgramTime(window.presentTime);
+                background.addVariableToPlot(variable, background);
             }
 
             canvas.add(inputPort);
@@ -1133,6 +1176,11 @@ class LollipopPlot extends ConnectableWidget {
         background.currentXCoord = 'localTime';
 
 
+        background.addAllVariablesToPlot = function () {
+            for (let i = 0; i < variablesConnected.length; i++) {
+                background.addVariableToPlot(variablesConnected[i], background);
+            }
+        }
 
         this.addInputPort();
         this.addPlottingArea(options);
@@ -1180,7 +1228,7 @@ class LollipopPlot extends ConnectableWidget {
 
             let newWidth = (background.getScaledWidth() - background.hMargin * 2 - background.strokeWidth);
             let newHeight = (background.getScaledHeight() - background.vMargin - background.hMargin - background.strokeWidth);
-            background.updatePlot(background.svg, background.currentData, newWidth, newHeight, true, background.currentXCoord);
+            background.updatePlot(background.svg, background.currentData, newWidth, newHeight, false, background.currentXCoord);
         }
 
         plotsOnCanvas.push(this);

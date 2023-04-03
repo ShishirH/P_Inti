@@ -2088,6 +2088,7 @@ function bindCanvasDefaultEvents(canvas) {
                                         declareAtTo: response.declareAtTo,
                                         scopeFrom: response.scopeFrom,
                                         scopeTo: response.scopeTo,
+                                        doNotCompressWhenCanvasClicked: true,
                                         connectionPortLocations: ['right']
                                     });
 

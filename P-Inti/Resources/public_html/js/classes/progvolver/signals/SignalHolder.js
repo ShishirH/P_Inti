@@ -28,6 +28,7 @@ class SignalHolder {
         background.label = options.fileName && options.lineNumber ? options.fileName + ' (' + options.lineNumber + ')' : options.fileName || '';
 
         background.oldRender = background.render;
+        background.childrenOnTop = [];
 
         background.setControlsVisibility({
             mb: false, // middle top disable
@@ -61,6 +62,7 @@ class SignalHolder {
             });
 
             canvas.add(signal);
+            background.childrenOnTop.push(signal);
             signal.bringToFront();
         };
 
@@ -102,6 +104,7 @@ class SignalHolder {
             });
 
             background.labelObject = labelObject;
+            background.childrenOnTop.push(labelObject);
 
             background.labelObject && background.labelObject.on({
                 mouseup: function (options) {
@@ -186,6 +189,7 @@ class SignalHolder {
             });
 
             background.lineContentTextBox = lineContentTextBox;
+            background.childrenOnTop.push(lineContentTextBox);
         }
 
         addLineContent();
@@ -207,6 +211,19 @@ class SignalHolder {
             background.positionObjects();
         })
 
+        background.remove = function() {
+            if (background.signal.outConnections && background.signal.outConnections[0]) {
+                background.signal.outConnections[0].contract();
+            }
+
+            for (let i = 0; i < background.childrenOnTop.length; i++) {
+                canvas.remove(background.childrenOnTop[i]);
+            }
+
+            background.removeHtmlObjects && background.removeHtmlObjects();
+            canvas.remove(background);
+        }
+
         background.registerListener('added', function () {
             background.bringToFront();
             bringToFront(background);
@@ -221,6 +238,7 @@ class SignalHolder {
         this.progvolverType = "SignalHolder";
         registerProgvolverObject(this);
 
+        nonMultiverseSupportedWidgets.push(background);
         return this.background;
     }
 }

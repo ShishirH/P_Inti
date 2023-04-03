@@ -1718,6 +1718,16 @@ namespace P_Inti
         }
 
 
+        public Dictionary<string, object> resetSignals(object arg)
+        {
+            Dictionary<string, object> result = new Dictionary<string, object>();
+            MyWindowControl.signalsPositions.Clear();
+            MyWindowControl.trackedSignalIDs.Clear();
+            arrayLine.lineNumbersArray.Clear();
+            SignalGlyphTagger.updateTags();
+
+            return result;
+        }
 
         public Dictionary<string, object> reset(object arg)
         {

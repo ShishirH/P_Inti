@@ -27,6 +27,7 @@ class AffectWidget {
 
         this.background = background;
         background.noScaleCache = false;
+        background.childrenOnTop = [];
 
         this.value = options.value || '';
 
@@ -74,6 +75,7 @@ class AffectWidget {
 
             signalReceiver.bringToFront();
             background.signalReceiver = signalReceiver;
+            background.childrenOnTop.push(signalReceiver);
         };
 
         addSignalReceiver();
@@ -105,6 +107,7 @@ class AffectWidget {
                 movable: false
             });
             background.outputPort = outputWidget;
+            background.childrenOnTop.push(outputWidget);
         }
 
         addOutputPort();
@@ -193,6 +196,23 @@ class AffectWidget {
 
         this.addOperations(options);
 
+        background.removeHtmlObjects = function() {
+            background.operations[0].remove();
+        }
+
+        background.remove = function() {
+            if (background.outputPort.outConnections && background.outputPort.outConnections[0]) {
+                background.outputPort.outConnections[0].contract();
+            }
+
+            for (let i = 0; i < background.childrenOnTop.length; i++) {
+                canvas.remove(background.childrenOnTop[i]);
+            }
+
+            background.removeHtmlObjects();
+            canvas.remove(background);
+        }
+
         background.registerListener('added', function (options) {
             canvas.add(background.signalReceiver);
             canvas.add(background.outputPort);
@@ -203,6 +223,7 @@ class AffectWidget {
         this.progvolverType = "AffectWidget";
         registerProgvolverObject(this);
 
+        nonMultiverseSupportedWidgets.push(background);
         return this.background;
     }
 }

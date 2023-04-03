@@ -53,7 +53,7 @@
         <Parent guid="guidP_IntiPackageCmdSet1" id="MyMenuGroup" />
         <Icon guid="guidImages1" id="bmpPic1" />
         <Strings>
-          <ButtonText>Add code to selected code multiverse</ButtonText>
+          <ButtonText>Add code to selected variant</ButtonText>
         </Strings>
       </Button>
 		<Button guid="guidP_IntiPackageCmdSet1" id="cmdidAddSignalToLineExecution" priority="0x0100" type="Button">

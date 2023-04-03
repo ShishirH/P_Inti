@@ -41,6 +41,7 @@ var CanvasVariableConnectionPort = iVoLVER.util.createClass(fabric.Circle, {
         console.log("UPDATED!. NEW VALUE IS: " + inConnection.value);
         this.parent.setValue(inConnection.value);
         this.setOperandValue(inConnection.value);
+        this.parent.positionObjects();
     },
 
     signalEmitted: function (value) {
@@ -61,6 +62,7 @@ var CanvasVariableConnectionPort = iVoLVER.util.createClass(fabric.Circle, {
             this.parent.setValue("" + 0);
         }
         this.value += 1;
+        this.parent.positionObjects();
     },
 
     showColorDecay: function (color, strokeWidth) {

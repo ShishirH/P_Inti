@@ -27,6 +27,7 @@ class CanvasVariable {
         background.fontColor = 'rgba(65, 65, 65, 1)';
 
         background.children = [];
+        background.childrenOnTop = [];
         background.expandedHeight = 30;
 
         function getValueWidth(newValue, theFont) {
@@ -140,6 +141,7 @@ class CanvasVariable {
 //            });
 
             background.children.push(nameObject);
+            background.childrenOnTop.push(nameObject);
             background.nameObject = nameObject;
 
             canvas.add(nameObject);
@@ -202,6 +204,7 @@ class CanvasVariable {
 
             canvas.add(thePort);
             background.connectionPort = thePort;
+            background.childrenOnTop.push(thePort);
         }
 
         background.addConnectionPortRight = function () {
@@ -257,6 +260,7 @@ class CanvasVariable {
 
             canvas.add(thePort);
             background.connectionPortRight = thePort;
+            background.childrenOnTop.push(thePort);
         }
 
         background.addTextField = function () {
@@ -311,6 +315,8 @@ class CanvasVariable {
 
             background.textField = textField;
             background.children.push(background.textField);
+            background.childrenOnTop.push(background.textField);
+
         }
 
         background.addConnectionPort();
@@ -347,6 +353,20 @@ class CanvasVariable {
                 window.canvasVariable = background;
             }
         })
+
+        background.remove = function() {
+            if (background.connectionPortRight.outConnections && background.connectionPortRight.outConnections[0]) {
+                background.connectionPortRight.outConnections[0].contract();
+            }
+
+            for (let i = 0; i < background.childrenOnTop.length; i++) {
+                canvas.remove(background.childrenOnTop[i]);
+            }
+
+            background.removeHtmlObjects && background.removeHtmlObjects();
+            canvas.remove(background);
+        }
+
         background.clone = function () {
             return new ProgvolverSymbol({
                 value: background.value,
@@ -366,6 +386,7 @@ class CanvasVariable {
 
         this.progvolverType = "CanvasVariable";
 
+        nonMultiverseSupportedWidgets.push(background);
         return background;
     }
 }

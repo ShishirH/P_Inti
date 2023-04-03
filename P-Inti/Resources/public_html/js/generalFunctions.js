@@ -463,6 +463,13 @@ function loadLogFiles(response, lineInfoFileContent, waitingDialog) {
                     expressions: null
                 }).then(function (response) {
                 });
+
+                // Inside a variant
+                if (getCombinedHashOfVariants() != "") {
+                    for (let i = 0; i < plotsOnCanvas.length; i++) {
+                        plotsOnCanvas[i].addAllVariablesToPlot();
+                    }
+                }
             }, 1000);
         }
     }
@@ -512,7 +519,6 @@ function clickRunCodeButton() {
             });
         }
     }
-
 
     // var theSlider = $("#theSlider").data("ionRangeSlider");
     // if (priorSliderFromPercentage > 0) {
@@ -580,6 +586,10 @@ function getAssociatedVariablesForCodeVariants(variantCombinationString)
     }
 
     if (window.jsHandler) {
+        window.jsHandler.resetSignals({
+            test:"Asdas"
+        });
+
         window.jsHandler.searchVariableAcrossVariants({
             variableNamesStr: variableNamesStr,
             declaredLinesStr: declaredLinesStr,
@@ -609,7 +619,7 @@ function getAssociatedVariablesForCodeVariants(variantCombinationString)
                 if (variable.kind == "ArraySymbol") {
                     variable.setValueForCurlyBrace(variablesValuesArray[i].trim());
                 } else {
-                    variable.value = variablesValuesArray[i];
+                    variable.setValue(variablesValuesArray[i].trim());
                 }
 
                 if (!variable.isOnCanvas) {
@@ -630,6 +640,16 @@ function getAssociatedVariablesForCodeVariants(variantCombinationString)
 
                     }
                 }
+            }
+
+            // Remove all non-supported widgets. TODO bring them back once they are switched back to the original multiverse
+            for (let i = 0; i < nonMultiverseSupportedWidgets.length; i++) {
+                nonMultiverseSupportedWidgets[i].remove && nonMultiverseSupportedWidgets[i].remove();
+            }
+
+            // Clear all plot contents
+            for (let i = 0; i < plotsOnCanvas.length; i++) {
+                plotsOnCanvas[i].clearPlot();
             }
 
             let lineInfoContent = "";
