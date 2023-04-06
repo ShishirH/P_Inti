@@ -1385,7 +1385,7 @@ namespace TestingCodeAnalysis
                         continue;
                     }
 
-                    if (false)
+                    if (line.Contains("if"))
                     {
                         allContents[documentFilePath][Int32.Parse(lineNumber)] = $" Logger.logLineInfo(@\"{documentFilePath}~{lineNumber}~{line}\");" + allContents[documentFilePath][Int32.Parse(lineNumber)];
                     }

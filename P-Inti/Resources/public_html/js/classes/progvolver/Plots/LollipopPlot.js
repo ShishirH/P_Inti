@@ -149,7 +149,7 @@ class LollipopPlot extends ConnectableWidget {
 
             colorScale = d3.scaleOrdinal()
                 .domain([1, 2])
-                .range(["#4e79a7", "#f28e2c"]);
+                .range(["#FF7F00", "#1776B6"]);
                 //.range(d3.schemeTableau10);
 
             console.log("color scale is: ");
@@ -1151,9 +1151,9 @@ class LollipopPlot extends ConnectableWidget {
                 variablesConnected.push(theConnector.source.background);
 
                 if (variablesConnected.length == 1) {
-                    variable.widget.thePorts[0].set('fill', "#4e79a7");
+                    variable.widget.thePorts[0].set('fill', "#1776B6");
                 } else {
-                    variable.widget.thePorts[0].set('fill', "#f28e2c");
+                    variable.widget.thePorts[0].set('fill', "#FF7F00");
                 }
 
                 background.addVariableToPlot(variable, background);

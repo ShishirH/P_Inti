@@ -898,6 +898,7 @@ function moveTimelineNext() {
     sliderMarksElement.append(sliderMarksElements);
 
     var selectedSymbol = canvas.getActiveObject();
+    canvasVariable && canvasVariable.positionObjects();
 
     if (selectedSymbol && selectedSymbol.showSliderMarks) {
         selectedSymbol.showSliderMarks();
