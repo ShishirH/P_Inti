@@ -1,7 +1,7 @@
 class CanvasVariable {
     constructor(options) {
 
-        var symbolFont = '20px Helvetica';
+        var symbolFont = '20px Consolas';
         options.height = options.height || 30;
         options.rx = options.rx || 5;
         options.ry = options.ry || 5;
@@ -267,7 +267,7 @@ class CanvasVariable {
             let isObjectSelectable = !background.isColorWidgetOutput;
 
                 let textField = new fabric.IText("Val", {
-                fontFamily: 'Helvetica',
+                fontFamily: 'Consolas',
                 fill: '#333',
                 padding: 3,
                 fontSize: 20,

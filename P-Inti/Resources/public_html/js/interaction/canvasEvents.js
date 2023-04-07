@@ -2106,6 +2106,7 @@ function bindCanvasDefaultEvents(canvas) {
                                     allSymbols.push(theSymbol);
                                     namedSymbols[theSymbol.name] = theSymbol;
                                     canvas.add(theSymbol);
+                                    animateBirth(theSymbol, false, 1, 1);
                                     theSymbol.isOnCanvas = true;
                                 }
 

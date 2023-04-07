@@ -27,7 +27,7 @@ var ArrayElementSymbol = iVoLVER.util.createClass(fabric.Rect, {
         this.oldRender = this.render;
         this.render = function (ctx) {
             this.oldRender(ctx);
-            ctx.font = '20px Helvetica';
+            ctx.font = '20px Consolas';
             ctx.fillStyle = this.fontColor;
             ctx.textAlign = "center";
             ctx.textBaseline = "middle";

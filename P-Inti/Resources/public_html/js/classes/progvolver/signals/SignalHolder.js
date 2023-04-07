@@ -15,8 +15,8 @@ class SignalHolder {
         options.nonResizable = true;
         options.hasControls = true;
         options.hasBorders = false;
-        options.y = 250;
-        options.x = 250;
+        options.y = 650;
+        options.x = 200;
 
         var background = createObjectBackground(fabric.Rect, options, this);
         background.signal = options.signal;

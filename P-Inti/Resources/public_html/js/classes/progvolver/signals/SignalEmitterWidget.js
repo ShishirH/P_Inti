@@ -29,7 +29,7 @@ var SignalEmitterWidget = iVoLVER.util.createClass(fabric.Triangle, {
         };
 
         this.setProgramTime = function (time) {
-            if (this.signals) {
+            if (this.signals && !window.waitSignals) {
                 time = window.presentTime;
                 console.log("!!Time is: " + time);
                 console.log("!!this.signals")

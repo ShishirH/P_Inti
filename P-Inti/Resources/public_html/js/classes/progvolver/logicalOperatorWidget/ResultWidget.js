@@ -1,6 +1,6 @@
 class ResultWidget {
     constructor(options) {
-        var symbolFont = '20px Helvetica';
+        var symbolFont = '20px Consolas';
 
         options.height = 30;
         options.width = 40;

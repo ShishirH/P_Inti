@@ -685,6 +685,7 @@ function getAssociatedVariablesForCodeVariants(variantCombinationString)
             } else {
                 hasCodeBeenCompiled = false;
                 setBottomButtonsVisibility();
+                window.waitSignals = true;
             }
 
         });
@@ -880,6 +881,8 @@ function moveTimelineNext() {
     console.log(currentIndex);
 
     window.presentTime = currentTime;
+
+    window.waitSignals = false;
 
     console.log("Updating the slider");
     console.log("Slider percentage: " + (currentIndex * 100) / window.lineData.length);
@@ -1751,7 +1754,7 @@ function addSignalToCanvas(object) {
     var signal = new SignalEmitterWidget({
         width: 180,
         height: 100,
-        top: 250,
+        top: 450,
         radius: 10,
         left: 250,
         id: id
@@ -1762,7 +1765,7 @@ function addSignalToCanvas(object) {
         stroke: '#F02466',
         width: 180,
         height: 100,
-        top: 250,
+        top: 450,
         radius: 40,
         left: 250,
         signal: signal,
