@@ -730,9 +730,16 @@ function getPositionAlongLineBetweenPoints(lineStartCoords, lineEndCoords) {
 let hasCounterBeenTwoBefore = 0;
 function updateMinimizeButton() {
     let counter = 0;
+
     for (let i = 0; i < referenceWidgetsList.length; i++) {
         let background = referenceWidgetsList[i];
         let additionalLogging = true;
+
+        if (window.auxObject.object.objectMembersDict["data"].value == 4 &&
+            (background == window.auxObject || background == window.rootObject.object.objectMembersDict["next"]))
+        {
+            hasCounterBeenTwoBefore = 2;
+        }
 
         // if (rootObject.object.objectMembersDict["next"].object.objectMembersDict["next"] === background) {
         //     additionalLogging = true;

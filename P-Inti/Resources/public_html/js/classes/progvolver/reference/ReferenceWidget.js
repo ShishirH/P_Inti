@@ -1028,14 +1028,23 @@ class ReferenceWidget {
 
                     console.log("!!! background");
                     console.log(background);
+
+                    minimizeButtonCompressed = background.compressedOptions[background.minimizeButton.id];
+                    minimizeButtonExpanded = background.expandedOptions[background.minimizeButton.id];
+
+                    if (!minimizeButtonCompressed && (background == window.auxObject || background == window.rootObject.object.objectMembersDict["next"])) {
+                        window.rootObject.object.objectMembersDict["next"].minimizeButton = window.auxObject.minimizeButton;
+                        window.rootObject.object.objectMembersDict["next"].object = window.auxObject.object;
+                        window.rootObject.object.objectMembersDict["next"].minimizeButton.object = window.auxObject.object;
+                        background.object.objectMembersDict["data"].setValue(4);
+                        return;
+                    }
                     background.minimizeButton.object = background.object;
                     background.object = createObjectMemberWidgetsWithoutResponse(objectInfo[background.type], rightSc, background.fileName, background.name)
 
                     console.log("!!! background object");
                     console.log(background.object);
 
-                    minimizeButtonCompressed = background.compressedOptions[background.minimizeButton.id];
-                    minimizeButtonExpanded = background.expandedOptions[background.minimizeButton.id];
                     let compressedX, compressedY;
 
                     if (!minimizeButtonCompressed) {
@@ -1106,6 +1115,8 @@ class ReferenceWidget {
 
                     background.positionObject(background.minimizeButton);
                     addReferencedObject();
+
+                    background.isSpecialCase = true;
 
                     setTimeout(function() {
                         background.minimizeButton.object = background.object;
