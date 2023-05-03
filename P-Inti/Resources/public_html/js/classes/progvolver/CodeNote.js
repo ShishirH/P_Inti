@@ -339,6 +339,34 @@ class CodeNote extends ConnectableWidget {
 
         };
 
+
+
+        background.registerListener('deselected', function (options) {
+                background.set("strokeWidth", 2); 
+        });
+
+        background.remove = function() {
+            for (let i = 0; i < background.childrenOnTop.length; i++) {
+                canvas.remove(background.childrenOnTop[i]);
+            }
+            canvas.remove(background);
+            d3.selectAll("#" + background.selector).remove();
+        }
+        
+        background.registerListener('mouseup', function (event) {
+                currentlySelectedElement = background;
+                console.log(currentlySelectedElement);
+                currentlySelectedElement.set("strokeWidth", 4); 
+        });
+        
+        document.addEventListener('keydown', function(event){
+            if (event.keyCode === 46){
+                currentlySelectedElement.remove();
+                
+            }
+        });
+        
+
         this.addTextArea(options);
         this.addTitle();
         this.addIcon();

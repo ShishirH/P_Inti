@@ -1756,6 +1756,47 @@ namespace P_Inti
             return result;
         }
 
+
+        public Dictionary<string, object> removeElement(object arg, object arg2, object arg3)
+        {
+            Dictionary<string, object> result = new Dictionary<string, object>();
+
+            
+
+                result.Add("trackedSymbolsIDs", windowControl.trackedSymbolsIDs.ToArray());
+                result.Add("trackedSymbols", windowControl.trackedSymbols.ToArray());
+                result.Add("initializationValues", initializationValues.ToArray());
+                result.Add("positions", windowControl.positions.ToArray());
+                result.Add("fileNames", windowControl.fileNames.ToArray());
+                result.Add("trackedExpressionsIDs", windowControl.trackedExpressionsIDs.ToArray());
+                result.Add("foundVariables", foundVariables);
+            if (windowControl.trackedSymbols.ContainsKey(arg.ToString()))
+            {
+                windowControl.trackedSymbols.Remove(arg.ToString());
+            }
+            if (windowControl.trackedSymbolsIDs.IndexOf(arg.ToString()) != -1)
+            {
+                windowControl.positions.RemoveAt(windowControl.trackedSymbolsIDs.IndexOf(arg.ToString()));
+                windowControl.fileNames.RemoveAt(windowControl.trackedSymbolsIDs.IndexOf(arg.ToString()));
+                windowControl.trackedSymbolsIDs.RemoveAt(windowControl.trackedSymbolsIDs.IndexOf(arg.ToString()));
+            }
+
+            if (foundVariables.IndexOf(arg3.ToString()) != -1)
+            {
+                foundVariables.RemoveAt(foundVariables.IndexOf(arg3.ToString()));
+            }
+
+            MyWindowControl.printInBrowserConsole("***************************************************************");
+            MyWindowControl.printInBrowserConsole(arg2.ToString());
+            if (initializationValues.ContainsKey(arg2.ToString()))
+            {
+                initializationValues.Remove(arg2.ToString());
+            }
+            return result;
+        }
+
+
+
         public Dictionary<string, object> getEditorState(object arg)
         {
 

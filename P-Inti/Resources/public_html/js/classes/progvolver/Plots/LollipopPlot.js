@@ -1,6 +1,6 @@
 class LollipopPlot extends ConnectableWidget {
     constructor(options) {
-
+        var plotterBackground = null;
         options.doNotAddConnectionPorts = true;
         options.cornerSize = 9;
         options.fill = '#2094E9';
@@ -553,7 +553,7 @@ class LollipopPlot extends ConnectableWidget {
                 .appendTo("body")
                 .addClass('scalable');
 
-
+            plotterBackground = plottingDiv;
             this.addContextMenu(background.selector);
 
 
@@ -1192,7 +1192,33 @@ class LollipopPlot extends ConnectableWidget {
         registerProgvolverObject(this);
 
 
+        background.registerListener('deselected', function (options) {
+                background.set("strokeWidth", 2); 
+        });
 
+        background.remove = function() {
+           
+
+            for (let i = 0; i < background.childrenOnTop.length; i++) {
+                canvas.remove(background.childrenOnTop[i]);
+            }
+            canvas.remove(background);
+            d3.selectAll("#" + background.selector).remove();
+        }
+        
+        background.registerListener('mouseup', function (event) {
+                currentlySelectedElement = background;
+                console.log(currentlySelectedElement);
+                currentlySelectedElement.set("strokeWidth", 4); 
+        });
+        
+        document.addEventListener('keydown', function(event){
+            if (event.keyCode === 46){
+                currentlySelectedElement.remove();
+                
+            }
+        });
+        
         this.setProgramTime = function (time) {
 
             var symbolNames = Object.keys(background.histories);

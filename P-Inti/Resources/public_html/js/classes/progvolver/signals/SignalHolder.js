@@ -234,7 +234,26 @@ class SignalHolder {
             canvas.add(background.labelObject)
             canvas.add(background.lineContentTextBox);
         });
-
+        background.registerListener('pressed', function () {
+            alert ("pressed!!!!");
+            background.remove();
+        });
+        
+        background.registerListener('mouseup', function () {
+//            alert ("mouseup!!!!!");
+            currentlySelectedElement = background;
+            console.log(currentlySelectedElement);
+        });
+        
+        
+        document.addEventListener('keydown', function(event){
+            //alert(event.keyCode);
+            if (event.keyCode === 46){
+                currentlySelectedElement.remove();
+            }
+//            console.log(nonMultiverseSupportedWidgets);
+        });
+        
         this.progvolverType = "SignalHolder";
         registerProgvolverObject(this);
 

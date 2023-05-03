@@ -1400,6 +1400,9 @@ namespace TestingCodeAnalysis
             // log initializations
             foreach(string key in JsHandler.initializationValues.Keys)
             {
+
+                MyWindowControl.printInBrowserConsole("&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&");
+                MyWindowControl.printInBrowserConsole(key);
                 if (!JsHandler.foundVariables.Contains(JsHandler.initializationValues[key]))
                 {
                     // Variable wasn't found in current code variant.
@@ -1720,7 +1723,7 @@ namespace TestingCodeAnalysis
 
                 // TMP
                 //syntaxTrees.Add(CSharpSyntaxTree.ParseText(File.ReadAllText(@"C:\Users\Admin\Documents\GitHub\P_Inti\P-Inti\Resources\Logger.cs")));
-                syntaxTrees.Add(CSharpSyntaxTree.ParseText(File.ReadAllText(@"E:\Dev\P_Inti\P-Inti\Resources\Logger.cs")));
+                syntaxTrees.Add(CSharpSyntaxTree.ParseText(File.ReadAllText(@"C:\Users\Hamid Mansoor\Desktop\pinti_final_version\P_Inti\P-Inti\Resources\Logger.cs")));
 
 
                 refs.Add(MetadataReference.CreateFromFile(typeof(object).GetTypeInfo().Assembly.Location));

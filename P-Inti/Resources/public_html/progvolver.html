@@ -31,6 +31,7 @@
             if (window.CefSharp) {
                 CefSharp.BindObjectAsync("jsHandler", "jsHandler");
             }
+            var currentlySelectedElement = null;
         </script>
         <link rel="stylesheet" type="text/css" href="./bootstrap-5.2.3-dist/css/bootstrap.min.css" />
 
@@ -243,7 +244,7 @@
 
             <!-- UNDO AND REDO -->
             <li class = "verticalLeftDivider"><a href = "javascript:void(0);" onclick="undoCanvas()"><i id="undoCanvas" class="fa fa-undo "></i></a></li>
-            <li class = "verticalLeftDivider"><a href = "javascript:void(0);" onclick="redoCanvas()"><i id="redoCanvas" class="fa fa-repeat "></i></a></li>
+            <li class = "verticalLeftDivider"><a href = "javascript:void(0);" title="redo" onclick="redoCanvas()"><i id="redoCanvas" class="fa fa-repeat "></i></a></li>
             <li class="verticalLeftDivider verticalRightDivider verticalRightDivider2"><a href="javascript:void(0);" onclick="reloadPage()"><i id="openWebPageButton" class="fa fa-refresh "></i></a></li>
 
             <!-- ZOOM -->

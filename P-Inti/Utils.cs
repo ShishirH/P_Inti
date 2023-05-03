@@ -34,7 +34,7 @@ namespace P_Inti
         public static Color glyphFillColor = Colors.Yellow;
 
         private static Random randomGenerator = new Random();
-        public static string programCS = @"C:\Users\shish\source\repos\ConsoleApp1\ConsoleApp1\Program.cs";
+        public static string programCS = @"C:\ConsoleApp1\ConsoleApp1\Program.cs";
 
         public static String generateID()
         {

@@ -200,6 +200,10 @@ class AffectWidget {
             background.operations[0].remove();
         }
 
+        background.registerListener('deselected', function (options) {
+                background.set("strokeWidth", 2); 
+        });
+
         background.remove = function() {
             if (background.outputPort.outConnections && background.outputPort.outConnections[0]) {
                 background.outputPort.outConnections[0].contract();
@@ -212,6 +216,20 @@ class AffectWidget {
             background.removeHtmlObjects();
             canvas.remove(background);
         }
+        
+        background.registerListener('mouseup', function (event) {
+                var rightClick = (event.e.which) ? (event.e.which == 3) : (event.e.which == 2);
+                currentlySelectedElement = background;
+                console.log(currentlySelectedElement);
+                currentlySelectedElement.set("strokeWidth", 4); 
+        });
+        
+        document.addEventListener('keydown', function(event){
+            if (event.keyCode === 46){
+                background.remove();
+                
+            }
+        });
 
         background.registerListener('added', function (options) {
             canvas.add(background.signalReceiver);

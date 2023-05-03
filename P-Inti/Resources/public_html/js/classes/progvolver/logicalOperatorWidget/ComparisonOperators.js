@@ -14,7 +14,7 @@ class ComparisonOperators {
         options.hasBorders = false;
 
         options.value = "Comparison Operator";
-
+        var selectDropdownTemp = null;
         var background = createObjectBackground(fabric.Rect, options, this);
 
         background.hMargin = 5;
@@ -203,9 +203,11 @@ class ComparisonOperators {
                     width: 50 + 'px',
                     height: 30 + 'px',
                 });
+                selectDropdownTemp = selectDropdown;
             };
 
             background.operations = selectDropdown;
+            background.children.push(selectDropdown);
             background.addHtmlChild(selectDropdown, positionDropdown);
             background.positionHtmlObjects();
         };
@@ -244,6 +246,34 @@ class ComparisonOperators {
             background.outputPort.updateOutput();
         };
 
+
+
+        background.registerListener('deselected', function (options) {
+            background.set("strokeWidth", 2); 
+        });
+
+        background.remove = function() {
+            console.log(background.children);
+            console.log(selectDropdownTemp);
+            for (let i = 0; i < background.children.length; i++) {
+                canvas.remove(background.children[i]);
+            }
+            selectDropdownTemp.remove();
+            
+            canvas.remove(background);
+        }
+        
+        background.registerListener('mouseup', function (event) {
+                currentlySelectedElement = background;
+                console.log(currentlySelectedElement);
+                currentlySelectedElement.set("strokeWidth", 4); 
+        });
+        
+        document.addEventListener('keydown', function(event){
+            if (event.keyCode === 46){
+                currentlySelectedElement.remove();
+            }
+        });
 
         this.addEvents(options);
 

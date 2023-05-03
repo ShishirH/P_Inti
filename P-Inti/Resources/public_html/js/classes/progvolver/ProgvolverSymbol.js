@@ -483,9 +483,11 @@ class ProgvolverSymbol extends ConnectableWidget {
 
             background.registerListener('mouseup', function (event) {
                 var rightClick = (event.e.which) ? (event.e.which == 3) : (event.e.which == 2);
-
+                currentlySelectedElement = background;
+                console.log(currentlySelectedElement);
+                currentlySelectedElement.set("strokeWidth", 4); 
                 if (rightClick) {
-                    background.expandedOptions[background.movementInteractionEvent.id].scaleX = 1;
+                    background.expandedOptiproons[background.movementInteractionEvent.id].scaleX = 1;
                     background.expandedOptions[background.movementInteractionEvent.id].scaleY = 1;
                     background.expandedOptions[background.movementInteractionEvent.id].opacity = 1;
 
@@ -507,7 +509,19 @@ class ProgvolverSymbol extends ConnectableWidget {
                 }
             });
 
+            
+
+            document.addEventListener('keydown', function(event){
+                if (event.keyCode === 46 && currentlySelectedElement){
+                    currentlySelectedElement.removeAll();
+                    window.jsHandler.removeElement(currentlySelectedElement.id, currentlySelectedElement.file + "~" + (currentlySelectedElement.lineNumber - 1), currentlySelectedElement.name).then(function (response) {
+                        console.log(response);
+                    });
+                }
+            });
+            
             background.registerListener('deselected', function (options) {
+                background.set("strokeWidth", 2); 
                 if (!background.doNotCompressWhenCanvasClicked) {
                     background.expandedOptions[background.movementInteractionEvent.id].scaleX = 0;
                     background.expandedOptions[background.movementInteractionEvent.id].scaleY = 0;

@@ -36,7 +36,7 @@ namespace P_Inti
             ImageDrawing signalDrawing = new ImageDrawing();
             signalDrawing.Rect = new Rect(75, 75, 100, 100);
             signalDrawing.ImageSource = new BitmapImage(
-                new Uri(@"E:\Dev\P_Inti\signalwave.png", UriKind.Absolute));
+                new Uri(@"C:\Users\Hamid Mansoor\Desktop\pinti_final_version\P_Inti\signalwave.png", UriKind.Absolute));
 
             DrawingBrush drawingBrush = new DrawingBrush(signalDrawing);
             Ellipse ellipse = new Ellipse();

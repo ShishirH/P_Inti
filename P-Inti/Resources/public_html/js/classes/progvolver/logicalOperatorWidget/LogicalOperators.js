@@ -14,7 +14,7 @@ class LogicalOperators {
         options.hasBorders = false;
 
         options.value = "Logical Operator";
-
+        var selectDropdownTemp = null;
         var background = createObjectBackground(fabric.Rect, options, this);
 
         background.children = [];
@@ -187,7 +187,7 @@ class LogicalOperators {
                     height: 30 + 'px',
                 });
             };
-
+            selectDropdownTemp = selectDropdown;
             background.operations = selectDropdown;
             background.addHtmlChild(selectDropdown, positionDropdown);
             background.positionHtmlObjects();
@@ -228,6 +228,33 @@ class LogicalOperators {
             console.log(background.rightOperandValue)
         }
 
+
+        background.registerListener('deselected', function (options) {
+            background.set("strokeWidth", 2); 
+        });
+
+        background.remove = function() {
+            console.log(background.children);
+            console.log(selectDropdownTemp);
+            for (let i = 0; i < background.children.length; i++) {
+                canvas.remove(background.children[i]);
+            }
+            selectDropdownTemp.remove();
+            
+            canvas.remove(background);
+        }
+        
+        background.registerListener('mouseup', function (event) {
+                currentlySelectedElement = background;
+                console.log(currentlySelectedElement);
+                currentlySelectedElement.set("strokeWidth", 4); 
+        });
+        
+        document.addEventListener('keydown', function(event){
+            if (event.keyCode === 46){
+                currentlySelectedElement.remove();
+            }
+        });
 
         this.progvolverType = "LogicalOperator";
         registerProgvolverObject(background);
