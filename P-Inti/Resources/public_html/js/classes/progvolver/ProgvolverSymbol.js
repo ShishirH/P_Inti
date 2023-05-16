@@ -825,7 +825,7 @@ class ProgvolverSymbol extends ConnectableWidget {
             console.log(background.widget.ports["right"].outConnections[0]);
 
             if (background.widget.ports["right"].outConnections && background.widget.ports["right"].outConnections[0]) {
-                
+                background.widget.ports["right"].outConnections[0].target.background.clearPlot();
                 background.widget.ports["right"].outConnections[0].contract();
             }
             
