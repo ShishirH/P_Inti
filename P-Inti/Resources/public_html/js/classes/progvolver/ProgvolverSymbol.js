@@ -822,6 +822,13 @@ class ProgvolverSymbol extends ConnectableWidget {
         }
 
         background.removeAll = function () {
+            console.log(background.widget.ports["right"].outConnections[0]);
+
+            if (background.widget.ports["right"].outConnections && background.widget.ports["right"].outConnections[0]) {
+                
+                background.widget.ports["right"].outConnections[0].contract();
+            }
+            
             background.childrenOnTop.forEach(function (child) {
                 canvas.remove(child);
             });
