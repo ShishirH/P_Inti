@@ -1697,7 +1697,7 @@ namespace TestingCodeAnalysis
 
                 // TMP
                 //syntaxTrees.Add(CSharpSyntaxTree.ParseText(File.ReadAllText(@"C:\Users\Admin\Documents\GitHub\P_Inti\P-Inti\Resources\Logger.cs")));
-                syntaxTrees.Add(CSharpSyntaxTree.ParseText(File.ReadAllText(@"E:\Dev\P_Inti\P-Inti\Resources\Logger.cs")));
+                syntaxTrees.Add(CSharpSyntaxTree.ParseText(File.ReadAllText(@"C:\Users\hamid\Desktop\P_Inti\P-Inti\Resources\Logger.cs")));
 
 
                 refs.Add(MetadataReference.CreateFromFile(typeof(object).GetTypeInfo().Assembly.Location));

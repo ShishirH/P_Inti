@@ -308,8 +308,8 @@
         {
             //Object[] showArgs = { "FROM VISUAL STUDIO:\n" + text };
             Object[] showArgs = { o.ToString() };
-            JavascriptResponse response = bs.EvaluateScriptAsync("printInConsole", showArgs).Result;
-            string result = (string)response.Result;
+            //JavascriptResponse response = bs.EvaluateScriptAsync("printInConsole", showArgs).Result;
+            //string result = (string)response.Result;
         }
 
         private static long nanoTime()
