@@ -1,0 +1,3 @@
+index~symbol~initialValue~widgetID~declareAtFrom~declareAtTo~scopeFrom~scopeTo~declarator~filePath
+0~a~3~01_June_2025___13_17_53_416___c9654c92-8369-4851-8c72-dc116d491a48___4816~18~18~13~23~HelloWorldApp.Geeks.Main(string[])~C:\Users\hamid\Downloads\ConsoleApp1\ConsoleApp1\Program.cs
+1~foo~"bar"~01_June_2025___13_18_12_559___6b371bc9-9563-482e-8eb9-1bc9882cd84f___610~19~19~13~23~HelloWorldApp.Geeks.Main(string[])~C:\Users\hamid\Downloads\ConsoleApp1\ConsoleApp1\Program.cs
